@@ -14,6 +14,14 @@ body {
   letter-spacing: 0.02em;
 }
 
+/* Horizon's text blocks (product titles, prices, RTE content, etc.) each carry
+   their own per-instance --text-transform custom property (default: none),
+   which otherwise overrides the inherited uppercase from body above. Force it
+   everywhere regardless of that per-block setting. */
+body * {
+  text-transform: uppercase !important;
+}
+
 :root {
   --hover-transition-duration: 0.12s;
   --hover-transition-timing: ease-out;
