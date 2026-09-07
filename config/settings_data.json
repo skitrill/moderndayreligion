@@ -9,10 +9,9 @@
  */
 {
   "current": {
-    "logo_height": 36,
-    "logo_height_mobile": 28,
-    "page_background_color": "{{ settings.color_palette.background }}",
-    "page_width": "narrow",
+    "logo": "shopify://shop_images/wad.png",
+    "logo_height": 40,
+    "logo_height_mobile": 40,
     "page_text_color": "{{ settings.color_palette.foreground }}",
     "type_body_font": "anonymous_pro_n4",
     "type_subheading_font": "anonymous_pro_n7",
@@ -47,7 +46,8 @@
     "type_size_h6": "10",
     "type_line_height_h6": "display-tight",
     "type_case_h6": "uppercase",
-    "card_title_case": "uppercase",
+    "page_background_color": "{{ settings.color_palette.background }}",
+    "page_width": "narrow",
     "page_transition_enabled": false,
     "transition_to_main_product": false,
     "card_hover_effect": "none",
@@ -93,6 +93,7 @@
     "quick_add_text": "{{ settings.color_palette.foreground }}",
     "product_corner_radius": 0,
     "card_corner_radius": 4,
+    "card_title_case": "uppercase",
     "show_variant_image": false,
     "variant_swatch_width": 34,
     "variant_swatch_height": 34,
@@ -106,6 +107,15 @@
     "variant_button_border_width": 1,
     "variant_button_radius": 14,
     "variant_button_width": "equal-width-buttons",
+    "sections": {
+      "password-footer": {
+        "type": "password-footer",
+        "settings": {
+          "background_color": ""
+        }
+      }
+    },
+    "content_for_index": [],
     "color_palette": {
       "background": "#000000",
       "foreground": "#F0EEE6",
