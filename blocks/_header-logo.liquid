@@ -37,9 +37,6 @@
     data-hidden-on-home-page
   {% endif %}
   href="{{ routes.root_url }}"
-  {% unless is_home_page %}
-    onclick="window.mdrGoBack(); return false;"
-  {% endunless %}
   class="size-style spacing-style header-logo"
   style="
     {% render 'size-style', settings: block_settings %}
@@ -51,7 +48,11 @@
   {{ block.shopify_attributes }}
 >
   {% unless is_home_page %}
-    <span class="header-logo__back-arrow" aria-hidden="true">&lsaquo;</span>
+    <span
+      class="header-logo__back-arrow"
+      aria-hidden="true"
+      onclick="event.preventDefault(); window.mdrGoBack();"
+    >&lsaquo;</span>
   {% endunless %}
   {% liquid
     assign logo_width = settings.logo_height | times: settings.logo.aspect_ratio | ceil
