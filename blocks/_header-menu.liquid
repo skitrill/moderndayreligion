@@ -59,6 +59,32 @@
                 </a>
               </li>
             {% endfor %}
+            <li>
+              <search-button>
+                <button
+                  type="button"
+                  on:click="#search-modal/showDialog"
+                  class="menu-list__item menu-list__item--button"
+                  aria-haspopup="dialog"
+                >
+                  {{- 'content.search' | t -}}
+                </button>
+              </search-button>
+            </li>
+            {% if shop.customer_accounts_enabled %}
+              <li>
+                <a
+                  href="{{ routes.account_url }}"
+                  class="menu-list__item"
+                >
+                  {%- if customer -%}
+                    {{- customer.first_name -}}
+                  {%- else -%}
+                    {{- 'content.account_title' | t -}}
+                  {%- endif -%}
+                </a>
+              </li>
+            {% endif %}
           </ul>
         </div>
       </div>
@@ -278,6 +304,20 @@
 
     & a {
       color: var(--color-foreground);
+    }
+
+    & .menu-list__item {
+      font-family: var(--font-accent--family);
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      font-size: var(--font-size--sm);
+    }
+
+    & .menu-list__item--button {
+      background: none;
+      border: none;
+      padding: 0;
+      cursor: pointer;
     }
   }
 
