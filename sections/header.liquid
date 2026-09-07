@@ -879,10 +879,10 @@
     }
 
     @media screen and (max-width: 749px) {
-      --header-template-columns: var(--header-mobile-bookend) var(--header-mobile-bookend) 1fr
-        var(--header-mobile-bookend) var(--header-mobile-bookend);
+      --header-template-columns: var(--header-mobile-bookend) 1fr
+        var(--header-mobile-bookend) var(--header-mobile-bookend) var(--header-mobile-bookend);
 
-      grid-template-areas: 'leftA leftB center rightA rightB';
+      grid-template-areas: 'leftB center rightA rightB rightC';
       grid-column: span 3;
       column-gap: 0;
       align-items: center;
@@ -894,14 +894,6 @@
 
       .header-logo {
         grid-area: center;
-      }
-
-      &:not(:has(header-actions)) .search-action {
-        grid-area: leftB;
-      }
-
-      &:not(:has(shopify-account)) .search-action {
-        grid-area: rightA;
       }
 
       .search-action {
@@ -918,8 +910,18 @@
       }
 
       header-actions {
+        display: contents;
+      }
+
+      .account-button.header-actions__action {
         grid-area: rightB;
-        justify-content: flex-end;
+        justify-content: center;
+      }
+
+      header-actions > button.header-actions__action,
+      header-actions > a.header-actions__action {
+        grid-area: rightC;
+        justify-content: center;
       }
     }
   }
@@ -927,10 +929,10 @@
   /* not ideal but we need to duplicate these styles for when touch comes into play
     We could avoid the duplication using js to set the data-menu-style attribute on small screens instead of using @media queries */
   #header-component[data-menu-style='drawer'] .header__columns {
-    --header-template-columns: var(--header-mobile-bookend) var(--header-mobile-bookend) 1fr
-      var(--header-mobile-bookend) var(--header-mobile-bookend);
+    --header-template-columns: var(--header-mobile-bookend) 1fr
+      var(--header-mobile-bookend) var(--header-mobile-bookend) var(--header-mobile-bookend);
 
-    grid-template-areas: 'leftA leftB center rightA rightB';
+    grid-template-areas: 'leftB center rightA rightB rightC';
     grid-column: span 3;
     column-gap: 0;
     align-items: center;
@@ -942,14 +944,6 @@
 
     .header-logo {
       grid-area: center;
-    }
-
-    &:not(:has(header-actions)) .search-action {
-      grid-area: leftB;
-    }
-
-    &:not(:has(shopify-account)) .search-action {
-      grid-area: rightA;
     }
 
     .search-action {
@@ -967,8 +961,18 @@
     }
 
     header-actions {
+      display: contents;
+    }
+
+    .account-button.header-actions__action {
       grid-area: rightB;
-      justify-content: flex-end;
+      justify-content: center;
+    }
+
+    header-actions > button.header-actions__action,
+    header-actions > a.header-actions__action {
+      grid-area: rightC;
+      justify-content: center;
     }
   }
 
