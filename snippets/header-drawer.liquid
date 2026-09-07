@@ -2,6 +2,7 @@
   Renders a header drawer menu triggered by the top details element.
 
   @param {object} linklist - The linklist to render
+  @param {boolean} [skip_linklist] - When true, don't render the linklist (used when the drawer's content is fully custom, e.g. the header portal drawer)
   @param {string} [class] - Additional classes to add to the drawer
   @param {string} [data_header_drawer_type] - The type of header drawer to render
   @param {object} [block] - The block that can be used to provide settings
@@ -66,11 +67,14 @@
       on:click="/toggle"
     >
       <span class="svg-wrapper header-drawer-icon header-drawer-icon--open">
-        {{- 'icon-menu.svg' | inline_asset_content -}}
+        {{- 'icon-grid-default.svg' | inline_asset_content -}}
       </span>
       <span class="svg-wrapper header-drawer-icon header-drawer-icon--close">
         {{- 'icon-close-menu.svg' | inline_asset_content -}}
       </span>
+      {% if cart.item_count > 0 %}
+        <span class="menu-drawer-cart-badge" ref="menuDrawerCartBadge">{{ cart.item_count }}</span>
+      {% endif %}
     </summary>
     <div
       ref="menuDrawer"
@@ -91,7 +95,7 @@
           {{- 'icon-close-menu.svg' | inline_asset_content -}}
         </span>
       </button>
-      <p class="menu-drawer__portal-label" aria-hidden="true">Access Points // {{ linklist.links.size }}</p>
+      <p class="menu-drawer__portal-label" aria-hidden="true">Access Points</p>
       <nav
         class="menu-drawer__navigation"
         style="
@@ -107,7 +111,7 @@
           {%- comment -%}
             Handle menus with fewer than 3 levels of links
           {%- endcomment -%}
-          {% if linklist.levels < 3 %}
+          {% if linklist.levels < 3 and skip_linklist != true %}
             {% assign first_accordion_open = false %}
             {% assign animation_index = 0 %}
             {%- for link in linklist.links -%}
@@ -588,6 +592,45 @@
               </li>
             {%- endfor -%}
           {% endif %}
+
+          <li class="menu-drawer__list-item--flat menu-drawer__portal-label-item">
+            <span class="menu-drawer__portal-section-label">Collections</span>
+          </li>
+          {%- for collection in collections -%}
+            <li class="menu-drawer__list-item--flat">
+              <a
+                href="{{ collection.url }}"
+                class="menu-drawer__menu-item menu-drawer__menu-item--mainlist"
+              >
+                <span class="menu-drawer__menu-item-text wrap-text">{{ collection.title | escape }}</span>
+              </a>
+            </li>
+          {%- endfor -%}
+
+          <li class="menu-drawer__list-item--flat menu-drawer__portal-divider">
+            <a
+              href="{{ routes.cart_url }}"
+              class="menu-drawer__menu-item menu-drawer__menu-item--mainlist"
+            >
+              <span class="menu-drawer__menu-item-text wrap-text">
+                Cart ({{ cart.item_count }})
+              </span>
+            </a>
+          </li>
+          <li class="menu-drawer__list-item--flat">
+            <a
+              href="{{ routes.account_url }}"
+              class="menu-drawer__menu-item menu-drawer__menu-item--mainlist"
+            >
+              <span class="menu-drawer__menu-item-text wrap-text">
+                {%- if customer -%}
+                  {{- customer.first_name -}}
+                {%- else -%}
+                  {{- 'content.account_title' | t -}}
+                {%- endif -%}
+              </span>
+            </a>
+          </li>
         </ul>
       </nav>
       <div
@@ -799,11 +842,30 @@
   }
 
   .menu-drawer-container .header__icon--summary {
+    position: relative;
     color: var(--color-foreground);
     display: flex;
     justify-content: center;
     align-items: center;
     padding: var(--padding-lg);
+  }
+
+  .menu-drawer-cart-badge {
+    position: absolute;
+    top: 2px;
+    right: 2px;
+    min-width: 1.4em;
+    height: 1.4em;
+    padding: 0 0.2em;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--color-foreground);
+    color: var(--color-background);
+    font-family: var(--font-accent--family);
+    font-size: var(--font-size--3xs, 0.6rem);
+    line-height: 1;
+    border-radius: 0;
   }
 
   .header__icon--summary .header-drawer-icon {
@@ -1113,6 +1175,25 @@
     color: var(--color-foreground-subdued);
     padding-inline: var(--drawer-padding);
     margin: 0 0 var(--margin-md);
+  }
+
+  .menu-drawer__portal-label-item.menu-drawer__portal-label-item {
+    border: none;
+    margin-block-start: var(--margin-lg);
+  }
+
+  .menu-drawer__portal-section-label {
+    display: block;
+    font-family: var(--font-accent--family);
+    font-size: var(--font-size--2xs);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--color-foreground-subdued);
+    padding-inline: var(--padding-lg);
+  }
+
+  .menu-drawer__portal-divider {
+    margin-block-start: var(--margin-lg) !important;
   }
 
   /* Terminal / dossier styling for the top-level (flat) drawer links */

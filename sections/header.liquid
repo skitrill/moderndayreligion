@@ -908,8 +908,12 @@
         grid-area: leftB;
       }
 
+      .header__drawer {
+        grid-area: rightB;
+      }
+
       .header__icon--menu {
-        justify-content: flex-start;
+        justify-content: flex-end;
         padding-inline: 0;
       }
 
@@ -920,20 +924,19 @@
     }
   }
 
-  /* Corteiz-style mobile layout: drawer trigger, search icon and account icon move
-     into the horizontal navigation-bar row below the logo instead of the top row.
-     !important is needed here since these selectors otherwise tie or lose on
+  /* Minimal header: logo left, single grid-icon drawer trigger right. The inline
+     desktop nav-links menu and the account/cart action icons are hidden at every
+     width -- collections, cart and account all live inside the drawer instead.
+     !important is needed since these selectors otherwise tie or lose on
      specificity against the generated component rules (id-scoped drawer rule,
-     same-specificity search-action rule). */
-  @media screen and (max-width: 749px) {
-    .header__drawer,
-    .search-action {
-      display: none !important;
-    }
+     same-specificity header-menu rule). */
+  #header-component .header-menu,
+  #header-component header-actions {
+    display: none !important;
+  }
 
-    .account-button.header-actions__action {
-      display: none;
-    }
+  #header-component .header__drawer {
+    display: flex !important;
   }
 
   /* not ideal but we need to duplicate these styles for when touch comes into play
@@ -968,9 +971,13 @@
       grid-area: leftB;
     }
 
+    .header__drawer {
+      grid-area: rightB;
+    }
+
     /* Pin glyphs to the content edge of the 44px bookend; keep the full tap target */
     .header__icon--menu {
-      justify-content: flex-start;
+      justify-content: flex-end;
       padding-inline: 0;
     }
 
