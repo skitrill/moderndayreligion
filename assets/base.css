@@ -257,7 +257,7 @@ p:empty {
     block-size: 100%;
     overflow: hidden;
     object-fit: cover;
-    animation-duration: 0.25s;
+    animation-duration: var(--animation-speed-slow);
     animation-timing-function: var(--animation-easing);
   }
 
@@ -284,14 +284,15 @@ p:empty {
 }
 
 /* Layout */
+/* Deliberately not flex: 1 / flex-grow here: that would stretch the page's
+   main content (and its last section) to fill the viewport, pushing the
+   footer down to the bottom of the screen with a big empty gap above it on
+   short pages. Instead the footer should follow the content directly, like
+   a lightweight app -- any leftover space shows up below the footer, not
+   between the content and it. */
 .content-for-layout {
-  flex: 1;
   display: flex;
   flex-direction: column;
-}
-
-.content-for-layout > .shopify-section:last-child {
-  flex-grow: 1;
 }
 
 /* Set up page widths & margins. Gutters grow to the device safe-area insets (viewport-fit=cover)
