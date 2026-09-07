@@ -54,6 +54,45 @@ main[data-template='index'] [id$='__product_list_fa6P9H'] .resource-list--grid {
   }
 }
 
+/* Product page: restyle the size buttons after denimtears.com's reference --
+   a tight grid of bottom-border-only labels (text low-left, no boxed
+   border) instead of Horizon's bordered pill buttons. The selected-state
+   solid fill/inverted text still comes from the existing pill element and
+   the theme's selected-variant palette, so only the resting geometry and
+   the extra border overlay (::before/::after) need overriding here. */
+main[data-template='product'] .variant-option__button-label {
+  border: none;
+  border-block-end: 1px solid var(--color-variant-border);
+  border-radius: 0;
+  min-height: 26px;
+  padding: 6px;
+  justify-content: flex-start;
+  font-size: var(--font-size--2xs);
+}
+
+main[data-template='product'] .variant-option__button-label::before,
+main[data-template='product'] .variant-option__button-label::after {
+  display: none;
+}
+
+main[data-template='product'] .variant-option__button-label:has(:checked) {
+  border-block-end-color: var(--color-selected-variant-border);
+}
+
+main[data-template='product'] .variant-option__button-label__text {
+  text-align: left;
+}
+
+main[data-template='product'] .variant-option--equal-width-buttons {
+  --variant-min-width: 46px;
+}
+
+/* Size chart toggle: small muted trigger next to the size buttons, matching
+   denimtears.com's "View size chart +" affordance. */
+main[data-template='product'] .size-chart {
+  margin-block-start: calc(-1 * var(--gap-sm));
+}
+
 /* Horizon's text blocks (product titles, prices, RTE content, etc.) each carry
    their own per-instance --text-transform custom property (default: none),
    which otherwise overrides the inherited uppercase from body above. Force it

@@ -1,0 +1,134 @@
+
+
+{% liquid
+  assign trigger_label = block.settings.trigger_label | default: 'Size Chart'
+%}
+
+<details
+  class="details size-chart spacing-style"
+  data-testid="size-chart"
+  style="{% render 'spacing-style', settings: block.settings %}"
+  {% if block.settings.open_by_default %}
+    open
+  {% endif %}
+  {{ block.shopify_attributes }}
+>
+  <summary class="details__header size-chart__trigger">
+    <span class="size-chart__trigger-text">{{ trigger_label }}</span>
+    <span class="svg-wrapper icon-plus">
+      {{- 'icon-plus.svg' | inline_asset_content -}}
+    </span>
+  </summary>
+  <div class="details-content size-chart__content">
+    {{ block.settings.chart_content }}
+  </div>
+</details>
+
+{% render 'summary-icon-styles' %}
+
+{% stylesheet %}
+  .size-chart {
+    border: none;
+  }
+
+  .size-chart__trigger {
+    padding-block: 0;
+    gap: var(--gap-2xs);
+    color: rgb(var(--color-foreground-rgb) / var(--opacity-70));
+    font-size: var(--font-size--2xs);
+  }
+
+  .size-chart__trigger:hover {
+    color: var(--color-foreground);
+  }
+
+  .size-chart__trigger .svg-wrapper {
+    width: var(--icon-size-2xs);
+    height: var(--icon-size-2xs);
+  }
+
+  .size-chart__content {
+    padding-block-start: var(--padding-sm);
+  }
+
+  .size-chart__content table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: var(--font-size--2xs);
+  }
+
+  .size-chart__content th,
+  .size-chart__content td {
+    text-align: center;
+    padding: var(--padding-xs) var(--padding-2xs);
+    border-bottom: 1px solid rgb(var(--color-foreground-rgb) / var(--opacity-25));
+    font-weight: 400;
+  }
+
+  .size-chart__content th:first-child,
+  .size-chart__content td:first-child {
+    text-align: left;
+  }
+
+  .size-chart__content thead th {
+    color: rgb(var(--color-foreground-rgb) / var(--opacity-60));
+    border-bottom-color: currentcolor;
+  }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "Size chart",
+  "tag": null,
+  "settings": [
+    {
+      "type": "text",
+      "id": "trigger_label",
+      "label": "Toggle label",
+      "default": "Size Chart"
+    },
+    {
+      "type": "checkbox",
+      "id": "open_by_default",
+      "label": "Open by default",
+      "default": false
+    },
+    {
+      "type": "richtext",
+      "id": "chart_content",
+      "label": "Chart content",
+      "default": "<table><thead><tr><th>Size</th><th>Chest</th><th>Length</th><th>Sleeve</th></tr></thead><tbody><tr><td>S</td><td>36</td><td>27</td><td>24</td></tr><tr><td>M</td><td>39</td><td>28</td><td>24.5</td></tr><tr><td>L</td><td>42</td><td>29</td><td>25</td></tr><tr><td>XL</td><td>45</td><td>30</td><td>25.5</td></tr></tbody></table>"
+    },
+    {
+      "type": "header",
+      "content": "t:content.padding"
+    },
+    {
+      "type": "range",
+      "id": "padding-block-start",
+      "label": "t:settings.top",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "default": 8
+    },
+    {
+      "type": "range",
+      "id": "padding-block-end",
+      "label": "t:settings.bottom",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "default": 0
+    }
+  ],
+  "presets": [
+    {
+      "name": "Size chart",
+      "category": "t:categories.product"
+    }
+  ]
+}
+{% endschema %}
