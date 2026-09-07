@@ -20,7 +20,7 @@ body {
    link is excluded -- it gets no highlight at all (see .header-logo below). */
 a:not([class*='button']):not(.header-logo):hover,
 a:not([class*='button']):not(.header-logo):active {
-  background-color: #040061;
+  background-color: #3B2412;
   color: #FFFFFF !important;
   text-decoration: none;
   -webkit-tap-highlight-color: transparent;
