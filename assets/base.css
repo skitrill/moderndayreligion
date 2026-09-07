@@ -11,12 +11,13 @@ body {
   min-height: 100svh;
   font-variation-settings: 'slnt' 0;
   text-transform: uppercase;
+  letter-spacing: 0.02em;
 }
 
 :root {
-  --hover-transition-duration: 0.25s;
+  --hover-transition-duration: 0.12s;
   --hover-transition-timing: ease-out;
-  --submenu-animation-speed: 360ms;
+  --submenu-animation-speed: 160ms;
 }
 
 html {
