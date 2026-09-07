@@ -921,11 +921,14 @@
   }
 
   /* Corteiz-style mobile layout: drawer trigger, search icon and account icon move
-     into the horizontal navigation-bar row below the logo instead of the top row. */
+     into the horizontal navigation-bar row below the logo instead of the top row.
+     !important is needed here since these selectors otherwise tie or lose on
+     specificity against the generated component rules (id-scoped drawer rule,
+     same-specificity search-action rule). */
   @media screen and (max-width: 749px) {
     .header__drawer,
     .search-action {
-      display: none;
+      display: none !important;
     }
 
     .account-button.header-actions__action {
