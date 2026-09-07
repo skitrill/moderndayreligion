@@ -9,9 +9,9 @@
  */
 {
   "current": {
-    "logo": "shopify://shop_images/wad.png",
-    "logo_height": 40,
-    "logo_height_mobile": 40,
+    "logo": "shopify://shop_images/erte.png",
+    "logo_height": 30,
+    "logo_height_mobile": 28,
     "page_text_color": "{{ settings.color_palette.foreground }}",
     "type_body_font": "anonymous_pro_n4",
     "type_subheading_font": "anonymous_pro_n7",
