@@ -880,7 +880,7 @@
 
     @media screen and (max-width: 749px) {
       --header-template-columns: var(--header-mobile-bookend) var(--header-mobile-bookend) 1fr
-        var(--header-mobile-bookend) var(--header-mobile-bookend);
+        var(--header-mobile-bookend) auto;
 
       grid-template-areas: 'leftA leftB center rightA rightB';
       grid-column: span 3;
@@ -944,7 +944,7 @@
     We could avoid the duplication using js to set the data-menu-style attribute on small screens instead of using @media queries */
   #header-component[data-menu-style='drawer'] .header__columns {
     --header-template-columns: var(--header-mobile-bookend) var(--header-mobile-bookend) 1fr
-      var(--header-mobile-bookend) var(--header-mobile-bookend);
+      var(--header-mobile-bookend) auto;
 
     grid-template-areas: 'leftA leftB center rightA rightB';
     grid-column: span 3;

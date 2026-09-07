@@ -19,13 +19,6 @@
       data-hydration-key="header-drawer-mobile"
       {{ block.shopify_attributes }}
     >
-      <a
-        href="{{ routes.cart_url }}"
-        class="header__cart-link"
-      >
-        Cart
-        {%- if cart.item_count > 0 %} ({{ cart.item_count }}){% endif -%}
-      </a>
       {% render 'header-drawer',
         linklist: block_settings.menu,
         skip_linklist: true,
@@ -33,6 +26,13 @@
         block: block,
         section: section
       %}
+      <a
+        href="{{ routes.cart_url }}"
+        class="header__cart-link"
+      >
+        Cart
+        {%- if cart.item_count > 0 %} ({{ cart.item_count }}){% endif -%}
+      </a>
     </div>
 
   {% when 'navigation_bar' %}
