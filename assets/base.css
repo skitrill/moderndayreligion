@@ -14,14 +14,20 @@ body {
   letter-spacing: 0.02em;
 }
 
-/* Text links (not buttons): a solid club-green highlight block snug behind the
-   text on hover/tap, with the text flipping to white -- not a shadow, not a
-   whole-row/tile fill, just the glyphs' own background. */
-a:not([class*='button']):hover,
-a:not([class*='button']):active {
-  background-color: #0B6E4F;
+/* Text links (not buttons): a solid highlight block snug behind the text on
+   hover/tap, with the text flipping to white -- not a shadow, not a
+   whole-row/tile fill, just the glyphs' own background. The header logo/back
+   link is excluded -- it gets no highlight at all (see .header-logo below). */
+a:not([class*='button']):not(.header-logo):hover,
+a:not([class*='button']):not(.header-logo):active {
+  background-color: #040061;
   color: #FFFFFF !important;
   text-decoration: none;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.header-logo:hover,
+.header-logo:active {
   -webkit-tap-highlight-color: transparent;
 }
 
