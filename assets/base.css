@@ -14,6 +14,17 @@ body {
   letter-spacing: 0.02em;
 }
 
+/* Text links (not buttons): a solid club-green highlight block snug behind the
+   text on hover/tap, with the text flipping to white -- not a shadow, not a
+   whole-row/tile fill, just the glyphs' own background. */
+a:not([class*='button']):hover,
+a:not([class*='button']):active {
+  background-color: #0B6E4F;
+  color: #FFFFFF !important;
+  text-decoration: none;
+  -webkit-tap-highlight-color: transparent;
+}
+
 /* Shrink the homepage product grid without touching the column count (4) or the
    gap between cards -- narrowing the grid's own max-width scales all 4 columns
    down proportionally while columns_gap/rows_gap stay the same literal px. */
