@@ -44,6 +44,16 @@ main[data-template='index'] [id$='__product_list_fa6P9H'] .resource-list--grid {
   color: #2E5E45;
 }
 
+/* Product page: shrink the media column so the image doesn't dominate the
+   page -- it stays left-aligned within its own (now narrower) grid column --
+   and let the details column (title/price/variant picker/description) take
+   the rest of the width. Reads as a narrower, less spread-out page overall. */
+@media screen and (min-width: 750px) {
+  main[data-template='product'] .product-information__grid.product-information--media-left {
+    grid-template-columns: minmax(200px, 300px) 1fr !important;
+  }
+}
+
 /* Horizon's text blocks (product titles, prices, RTE content, etc.) each carry
    their own per-instance --text-transform custom property (default: none),
    which otherwise overrides the inherited uppercase from body above. Force it
