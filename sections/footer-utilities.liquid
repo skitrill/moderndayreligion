@@ -23,6 +23,8 @@
 </div>
 
 {% stylesheet %}
+  /* Footer utilities (copyright, policy links, social icons) always stack
+     vertically, regardless of block count or viewport. */
   .utilities {
     width: 100%;
     display: flex;
@@ -32,15 +34,6 @@
     text-wrap: nowrap;
     border-top: var(--border-width) solid var(--divider-color, var(--color-border));
     color: var(--color-foreground-muted);
-
-    @media screen and (min-width: 750px) {
-      display: grid;
-      grid-template-columns: 1fr auto 1fr;
-      justify-content: center;
-      gap: var(--gap);
-      align-items: center;
-      text-align: left;
-    }
   }
 
   .utilities a,
@@ -50,50 +43,6 @@
 
   .utilities > * {
     text-align: center;
-
-    @media screen and (min-width: 750px) {
-      text-align: left;
-      justify-self: start;
-    }
-  }
-
-  /* Dynamic positioning based on number of blocks */
-  @media screen and (min-width: 750px) {
-    /* 1 block: Single column, left aligned */
-    .utilities--blocks-1 {
-      grid-template-columns: 1fr;
-      justify-content: start;
-    }
-
-    .utilities--blocks-1 > * {
-      justify-self: start;
-      text-align: left;
-    }
-
-    /* 2 blocks: Two equal columns, start and end aligned */
-    .utilities--blocks-2 {
-      grid-template-columns: 1fr 1fr;
-    }
-
-    .utilities--blocks-2 > *:nth-child(2) {
-      justify-self: end;
-      text-align: right;
-    }
-
-    /* 3 blocks: Three columns (1fr auto 1fr), start/center/end aligned */
-    .utilities--blocks-3 {
-      grid-template-columns: 1fr auto 1fr;
-    }
-
-    .utilities--blocks-3 > *:nth-child(2) {
-      justify-self: center;
-      text-align: center;
-    }
-
-    .utilities--blocks-3 > *:nth-child(3) {
-      justify-self: end;
-      text-align: right;
-    }
   }
 {% endstylesheet %}
 
