@@ -38,7 +38,7 @@
   {% endif %}
   href="{{ routes.root_url }}"
   {% unless is_home_page %}
-    onclick="if (window.history.length > 1) { window.history.back(); return false; }"
+    onclick="window.mdrGoBack(); return false;"
   {% endunless %}
   class="size-style spacing-style header-logo"
   style="
@@ -99,6 +99,7 @@
   .header-logo {
     display: flex;
     height: 100%;
+    min-height: 44px;
     font-size: var(--font-size--md);
     font-family: var(--font-family);
     font-weight: var(--font-weight);
@@ -134,8 +135,8 @@
   }
 
   .header-logo__back-arrow {
-    margin-inline-end: 0.4em;
-    font-size: 1.2em;
+    margin-inline-end: 0.6em;
+    font-size: 1.4em;
     line-height: 1;
   }
 

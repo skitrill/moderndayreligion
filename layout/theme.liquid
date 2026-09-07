@@ -148,6 +148,48 @@
         })();
       </script>
 
+      <script>
+        /**
+         * Tracks the visitor's own in-site page path (sessionStorage, not the browser's real
+         * history stack) so the header's back arrow always lands on the page they actually came
+         * from within this site -- never off-site to an external referrer, and never dependent
+         * on how many redirects or query-string variants the real history stack accumulated.
+         *
+         * mdrGoBack(), called by the header logo's back arrow, pops the current entry and
+         * navigates to whatever is now on top; a page reached that way sets a one-shot flag so
+         * it doesn't re-push itself as a new entry.
+         */
+        (function () {
+          const KEY = 'mdrNavStack';
+          const BACK_FLAG = 'mdrIsBackNav';
+
+          const stack = JSON.parse(sessionStorage.getItem(KEY) || '[]');
+          const current = window.location.pathname + window.location.search;
+          const isBackNav = sessionStorage.getItem(BACK_FLAG) === '1';
+          sessionStorage.removeItem(BACK_FLAG);
+
+          if (!isBackNav && stack[stack.length - 1] !== current) {
+            stack.push(current);
+            sessionStorage.setItem(KEY, JSON.stringify(stack));
+          }
+        })();
+
+        window.mdrGoBack = function () {
+          const KEY = 'mdrNavStack';
+          const stack = JSON.parse(sessionStorage.getItem(KEY) || '[]');
+          stack.pop();
+          const target = stack[stack.length - 1];
+          sessionStorage.setItem(KEY, JSON.stringify(stack));
+
+          if (target) {
+            sessionStorage.setItem('mdrIsBackNav', '1');
+            window.location.href = target;
+          } else {
+            window.location.href = '/';
+          }
+        };
+      </script>
+
       <main
         id="MainContent"
         class="content-for-layout"
