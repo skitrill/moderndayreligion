@@ -19,6 +19,13 @@
       data-hydration-key="header-drawer-mobile"
       {{ block.shopify_attributes }}
     >
+      <a
+        href="{{ routes.cart_url }}"
+        class="header__cart-link"
+      >
+        Cart
+        {%- if cart.item_count > 0 %} ({{ cart.item_count }}){% endif -%}
+      </a>
       {% render 'header-drawer',
         linklist: block_settings.menu,
         skip_linklist: true,
@@ -261,6 +268,16 @@
     display: flex;
     min-height: var(--header-drawer-min-height);
     align-items: center;
+    gap: var(--gap-md);
+  }
+
+  .header__cart-link {
+    font-family: var(--font-accent--family);
+    font-size: var(--font-size--xs);
+    letter-spacing: 0.04em;
+    color: var(--color-foreground);
+    text-decoration: none;
+    white-space: nowrap;
   }
 
   #header-component[data-menu-style='drawer'] .header__drawer {

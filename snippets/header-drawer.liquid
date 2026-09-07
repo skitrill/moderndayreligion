@@ -72,9 +72,6 @@
       <span class="svg-wrapper header-drawer-icon header-drawer-icon--close">
         {{- 'icon-caret.svg' | inline_asset_content -}}
       </span>
-      {% if cart.item_count > 0 %}
-        <span class="menu-drawer-cart-badge" ref="menuDrawerCartBadge">{{ cart.item_count }}</span>
-      {% endif %}
     </summary>
     <div
       ref="menuDrawer"
@@ -609,16 +606,6 @@
 
           <li class="menu-drawer__list-item--flat menu-drawer__portal-divider">
             <a
-              href="{{ routes.cart_url }}"
-              class="menu-drawer__menu-item menu-drawer__menu-item--mainlist"
-            >
-              <span class="menu-drawer__menu-item-text wrap-text">
-                Cart ({{ cart.item_count }})
-              </span>
-            </a>
-          </li>
-          <li class="menu-drawer__list-item--flat">
-            <a
               href="{{ routes.account_url }}"
               class="menu-drawer__menu-item menu-drawer__menu-item--mainlist"
             >
@@ -850,24 +837,6 @@
     min-width: 44px;
     min-height: 44px;
     padding: 14px;
-  }
-
-  .menu-drawer-cart-badge {
-    position: absolute;
-    top: 2px;
-    right: 2px;
-    min-width: 1.4em;
-    height: 1.4em;
-    padding: 0 0.2em;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    background: var(--color-foreground);
-    color: var(--color-background);
-    font-family: var(--font-accent--family);
-    font-size: var(--font-size--3xs, 0.6rem);
-    line-height: 1;
-    border-radius: 0;
   }
 
   .header__icon--summary .header-drawer-icon {
