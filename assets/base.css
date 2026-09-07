@@ -14,6 +14,28 @@ body {
   letter-spacing: 0.02em;
 }
 
+/* Homepage: Supreme-style layout -- a narrow category sidebar beside the
+   product grid on desktop, stacked (fluid) on mobile. Targets the two
+   homepage sections directly since Shopify sections can't nest inside one
+   another; the id$= attribute selector survives the numeric template
+   prefix Shopify assigns to each section's DOM id. */
+@media screen and (min-width: 750px) {
+  main[data-template='index'] {
+    display: grid;
+    grid-template-columns: 150px 1fr;
+    column-gap: var(--gap-2xl);
+    align-items: start;
+  }
+}
+
+main[data-template='index'] [id$='__sidebar_categories_pX7q2'] .menu__heading__default {
+  display: none;
+}
+
+main[data-template='index'] [id$='__sidebar_categories_pX7q2'] .menu__item {
+  font-size: var(--font-size--xs);
+}
+
 /* Horizon's text blocks (product titles, prices, RTE content, etc.) each carry
    their own per-instance --text-transform custom property (default: none),
    which otherwise overrides the inherited uppercase from body above. Force it
