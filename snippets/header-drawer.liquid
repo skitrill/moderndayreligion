@@ -262,7 +262,7 @@
                 {% endif %}
               </li>
             {%- endfor -%}
-          {% else %}
+          {% elsif skip_linklist != true %}
             {%- comment -%}
               Handle menus with 3 levels of links
             {%- endcomment -%}
