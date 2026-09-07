@@ -1178,11 +1178,14 @@
     padding-block: var(--padding-sm);
     padding-inline: var(--padding-lg);
     gap: var(--gap-sm);
+    background: none;
+    -webkit-tap-highlight-color: transparent;
   }
 
-  .menu-drawer__menu > .menu-drawer__list-item--flat .menu-drawer__menu-item--mainlist:hover {
-    color: var(--color-foreground);
-    opacity: 0.6;
+  .menu-drawer__menu > .menu-drawer__list-item--flat .menu-drawer__menu-item--mainlist:hover,
+  .menu-drawer__menu > .menu-drawer__list-item--flat .menu-drawer__menu-item--mainlist:active {
+    color: #ED1C24;
+    background: none;
   }
 
   .menu-drawer__menu-item--parent {

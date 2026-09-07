@@ -14,6 +14,19 @@ body {
   letter-spacing: 0.02em;
 }
 
+/* Shrink the homepage product grid without touching the column count (4) or the
+   gap between cards -- narrowing the grid's own max-width scales all 4 columns
+   down proportionally while columns_gap/rows_gap stay the same literal px. */
+main[data-template='index'] [id$='__product_list_fa6P9H'] .resource-list--grid {
+  max-width: 720px;
+  margin-inline: auto;
+}
+
+.product-grid__card .price {
+  font-size: var(--font-size--3xs, 0.65rem);
+  color: #2E5E45;
+}
+
 /* Horizon's text blocks (product titles, prices, RTE content, etc.) each carry
    their own per-instance --text-transform custom property (default: none),
    which otherwise overrides the inherited uppercase from body above. Force it
