@@ -67,10 +67,10 @@
       on:click="/toggle"
     >
       <span class="svg-wrapper header-drawer-icon header-drawer-icon--open">
-        {{- 'icon-grid-default.svg' | inline_asset_content -}}
+        {{- 'icon-caret.svg' | inline_asset_content -}}
       </span>
       <span class="svg-wrapper header-drawer-icon header-drawer-icon--close">
-        {{- 'icon-close-menu.svg' | inline_asset_content -}}
+        {{- 'icon-caret.svg' | inline_asset_content -}}
       </span>
       {% if cart.item_count > 0 %}
         <span class="menu-drawer-cart-badge" ref="menuDrawerCartBadge">{{ cart.item_count }}</span>
@@ -922,45 +922,42 @@
     display: none;
   }
 
-  details.menu-open .header__icon--menu .header-drawer-icon--close {
-    @media screen and (min-width: 750px) {
-      display: none;
-    }
-  }
-
   details.menu-open .header__icon--menu .header-drawer-icon--open {
     display: none;
+  }
 
-    @media screen and (min-width: 750px) {
-      display: flex;
-    }
+  details.menu-open .header__icon--menu .header-drawer-icon--close {
+    display: flex;
+  }
+
+  .header__icon--menu .header-drawer-icon--close svg {
+    transform: rotate(180deg);
+  }
+
+  .menu-drawer-container {
+    position: relative;
   }
 
   .menu-drawer {
-    position: fixed;
-    transform: translateX(100%);
+    position: absolute;
+    transform: translateY(-8px);
     visibility: hidden;
-    height: var(--drawer-height);
-    width: var(--drawer-width);
-    max-width: var(--drawer-max-width);
+    opacity: 0;
+    height: auto;
+    width: max(16rem, 60vw);
+    max-width: min(20rem, calc(100vw - 2 * var(--page-margin, 16px)));
+    max-height: min(70vh, 32rem);
     z-index: var(--layer-menu-drawer);
     right: 0;
-    top: 0;
+    top: 100%;
+    margin-block-start: 8px;
 
-    /* Right-anchored drawer spans the full physical viewport (viewport-fit=cover); keep its
-       content clear of the status bar, right-side notch, and home indicator. Subtract the
-       designed menu gutter so link text aligns with the page / hamburger, not inset twice. */
-    padding: var(--safe-area-inset-top) max(0px, calc(var(--safe-area-inset-right) - var(--drawer-padding)))
-      var(--safe-area-inset-bottom) 0;
+    padding: 0;
     background-color: var(--color-background);
     overflow: auto;
     display: flex;
-    border-left: var(--style-border-drawer);
+    border: var(--style-border-drawer);
     flex-direction: column;
-
-    @media screen and (min-width: 750px) {
-      width: 25rem;
-    }
   }
 
   /* When opening a submenu we don't want the first-level menu to be scrollable, so we reset the overflow  */
@@ -992,7 +989,7 @@
 
   .menu-open > .menu-drawer,
   .menu-open > .menu-drawer__submenu:not(.menu-drawer__menu--childlist) {
-    transform: translateX(0);
+    transform: translateY(0);
     visibility: visible;
     opacity: 1;
     display: flex;
@@ -1196,19 +1193,20 @@
     margin-block-start: var(--margin-lg) !important;
   }
 
-  /* Terminal / dossier styling for the top-level (flat) drawer links */
+  /* Terminal / dossier styling for the top-level (flat) drawer links --
+     thin hairline dividers between rows, not boxed tiles. */
   .menu-drawer__menu > .menu-drawer__list-item--flat {
     margin-block-end: 0;
-    border: 1px solid var(--color-border);
-  }
-
-  .menu-drawer__menu > .menu-drawer__list-item--flat + .menu-drawer__list-item--flat {
-    border-top: none;
+    border-bottom: 1px solid var(--color-border);
   }
 
   .menu-drawer__menu > .menu-drawer__list-item--flat .menu-drawer__menu-item--mainlist {
+    min-height: 0;
     font-family: var(--font-accent--family);
+    font-size: var(--font-size--xs);
+    line-height: 1.2;
     letter-spacing: 0.04em;
+    padding-block: var(--padding-sm);
     padding-inline: var(--padding-lg);
     gap: var(--gap-sm);
   }
@@ -1216,9 +1214,9 @@
   .menu-drawer__menu > .menu-drawer__list-item--flat .menu-drawer__menu-item-text::before {
     content: '';
     display: inline-block;
-    width: 0.5em;
-    height: 0.5em;
-    margin-inline-end: 0.6em;
+    width: 0.4em;
+    height: 0.4em;
+    margin-inline-end: 0.5em;
     background: currentColor;
     vertical-align: middle;
   }

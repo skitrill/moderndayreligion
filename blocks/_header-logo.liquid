@@ -21,6 +21,11 @@
   endif
 
   assign alt_text_fallback = 'accessibility.home_logo_alt' | t: store_name: shop.name
+
+  assign is_home_page = false
+  if template.name == 'index'
+    assign is_home_page = true
+  endif
 %}
 
 {% comment %}
@@ -32,6 +37,9 @@
     data-hidden-on-home-page
   {% endif %}
   href="{{ routes.root_url }}"
+  {% unless is_home_page %}
+    onclick="if (window.history.length > 1) { window.history.back(); return false; }"
+  {% endunless %}
   class="size-style spacing-style header-logo"
   style="
     {% render 'size-style', settings: block_settings %}
@@ -42,6 +50,9 @@
   "
   {{ block.shopify_attributes }}
 >
+  {% unless is_home_page %}
+    <span class="header-logo__back-arrow" aria-hidden="true">&lsaquo;</span>
+  {% endunless %}
   {% liquid
     assign logo_width = settings.logo_height | times: settings.logo.aspect_ratio | ceil
     assign logo_width_mobile = settings.logo_height_mobile | times: settings.logo.aspect_ratio | ceil
@@ -120,6 +131,12 @@
     &:hover {
       text-decoration: none;
     }
+  }
+
+  .header-logo__back-arrow {
+    margin-inline-end: 0.4em;
+    font-size: 1.2em;
+    line-height: 1;
   }
 
   .header-logo__image {
