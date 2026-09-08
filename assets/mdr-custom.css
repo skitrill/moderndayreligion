@@ -347,6 +347,8 @@ product-price *,
   --minimum-touch-target: 25px !important;
   flex: 0 0 auto !important;
   align-self: center !important;
+  background: #fff !important;
+  color: #000 !important;
 }
 
 .quantity-selector :is(.quantity-minus, .quantity-plus) .svg-wrapper {
@@ -357,7 +359,8 @@ product-price *,
   position: relative;
   width: 25px !important;
   height: 28px !important;
-  background: none !important;
+  background: #fff !important;
+  color: #000 !important;
   box-shadow: none !important;
   border: 0 !important;
 }
@@ -366,6 +369,10 @@ product-price *,
   width: 22px !important;
   min-width: 0 !important;
   height: 28px !important;
+  background: #fff !important;
+  color: #000 !important;
+  /* very small -- matches the PDP product title (0.625rem) */
+  font-size: 0.625rem !important;
 }
 
 .quantity-selector :is(.quantity-minus, .quantity-plus)::after {
@@ -375,7 +382,7 @@ product-price *,
   top: 50%;
   width: 6px;
   height: 6px;
-  border: solid var(--color-foreground, #f0eee6);
+  border: solid #000;
   border-width: 0 1.4px 1.4px 0;
 }
 
@@ -395,6 +402,13 @@ product-price *,
 
 .quantity-selector :is(.quantity-minus, .quantity-plus)[disabled] {
   opacity: 0.35;
+}
+
+/* ---- Product colour option rendered in club green ----------------------- */
+.variant-picker .variant-option[data-testid='variant-option-single'],
+.variant-picker .variant-option[data-testid='variant-option-single'] .variant-option__swatch-value,
+.variant-picker .variant-option__swatch-value {
+  color: #2c6e49 !important;
 }
 
 /* ---- Mobile: product hero image size ------------------------------------- */
