@@ -1324,10 +1324,13 @@ a:not([class*='button']):not(.header-logo):focus-visible {
   --color-foreground-subdued: rgb(204 43 31 / 0.45) !important;
 }
 
-/* product description column -> muted, NOT red */
-main .product-information__grid.product-information__grid .product-details.product-details,
-main .product-information__grid.product-information__grid .product-details.product-details * {
-  color: rgba(240, 238, 230, 0.6) !important;
+/* product description column -> muted, NOT red (via the foreground var, so
+   buttons / inputs with their own colours are untouched) */
+main .product-information__grid,
+main .product-information__grid .product-details {
+  --color-foreground: rgba(240, 238, 230, 0.6) !important;
+  --color-foreground-rgb: 240 238 230 !important;
+  --color-foreground-muted: rgb(240 238 230 / 0.5) !important;
 }
 
 /* ...prices still blue */
