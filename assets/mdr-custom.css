@@ -1427,3 +1427,8 @@ cart-drawer [class*='price'] {
 #header-component a[href$='/cart'] {
   color: #3a3ec4 !important;
 }
+
+/* lookbook heading -> follow the red default */
+.mdr-lookbook__heading {
+  color: #cc2b1f !important;
+}
