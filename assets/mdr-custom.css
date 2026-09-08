@@ -1325,3 +1325,72 @@ a:not([class*='button']):not(.header-logo):focus-visible {
   --color-foreground-muted: rgb(154 97 52 / 0.68) !important;
   --color-foreground-subdued: rgb(154 97 52 / 0.42) !important;
 }
+
+/* ==========================================================================
+   Targeted colour: white logo, dark-brown collection titles,
+   yellow cart text, blue cart count
+   ========================================================================== */
+
+/* logo -> white */
+.header-logo,
+.header-logo span,
+.header-logo .header-logo__back-arrow,
+#header-component .header-logo,
+#header-component .header-logo span,
+#header-component [data-testid='header-logo'] {
+  color: #ffffff !important;
+}
+
+/* collection / section titles -> dark brown (explicit lock) */
+.resource-list__heading,
+.section-resource-list__header h3,
+main[data-template^='collection'] h1,
+main[data-template^='collection'] h2,
+.collection-hero__title,
+[class*='collection'] [class*='title'],
+.mdr-lookbook__heading {
+  color: #9a6134 !important;
+}
+
+/* cart text -> mango yellow */
+.cart-page,
+.cart-page *,
+.cart-items-component,
+.cart-items-component *,
+.cart-totals,
+.cart-totals *,
+.cart-title,
+.cart-title *,
+.cart-page__title,
+.cart-page__title *,
+cart-drawer,
+cart-drawer *,
+.cart-drawer,
+.cart-drawer * {
+  color: #fdb92e !important;
+}
+
+/* ...but prices stay blue */
+.cart-page .cart-items__price,
+.cart-page .cart-items__price *,
+.cart-page product-price,
+.cart-page product-price *,
+.cart-page [class*='price'],
+.cart-totals .cart-totals__total-value,
+.cart-totals .cart-totals__total-value *,
+.cart-totals [class*='total-value'],
+.cart-totals [class*='price'],
+.cart-drawer [class*='price'],
+cart-drawer [class*='price'] {
+  color: #3a3ec4 !important;
+}
+
+/* ...and the count stays blue */
+.cart-bubble,
+.cart-bubble *,
+.cart-bubble__text-count,
+[class*='cart-bubble'] [class*='count'],
+.cart-page__title .cart-bubble,
+.cart-page__title .cart-bubble * {
+  color: #3a3ec4 !important;
+}
