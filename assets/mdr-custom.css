@@ -1258,3 +1258,25 @@ body:has(#Details-menu-drawer-container[open]) {
     --page-margin: 10px !important;
   }
 }
+
+/* size-chart panel -> all text mango-yellow */
+.size-chart,
+.size-chart *,
+main .product-information__grid .size-chart,
+main .product-information__grid .size-chart *,
+.size-chart__trigger,
+.size-chart__trigger-text,
+.size-chart__content,
+.size-chart__content *,
+.size-chart__content table,
+.size-chart__content thead th,
+.size-chart__content th,
+.size-chart__content td,
+.size-chart__note {
+  color: #fdb92e !important;
+}
+
+.size-chart__content th,
+.size-chart__content td {
+  border-color: rgb(253 185 46 / 0.28) !important;
+}
