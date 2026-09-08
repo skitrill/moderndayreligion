@@ -231,4 +231,87 @@
       new MutationObserver(init).observe(hc, { childList: true, subtree: true });
     }
   })();
+
+  /* =====================================================================
+     Homepage featured grid: dense 8x8 (reached ONLY by tapping the logo)
+     <-> "zoom" view of 2 cols on mobile / 4 on desktop (default; also what
+     a tap anywhere on the dense layout returns you to). The HOME link --
+     or anything else -- never brings the 8x8 back.
+     ===================================================================== */
+  (function () {
+    if (window.__mdrFeaturedGrid) return;
+    window.__mdrFeaturedGrid = true;
+
+    var D = document;
+    var root = D.documentElement;
+    var KEY = 'mdrFeaturedView'; /* 'grid8' | 'zoom' */
+
+    function read() {
+      try { return sessionStorage.getItem(KEY) === 'grid8' ? 'grid8' : 'zoom'; }
+      catch (e) { return 'zoom'; }
+    }
+    function write(v) {
+      try { sessionStorage.setItem(KEY, v); } catch (e) {}
+    }
+    function apply(v, animate) {
+      root.setAttribute('data-featured', v);
+      if (animate) {
+        root.classList.remove('mdr-featured-anim');
+        void root.offsetWidth;
+        root.classList.add('mdr-featured-anim');
+        setTimeout(function () { root.classList.remove('mdr-featured-anim'); }, 400);
+      }
+    }
+    function setView(v, animate) {
+      write(v);
+      apply(v, animate);
+    }
+
+    /* reflect stored state as early as possible */
+    apply(read(), false);
+
+    function featured() {
+      return D.querySelector('[id$="__product_list_fa6P9H"]');
+    }
+
+    /* Tap anywhere on the dense layout -> zoom out to 2/4. Only active while
+       dense; in "zoom" view, card taps navigate to the product as normal. */
+    D.addEventListener('click', function (e) {
+      if (read() !== 'grid8') return;
+      var sec = featured();
+      if (!sec || !sec.contains(e.target)) return;
+      e.preventDefault();
+      e.stopPropagation();
+      setView('zoom', true);
+    }, true);
+
+    /* The logo is the ONLY control that brings back the dense 8x8. */
+    function wireLogo() {
+      var logo = D.querySelector('a.header-logo');
+      if (!logo || logo.__mdrFeaturedWired) return;
+      logo.__mdrFeaturedWired = true;
+      logo.addEventListener('click', function (e) {
+        var onHome = location.pathname === '/' || location.pathname === '';
+        write('grid8');
+        if (onHome) {
+          e.preventDefault();
+          e.stopPropagation();
+          apply('grid8', true);
+          window.scrollTo(0, 0);
+        }
+        /* off-home: allow navigation to "/"; it will load in dense mode */
+      }, true);
+    }
+
+    wireLogo();
+    if (D.readyState !== 'loading') wireLogo();
+    D.addEventListener('DOMContentLoaded', wireLogo);
+    window.addEventListener('load', wireLogo);
+    if (window.MutationObserver) {
+      new MutationObserver(wireLogo).observe(
+        D.querySelector('#header-component') || D.body,
+        { childList: true, subtree: true }
+      );
+    }
+  })();
 </script>

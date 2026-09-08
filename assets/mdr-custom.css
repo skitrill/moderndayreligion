@@ -548,6 +548,58 @@ main[data-template='index'] [id$='__product_list_fa6P9H'] .resource-list--grid {
   margin-inline: 0 !important;
 }
 
+/* ---- Featured grid: default "zoom" view (2 cols mobile / 4 desktop);
+   dense 8x8 only when the logo toggles data-featured="grid8" on <html>. ---- */
+main[data-template='index'] [id$='__product_list_fa6P9H'] .resource-list--grid {
+  display: grid !important;
+  grid-template-columns: repeat(2, 1fr) !important;
+  column-gap: 6px !important;
+  row-gap: 6px !important;
+}
+
+@media (min-width: 750px) {
+  main[data-template='index'] [id$='__product_list_fa6P9H'] .resource-list--grid {
+    grid-template-columns: repeat(4, 1fr) !important;
+  }
+}
+
+html[data-featured='grid8'] main[data-template='index'] [id$='__product_list_fa6P9H'] .resource-list--grid {
+  grid-template-columns: repeat(8, 1fr) !important;
+  column-gap: 2px !important;
+  row-gap: 2px !important;
+}
+
+/* dense mode: the whole layout is one tap target -> zoom back to 2/4 */
+html[data-featured='grid8'] main[data-template='index'] [id$='__product_list_fa6P9H'] {
+  cursor: zoom-in;
+}
+
+html[data-featured='grid8'] main[data-template='index'] [id$='__product_list_fa6P9H'] :is(a, button, .product-card__content) {
+  pointer-events: none !important;
+}
+
+/* snappy settle when switching modes */
+html.mdr-featured-anim main[data-template='index'] [id$='__product_list_fa6P9H'] .resource-list--grid {
+  animation: mdr-featured-zoom 0.34s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@keyframes mdr-featured-zoom {
+  from {
+    transform: scale(0.955);
+    opacity: 0.45;
+  }
+  to {
+    transform: none;
+    opacity: 1;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html.mdr-featured-anim main[data-template='index'] [id$='__product_list_fa6P9H'] .resource-list--grid {
+    animation: none;
+  }
+}
+
 /* ==========================================================================
    Batch: hazard-tape bg + card tiles, card spacing + glow, cart lines,
    mobile buy-buttons row, red Shop Pay
