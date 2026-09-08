@@ -1207,19 +1207,24 @@ body:has(#Details-menu-drawer-container[open]) {
 
 /* one long box around the whole size row */
 .variant-option--buttons {
+  position: relative !important;
   border: 1px solid rgb(var(--color-foreground-rgb) / 0.3) !important;
   padding: 0 !important;
+  margin-top: 22px !important;
   display: flex !important;
   flex-wrap: nowrap !important;
   gap: 0 !important;
   overflow: hidden !important;
 }
 
-/* keep the "SIZE" legend above the box, no fieldset notch */
+/* "SIZE" legend lifted clear of the box (absolute -> out of the flex flow) */
 .variant-option--buttons > legend {
-  float: left !important;
-  width: 100% !important;
-  margin: 0 0 6px !important;
+  position: absolute !important;
+  top: -20px !important;
+  left: 0 !important;
+  float: none !important;
+  width: auto !important;
+  margin: 0 !important;
   padding: 0 !important;
 }
 
