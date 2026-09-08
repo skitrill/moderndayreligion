@@ -495,30 +495,24 @@ main[data-template='index'] [id$='__product_list_fa6P9H'] .resource-list--grid {
    mobile buy-buttons row, red Shop Pay
    ========================================================================== */
 
-/* ---- Subtle diagonal orange/black "tape" pattern: whole page + card tiles -- */
+/* ---- Subtle diagonal orange/black "tape" pattern: on the CARD TILES only.
+   The page itself stays plain black (no pattern at the page ends). --------- */
 :root {
-  --mdr-tape-page: repeating-linear-gradient(
+  --mdr-tape: repeating-linear-gradient(
     45deg,
     rgba(255, 128, 40, 0.028) 0 7px,
-    rgba(255, 128, 40, 0) 7px 15px
-  );
-  --mdr-tape-card: repeating-linear-gradient(
-    45deg,
-    rgba(255, 128, 40, 0.06) 0 7px,
     rgba(255, 128, 40, 0) 7px 15px
   );
 }
 
 body {
   background-color: #000 !important;
-  background-image: var(--mdr-tape-page) !important;
-  /* scroll, not fixed -- fixed backgrounds jank hard on mobile Safari */
-  background-attachment: scroll !important;
+  background-image: none !important;
 }
 
 .product-card__content {
   background-color: #000 !important;
-  background-image: var(--mdr-tape-card) !important;
+  background-image: var(--mdr-tape) !important;
   border: 0 !important;
   box-shadow: none !important;
 }
@@ -606,9 +600,16 @@ body {
 .product-form-buttons .shopify-payment-button {
   max-width: none !important;
   margin: 0 !important;
+  overflow: visible !important;
 }
 
-/* equal height + flat shape across all three */
+/* The Shop Pay wallet button renders at 41px -- match everything to it.
+   Items align at the top so the "more payment options" link can hang
+   just below the row without stretching it. */
+.product-form-buttons {
+  align-items: flex-start !important;
+}
+
 .product-form-buttons > .quantity-selector-wrapper,
 .product-form-buttons .quantity-selector,
 .product-form-buttons > span:not(.product-form-text__error),
@@ -616,11 +617,13 @@ body {
 .product-form-buttons .product-form__submit,
 .product-form-buttons > .accelerated-checkout-block,
 .product-form-buttons .shopify-payment-button,
-.product-form-buttons .shopify-payment-button > * {
-  height: 46px !important;
-  min-height: 46px !important;
+.product-form-buttons shop-pay-wallet-button,
+.product-form-buttons .shopify-payment-button__button {
+  height: 41px !important;
+  min-height: 41px !important;
+  max-height: 41px !important;
   border-radius: 0 !important;
-  align-self: stretch !important;
+  align-self: flex-start !important;
 }
 
 .product-form-buttons .add-to-cart-button:not(.sticky-add-to-cart__button) {
@@ -684,5 +687,19 @@ button.link,
     animation-duration: 0.001s !important;
     transition-duration: 0.001s !important;
     scroll-behavior: auto !important;
+  }
+}
+
+/* ---- Mobile: tighten the "You may also like" section padding ------------ */
+@media screen and (max-width: 749px) {
+  .product-recommendations,
+  .product-recommendations > .section,
+  .product-recommendations .section--page-width {
+    padding-block: 8px !important;
+  }
+
+  .product-recommendations .resource-list__heading,
+  .product-recommendations [class*='title'] {
+    margin-block: 0 6px !important;
   }
 }
