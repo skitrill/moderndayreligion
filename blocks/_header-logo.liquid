@@ -52,7 +52,7 @@
       class="header-logo__back-arrow"
       aria-hidden="true"
       onclick="event.preventDefault(); window.mdrGoBack();"
-    >&lsaquo;</span>
+    >&laquo;</span>
   {% endunless %}
   {% liquid
     assign logo_width = settings.logo_height | times: settings.logo.aspect_ratio | ceil
@@ -136,10 +136,26 @@
   }
 
   .header-logo__back-arrow {
-    margin-inline-end: 1em;
-    padding-inline: 0.2em;
-    font-size: 1.4em;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 38px;
+    min-height: 44px;
+    margin-inline-end: 0.2em;
+    font-size: 1.25em;
     line-height: 1;
+    letter-spacing: -0.05em;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  .header-logo__back-arrow:active {
+    opacity: 0.55;
+  }
+
+  @media screen and (max-width: 749px) {
+    .header-logo__back-arrow {
+      min-width: 44px;
+    }
   }
 
   .header-logo__image {
