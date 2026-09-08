@@ -34,6 +34,10 @@
     var D = document;
     var botBtn = null;
     var topBtn = null;
+    var REDUCE = window.matchMedia &&
+      window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    var glideRAF = null;
+    var glideDetach = null;
 
     function scrollTop() {
       return window.scrollY || window.pageYOffset || D.documentElement.scrollTop || 0;
@@ -43,14 +47,68 @@
       return Math.max(0, D.documentElement.scrollHeight - window.innerHeight);
     }
 
-    /* No visible travel -- jump straight there, then flash a "zap". */
-    function zapScroll(targetY, btn) {
+    /* Fast launch, long soft glide to a stop (yeezy-style momentum). */
+    function easeOutExpo(p) {
+      return p >= 1 ? 1 : 1 - Math.pow(2, -10 * p);
+    }
+
+    /* Windy + snappy: eased travel you can see, bailing out the moment the
+       user grabs the page back with a wheel / swipe / nav key. */
+    function glideScroll(targetY, btn) {
       targetY = Math.max(0, Math.min(targetY, maxScroll()));
-      var prev = D.documentElement.style.scrollBehavior;
+      var startY = scrollTop();
+      var dist = targetY - startY;
+
+      if (glideRAF) { cancelAnimationFrame(glideRAF); glideRAF = null; }
+      if (glideDetach) glideDetach();
+
+      if (REDUCE || Math.abs(dist) < 2) {
+        window.scrollTo(0, targetY);
+        zap(btn);
+        return;
+      }
+
       D.documentElement.style.scrollBehavior = 'auto';
-      window.scrollTo(0, targetY);
-      D.documentElement.style.scrollBehavior = prev;
-      zap(btn);
+      var dur = Math.max(430, Math.min(880, 300 + Math.abs(dist) * 0.16));
+      var t0 = null;
+      var stopped = false;
+
+      function detach() {
+        window.removeEventListener('wheel', bail);
+        window.removeEventListener('touchstart', bail);
+        window.removeEventListener('keydown', onKey);
+        glideDetach = null;
+      }
+      function bail() {
+        stopped = true;
+        if (glideRAF) { cancelAnimationFrame(glideRAF); glideRAF = null; }
+        detach();
+      }
+      function onKey(e) {
+        if (/^(Arrow|Page)/.test(e.key) || e.key === 'Home' ||
+            e.key === 'End' || e.key === ' ') {
+          bail();
+        }
+      }
+      window.addEventListener('wheel', bail, { passive: true });
+      window.addEventListener('touchstart', bail, { passive: true });
+      window.addEventListener('keydown', onKey);
+      glideDetach = detach;
+
+      function step(now) {
+        if (stopped) return;
+        if (t0 === null) t0 = now;
+        var p = Math.min(1, (now - t0) / dur);
+        window.scrollTo(0, Math.round(startY + dist * easeOutExpo(p)));
+        if (p < 1) {
+          glideRAF = requestAnimationFrame(step);
+        } else {
+          glideRAF = null;
+          detach();
+          zap(btn);
+        }
+      }
+      glideRAF = requestAnimationFrame(step);
     }
 
     function headerOffset() {
@@ -76,7 +134,7 @@
       var y = first ? first.getBoundingClientRect().top + now - headerOffset() : 0;
       /* never jump downward -- fall back to the very top */
       if (y >= now - 2) y = 0;
-      zapScroll(y, topBtn);
+      glideScroll(y, topBtn);
     }
 
     function goBottom() {
@@ -88,7 +146,7 @@
         : maxScroll();
       /* never jump upward -- fall back to the page bottom */
       if (y <= now + 2) y = maxScroll();
-      zapScroll(y, botBtn);
+      glideScroll(y, botBtn);
     }
 
     /* Build the fixed [top] control and pin it to <body> */

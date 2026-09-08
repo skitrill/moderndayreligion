@@ -175,14 +175,38 @@ footer .utilities {
   transition: opacity 0.15s ease;
 }
 
-.mdr-jump:hover,
-.mdr-jump:focus-visible {
-  opacity: 0.6;
-}
-
 .mdr-jump.mdr-off {
   opacity: 0;
   pointer-events: none;
+}
+
+/* Arrows never take a tap highlight or a hover/active colour fill. */
+.mdr-jump,
+.mdr-jump *,
+.mdr-scrolltop,
+.mdr-scrolltop * {
+  -webkit-tap-highlight-color: transparent !important;
+}
+
+.mdr-jump:hover,
+.mdr-jump:active,
+.mdr-jump:focus,
+.mdr-jump:focus-visible,
+.mdr-scrolltop:hover,
+.mdr-scrolltop:active,
+.mdr-scrolltop:focus,
+.mdr-scrolltop:focus-visible {
+  background: none !important;
+  background-color: transparent !important;
+  color: var(--color-foreground, #f0eee6) !important;
+  outline: none !important;
+  box-shadow: none !important;
+  text-decoration: none !important;
+}
+
+.mdr-jump:hover,
+.mdr-jump:focus-visible {
+  opacity: 0.6;
 }
 
 /* ---- [top] control (fixed, bottom-right) ------------------------------------ */
@@ -215,8 +239,8 @@ footer .utilities {
   pointer-events: auto;
 }
 
-.mdr-scrolltop:hover,
-.mdr-scrolltop:focus-visible {
+.mdr-scrolltop.mdr-visible:hover,
+.mdr-scrolltop.mdr-visible:focus-visible {
   opacity: 0.6;
 }
 
@@ -234,17 +258,16 @@ footer .utilities {
   margin: 0 1px;
 }
 
-/* ---- zap: no travel, just a hard flash ------------------------------------ */
+/* ---- zap: a soft "gust" nudge as the glide launches --------------------- */
 @keyframes mdr-zap {
-  0%   { opacity: 1; transform: scale(1); filter: none; }
-  15%  { opacity: 0.15; transform: scale(1.55); filter: brightness(2.4); }
-  45%  { opacity: 1; transform: scale(0.92); }
-  100% { opacity: 1; transform: scale(1); filter: none; }
+  0%   { opacity: 1; transform: translateY(0); }
+  30%  { opacity: 0.5; transform: translateY(1.5px); }
+  100% { opacity: 1; transform: translateY(0); }
 }
 
 .mdr-jump.mdr-zap,
 .mdr-scrolltop.mdr-visible.mdr-zap {
-  animation: mdr-zap 0.16s steps(6, end);
+  animation: mdr-zap 0.42s cubic-bezier(0.22, 1, 0.36, 1);
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -521,14 +544,14 @@ body {
   box-shadow: none !important;
 }
 
-/* Glow hugs the product PNG cutout itself (~5%), not the card. */
+/* Glow hugs the product PNG cutout itself (~20%), not the card. */
 .product-card .product-media__image,
 .product-card .product-media img,
 .product-card img.product-media__image,
 .product-information__media .product-media__image,
 .product-information__media img,
 .product-media__image {
-  filter: drop-shadow(0 0 14px rgba(240, 238, 230, 0.05)) !important;
+  filter: drop-shadow(0 0 20px rgba(240, 238, 230, 0.2)) !important;
 }
 
 /* ---- Slight visible gap between cards so they don't look merged ----------- */
