@@ -546,11 +546,17 @@ main[data-template='index'] .resource-list--grid,
    the logo toggles data-featured="grid8" on <html>. -------------------- */
 main[data-template='index'] [id$='__product_list_fa6P9H'] .resource-list--grid {
   display: grid !important;
-  grid-template-columns: repeat(4, 1fr) !important;
+  grid-template-columns: repeat(3, 1fr) !important;
   column-gap: 6px !important;
   row-gap: 6px !important;
   max-width: 640px !important;
   margin-inline: auto !important;
+}
+
+@media (min-width: 750px) {
+  main[data-template='index'] [id$='__product_list_fa6P9H'] .resource-list--grid {
+    grid-template-columns: repeat(4, 1fr) !important;
+  }
 }
 
 html[data-featured='grid8'] main[data-template='index'] [id$='__product_list_fa6P9H'] .resource-list--grid {
