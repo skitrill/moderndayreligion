@@ -9,23 +9,17 @@ html {
   font-size: 15px;
 }
 
-/* Desktop keeps the logo at its original size. */
-@media screen and (min-width: 750px) {
-  #header-component .header-logo,
-  #header-component .header-logo span,
-  #header-component [data-testid='header-logo'] {
-    font-size: 21px;
-  }
-}
-
-/* Mobile: hold the logo on one line even when the cart count widens "CART (n)". */
-@media screen and (max-width: 749px) {
-  #header-component .header-logo,
-  #header-component .header-logo span,
-  #header-component [data-testid='header-logo'] {
-    font-size: 16px;
-    white-space: nowrap;
-  }
+/* Wordmark ("RACK") styled like the "Featured products" section title:
+   Anonymous Pro, small, regular weight, uppercase. */
+#header-component .header-logo,
+#header-component .header-logo span,
+#header-component [data-testid='header-logo'] {
+  font-size: 0.625rem !important;
+  font-weight: 400 !important;
+  letter-spacing: normal !important;
+  text-transform: uppercase !important;
+  font-family: 'Anonymous Pro', ui-monospace, monospace !important;
+  white-space: nowrap;
 }
 
 /* ---- Product cards: same treatment everywhere ----------------------------------
@@ -1350,14 +1344,14 @@ main .product-information__grid.product-information__grid .size-chart * {
    yellow cart text, blue cart count
    ========================================================================== */
 
-/* logo -> white */
+/* wordmark colour -> same as the "Featured products" title (cream) */
 .header-logo,
 .header-logo span,
 .header-logo .header-logo__back-arrow,
 #header-component .header-logo,
 #header-component .header-logo span,
 #header-component [data-testid='header-logo'] {
-  color: #ffffff !important;
+  color: #f0eee6 !important;
 }
 
 
