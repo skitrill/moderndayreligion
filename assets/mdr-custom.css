@@ -677,6 +677,11 @@ body {
   justify-content: center !important;
 }
 
+/* ADD TO CART: text only, drop the cart icon */
+.add-to-cart-button .add-to-cart-text > .svg-wrapper {
+  display: none !important;
+}
+
 /* ---- "Buy with Shop" button -> red ------------------------------------- */
 .shopify-payment-button,
 .shopify-payment-button__button {
