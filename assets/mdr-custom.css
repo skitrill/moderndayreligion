@@ -575,14 +575,24 @@ body {
   box-shadow: none !important;
 }
 
-/* Glow hugs the product PNG cutout itself (~20%), not the card. */
+/* Glow on the CARD cut-outs only -- faint, low-intensity warm brown (~10%). */
 .product-card .product-media__image,
 .product-card .product-media img,
 .product-card img.product-media__image,
+.resource-list__item .product-media__image,
+.resource-list__item .product-media img {
+  filter: drop-shadow(0 0 11px rgba(122, 84, 52, 0.1)) !important;
+}
+
+/* No glow on the product-page hero -- the 20% halo was tracing a faint box
+   around the cut-out's edge on mobile. */
 .product-information__media .product-media__image,
 .product-information__media img,
-.product-media__image {
-  filter: drop-shadow(0 0 20px rgba(240, 238, 230, 0.2)) !important;
+.product-information__media .product-media,
+.product-media-gallery .product-media__image,
+.product-media-gallery img,
+.product-media-container img {
+  filter: none !important;
 }
 
 /* ---- Slight visible gap between cards so they don't look merged ----------- */
