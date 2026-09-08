@@ -47,7 +47,7 @@
               "type": "_product-list-text",
               "name": "t:names.collection_title",
               "settings": {
-                "text": "",
+                "text": "<p>All</p>",
                 "width": "fit-content",
                 "max_width": "normal",
                 "alignment": "left",
