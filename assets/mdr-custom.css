@@ -1259,20 +1259,13 @@ body:has(#Details-menu-drawer-container[open]) {
   }
 }
 
-/* size-chart panel -> all text mango-yellow */
+/* size-chart panel -> all text mango-yellow.
+   The product-copy rule that greys this column is (0,3,2) specific and
+   !important, so we out-specify it with padded :not()s. */
 .size-chart,
 .size-chart *,
-main .product-information__grid .size-chart,
-main .product-information__grid .size-chart *,
-.size-chart__trigger,
-.size-chart__trigger-text,
-.size-chart__content,
-.size-chart__content *,
-.size-chart__content table,
-.size-chart__content thead th,
-.size-chart__content th,
-.size-chart__content td,
-.size-chart__note {
+main .product-information__grid .size-chart:not(._):not(._):not(._),
+main .product-information__grid .size-chart:not(._):not(._):not(._) * {
   color: #fdb92e !important;
 }
 
