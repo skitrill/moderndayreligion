@@ -1255,7 +1255,7 @@ body:has(#Details-menu-drawer-container[open]) {
 /* selected size -> deep off-white fill, dark text */
 .variant-option--buttons .variant-option__button-label__pill {
   inset: 0 !important;
-  background: #ffb6c1 !important;
+  background: #ff9100 !important;
 }
 
 .variant-option--buttons .variant-option__button-label:has(input:checked) {
@@ -1295,12 +1295,12 @@ main .product-information__grid .size-chart:not(._):not(._):not(._) * {
    ========================================================================== */
 
 ::selection {
-  background: #ffb6c1;
+  background: #ff9100;
   color: #1a1a1a;
 }
 
 ::-moz-selection {
-  background: #ffb6c1;
+  background: #ff9100;
   color: #1a1a1a;
 }
 
@@ -1308,7 +1308,7 @@ main .product-information__grid .size-chart:not(._):not(._):not(._) * {
 a:not([class*='button']):not(.header-logo):hover,
 a:not([class*='button']):not(.header-logo):active,
 a:not([class*='button']):not(.header-logo):focus-visible {
-  background-color: #ffb6c1 !important;
+  background-color: #ff9100 !important;
   color: #1a1a1a !important;
 }
 
@@ -1320,10 +1320,10 @@ a:not([class*='button']):not(.header-logo):focus-visible {
 *,
 ::before,
 ::after {
-  --color-foreground: #ffb6c1 !important;
-  --color-foreground-rgb: 255 182 193 !important;
-  --color-foreground-muted: rgb(255 182 193 / 0.66) !important;
-  --color-foreground-subdued: rgb(255 182 193 / 0.4) !important;
+  --color-foreground: #ff9100 !important;
+  --color-foreground-rgb: 255 145 0 !important;
+  --color-foreground-muted: rgb(255 145 0 / 0.66) !important;
+  --color-foreground-subdued: rgb(255 145 0 / 0.4) !important;
 }
 
 /* ==========================================================================
@@ -1349,7 +1349,7 @@ main[data-template^='collection'] h2,
 .collection-hero__title,
 [class*='collection'] [class*='title'],
 .mdr-lookbook__heading {
-  color: #ffb6c1 !important;
+  color: #ff9100 !important;
 }
 
 /* cart text -> mango yellow */
