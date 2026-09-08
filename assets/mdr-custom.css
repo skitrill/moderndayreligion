@@ -1032,3 +1032,87 @@ button.link,
 
 /* select / dropdown native carets that the theme draws as a background image
    still read fine; the CSS quantity chevrons are thinned above (0.9px) */
+
+/* ==========================================================================
+   Header menu -> a compact "USER" dropdown that drops under the caret
+   ========================================================================== */
+
+/* no full-screen backdrop for a little dropdown */
+.header__underlay,
+.header__underlay-open,
+.header__underlay-closed {
+  display: none !important;
+}
+
+#Details-menu-drawer-container {
+  position: relative;
+}
+
+/* the drawer panel becomes a small dropdown pinned under the arrow */
+#Details-menu-drawer-container > .menu-drawer {
+  position: absolute !important;
+  inset: auto 0 auto auto !important;
+  top: calc(100% + 6px) !important;
+  width: max-content !important;
+  min-width: 84px !important;
+  max-width: 150px !important;
+  height: auto !important;
+  max-height: none !important;
+  padding: 3px 5px !important;
+  background: #121212 !important;                 /* a visible shade of black */
+  border: 1px solid rgb(var(--color-foreground-rgb) / 0.16) !important;
+  border-radius: 0 !important;
+  box-shadow: none !important;
+  overflow: visible !important;
+  transform: none !important;
+  transform-origin: top right;
+  z-index: 60 !important;
+  animation: mdr-hdrop 0.18s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@keyframes mdr-hdrop {
+  from { opacity: 0; transform: translateY(-6px) scaleY(0.8); }
+  to   { opacity: 1; transform: translateY(0) scaleY(1); }
+}
+
+/* keep only the account link; strip every other bit of drawer chrome */
+#Details-menu-drawer-container .menu-drawer__close-button,
+#Details-menu-drawer-container .menu-drawer__portal-label,
+#Details-menu-drawer-container [class*='resource-card'],
+#Details-menu-drawer-container [class*='predictive'],
+#Details-menu-drawer-container [class*='menu-drawer__account'],
+#Details-menu-drawer-container [class*='menu-drawer__utility'],
+#Details-menu-drawer-container [class*='menu-drawer__footer'],
+#Details-menu-drawer-container .menu-drawer__menu-item:not([href*='/account']),
+#Details-menu-drawer-container .menu-drawer__navigation ul > li:not(:has(a[href*='/account'])) {
+  display: none !important;
+}
+
+#Details-menu-drawer-container .menu-drawer__navigation,
+#Details-menu-drawer-container .menu-drawer__navigation ul {
+  padding: 0 !important;
+  margin: 0 !important;
+  list-style: none !important;
+}
+
+#Details-menu-drawer-container .menu-drawer__menu-item {
+  display: block !important;
+  padding: 3px 4px !important;
+  min-height: 0 !important;
+  border: 0 !important;
+  font-family: var(--font-accent--family, inherit) !important;
+  font-size: 0.6rem !important;
+  letter-spacing: 0.07em !important;
+  text-transform: uppercase !important;
+  color: var(--color-foreground-muted) !important;
+}
+
+#Details-menu-drawer-container .menu-drawer__menu-item:hover {
+  color: var(--color-foreground) !important;
+}
+
+/* don't let the tiny dropdown lock page scroll */
+html:has(#Details-menu-drawer-container[open]),
+body:has(#Details-menu-drawer-container[open]) {
+  overflow: auto !important;
+}

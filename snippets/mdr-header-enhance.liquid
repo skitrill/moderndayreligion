@@ -318,4 +318,47 @@
       );
     }
   })();
+
+  /* =====================================================================
+     Header menu -> a compact "USER" dropdown under the caret.
+     Everything but the account link is stripped (in CSS); here we rename
+     it, drop the scroll-lock, and close it on an outside tap.
+     ===================================================================== */
+  (function () {
+    if (window.__mdrHeaderMenu) return;
+    window.__mdrHeaderMenu = true;
+    var D = document;
+
+    function tidy() {
+      var det = D.getElementById('Details-menu-drawer-container');
+      if (!det) return;
+      det.removeAttribute('scroll-lock');
+
+      var acct = det.querySelector('.menu-drawer__menu-item[href*="/account"], a[href*="/account"]');
+      if (acct && acct.textContent.trim().toLowerCase() === 'account') {
+        acct.textContent = 'User';
+      }
+
+      if (!det.__mdrWired) {
+        det.__mdrWired = true;
+        det.addEventListener('toggle', function () {
+          if (!det.open) return;
+          det.removeAttribute('scroll-lock');
+          D.documentElement.style.overflow = '';
+          D.body.style.overflow = '';
+        });
+        D.addEventListener('click', function (e) {
+          if (det.open && !det.contains(e.target)) det.open = false;
+        }, true);
+      }
+    }
+
+    if (D.readyState !== 'loading') tidy();
+    D.addEventListener('DOMContentLoaded', tidy);
+    window.addEventListener('load', tidy);
+    var hc = D.querySelector('#header-component');
+    if (hc && window.MutationObserver) {
+      new MutationObserver(tidy).observe(hc, { childList: true, subtree: true });
+    }
+  })();
 </script>
