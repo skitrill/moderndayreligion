@@ -404,24 +404,23 @@ product-price *,
   opacity: 0.35;
 }
 
-/* ---- Product colour option rendered in club green ----------------------- */
+/* ---- Product-page copy + colour option: match the "© 2026" footer text
+   (rgba(240, 238, 230, 0.6)); the brown price keeps its own colour -------- */
 .variant-picker .variant-option[data-testid='variant-option-single'],
 .variant-picker .variant-option[data-testid='variant-option-single'] .variant-option__swatch-value,
 .variant-picker .variant-option__swatch-value {
-  color: #2c6e49 !important;
+  color: rgba(240, 238, 230, 0.6) !important;
 }
 
-/* ---- Product-page copy: deep off-white --------------------------------- */
 main .product-information__grid {
-  --color-foreground: rgb(214, 209, 196);
-  --color-foreground-rgb: 214 209 196;
+  --color-foreground: rgba(240, 238, 230, 0.6);
 }
 
 main .product-information__grid :is(h1, h2, h3, h4, h5, h6, p, li, legend,
   .rte, .text-block, .product-title, .product-description):not(.price):not(product-price),
 main .product-information__grid .rte:not(product-price) :is(span, p, li, a, strong, em),
 main .product-information__grid .text-block:not(product-price) :is(span, p, li, a, strong, em) {
-  color: rgb(214, 209, 196) !important;
+  color: rgba(240, 238, 230, 0.6) !important;
 }
 
 /* ---- Mobile: product hero image size ------------------------------------- */
@@ -697,10 +696,27 @@ body {
   display: none !important;
 }
 
-/* ---- "Buy with Shop" button -> very deep brown ------------------------- */
-.shopify-payment-button,
-.shopify-payment-button__button {
-  filter: hue-rotate(129deg) saturate(0.62) brightness(0.42) contrast(1.06) !important;
+/* ---- "Buy with Shop" -> chocolate button, text stays pure white -------
+   The Shop Pay wallet button paints inside a closed shadow root, so its
+   background can't be set directly. A `mix-blend-mode: color` overlay
+   repaints the purple as chocolate while leaving the white logo + text
+   untouched -- the blend keeps the backdrop luminosity, so white stays
+   white and the mid-tone purple lands on a deep chocolate. */
+.shopify-payment-button {
+  position: relative;
+  isolation: isolate;
+}
+
+.shopify-payment-button::before {
+  content: "";
+  position: absolute;
+  inset-inline: 0;
+  top: 0;
+  height: 42px;
+  background: #7a4a24;
+  mix-blend-mode: color;
+  pointer-events: none;
+  z-index: 4;
 }
 
 /* ==========================================================================
