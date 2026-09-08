@@ -785,41 +785,12 @@ body {
   display: none !important;
 }
 
-/* ---- "Buy with Shop" -> chocolate button, text stays pure white -------
-   The Shop Pay wallet button paints inside a closed shadow root, so its
-   background can't be set directly. A `mix-blend-mode: color` overlay
-   repaints the purple as chocolate while leaving the white logo + text
-   untouched -- the blend keeps the backdrop luminosity, so white stays
-   white and the mid-tone purple lands on a deep chocolate. */
-.shopify-payment-button {
-  position: relative;
-  isolation: isolate;
-}
-
-.shopify-payment-button::before {
-  content: "";
-  position: absolute;
-  inset-inline: 0;
-  top: 0;
-  height: 42px;
-  background: #6b3f1e;
-  mix-blend-mode: color;
-  pointer-events: none;
-  z-index: 4;
-}
-
-/* deepen the mid-tones toward dark chocolate; `overlay` leaves the white
-   highlights (logo + text) essentially untouched */
-.shopify-payment-button::after {
-  content: "";
-  position: absolute;
-  inset-inline: 0;
-  top: 0;
-  height: 42px;
-  background: #24140a;
-  mix-blend-mode: overlay;
-  pointer-events: none;
-  z-index: 5;
+/* ---- "Buy with Shop" -> red ------------------------------------------
+   The Shop Pay wallet button paints inside a closed shadow root, so we
+   recolour the purple with a hue-rotate filter. */
+.shopify-payment-button,
+.shopify-payment-button__button {
+  filter: hue-rotate(122deg) saturate(1.35) brightness(0.95) !important;
 }
 
 /* ==========================================================================
