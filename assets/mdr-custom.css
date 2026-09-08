@@ -411,6 +411,19 @@ product-price *,
   color: #2c6e49 !important;
 }
 
+/* ---- Product-page copy: deep off-white --------------------------------- */
+main .product-information__grid {
+  --color-foreground: rgb(214, 209, 196);
+  --color-foreground-rgb: 214 209 196;
+}
+
+main .product-information__grid :is(h1, h2, h3, h4, h5, h6, p, li, legend,
+  .rte, .text-block, .product-title, .product-description):not(.price):not(product-price),
+main .product-information__grid .rte:not(product-price) :is(span, p, li, a, strong, em),
+main .product-information__grid .text-block:not(product-price) :is(span, p, li, a, strong, em) {
+  color: rgb(214, 209, 196) !important;
+}
+
 /* ---- Mobile: product hero image size ------------------------------------- */
 @media screen and (max-width: 749px) {
   .product-information__grid .product-information__media,
@@ -684,10 +697,10 @@ body {
   display: none !important;
 }
 
-/* ---- "Buy with Shop" button -> red ------------------------------------- */
+/* ---- "Buy with Shop" button -> very deep brown ------------------------- */
 .shopify-payment-button,
 .shopify-payment-button__button {
-  filter: hue-rotate(122deg) saturate(1.35) brightness(0.95) !important;
+  filter: hue-rotate(129deg) saturate(0.62) brightness(0.42) contrast(1.06) !important;
 }
 
 /* ==========================================================================
