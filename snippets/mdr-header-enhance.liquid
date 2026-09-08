@@ -265,6 +265,7 @@
     function setView(v, animate) {
       write(v);
       apply(v, animate);
+      padFill(v);
     }
 
     /* reflect stored state as early as possible */
@@ -272,6 +273,47 @@
 
     function featured() {
       return D.querySelector('[id$="__product_list_fa6P9H"]');
+    }
+
+    /* TEMP: only 3 products in the catalogue -- clone the tiles so the 8x8
+       (and the zoom view) are visually full while we test the look. Clones
+       are inert and tagged [data-mdr-clone]; delete this block once there
+       are enough real products. */
+    function padFill(mode) {
+      var sec = featured();
+      if (!sec) return;
+      var grid = sec.querySelector('.resource-list--grid') || sec.querySelector('.resource-list');
+      if (!grid) return;
+
+      var clones = grid.querySelectorAll('[data-mdr-clone]');
+      for (var c = clones.length - 1; c >= 0; c--) clones[c].remove();
+
+      var originals = [];
+      var kids = grid.children;
+      for (var k = 0; k < kids.length; k++) {
+        if (!kids[k].hasAttribute('data-mdr-clone')) originals.push(kids[k]);
+      }
+      if (!originals.length) return;
+
+      var target = mode === 'grid8' ? 64 : 24;
+      var need = target - originals.length;
+      if (need <= 0) return;
+
+      var frag = D.createDocumentFragment();
+      for (var i = 0; i < need; i++) {
+        var node = originals[i % originals.length].cloneNode(true);
+        node.setAttribute('data-mdr-clone', '');
+        node.style.pointerEvents = 'none';
+        var pc = node.querySelector('product-card');
+        if (pc) {
+          pc.removeAttribute('on:click');
+          pc.removeAttribute('id');
+        }
+        var links = node.querySelectorAll('a');
+        for (var l = 0; l < links.length; l++) links[l].removeAttribute('href');
+        frag.appendChild(node);
+      }
+      grid.appendChild(frag);
     }
 
     /* Tap anywhere on the dense layout -> zoom out to 2/4. Only active while
@@ -303,10 +345,15 @@
       }, true);
     }
 
-    wireLogo();
-    if (D.readyState !== 'loading') wireLogo();
-    D.addEventListener('DOMContentLoaded', wireLogo);
-    window.addEventListener('load', wireLogo);
+    function boot() {
+      wireLogo();
+      padFill(read());
+    }
+
+    boot();
+    if (D.readyState !== 'loading') boot();
+    D.addEventListener('DOMContentLoaded', boot);
+    window.addEventListener('load', boot);
     if (window.MutationObserver) {
       new MutationObserver(wireLogo).observe(
         D.querySelector('#header-component') || D.body,
