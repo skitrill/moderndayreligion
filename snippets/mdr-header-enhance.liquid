@@ -1,0 +1,290 @@
+{%- doc -%}
+  MDR header / scroll enhancements (custom, non-Horizon).
+
+  - [bottom]: a tiny text control stacked tight under the cart on the far right of
+    the header bar. No icon. Scrolls to the last product on the page with a snappy
+    "windy" easing. Desktop inline-header ("menu") mode only.
+  - [top]: a tiny fixed control pinned to the bottom-right of the viewport that
+    fades in once the visitor scrolls down (and whenever they reach the page
+    bottom). Scrolls back to the first product / top of the page. Built in JS and
+    appended to <body> so it stays viewport-fixed (the header is a containing
+    block via `contain`).
+
+  Rendered once from the `actions` capture in sections/header.liquid.
+{%- enddoc -%}
+
+<div class="mdr-jump-wrap" data-mdr-jump>
+  <a
+    href="#"
+    class="mdr-jump mdr-jump--bottom"
+    role="button"
+    aria-label="Scroll to last item"
+  >
+    [bottom]
+  </a>
+</div>
+
+<style>
+  /* ---- [bottom] : stacked tight under the cart, far right of the header ---- */
+  .mdr-jump-wrap {
+    display: none;
+  }
+
+  #header-component[data-menu-style='menu'] .mdr-jump-wrap {
+    display: flex;
+    justify-content: flex-end;
+    margin-top: -2px;
+  }
+
+  #header-component[data-menu-style='menu'] .header__column--right {
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 1px;
+  }
+
+  .mdr-jump {
+    display: inline-block;
+    padding: 0;
+    border: 0;
+    background: none;
+    cursor: pointer;
+    text-decoration: none;
+    color: var(--color-foreground);
+    font-family: var(--font-accent--family, inherit);
+    font-size: 0.5rem;
+    line-height: 1;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    transition: opacity 0.2s var(--ease-out-cubic, ease), transform 0.2s var(--ease-out-cubic, ease);
+  }
+
+  .mdr-jump:hover,
+  .mdr-jump:focus-visible {
+    opacity: 0.6;
+  }
+
+  .mdr-jump.mdr-off {
+    opacity: 0;
+    pointer-events: none;
+  }
+
+  /* ---- [top] : fixed to the bottom-right of the viewport, on scroll ---- */
+  .mdr-scrolltop {
+    position: fixed;
+    right: max(16px, env(safe-area-inset-right, 16px));
+    bottom: max(16px, env(safe-area-inset-bottom, 16px));
+    z-index: 2147483000;
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 6px 2px 6px 6px;
+    border: 0;
+    background: none;
+    cursor: pointer;
+    color: var(--color-foreground, #f0eee6);
+    font-family: var(--font-accent--family, inherit);
+    font-size: 0.5rem;
+    line-height: 1;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    opacity: 0;
+    transform: translateY(6px);
+    pointer-events: none;
+    transition: opacity 0.22s var(--ease-out-cubic, ease), transform 0.22s var(--ease-out-cubic, ease);
+  }
+
+  .mdr-scrolltop.mdr-visible {
+    opacity: 1;
+    transform: translateY(0);
+    pointer-events: auto;
+  }
+
+  .mdr-scrolltop:hover,
+  .mdr-scrolltop:focus-visible {
+    opacity: 0.6;
+  }
+
+  .mdr-scrolltop__arrow {
+    display: block;
+    flex: none;
+    width: 9px;
+    height: 6px;
+  }
+
+  @keyframes mdr-gust {
+    0% { transform: translateY(0); }
+    35% { transform: translateY(var(--mdr-gust-y, -6px)); }
+    100% { transform: translateY(0); }
+  }
+
+  .mdr-jump.mdr-gust,
+  .mdr-scrolltop.mdr-visible.mdr-gust {
+    animation: mdr-gust 0.42s var(--ease-out-cubic, cubic-bezier(0.33, 1, 0.68, 1));
+  }
+
+  .mdr-jump--bottom.mdr-gust {
+    --mdr-gust-y: 6px;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .mdr-jump.mdr-gust,
+    .mdr-scrolltop.mdr-gust {
+      animation: none;
+    }
+  }
+</style>
+
+<script>
+  (function () {
+    if (window.__mdrHeaderEnhance) return;
+    window.__mdrHeaderEnhance = true;
+
+    var D = document;
+    var botBtn = null;
+    var topBtn = null;
+
+    function easeOutCubic(t) {
+      return 1 - Math.pow(1 - t, 3);
+    }
+
+    /* Overshoot-and-settle -- the "windy" whoosh */
+    function easeOutBack(t) {
+      var c1 = 1.70158;
+      var c3 = c1 + 1;
+      return 1 + c3 * Math.pow(t - 1, 3) + c1 * Math.pow(t - 1, 2);
+    }
+
+    var prefersReduced =
+      window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+    function scrollTop() {
+      return window.scrollY || window.pageYOffset || D.documentElement.scrollTop || 0;
+    }
+
+    function maxScroll() {
+      return Math.max(0, D.documentElement.scrollHeight - window.innerHeight);
+    }
+
+    function tweenScroll(targetY, duration, ease) {
+      targetY = Math.max(0, Math.min(targetY, maxScroll()));
+      var startY = scrollTop();
+      var dist = targetY - startY;
+      if (Math.abs(dist) < 2) return;
+      if (prefersReduced) {
+        window.scrollTo(0, targetY);
+        return;
+      }
+      var start = null;
+      function frame(now) {
+        if (start === null) start = now;
+        var p = Math.min(1, (now - start) / duration);
+        window.scrollTo(0, startY + dist * ease(p));
+        if (p < 1) requestAnimationFrame(frame);
+      }
+      requestAnimationFrame(frame);
+    }
+
+    function headerOffset() {
+      var raw = getComputedStyle(D.body).getPropertyValue('--header-height').trim();
+      var n = parseFloat(raw);
+      return (isNaN(n) ? 60 : n) + 10;
+    }
+
+    function productCards() {
+      return Array.prototype.slice.call(D.querySelectorAll('product-card, .product-card'));
+    }
+
+    function gust(el) {
+      if (!el) return;
+      el.classList.remove('mdr-gust');
+      void el.offsetWidth;
+      el.classList.add('mdr-gust');
+    }
+
+    function goTop() {
+      var now = scrollTop();
+      var first = productCards()[0];
+      var y = first ? first.getBoundingClientRect().top + now - headerOffset() : 0;
+      /* never scroll downward -- fall back to the very top */
+      if (y >= now - 2) y = 0;
+      tweenScroll(y, 360, easeOutCubic);
+      gust(topBtn);
+    }
+
+    function goBottom() {
+      var now = scrollTop();
+      var cards = productCards();
+      var last = cards[cards.length - 1];
+      var y = last
+        ? last.getBoundingClientRect().bottom + now - window.innerHeight + 24
+        : maxScroll();
+      /* never scroll upward -- fall back to the page bottom */
+      if (y <= now + 2) y = maxScroll();
+      tweenScroll(y, 480, easeOutBack);
+      gust(botBtn);
+    }
+
+    /* Build the fixed [top] control and pin it to <body> */
+    function ensureTopButton() {
+      if (topBtn && topBtn.isConnected && topBtn.parentNode === D.body) return;
+      topBtn = D.querySelector('.mdr-scrolltop');
+      if (!topBtn) {
+        topBtn = D.createElement('button');
+        topBtn.type = 'button';
+        topBtn.className = 'mdr-scrolltop';
+        topBtn.setAttribute('aria-label', 'Scroll to top');
+        topBtn.innerHTML =
+          '<svg class="mdr-scrolltop__arrow" viewBox="0 0 12 8" width="12" height="8" aria-hidden="true" focusable="false">' +
+          '<path d="M1 6.5 6 1.5l5 5" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>' +
+          '</svg><span>[top]</span>';
+        topBtn.addEventListener('click', function (e) {
+          e.preventDefault();
+          goTop();
+        });
+      }
+      if (topBtn.parentNode !== D.body) D.body.appendChild(topBtn);
+    }
+
+    function updateVisibility() {
+      var y = scrollTop();
+      var maxY = maxScroll();
+      var atBottom = maxY > 40 && y >= maxY - 4;
+      if (topBtn) topBtn.classList.toggle('mdr-visible', y > 80 || atBottom);
+      if (botBtn) botBtn.classList.toggle('mdr-off', maxY > 0 && y > maxY - 120);
+    }
+
+    function wireBottom() {
+      var wrap = D.querySelector('[data-mdr-jump]');
+      if (!wrap) return;
+      botBtn = wrap.querySelector('.mdr-jump--bottom');
+      if (botBtn && !botBtn.__mdrWired) {
+        botBtn.__mdrWired = true;
+        botBtn.addEventListener('click', function (e) {
+          e.preventDefault();
+          goBottom();
+        });
+      }
+    }
+
+    function init() {
+      ensureTopButton();
+      wireBottom();
+      updateVisibility();
+    }
+
+    /* Catch scrolling regardless of which node emits the event */
+    window.addEventListener('scroll', updateVisibility, { passive: true });
+    D.addEventListener('scroll', updateVisibility, { passive: true, capture: true });
+    window.addEventListener('resize', updateVisibility, { passive: true });
+
+    if (D.readyState !== 'loading') init();
+    D.addEventListener('DOMContentLoaded', init);
+    window.addEventListener('load', init);
+
+    /* Re-wire / re-pin after Horizon section hydration swaps header DOM */
+    var hc = D.querySelector('#header-component');
+    if (hc && window.MutationObserver) {
+      new MutationObserver(init).observe(hc, { childList: true, subtree: true });
+    }
+  })();
+</script>
