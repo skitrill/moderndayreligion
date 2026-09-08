@@ -309,10 +309,11 @@ product-price *,
 [class*='cart-totals'] [class*='value'],
 [class*='cart-totals'] .price,
 [class*='totals'] [class*='price'] {
-  color: #9a6134 !important;
+  /* #040061 is near-invisible on black, so a legible sibling of it */
+  color: #3a3ec4 !important;
 }
 
-/* ...but the order / estimated total itself -> red */
+/* order / estimated total -> the same blue */
 .cart-totals__total-value,
 .cart-totals__total-value *,
 [class*='cart-totals'] [class*='total'] [class*='value'],
@@ -320,7 +321,7 @@ product-price *,
 .cart-drawer__total .price,
 .cart__total .price,
 .totals__total-value {
-  color: #cc2b1f !important;
+  color: #3a3ec4 !important;
 }
 
 /* ---- Cart page: end at the same right edge as the header (the cart link).
@@ -785,12 +786,37 @@ body {
   display: none !important;
 }
 
-/* ---- "Buy with Shop" -> red ------------------------------------------
-   The Shop Pay wallet button paints inside a closed shadow root, so we
-   recolour the purple with a hue-rotate filter. */
-.shopify-payment-button,
-.shopify-payment-button__button {
-  filter: hue-rotate(122deg) saturate(1.35) brightness(0.95) !important;
+/* ---- "Buy with Shop" -> #040061 --------------------------------------
+   The Shop Pay wallet button paints inside a closed shadow root; a
+   `mix-blend-mode` overlay repaints the purple toward #040061 while the
+   white logo + text stay white. */
+.shopify-payment-button {
+  position: relative;
+  isolation: isolate;
+}
+
+.shopify-payment-button::before {
+  content: "";
+  position: absolute;
+  inset-inline: 0;
+  top: 0;
+  height: 42px;
+  background: #040061;
+  mix-blend-mode: color;
+  pointer-events: none;
+  z-index: 4;
+}
+
+.shopify-payment-button::after {
+  content: "";
+  position: absolute;
+  inset-inline: 0;
+  top: 0;
+  height: 42px;
+  background: #02003a;
+  mix-blend-mode: overlay;
+  pointer-events: none;
+  z-index: 5;
 }
 
 /* ==========================================================================
