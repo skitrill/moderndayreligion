@@ -118,7 +118,8 @@
       var maxY = maxScroll();
       var atBottom = maxY > 40 && y >= maxY - 4;
       if (topBtn) topBtn.classList.toggle('mdr-visible', y > 80 || atBottom);
-      if (botBtn) botBtn.classList.toggle('mdr-off', maxY > 0 && y > maxY - 120);
+      /* only dim [v] when there is real scroll room AND we're near the end */
+      if (botBtn) botBtn.classList.toggle('mdr-off', maxY > 260 && y > maxY - 140);
     }
 
     function wireBottom() {
