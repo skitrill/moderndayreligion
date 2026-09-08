@@ -1,0 +1,72 @@
+{%- doc -%}
+  MDR custom footer nav (replaces the stock main-menu links in the footer):
+  SHOP -> home, LOOKBOOK -> /pages/lookbook, MAILING -> a slim drop-down box
+  with a newsletter sign-up. Rendered from sections/footer.liquid inside
+  .footer-content; the stock .footer-content .menu is hidden in mdr-custom.css.
+{%- enddoc -%}
+
+<nav class="mdr-fnav" aria-label="Footer">
+  <ul>
+    <li><a href="{{ routes.root_url }}">Shop</a></li>
+    <li><a href="/pages/lookbook">Lookbook</a></li>
+    <li class="mdr-fnav__mailing">
+      <button
+        type="button"
+        class="mdr-fnav__toggle"
+        aria-expanded="false"
+        aria-controls="mdr-mailing-drop"
+      >
+        Mailing
+      </button>
+      <div id="mdr-mailing-drop" class="mdr-fnav__drop" hidden>
+        {%- form 'customer' -%}
+          {%- if form.posted_successfully? -%}
+            <p class="mdr-fnav__msg">You're on the list.</p>
+          {%- else -%}
+            <input type="hidden" name="contact[tags]" value="newsletter">
+            <input
+              type="email"
+              name="contact[email]"
+              class="mdr-fnav__email"
+              placeholder="EMAIL"
+              autocomplete="email"
+              aria-label="Email"
+              required
+            >
+            <button type="submit" class="mdr-fnav__submit">Join</button>
+          {%- endif -%}
+        {%- endform -%}
+      </div>
+      {%- if form.errors -%}
+        <p class="mdr-fnav__msg mdr-fnav__msg--err">{{ form.errors | default_errors }}</p>
+      {%- endif -%}
+    </li>
+  </ul>
+</nav>
+
+<script>
+  (function () {
+    var t = document.querySelector('.mdr-fnav__toggle');
+    if (!t || t.__mdrWired) return;
+    t.__mdrWired = true;
+    var d = document.getElementById('mdr-mailing-drop');
+
+    function set(open) {
+      t.setAttribute('aria-expanded', String(open));
+      if (d) d.hidden = !open;
+    }
+
+    t.addEventListener('click', function () {
+      set(t.getAttribute('aria-expanded') !== 'true');
+    });
+
+    document.addEventListener('click', function (e) {
+      if (!e.target.closest('.mdr-fnav__mailing')) set(false);
+    });
+
+    /* re-open after a submit round-trip */
+    if (location.search.indexOf('customer_posted') > -1 || document.querySelector('.mdr-fnav__msg')) {
+      set(true);
+    }
+  })();
+</script>

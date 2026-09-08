@@ -99,6 +99,10 @@ footer > .shopify-section:has(.footer-content) .footer-content {
   justify-items: start !important;
   padding-block: 0 !important;
   background: transparent !important;
+  /* let the MAILING drop-down escape the footer box */
+  contain: none !important;
+  content-visibility: visible !important;
+  overflow: visible !important;
 }
 
 /* the menu section carries its own opaque bg -- drop it so it doesn't paint
@@ -702,4 +706,138 @@ button.link,
   .product-recommendations [class*='title'] {
     margin-block: 0 6px !important;
   }
+}
+
+/* ==========================================================================
+   Custom footer nav: SHOP / LOOKBOOK / MAILING (with sign-up drop-down)
+   ========================================================================== */
+
+/* hide the stock main-menu links in the footer -- mdr-footer-nav replaces them */
+.footer-content .menu,
+.footer-content .menu__details,
+.footer-content .accordion-custom {
+  display: none !important;
+}
+
+.mdr-fnav {
+  pointer-events: none;
+}
+
+.mdr-fnav ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--gap-xs);
+}
+
+.mdr-fnav a,
+.mdr-fnav .mdr-fnav__toggle {
+  pointer-events: auto;
+  display: inline-block;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  background: none;
+  cursor: pointer;
+  font-family: var(--font-accent--family, inherit);
+  font-size: 0.625rem;
+  line-height: 1;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--color-foreground-muted);
+  text-decoration: none;
+}
+
+.mdr-fnav a:hover,
+.mdr-fnav .mdr-fnav__toggle:hover {
+  color: var(--color-foreground);
+}
+
+.mdr-fnav__mailing {
+  position: relative;
+}
+
+/* the slim rectangular drop-down box */
+.mdr-fnav__drop {
+  position: absolute;
+  left: 0;
+  top: calc(100% + 5px);
+  z-index: 20;
+  display: flex;
+  align-items: stretch;
+  width: 190px;
+  height: 24px;
+  background: #000;
+  border: 1px solid rgb(var(--color-foreground-rgb) / 0.28);
+  pointer-events: auto;
+}
+
+.mdr-fnav__drop[hidden] {
+  display: none !important;
+}
+
+.mdr-fnav__email {
+  flex: 1 1 auto;
+  min-width: 0;
+  height: 100%;
+  border: 0;
+  background: transparent;
+  color: var(--color-foreground);
+  font-family: var(--font-accent--family, inherit);
+  font-size: 0.58rem;
+  letter-spacing: 0.05em;
+  padding: 0 7px;
+  pointer-events: auto;
+}
+
+.mdr-fnav__email::placeholder {
+  color: rgb(var(--color-foreground-rgb) / 0.45);
+}
+
+.mdr-fnav__email:focus {
+  outline: 0;
+}
+
+.mdr-fnav__submit {
+  flex: 0 0 auto;
+  height: 100%;
+  border: 0;
+  border-left: 1px solid rgb(var(--color-foreground-rgb) / 0.28);
+  background: transparent;
+  color: var(--color-foreground);
+  font-family: var(--font-accent--family, inherit);
+  font-size: 0.52rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  padding: 0 9px;
+  cursor: pointer;
+  pointer-events: auto;
+}
+
+.mdr-fnav__submit:hover {
+  background: rgb(var(--color-foreground-rgb) / 0.1);
+}
+
+.mdr-fnav__msg {
+  position: absolute;
+  left: 0;
+  top: calc(100% + 5px);
+  width: 190px;
+  margin: 0;
+  padding: 5px 7px;
+  background: #000;
+  border: 1px solid rgb(var(--color-foreground-rgb) / 0.28);
+  font-family: var(--font-accent--family, inherit);
+  font-size: 0.52rem;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: var(--color-foreground-muted);
+  pointer-events: auto;
+}
+
+.mdr-fnav__msg--err {
+  color: #c0392b;
 }
