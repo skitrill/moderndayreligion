@@ -1037,9 +1037,9 @@ button.link,
    Header menu -> a compact "USER" dropdown that drops under the caret
    ========================================================================== */
 
-/* keep the header's own background layer, but stop the drawer's full-screen
-   dim + click-catch so the little USER dropdown doesn't darken the page */
-#header-component:has(#Details-menu-drawer-container[open]) .header__underlay,
+/* keep the header's own background layer (.header__underlay-closed); only
+   neutralise the drawer's full-screen dim so the little USER dropdown
+   doesn't darken the page */
 .header__underlay-open {
   background: transparent !important;
   backdrop-filter: none !important;
