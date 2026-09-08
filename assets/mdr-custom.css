@@ -1313,44 +1313,33 @@ a:not([class*='button']):not(.header-logo):focus-visible {
 }
 
 /* ==========================================================================
-   ALL fonts red -- overrides every other text colour (id-level specificity
-   so it beats the earlier per-element colour rules).
+   Default font colour -> a softer red site-wide (not neon).
    ========================================================================== */
 *,
 ::before,
 ::after {
   --color-foreground: #cc2b1f !important;
   --color-foreground-rgb: 204 43 31 !important;
-  --color-foreground-muted: rgb(204 43 31 / 0.7) !important;
+  --color-foreground-muted: rgb(204 43 31 / 0.72) !important;
   --color-foreground-subdued: rgb(204 43 31 / 0.45) !important;
 }
 
-*:not(#\@):not(#\#),
-*:not(#\@):not(#\#)::before,
-*:not(#\@):not(#\#)::after {
-  color: #cc2b1f !important;
-  -webkit-text-fill-color: #cc2b1f !important;
-}
-
 /* product description column -> muted, NOT red */
-main .product-information__grid .product-details:not(#\@):not(#\#),
-main .product-information__grid .product-details:not(#\@):not(#\#) * {
+main .product-information__grid.product-information__grid .product-details.product-details,
+main .product-information__grid.product-information__grid .product-details.product-details * {
   color: rgba(240, 238, 230, 0.6) !important;
-  -webkit-text-fill-color: rgba(240, 238, 230, 0.6) !important;
 }
 
 /* ...prices still blue */
-main .product-information__grid
-  :is(.price, .price *, product-price, product-price *):not(#\@):not(#\#) {
+main .product-information__grid.product-information__grid
+  :is(.price, .price *, product-price, product-price *) {
   color: #3a3ec4 !important;
-  -webkit-text-fill-color: #3a3ec4 !important;
 }
 
 /* ...size chart still mango yellow */
-main .product-information__grid .size-chart:not(#\@):not(#\#),
-main .product-information__grid .size-chart:not(#\@):not(#\#) * {
+main .product-information__grid.product-information__grid .size-chart,
+main .product-information__grid.product-information__grid .size-chart * {
   color: #fdb92e !important;
-  -webkit-text-fill-color: #fdb92e !important;
 }
 
 /* ==========================================================================
@@ -1368,16 +1357,6 @@ main .product-information__grid .size-chart:not(#\@):not(#\#) * {
   color: #ffffff !important;
 }
 
-/* collection / section titles -> light pink (explicit lock) */
-.resource-list__heading,
-.section-resource-list__header h3,
-main[data-template^='collection'] h1,
-main[data-template^='collection'] h2,
-.collection-hero__title,
-[class*='collection'] [class*='title'],
-.mdr-lookbook__heading {
-  color: #d6d1c4 !important;
-}
 
 /* cart text -> mango yellow */
 .cart-page,
