@@ -1202,30 +1202,48 @@ body:has(#Details-menu-drawer-container[open]) {
 }
 
 /* ==========================================================================
-   Borders around the size chips + tighter phone gutters
+   Sizes joined into one long bordered box + tighter phone gutters
    ========================================================================== */
 
-/* box each size option */
-.variant-option--buttons .variant-option__button-label {
+/* one long box around the whole size row */
+.variant-option--buttons {
   border: 1px solid rgb(var(--color-foreground-rgb) / 0.3) !important;
-  padding: 5px 4px !important;
-  min-height: 30px !important;
+  padding: 0 !important;
+  display: flex !important;
+  flex-wrap: nowrap !important;
+  gap: 0 !important;
+  overflow: hidden !important;
+}
+
+/* keep the "SIZE" legend above the box, no fieldset notch */
+.variant-option--buttons > legend {
+  float: left !important;
+  width: 100% !important;
+  margin: 0 0 6px !important;
+  padding: 0 !important;
+}
+
+/* each size = a segment, divided by a hairline */
+.variant-option--buttons .variant-option__button-label {
+  flex: 1 1 0 !important;
+  border: 0 !important;
+  border-left: 1px solid rgb(var(--color-foreground-rgb) / 0.16) !important;
+  padding: 6px 4px !important;
+  min-height: 32px !important;
   align-items: center !important;
   justify-content: center !important;
   text-align: center !important;
   overflow: hidden !important;
 }
 
+.variant-option--buttons .variant-option__button-label:first-of-type {
+  border-left: 0 !important;
+}
+
+/* selected -> subtle fill inside its segment (no more bleeding cream pill) */
 .variant-option--buttons .variant-option__button-label__pill {
   inset: 0 !important;
-}
-
-.variant-option--buttons .variant-option__button-label:has(input:checked) {
-  border-color: var(--color-foreground) !important;
-}
-
-.variant-option--buttons .variant-option__button-label:has(input[data-option-available='false']) {
-  border-color: rgb(var(--color-foreground-rgb) / 0.14) !important;
+  background: rgb(var(--color-foreground-rgb) / 0.14) !important;
 }
 
 /* phone: narrower side gutters */
