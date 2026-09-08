@@ -807,7 +807,7 @@ button.link,
   height: 100%;
   border: 0;
   background: #241206;
-  color: #ffffff;
+  color: rgb(var(--color-foreground-rgb) / 0.28);
   font-family: var(--font-accent--family, inherit);
   font-size: 0.52rem;
   letter-spacing: 0.06em;
