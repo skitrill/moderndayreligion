@@ -541,32 +541,29 @@ main[data-template='index'] .resource-list--grid,
   row-gap: 2px !important;
 }
 
-/* undo the homepage-only grid narrowing in base.css so featured fills like the
-   collection does */
-main[data-template='index'] [id$='__product_list_fa6P9H'] .resource-list--grid {
-  max-width: none !important;
-  margin-inline: 0 !important;
-}
-
-/* ---- Featured grid: default "zoom" view (2 cols mobile / 4 desktop);
-   dense 8x8 only when the logo toggles data-featured="grid8" on <html>. ---- */
+/* ---- Featured grid: a centred, compact block like the lookbook (never
+   full-width). Zoom-out view = 4 cols on phone AND pc; dense 8x8 only when
+   the logo toggles data-featured="grid8" on <html>. -------------------- */
 main[data-template='index'] [id$='__product_list_fa6P9H'] .resource-list--grid {
   display: grid !important;
-  grid-template-columns: repeat(2, 1fr) !important;
+  grid-template-columns: repeat(4, 1fr) !important;
   column-gap: 6px !important;
   row-gap: 6px !important;
-}
-
-@media (min-width: 750px) {
-  main[data-template='index'] [id$='__product_list_fa6P9H'] .resource-list--grid {
-    grid-template-columns: repeat(4, 1fr) !important;
-  }
+  max-width: 640px !important;
+  margin-inline: auto !important;
 }
 
 html[data-featured='grid8'] main[data-template='index'] [id$='__product_list_fa6P9H'] .resource-list--grid {
   grid-template-columns: repeat(8, 1fr) !important;
   column-gap: 2px !important;
   row-gap: 2px !important;
+}
+
+/* keep the section heading aligned with the centred grid */
+main[data-template='index'] [id$='__product_list_fa6P9H'] :is(.resource-list__heading, .section-header, [class*='resource-list'] [class*='title']) {
+  max-width: 640px !important;
+  margin-inline: auto !important;
+  text-align: center !important;
 }
 
 /* dense mode: the whole layout is one tap target -> zoom back to 2/4 */
