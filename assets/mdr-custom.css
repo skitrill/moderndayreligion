@@ -312,6 +312,17 @@ product-price *,
   color: #9a6134 !important;
 }
 
+/* ...but the order / estimated total itself -> red */
+.cart-totals__total-value,
+.cart-totals__total-value *,
+[class*='cart-totals'] [class*='total'] [class*='value'],
+[class*='cart-totals'] [class*='total'] .price,
+.cart-drawer__total .price,
+.cart__total .price,
+.totals__total-value {
+  color: #cc2b1f !important;
+}
+
 /* ---- Cart page: end at the same right edge as the header (the cart link).
    The section is a [gutter | 900 content | gutter] grid; the cart bled into the
    right gutter (grid-column 2/4). Confine it to the content track. --- */
