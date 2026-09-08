@@ -603,6 +603,14 @@ main[data-template='index'] [id$='__product_list_fa6P9H'] .section-resource-list
   margin-bottom: clamp(10px, 2.4vw, 20px) !important;
 }
 
+/* "All" section title -> red */
+main[data-template='index'] [id$='__product_list_fa6P9H'] .section-resource-list__header
+  :is(h1, h2, h3, h4, .text-block, [class*='title']),
+main[data-template='index'] [id$='__product_list_fa6P9H'] .section-resource-list__header
+  :is(h1, h2, h3, h4, .text-block) * {
+  color: #cc2b1f !important;
+}
+
 /* dense mode: the whole layout is one tap target -> zoom back to 2/4 */
 html[data-featured='grid8'] main[data-template='index'] [id$='__product_list_fa6P9H'] {
   cursor: zoom-in;
