@@ -554,11 +554,11 @@ main[data-template='index'] .resource-list--grid,
 }
 
 /* ---- Featured grid: a centred, compact block like the lookbook (never
-   full-width). Zoom-out view = 4 cols on phone AND pc; dense 8x8 only when
-   the logo toggles data-featured="grid8" on <html>. -------------------- */
+   full-width). Zoom-out view = 2 cols on phone, 4 on pc; dense 8x8 only
+   when the logo toggles data-featured="grid8" on <html>. -------------- */
 main[data-template='index'] [id$='__product_list_fa6P9H'] .resource-list--grid {
   display: grid !important;
-  grid-template-columns: repeat(3, 1fr) !important;
+  grid-template-columns: repeat(2, 1fr) !important;
   column-gap: 6px !important;
   row-gap: 6px !important;
   max-width: 640px !important;
@@ -838,6 +838,16 @@ button.link,
   text-decoration: none !important;
   text-decoration-line: none !important;
   border-bottom: 0 !important;
+}
+
+/* "more payment options" -> red highlight pill */
+.shopify-payment-button__more-options,
+[class*='more-options'] {
+  display: inline-block !important;
+  padding: 2px 8px !important;
+  background: #cc2b1f !important;
+  color: #fff !important;
+  border-radius: 0 !important;
 }
 
 /* the footer menu's current-page marker used an underline -- drop it */
