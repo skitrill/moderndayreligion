@@ -1,14 +1,59 @@
 
 
+{%- doc -%}
+  Collapsible size chart on the product page.
+
+  It renders whichever HTML table fits the product:
+  - "Tops" chart (chart_content) for tees / crews / hoodies
+  - "Bottoms" chart (chart_content_bottoms) for shorts / pants / etc.
+
+  In "auto" mode it looks at the product's Type and Tags for any of the
+  bottoms_keywords and, if it finds one, shows the bottoms chart; otherwise the
+  tops chart. You can force either one with the "Which chart" setting.
+
+  Both default tables use EU numeric sizing (44-54) with measurements in cm.
+{%- enddoc -%}
+
 {% liquid
-  assign trigger_label = block.settings.trigger_label | default: 'Size Chart'
+  assign settings = block.settings
+  assign trigger_label = settings.trigger_label | default: 'Size Chart'
+  assign product_ref = closest.product
+
+  assign mode = settings.chart_mode | default: 'auto'
+  assign is_bottoms = false
+
+  if mode == 'bottoms'
+    assign is_bottoms = true
+  elsif mode == 'auto' and product_ref != blank
+    assign keywords = settings.bottoms_keywords | default: 'short,pant,trouser,bottom,jean,cargo,sweatpant,jort'
+    assign type_str = product_ref.type | downcase
+    assign tags_str = product_ref.tags | join: ',' | downcase
+    assign keyword_list = keywords | downcase | split: ','
+    for keyword in keyword_list
+      assign keyword = keyword | strip
+      if keyword == blank
+        continue
+      endif
+      if type_str contains keyword or tags_str contains keyword
+        assign is_bottoms = true
+        break
+      endif
+    endfor
+  endif
+
+  if is_bottoms
+    assign chart_html = settings.chart_content_bottoms
+  else
+    assign chart_html = settings.chart_content
+  endif
 %}
 
 <details
   class="details size-chart spacing-style"
   data-testid="size-chart"
-  style="{% render 'spacing-style', settings: block.settings %}"
-  {% if block.settings.open_by_default %}
+  data-chart="{% if is_bottoms %}bottoms{% else %}tops{% endif %}"
+  style="{% render 'spacing-style', settings: settings %}"
+  {% if settings.open_by_default %}
     open
   {% endif %}
   {{ block.shopify_attributes }}
@@ -20,7 +65,10 @@
     </span>
   </summary>
   <div class="details-content size-chart__content">
-    {{ block.settings.chart_content }}
+    {{ chart_html }}
+    {%- if settings.units_note != blank -%}
+      <p class="size-chart__note">{{ settings.units_note }}</p>
+    {%- endif -%}
   </div>
 </details>
 
@@ -74,6 +122,12 @@
     color: rgb(var(--color-foreground-rgb) / var(--opacity-60));
     border-bottom-color: currentcolor;
   }
+
+  .size-chart__note {
+    margin: var(--padding-xs) 0 0;
+    font-size: var(--font-size--3xs, 0.65rem);
+    color: rgb(var(--color-foreground-rgb) / var(--opacity-60));
+  }
 {% endstylesheet %}
 
 {% schema %}
@@ -94,10 +148,48 @@
       "default": false
     },
     {
+      "type": "select",
+      "id": "chart_mode",
+      "label": "Which chart",
+      "options": [
+        { "value": "auto", "label": "Auto (by product type / tags)" },
+        { "value": "tops", "label": "Always tops" },
+        { "value": "bottoms", "label": "Always bottoms" }
+      ],
+      "default": "auto"
+    },
+    {
+      "type": "text",
+      "id": "bottoms_keywords",
+      "label": "Bottoms keywords",
+      "info": "Comma-separated. If the product Type or any Tag contains one of these, the bottoms chart is used.",
+      "default": "short,pant,trouser,bottom,jean,cargo,sweatpant,jort"
+    },
+    {
+      "type": "text",
+      "id": "units_note",
+      "label": "Units note",
+      "default": "EU sizing. Measurements in cm, garment laid flat."
+    },
+    {
+      "type": "header",
+      "content": "Tops chart"
+    },
+    {
       "type": "html",
       "id": "chart_content",
-      "label": "Chart content",
-      "default": "<table><thead><tr><th>Size</th><th>Chest</th><th>Length</th><th>Sleeve</th></tr></thead><tbody><tr><td>S</td><td>36</td><td>27</td><td>24</td></tr><tr><td>M</td><td>39</td><td>28</td><td>24.5</td></tr><tr><td>L</td><td>42</td><td>29</td><td>25</td></tr><tr><td>XL</td><td>45</td><td>30</td><td>25.5</td></tr></tbody></table>"
+      "label": "Tops chart content",
+      "default": "<table><thead><tr><th>EU</th><th>Chest</th><th>Shoulder</th><th>Length</th><th>Sleeve</th></tr></thead><tbody><tr><td>44 (XS)</td><td>96</td><td>43</td><td>68</td><td>21</td></tr><tr><td>46 (S)</td><td>100</td><td>44</td><td>70</td><td>21.5</td></tr><tr><td>48 (M)</td><td>104</td><td>45</td><td>72</td><td>22</td></tr><tr><td>50 (L)</td><td>108</td><td>46</td><td>74</td><td>22.5</td></tr><tr><td>52 (XL)</td><td>112</td><td>47</td><td>76</td><td>23</td></tr><tr><td>54 (XXL)</td><td>116</td><td>48</td><td>78</td><td>23.5</td></tr></tbody></table>"
+    },
+    {
+      "type": "header",
+      "content": "Bottoms chart"
+    },
+    {
+      "type": "html",
+      "id": "chart_content_bottoms",
+      "label": "Bottoms chart content",
+      "default": "<table><thead><tr><th>EU</th><th>Waist</th><th>Hip</th><th>Inseam</th><th>Leg opening</th></tr></thead><tbody><tr><td>44 (XS)</td><td>72</td><td>90</td><td>18.5</td><td>28</td></tr><tr><td>46 (S)</td><td>77</td><td>95</td><td>19</td><td>29</td></tr><tr><td>48 (M)</td><td>82</td><td>100</td><td>19.5</td><td>30</td></tr><tr><td>50 (L)</td><td>87</td><td>105</td><td>20</td><td>31</td></tr><tr><td>52 (XL)</td><td>92</td><td>110</td><td>20.5</td><td>32</td></tr><tr><td>54 (XXL)</td><td>97</td><td>115</td><td>21</td><td>33</td></tr></tbody></table>"
     },
     {
       "type": "header",

@@ -6,7 +6,8 @@
  * or related systems. Please exercise caution as any changes
  * made to this file may be overwritten.
  * ------------------------------------------------------------
- */{
+ */
+{
   "sections": {
     "main": {
       "type": "product-information",
@@ -205,7 +206,7 @@
               "settings": {
                 "trigger_label": "Size Chart",
                 "open_by_default": false,
-                "chart_content": "<table><thead><tr><th>Size</th><th>Chest</th><th>Length</th><th>Sleeve</th></tr></thead><tbody><tr><td>S</td><td>36</td><td>27</td><td>24</td></tr><tr><td>M</td><td>39</td><td>28</td><td>24.5</td></tr><tr><td>L</td><td>42</td><td>29</td><td>25</td></tr><tr><td>XL</td><td>45</td><td>30</td><td>25.5</td></tr></tbody></table>",
+                "chart_content": "<table><thead><tr><th>EU</th><th>Chest</th><th>Shoulder</th><th>Length</th><th>Sleeve</th></tr></thead><tbody><tr><td>44 (XS)</td><td>96</td><td>43</td><td>68</td><td>21</td></tr><tr><td>46 (S)</td><td>100</td><td>44</td><td>70</td><td>21.5</td></tr><tr><td>48 (M)</td><td>104</td><td>45</td><td>72</td><td>22</td></tr><tr><td>50 (L)</td><td>108</td><td>46</td><td>74</td><td>22.5</td></tr><tr><td>52 (XL)</td><td>112</td><td>47</td><td>76</td><td>23</td></tr><tr><td>54 (XXL)</td><td>116</td><td>48</td><td>78</td><td>23.5</td></tr></tbody></table>",
                 "padding-block-start": 8,
                 "padding-block-end": 0
               },
