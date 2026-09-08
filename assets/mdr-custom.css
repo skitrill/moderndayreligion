@@ -1,0 +1,245 @@
+/* ==========================================================================
+   MDR custom overrides (non-Horizon).
+   Loaded from <head> in layout/theme.liquid so it applies before first paint
+   -- no post-load reflow.
+   ========================================================================== */
+
+/* ---- Global: shrink the whole page a touch ---------------------------------- */
+html {
+  font-size: 15px;
+}
+
+/* Desktop keeps the logo at its original size; on mobile it scales with the
+   page so it never wraps. */
+@media screen and (min-width: 750px) {
+  #header-component .header-logo,
+  #header-component .header-logo span,
+  #header-component [data-testid='header-logo'] {
+    font-size: 21px;
+  }
+}
+
+/* ---- Product cards: same treatment everywhere ----------------------------------
+   collection grid, homepage featured, "you may also like", search results. */
+
+/* No card title / price anywhere -- they live on the product page only. */
+:is(product-card, .product-card) :is(
+  [ref='productTitleLink'],
+  product-price,
+  .product-grid-view-zoom-out--details,
+  .product-card__title,
+  [class*='price']
+),
+.resource-card__content {
+  display: none !important;
+}
+
+/* Card blends into the black; a single hairline "thread" separates them. */
+.product-card__content {
+  background: rgb(var(--color-foreground-rgb) / 0.025) !important;
+  border: 1px solid rgb(var(--color-foreground-rgb) / 0.07) !important;
+  padding: 3px !important;
+}
+
+/* Kill any per-gallery border (the homepage list sets one). */
+.product-card .card-gallery,
+.product-card .product-media-container {
+  border: 0 !important;
+}
+
+.product-card .product-media-container {
+  max-width: 94%;
+  margin-inline: auto;
+}
+
+/* ---- Footer: Home / Catalog / Contact --------------------------------------
+   Vertical stack pinned to the bottom-left corner, on the same horizontal band
+   as the centered policy links. Pointer-events are handled so both groups stay
+   clickable despite the overlap. */
+footer {
+  display: flex;
+  flex-direction: column;
+  position: relative;
+}
+
+footer > .shopify-section:has(.footer-content) {
+  order: 2;
+  position: absolute !important;
+  left: 0 !important;
+  right: 0 !important;
+  top: 50% !important;
+  bottom: auto !important;
+  transform: translateY(-50%) !important;
+  z-index: 5;
+  pointer-events: none;
+}
+
+footer > .shopify-section:has(.footer-content) .section,
+footer > .shopify-section:has(.footer-content) .footer-content {
+  pointer-events: none;
+  justify-items: start !important;
+  padding-block: 0 !important;
+  background: transparent !important;
+}
+
+/* the menu section carries its own opaque bg -- drop it so it doesn't paint
+   over the copyright / policy links it now sits on top of */
+footer > .shopify-section:has(.footer-content) .section-background {
+  display: none !important;
+}
+
+footer > .shopify-section:has(.footer-content) a {
+  pointer-events: auto;
+}
+
+.footer-content .list-unstyled {
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: flex-start;
+  gap: var(--gap-xs);
+}
+
+.footer-content .menu__item a {
+  color: var(--color-foreground-muted);
+}
+
+footer .utilities {
+  padding-block: 8px 8px !important;
+  gap: 10px !important;
+}
+
+/* ---- Product page: compact info column ------------------------------------ */
+.product-information__grid.product-information--media-left {
+  justify-content: start !important;
+  column-gap: 44px !important;
+}
+
+.product-information__grid .product-details {
+  max-width: 340px !important;
+  min-width: 0 !important;
+}
+
+.product-information__grid .product-details :is(
+  variant-picker,
+  buy-buttons,
+  .product-form,
+  .product-form__buttons,
+  accelerated-checkout,
+  .shopify-payment-button,
+  .rte,
+  .product-description
+) {
+  max-width: 100% !important;
+}
+
+@media screen and (max-width: 749px) {
+  .product-information__grid .product-details {
+    max-width: none !important;
+  }
+}
+
+/* ---- [bottom] control (in header) --------------------------------------------- */
+.mdr-jump-wrap {
+  display: flex;
+  justify-content: flex-end;
+  position: absolute;
+  right: var(--page-margin, 20px);
+  top: calc(var(--header-height, 60px) / 2 + 13px);
+  z-index: 6;
+}
+
+.mdr-jump {
+  display: inline-flex;
+  align-items: center;
+  gap: 1px;
+  padding: 2px;
+  border: 0;
+  background: none;
+  cursor: pointer;
+  text-decoration: none;
+  color: var(--color-foreground);
+  font-family: var(--font-accent--family, inherit);
+  font-size: 0.6rem;
+  line-height: 1;
+  letter-spacing: 0;
+  transition: opacity 0.15s ease;
+}
+
+.mdr-jump:hover,
+.mdr-jump:focus-visible {
+  opacity: 0.6;
+}
+
+.mdr-jump.mdr-off {
+  opacity: 0;
+  pointer-events: none;
+}
+
+/* ---- [top] control (fixed, bottom-right) ------------------------------------ */
+.mdr-scrolltop {
+  position: fixed;
+  right: max(16px, env(safe-area-inset-right, 16px));
+  bottom: max(16px, env(safe-area-inset-bottom, 16px));
+  z-index: 2147483000;
+  display: inline-flex;
+  align-items: center;
+  gap: 1px;
+  padding: 6px;
+  border: 0;
+  background: none;
+  cursor: pointer;
+  color: var(--color-foreground, #f0eee6);
+  font-family: var(--font-accent--family, inherit);
+  font-size: 0.6rem;
+  line-height: 1;
+  letter-spacing: 0;
+  opacity: 0;
+  transform: translateY(6px);
+  pointer-events: none;
+  transition: opacity 0.18s ease, transform 0.18s ease;
+}
+
+.mdr-scrolltop.mdr-visible {
+  opacity: 1;
+  transform: translateY(0);
+  pointer-events: auto;
+}
+
+.mdr-scrolltop:hover,
+.mdr-scrolltop:focus-visible {
+  opacity: 0.6;
+}
+
+/* bracketed arrow glyph */
+.mdr-bracket {
+  font-size: 0.7rem;
+  opacity: 0.85;
+}
+
+.mdr-arrow {
+  display: block;
+  flex: none;
+  width: 8px;
+  height: 6px;
+  margin: 0 1px;
+}
+
+/* ---- zap: no travel, just a hard flash ------------------------------------ */
+@keyframes mdr-zap {
+  0%   { opacity: 1; transform: scale(1); filter: none; }
+  15%  { opacity: 0.15; transform: scale(1.55); filter: brightness(2.4); }
+  45%  { opacity: 1; transform: scale(0.92); }
+  100% { opacity: 1; transform: scale(1); filter: none; }
+}
+
+.mdr-jump.mdr-zap,
+.mdr-scrolltop.mdr-visible.mdr-zap {
+  animation: mdr-zap 0.16s steps(6, end);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .mdr-jump.mdr-zap,
+  .mdr-scrolltop.mdr-zap {
+    animation: none;
+  }
+}

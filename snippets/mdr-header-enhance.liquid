@@ -16,9 +16,13 @@
     href="#"
     class="mdr-jump mdr-jump--bottom"
     role="button"
-    aria-label="Scroll to last item"
+    aria-label="Jump to bottom"
   >
-    [bottom]
+    <span class="mdr-bracket">[</span>
+    <svg class="mdr-arrow" viewBox="0 0 12 8" width="12" height="8" aria-hidden="true" focusable="false">
+      <path d="M1 1.5 6 6.5l5-5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" />
+    </svg>
+    <span class="mdr-bracket">]</span>
   </a>
 </div>
 
@@ -31,20 +35,6 @@
     var botBtn = null;
     var topBtn = null;
 
-    function easeOutCubic(t) {
-      return 1 - Math.pow(1 - t, 3);
-    }
-
-    /* Overshoot-and-settle -- the "windy" whoosh */
-    function easeOutBack(t) {
-      var c1 = 1.70158;
-      var c3 = c1 + 1;
-      return 1 + c3 * Math.pow(t - 1, 3) + c1 * Math.pow(t - 1, 2);
-    }
-
-    var prefersReduced =
-      window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-
     function scrollTop() {
       return window.scrollY || window.pageYOffset || D.documentElement.scrollTop || 0;
     }
@@ -53,23 +43,14 @@
       return Math.max(0, D.documentElement.scrollHeight - window.innerHeight);
     }
 
-    function tweenScroll(targetY, duration, ease) {
+    /* No visible travel -- jump straight there, then flash a "zap". */
+    function zapScroll(targetY, btn) {
       targetY = Math.max(0, Math.min(targetY, maxScroll()));
-      var startY = scrollTop();
-      var dist = targetY - startY;
-      if (Math.abs(dist) < 2) return;
-      if (prefersReduced) {
-        window.scrollTo(0, targetY);
-        return;
-      }
-      var start = null;
-      function frame(now) {
-        if (start === null) start = now;
-        var p = Math.min(1, (now - start) / duration);
-        window.scrollTo(0, startY + dist * ease(p));
-        if (p < 1) requestAnimationFrame(frame);
-      }
-      requestAnimationFrame(frame);
+      var prev = D.documentElement.style.scrollBehavior;
+      D.documentElement.style.scrollBehavior = 'auto';
+      window.scrollTo(0, targetY);
+      D.documentElement.style.scrollBehavior = prev;
+      zap(btn);
     }
 
     function headerOffset() {
@@ -82,21 +63,20 @@
       return Array.prototype.slice.call(D.querySelectorAll('product-card, .product-card'));
     }
 
-    function gust(el) {
+    function zap(el) {
       if (!el) return;
-      el.classList.remove('mdr-gust');
+      el.classList.remove('mdr-zap');
       void el.offsetWidth;
-      el.classList.add('mdr-gust');
+      el.classList.add('mdr-zap');
     }
 
     function goTop() {
       var now = scrollTop();
       var first = productCards()[0];
       var y = first ? first.getBoundingClientRect().top + now - headerOffset() : 0;
-      /* never scroll downward -- fall back to the very top */
+      /* never jump downward -- fall back to the very top */
       if (y >= now - 2) y = 0;
-      tweenScroll(y, 360, easeOutCubic);
-      gust(topBtn);
+      zapScroll(y, topBtn);
     }
 
     function goBottom() {
@@ -106,10 +86,9 @@
       var y = last
         ? last.getBoundingClientRect().bottom + now - window.innerHeight + 24
         : maxScroll();
-      /* never scroll upward -- fall back to the page bottom */
+      /* never jump upward -- fall back to the page bottom */
       if (y <= now + 2) y = maxScroll();
-      tweenScroll(y, 480, easeOutBack);
-      gust(botBtn);
+      zapScroll(y, botBtn);
     }
 
     /* Build the fixed [top] control and pin it to <body> */
@@ -120,11 +99,12 @@
         topBtn = D.createElement('button');
         topBtn.type = 'button';
         topBtn.className = 'mdr-scrolltop';
-        topBtn.setAttribute('aria-label', 'Scroll to top');
+        topBtn.setAttribute('aria-label', 'Jump to top');
         topBtn.innerHTML =
-          '<svg class="mdr-scrolltop__arrow" viewBox="0 0 12 8" width="12" height="8" aria-hidden="true" focusable="false">' +
-          '<path d="M1 6.5 6 1.5l5 5" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>' +
-          '</svg><span>[top]</span>';
+          '<span class="mdr-bracket">[</span>' +
+          '<svg class="mdr-arrow" viewBox="0 0 12 8" width="12" height="8" aria-hidden="true" focusable="false">' +
+          '<path d="M1 6.5 6 1.5l5 5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>' +
+          '</svg><span class="mdr-bracket">]</span>';
         topBtn.addEventListener('click', function (e) {
           e.preventDefault();
           goTop();
