@@ -69,10 +69,10 @@
         {%- assign i = i | plus: 1 -%}
       {%- endfor -%}
     {%- else -%}
-      {%- assign max_tiles = 12 -%}
+      {%- assign max_tiles = 64 -%}
       {%- assign shown = 0 -%}
-      {%- for pass in (1..4) -%}
-        {%- assign media_index = pass | minus: 1 -%}
+      {%- for pass in (1..40) -%}
+        {%- assign media_index = pass | minus: 1 | modulo: 4 -%}
         {%- for product in collections.all.products -%}
           {%- if shown >= max_tiles -%}{%- break -%}{%- endif -%}
           {%- assign media = product.media[media_index] -%}
@@ -81,11 +81,11 @@
           <div class="mdr-lookbook__item" style="--i: {{ shown }}">
             {{
               media.preview_image
-              | image_url: width: 1200
+              | image_url: width: 800
               | image_tag:
                 loading: 'lazy',
-                widths: '200, 300, 400, 600, 800, 1000, 1200',
-                sizes: '(max-width: 749px) 46vw, 320px',
+                widths: '120, 160, 220, 300, 400, 600, 800',
+                sizes: '(max-width: 749px) 13vw, 90px',
                 class: 'mdr-lookbook__img'
             }}
           </div>
@@ -110,11 +110,14 @@
     justify-content: center;
   }
 
+  /* Match the rest of the site (Anonymous Pro, e.g. the footer "© 2026" line):
+     same size, same tracking -- no wide letter-spacing. */
   .mdr-lookbook__heading {
-    margin: 0 0 clamp(12px, 3vw, 26px);
-    font-size: clamp(0.7rem, 2.4vw, 0.9rem);
+    margin: 0 0 clamp(10px, 2.4vw, 20px);
+    font-family: inherit;
+    font-size: 0.75rem;
     font-weight: 400;
-    letter-spacing: 0.24em;
+    letter-spacing: 0.02em;
     text-transform: uppercase;
     text-align: center;
     color: rgba(240, 238, 230, 0.6);
@@ -172,15 +175,15 @@
 
   @media (prefers-reduced-motion: no-preference) {
     .mdr-lookbook__item {
-      animation: mdr-lookbook-in 0.6s both;
-      animation-delay: calc(var(--i, 0) * 35ms);
+      animation: mdr-lookbook-in 0.5s both;
+      animation-delay: calc(min(var(--i, 0), 32) * 16ms);
     }
   }
 
   @keyframes mdr-lookbook-in {
     from {
       opacity: 0;
-      transform: translateY(9px);
+      transform: translateY(6px);
     }
     to {
       opacity: 1;
@@ -211,18 +214,18 @@
       "id": "desktop_columns",
       "label": "Columns (desktop)",
       "min": 2,
-      "max": 6,
+      "max": 12,
       "step": 1,
-      "default": 3
+      "default": 8
     },
     {
       "type": "range",
       "id": "mobile_columns",
       "label": "Columns (mobile)",
       "min": 1,
-      "max": 4,
+      "max": 8,
       "step": 1,
-      "default": 2
+      "default": 8
     },
     {
       "type": "range",
@@ -232,17 +235,17 @@
       "max": 24,
       "step": 1,
       "unit": "px",
-      "default": 4
+      "default": 2
     },
     {
       "type": "range",
       "id": "grid_max_width",
       "label": "Grid max width",
-      "min": 380,
+      "min": 320,
       "max": 1400,
       "step": 20,
       "unit": "px",
-      "default": 880
+      "default": 640
     },
     {
       "type": "select",
