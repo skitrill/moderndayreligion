@@ -1313,17 +1313,17 @@ a:not([class*='button']):not(.header-logo):focus-visible {
 }
 
 /* ==========================================================================
-   Default font colour -> dark brown site-wide. Explicitly-coloured bits
+   Default font colour -> light pink site-wide. Explicitly-coloured bits
    (yellow size chart / cart titles, blue prices, deep-off-white selection)
    keep their own colour.
    ========================================================================== */
 *,
 ::before,
 ::after {
-  --color-foreground: #9a6134 !important;
-  --color-foreground-rgb: 154 97 52 !important;
-  --color-foreground-muted: rgb(154 97 52 / 0.68) !important;
-  --color-foreground-subdued: rgb(154 97 52 / 0.42) !important;
+  --color-foreground: #ffb6c1 !important;
+  --color-foreground-rgb: 255 182 193 !important;
+  --color-foreground-muted: rgb(255 182 193 / 0.66) !important;
+  --color-foreground-subdued: rgb(255 182 193 / 0.4) !important;
 }
 
 /* ==========================================================================
@@ -1341,7 +1341,7 @@ a:not([class*='button']):not(.header-logo):focus-visible {
   color: #ffffff !important;
 }
 
-/* collection / section titles -> dark brown (explicit lock) */
+/* collection / section titles -> light pink (explicit lock) */
 .resource-list__heading,
 .section-resource-list__header h3,
 main[data-template^='collection'] h1,
@@ -1349,7 +1349,7 @@ main[data-template^='collection'] h2,
 .collection-hero__title,
 [class*='collection'] [class*='title'],
 .mdr-lookbook__heading {
-  color: #9a6134 !important;
+  color: #ffb6c1 !important;
 }
 
 /* cart text -> mango yellow */
