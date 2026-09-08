@@ -383,7 +383,7 @@ product-price *,
   width: 6px;
   height: 6px;
   border: solid #000;
-  border-width: 0 1.4px 1.4px 0;
+  border-width: 0 0.9px 0.9px 0;
 }
 
 /* plus = increase = chevron pointing up */
@@ -1010,3 +1010,25 @@ button.link,
 .mdr-fnav__msg--err {
   color: #c0392b;
 }
+
+/* ==========================================================================
+   Slim every arrow / chevron -- hairline stroke to match the light type
+   ========================================================================== */
+
+/* theme SVG icons + carets (disclosure, quantity, cart, search, plus...) */
+* {
+  --icon-stroke-width: 1px !important;
+}
+
+/* [v] / [^] jump controls (their SVG paths hard-code the stroke) */
+.mdr-arrow path {
+  stroke-width: 1 !important;
+}
+
+/* the "<<" back arrow glyph in the logo */
+.header-logo__back-arrow {
+  font-weight: 300 !important;
+}
+
+/* select / dropdown native carets that the theme draws as a background image
+   still read fine; the CSS quantity chevrons are thinned above (0.9px) */
