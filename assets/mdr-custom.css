@@ -1153,8 +1153,8 @@ body:has(#Details-menu-drawer-container[open]) {
    Fully revertible: delete from here to the end of the file.
    ========================================================================== */
 :root {
-  --mdr-accent: #e35a1c;        /* burnt safety-orange -- echoes the hazard tape */
-  --mdr-accent-deep: #c24e17;   /* same hue, deeper -- small text / price */
+  --mdr-accent: #2c6e49;        /* club green */
+  --mdr-accent-deep: #235539;   /* same hue, deeper -- small text / price */
   --mdr-ink: #fbf8ee;           /* near-white bone -- headings + wordmark */
 }
 
@@ -1260,5 +1260,5 @@ product-price *,
   width: 11px;
   height: 11px;
   background: center / contain no-repeat
-    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='none' stroke='%23de5f22' stroke-width='1' stroke-linecap='round'%3E%3Ccircle cx='8' cy='5' r='3'/%3E%3Cpath d='M2.6 14c0-3 2.4-4.6 5.4-4.6S13.4 11 13.4 14'/%3E%3C/svg%3E");
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='none' stroke='%232c6e49' stroke-width='1' stroke-linecap='round'%3E%3Ccircle cx='8' cy='5' r='3'/%3E%3Cpath d='M2.6 14c0-3 2.4-4.6 5.4-4.6S13.4 11 13.4 14'/%3E%3C/svg%3E");
 }
