@@ -1116,3 +1116,34 @@ html:has(#Details-menu-drawer-container[open]),
 body:has(#Details-menu-drawer-container[open]) {
   overflow: auto !important;
 }
+
+/* trim leftover drawer bits inside the USER dropdown */
+#Details-menu-drawer-container [class*='menu-drawer__featured'],
+#Details-menu-drawer-container .menu-drawer__portal-label,
+#Details-menu-drawer-container hr,
+#Details-menu-drawer-container .menu-drawer__portal-divide::before,
+#Details-menu-drawer-container .menu-drawer__portal-divide::after,
+#Details-menu-drawer-container .menu-drawer__navigation::before,
+#Details-menu-drawer-container .menu-drawer__navigation::after,
+#Details-menu-drawer-container .menu-drawer__menu::before,
+#Details-menu-drawer-container .menu-drawer__menu::after {
+  display: none !important;
+  content: none !important;
+}
+
+#Details-menu-drawer-container > .menu-drawer {
+  padding: 2px 5px !important;
+}
+
+#Details-menu-drawer-container .menu-drawer__menu,
+#Details-menu-drawer-container .menu-drawer__list-item--flat,
+#Details-menu-drawer-container .menu-drawer__portal-divide {
+  margin: 0 !important;
+  padding: 0 !important;
+  border: 0 !important;
+  list-style: none !important;
+}
+
+#Details-menu-drawer-container .menu-drawer__menu-item {
+  line-height: 1.3 !important;
+}
