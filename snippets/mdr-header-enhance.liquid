@@ -134,16 +134,33 @@
       }
     }
 
+    /* Line the [v] control's right edge up with the CART link, whatever the
+       viewport / page gutter is. */
+    function syncCartEdge() {
+      var cart =
+        D.querySelector('.header__cart-link') ||
+        D.querySelector('.header__column--right .action__cart') ||
+        D.querySelector('.header__column--right a[href*="/cart"]');
+      if (!cart) return;
+      var right = cart.getBoundingClientRect().right;
+      var fromEdge = Math.max(0, Math.round(D.documentElement.clientWidth - right));
+      D.documentElement.style.setProperty('--mdr-cart-right', fromEdge + 'px');
+    }
+
     function init() {
       ensureTopButton();
       wireBottom();
+      syncCartEdge();
       updateVisibility();
     }
 
     /* Catch scrolling regardless of which node emits the event */
     window.addEventListener('scroll', updateVisibility, { passive: true });
     D.addEventListener('scroll', updateVisibility, { passive: true, capture: true });
-    window.addEventListener('resize', updateVisibility, { passive: true });
+    window.addEventListener('resize', function () {
+      syncCartEdge();
+      updateVisibility();
+    }, { passive: true });
 
     if (D.readyState !== 'loading') init();
     D.addEventListener('DOMContentLoaded', init);

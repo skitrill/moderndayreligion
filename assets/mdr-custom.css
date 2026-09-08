@@ -9,13 +9,22 @@ html {
   font-size: 15px;
 }
 
-/* Desktop keeps the logo at its original size; on mobile it scales with the
-   page so it never wraps. */
+/* Desktop keeps the logo at its original size. */
 @media screen and (min-width: 750px) {
   #header-component .header-logo,
   #header-component .header-logo span,
   #header-component [data-testid='header-logo'] {
     font-size: 21px;
+  }
+}
+
+/* Mobile: hold the logo on one line even when the cart count widens "CART (n)". */
+@media screen and (max-width: 749px) {
+  #header-component .header-logo,
+  #header-component .header-logo span,
+  #header-component [data-testid='header-logo'] {
+    font-size: 16px;
+    white-space: nowrap;
   }
 }
 
@@ -242,4 +251,143 @@ footer .utilities {
   .mdr-scrolltop.mdr-zap {
     animation: none;
   }
+}
+
+/* ==========================================================================
+   Batch: cart layout, price color, quantity buttons, spacing, mobile image
+   ========================================================================== */
+
+/* ---- Slightly more compact section rhythm site-wide --------------------- */
+:root {
+  --spacing-scale-md: 0.68;
+  --spacing-scale-default: 0.75;
+}
+
+/* ---- Prices in dark brown, everywhere --------------------------------------- */
+.price,
+.price *,
+.compare-at-price,
+.unit-price,
+.price-per-item,
+product-price,
+product-price *,
+.cart-items__price,
+.cart-items__price *,
+.cart-items__unit-price-wrapper,
+.cart-totals__price,
+.cart-totals__total-value,
+.cart-totals__total-value *,
+[class*='total-value'],
+[class*='cart-totals'] [class*='value'],
+[class*='cart-totals'] .price,
+[class*='totals'] [class*='price'] {
+  color: #9a6134 !important;
+}
+
+/* ---- Cart page: end at the same right edge as the header (the cart link).
+   The section is a [gutter | 900 content | gutter] grid; the cart bled into the
+   right gutter (grid-column 2/4). Confine it to the content track. --- */
+.cart-page {
+  grid-column: 2 / 3 !important;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 300px) !important;
+  column-gap: 40px !important;
+}
+
+/* Drop the olive elevated panel behind the summary / checkout area */
+.cart-page__summary .section-background,
+.cart-summary .section-background {
+  display: none !important;
+}
+
+.cart-summary,
+.cart-summary__inner,
+.cart-page__summary {
+  box-shadow: none !important;
+  background: transparent !important;
+}
+
+@media screen and (max-width: 749px) {
+  .cart-page {
+    grid-template-columns: 1fr !important;
+  }
+}
+
+/* ---- Quantity selector: bare up / down chevrons, like a dropdown caret ---- */
+.quantity-selector :is(.quantity-minus, .quantity-plus) .svg-wrapper {
+  display: none !important;
+}
+
+.quantity-selector :is(.quantity-minus, .quantity-plus) {
+  position: relative;
+  background: none !important;
+  box-shadow: none !important;
+  border: 0 !important;
+}
+
+.quantity-selector :is(.quantity-minus, .quantity-plus)::after {
+  content: '';
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 6px;
+  height: 6px;
+  border: solid var(--color-foreground, #f0eee6);
+  border-width: 0 1.4px 1.4px 0;
+}
+
+/* plus = increase = chevron pointing up */
+.quantity-selector .quantity-plus::after {
+  transform: translate(-50%, -25%) rotate(-135deg);
+}
+
+/* minus = decrease = chevron pointing down */
+.quantity-selector .quantity-minus::after {
+  transform: translate(-50%, -75%) rotate(45deg);
+}
+
+.quantity-selector :is(.quantity-minus, .quantity-plus):active::after {
+  opacity: 0.55;
+}
+
+.quantity-selector :is(.quantity-minus, .quantity-plus)[disabled] {
+  opacity: 0.35;
+}
+
+/* ---- Mobile: product hero image is too large -------------------------------- */
+@media screen and (max-width: 749px) {
+  .product-information__grid .product-information__media,
+  .product-information__grid [class*='media-gallery'],
+  .product-information__grid .product-media-container {
+    max-width: 70% !important;
+    margin-inline: auto !important;
+  }
+}
+
+/* ---- [bottom] control: line its right edge up with the CART link ----------- */
+.mdr-jump-wrap {
+  right: var(--mdr-cart-right, var(--page-margin, 20px)) !important;
+}
+
+/* ---- Cart line items: smaller type; highlight only on the title ------------ */
+.cart-items__title {
+  font-size: 0.75rem !important;
+}
+
+.cart-items__price,
+.cart-items__price *,
+.cart-items__unit-price-wrapper,
+.cart-items__unit-price-wrapper *,
+.cart-items__variants,
+.cart-items__variants dd {
+  font-size: 0.625rem !important;
+}
+
+/* image link stays clickable but gets no highlight / hover treatment */
+.cart-items__media-container,
+.cart-items__media-container:hover,
+.cart-items__media-container:active,
+.cart-items__media-container:focus-visible {
+  background-color: transparent !important;
+  color: inherit !important;
+  -webkit-tap-highlight-color: transparent !important;
 }
