@@ -1148,25 +1148,95 @@ body:has(#Details-menu-drawer-container[open]) {
   line-height: 1.3 !important;
 }
 
-/* USER dropdown -> club-green panel + a slim Times-Roman-style user mark */
+/* ==========================================================================
+   COLOUR PASS -- text hierarchy + one burnt-orange accent (corteiz-ish).
+   Fully revertible: delete from here to the end of the file.
+   ========================================================================== */
+:root {
+  --mdr-accent: #de5f22; /* burnt safety-orange, echoes the hazard tape */
+  --mdr-ink: #f7f4ea; /* stark bone -- headings / brand marks */
+}
+
+/* nudge the base surface text a touch warmer + dimmer so headings pop */
+*,
+::before,
+::after {
+  --color-foreground: #e7e3d6 !important;
+  --color-foreground-rgb: 231 227 214 !important;
+  --color-foreground-muted: rgb(231 227 214 / 0.56) !important;
+}
+
+/* stark headings + brand marks */
+h1,
+h2,
+h3,
+h4,
+.header-logo,
+.header-logo span,
+.resource-list__heading,
+.section-resource-list__header h3,
+.product-title,
+.cart-items__title,
+.cart-items__title a,
+.mdr-lookbook__heading {
+  color: var(--mdr-ink) !important;
+}
+
+/* the accent, on the small interactive furniture only */
+.mdr-jump,
+.mdr-jump *,
+.mdr-scrolltop,
+.mdr-scrolltop *,
+.header-logo__back-arrow,
+a[aria-current='page'],
+.menu-list__link--active,
+.menu-list__link:hover,
+.shopify-payment-button__more-options,
+.mdr-fnav a:hover,
+.footer-content .menu__item a:hover,
+.footer-utilities a:hover {
+  color: var(--mdr-accent) !important;
+}
+
+.mdr-arrow path {
+  stroke: var(--mdr-accent) !important;
+}
+
+/* price stays in the warm family, a shade brighter for legibility */
+.price,
+.price *,
+product-price,
+product-price *,
+.cart-items__price,
+.cart-items__price *,
+.cart-totals__total-value,
+.cart-totals__total-value *,
+[class*='total-value'],
+[class*='cart-totals'] [class*='value'] {
+  color: #ba7330 !important;
+}
+
+/* ---- USER dropdown -> on-brand: hazard-black panel, orange edge + mark --- */
 #Details-menu-drawer-container > .menu-drawer {
-  background: #2c6e49 !important;
-  border-color: rgba(0, 0, 0, 0.3) !important;
+  background-color: #0c0c0c !important;
+  background-image: var(--mdr-tape) !important;
+  border: 1px solid rgb(var(--color-foreground-rgb) / 0.16) !important;
+  border-left: 2px solid var(--mdr-accent) !important;
 }
 
 #Details-menu-drawer-container .menu-drawer__menu-item[href*='/account'] {
   display: inline-flex !important;
   align-items: center !important;
-  gap: 5px !important;
-  font-family: Georgia, 'Times New Roman', Times, serif !important;
+  gap: 6px !important;
+  font-family: var(--font-accent--family, inherit) !important;
   font-style: normal !important;
-  letter-spacing: 0.05em !important;
+  letter-spacing: 0.16em !important;
   text-transform: uppercase !important;
-  color: #f0eee6 !important;
+  color: var(--color-foreground-muted) !important;
 }
 
 #Details-menu-drawer-container .menu-drawer__menu-item[href*='/account']:hover {
-  color: #ffffff !important;
+  color: var(--mdr-ink) !important;
 }
 
 #Details-menu-drawer-container .menu-drawer__menu-item[href*='/account']::before {
@@ -1175,5 +1245,5 @@ body:has(#Details-menu-drawer-container[open]) {
   width: 11px;
   height: 11px;
   background: center / contain no-repeat
-    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='none' stroke='%23F0EEE6' stroke-width='1' stroke-linecap='round'%3E%3Ccircle cx='8' cy='5' r='3'/%3E%3Cpath d='M2.6 14c0-3 2.4-4.6 5.4-4.6S13.4 11 13.4 14'/%3E%3C/svg%3E");
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='none' stroke='%23de5f22' stroke-width='1' stroke-linecap='round'%3E%3Ccircle cx='8' cy='5' r='3'/%3E%3Cpath d='M2.6 14c0-3 2.4-4.6 5.4-4.6S13.4 11 13.4 14'/%3E%3C/svg%3E");
 }
