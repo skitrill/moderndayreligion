@@ -1153,20 +1153,23 @@ body:has(#Details-menu-drawer-container[open]) {
    Fully revertible: delete from here to the end of the file.
    ========================================================================== */
 :root {
-  --mdr-accent: #de5f22; /* burnt safety-orange, echoes the hazard tape */
-  --mdr-ink: #f7f4ea; /* stark bone -- headings / brand marks */
+  --mdr-accent: #e35a1c;        /* burnt safety-orange -- echoes the hazard tape */
+  --mdr-accent-deep: #c24e17;   /* same hue, deeper -- small text / price */
+  --mdr-ink: #fbf8ee;           /* near-white bone -- headings + wordmark */
 }
 
-/* nudge the base surface text a touch warmer + dimmer so headings pop */
+/* Base copy -> warm sand, dimmed a real step below the bone headings so a
+   proper hierarchy reads at a glance (paper-ish, not flat cream). */
 *,
 ::before,
 ::after {
-  --color-foreground: #e7e3d6 !important;
-  --color-foreground-rgb: 231 227 214 !important;
-  --color-foreground-muted: rgb(231 227 214 / 0.56) !important;
+  --color-foreground: #d8d2c0 !important;
+  --color-foreground-rgb: 216 210 192 !important;
+  --color-foreground-muted: rgb(216 210 192 / 0.5) !important;
+  --color-foreground-subdued: rgb(216 210 192 / 0.32) !important;
 }
 
-/* stark headings + brand marks */
+/* Headings + brand marks -> full bone */
 h1,
 h2,
 h3,
@@ -1182,19 +1185,25 @@ h4,
   color: var(--mdr-ink) !important;
 }
 
-/* the accent, on the small interactive furniture only */
+/* The accent, used with intent -> primary nav, active state, and every bit
+   of interactive furniture. Legal / policy links stay quiet. */
+.menu-list__link,
+.menu-list__link-title,
+.mdr-fnav a,
+.mdr-fnav .mdr-fnav__toggle,
+a[aria-current='page'],
+.menu-list__link--active,
+.menu-list__link:hover,
 .mdr-jump,
 .mdr-jump *,
 .mdr-scrolltop,
 .mdr-scrolltop *,
 .header-logo__back-arrow,
-a[aria-current='page'],
-.menu-list__link--active,
-.menu-list__link:hover,
 .shopify-payment-button__more-options,
-.mdr-fnav a:hover,
 .footer-content .menu__item a:hover,
-.footer-utilities a:hover {
+.footer-utilities a:hover,
+.size-chart__trigger:hover .size-chart__trigger-text,
+.variant-option__button-label:has(input:checked) .variant-option__button-label__text {
   color: var(--mdr-accent) !important;
 }
 
@@ -1202,7 +1211,12 @@ a[aria-current='page'],
   stroke: var(--mdr-accent) !important;
 }
 
-/* price stays in the warm family, a shade brighter for legibility */
+/* selected size chip picks up the accent edge */
+.variant-option__button-label:has(input:checked) {
+  box-shadow: inset 0 0 0 1px var(--mdr-accent) !important;
+}
+
+/* Price -> one warm accent (deeper hue so small text stays legible on black) */
 .price,
 .price *,
 product-price,
@@ -1213,7 +1227,7 @@ product-price *,
 .cart-totals__total-value *,
 [class*='total-value'],
 [class*='cart-totals'] [class*='value'] {
-  color: #ba7330 !important;
+  color: var(--mdr-accent-deep) !important;
 }
 
 /* ---- USER dropdown -> on-brand: hazard-black panel, orange edge + mark --- */
@@ -1246,35 +1260,4 @@ product-price *,
   height: 11px;
   background: center / contain no-repeat
     url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='none' stroke='%23de5f22' stroke-width='1' stroke-linecap='round'%3E%3Ccircle cx='8' cy='5' r='3'/%3E%3Cpath d='M2.6 14c0-3 2.4-4.6 5.4-4.6S13.4 11 13.4 14'/%3E%3C/svg%3E");
-}
-
-/* ---- Display face: Space Grotesk on the wordmark + section headings -----
-   (body / UI stay on Anonymous Pro). Revert: delete this rule + the
-   <link> in layout/theme.liquid. */
-:root {
-  --mdr-display: 'Space Grotesk', 'Anonymous Pro', system-ui, sans-serif;
-}
-
-.header-logo,
-.header-logo span,
-#header-component .header-logo,
-#header-component .header-logo span,
-h1,
-h2,
-h3,
-.resource-list__heading,
-.section-resource-list__header h3,
-.mdr-lookbook__heading,
-.product-title,
-.cart-items__title {
-  font-family: var(--mdr-display) !important;
-  font-weight: 600 !important;
-  letter-spacing: 0.01em !important;
-}
-
-/* keep the logo tight + on one line with the new metrics */
-#header-component .header-logo,
-#header-component .header-logo span {
-  font-weight: 700 !important;
-  letter-spacing: -0.005em !important;
 }
