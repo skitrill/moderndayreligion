@@ -43,11 +43,24 @@ html {
   display: none !important;
 }
 
-/* Card blends into the black; a single hairline "thread" separates them. */
+/* Flat tile: a barely-there warm-orange wash, no border, no hairlines. */
 .product-card__content {
-  background: rgb(var(--color-foreground-rgb) / 0.025) !important;
-  border: 1px solid rgb(var(--color-foreground-rgb) / 0.07) !important;
+  background: rgba(255, 132, 48, 0.035) !important;
+  border: 0 !important;
+  box-shadow: none !important;
   padding: 3px !important;
+}
+
+.product-card,
+.product-card__content,
+.product-card .card-gallery,
+.product-card .product-media-container,
+.product-card .product-media,
+.product-card img,
+.product-grid__item,
+.resource-list__item {
+  border: 0 !important;
+  outline: 0 !important;
 }
 
 /* Kill any per-gallery border (the homepage list sets one). */
@@ -117,34 +130,21 @@ footer .utilities {
   gap: 10px !important;
 }
 
-/* ---- Product page: compact info column ------------------------------------ */
+/* ---- Product page: details column fills to the cart edge, tight gap ------- */
 .product-information__grid.product-information--media-left {
-  justify-content: start !important;
-  column-gap: 44px !important;
+  justify-content: stretch !important;
+  column-gap: 16px !important;
+}
+
+@media screen and (min-width: 750px) {
+  .product-information__grid.product-information--media-left {
+    grid-template-columns: 300px minmax(0, 1fr) !important;
+  }
 }
 
 .product-information__grid .product-details {
-  max-width: 340px !important;
+  max-width: none !important;
   min-width: 0 !important;
-}
-
-.product-information__grid .product-details :is(
-  variant-picker,
-  buy-buttons,
-  .product-form,
-  .product-form__buttons,
-  accelerated-checkout,
-  .shopify-payment-button,
-  .rte,
-  .product-description
-) {
-  max-width: 100% !important;
-}
-
-@media screen and (max-width: 749px) {
-  .product-information__grid .product-details {
-    max-width: none !important;
-  }
 }
 
 /* ---- [bottom] control (in header) --------------------------------------------- */
@@ -312,16 +312,32 @@ product-price *,
   }
 }
 
-/* ---- Quantity selector: bare up / down chevrons, like a dropdown caret ---- */
+/* ---- Quantity selector: bare up / down chevrons; smaller footprint --------
+   (~40% narrower, ~30% shorter than stock) */
+.quantity-selector {
+  --quantity-selector-width: 74px !important;
+  --minimum-touch-target: 25px !important;
+  flex: 0 0 auto !important;
+  align-self: center !important;
+}
+
 .quantity-selector :is(.quantity-minus, .quantity-plus) .svg-wrapper {
   display: none !important;
 }
 
 .quantity-selector :is(.quantity-minus, .quantity-plus) {
   position: relative;
+  width: 25px !important;
+  height: 28px !important;
   background: none !important;
   box-shadow: none !important;
   border: 0 !important;
+}
+
+.quantity-selector input[type='number'] {
+  width: 22px !important;
+  min-width: 0 !important;
+  height: 28px !important;
 }
 
 .quantity-selector :is(.quantity-minus, .quantity-plus)::after {
@@ -390,4 +406,89 @@ product-price *,
   background-color: transparent !important;
   color: inherit !important;
   -webkit-tap-highlight-color: transparent !important;
+}
+
+/* ==========================================================================
+   Batch: remove product-page rules, shrink long buttons, tighten page frame
+   ========================================================================== */
+
+/* ---- Product page: no rule lines (size-chart table + accordion) ----------- */
+.size-chart,
+.size-chart summary,
+.size-chart__content,
+.size-chart__content table,
+.size-chart__content thead,
+.size-chart__content tbody,
+.size-chart__content tr,
+.size-chart__content th,
+.size-chart__content td {
+  border: 0 !important;
+  border-color: transparent !important;
+}
+
+/* ---- Long / full-width buttons: much shorter, ~half width, centered ------ */
+.shopify-payment-button__button,
+.shopify-payment-button [role='button'],
+.cart__checkout-button,
+.cart-summary .button:not(.cart-discount__button),
+.button--continue-shopping,
+.contact-form button[type='submit'],
+.contact-form .button,
+main .button[type='submit']:not(.add-to-cart-button):not(.product-form__submit) {
+  min-height: 0 !important;
+  padding-block: 4px !important;
+  max-width: 50% !important;
+  margin-inline: auto !important;
+  line-height: 1.15 !important;
+  white-space: nowrap !important;
+}
+
+/* Buy-with-Shop lives in an iframe-ish wrapper -- rein the wrapper in too */
+.shopify-payment-button {
+  max-width: 50% !important;
+  margin-inline: auto !important;
+}
+
+.shopify-payment-button__button {
+  min-height: 0 !important;
+}
+
+/* ADD TO CART: primary action -- trim its height only, never squeeze/wrap it */
+.add-to-cart-button,
+.product-form__submit {
+  min-height: 0 !important;
+  padding-block: 7px !important;
+  white-space: nowrap !important;
+  min-width: max-content !important;
+  max-width: none !important;
+}
+
+.product-form-buttons,
+.product-form__buttons {
+  gap: 8px !important;
+  justify-content: flex-start !important;
+}
+
+/* ---- Whole page framed to the header: logo-start .. cart-end, centered ---- */
+main .shopify-section > .section,
+main .shopify-section > .section-wrapper > .section,
+main .section--page-width {
+  max-width: calc(60rem + 2 * var(--page-margin, 40px)) !important;
+  margin-inline: auto !important;
+}
+
+/* ---- Homepage featured + product recommendations: match the collection --
+   same flat tiles, tight seam. The collection page keeps its own native grid. */
+main[data-template='index'] .resource-list--grid,
+.product-recommendations .resource-list--grid,
+.product-recommendations .resource-list {
+  column-gap: 2px !important;
+  row-gap: 2px !important;
+}
+
+/* undo the homepage-only grid narrowing in base.css so featured fills like the
+   collection does */
+main[data-template='index'] [id$='__product_list_fa6P9H'] .resource-list--grid {
+  max-width: none !important;
+  margin-inline: 0 !important;
 }
