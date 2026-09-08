@@ -1313,7 +1313,8 @@ a:not([class*='button']):not(.header-logo):focus-visible {
 }
 
 /* ==========================================================================
-   ALL fonts red (overrides every other text colour).
+   ALL fonts red -- overrides every other text colour (id-level specificity
+   so it beats the earlier per-element colour rules).
    ========================================================================== */
 *,
 ::before,
@@ -1322,7 +1323,13 @@ a:not([class*='button']):not(.header-logo):focus-visible {
   --color-foreground-rgb: 255 0 0 !important;
   --color-foreground-muted: rgb(255 0 0 / 0.7) !important;
   --color-foreground-subdued: rgb(255 0 0 / 0.45) !important;
+}
+
+*:not(#\@):not(#\#),
+*:not(#\@):not(#\#)::before,
+*:not(#\@):not(#\#)::after {
   color: #ff0000 !important;
+  -webkit-text-fill-color: #ff0000 !important;
 }
 
 /* ==========================================================================
