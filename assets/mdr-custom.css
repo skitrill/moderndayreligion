@@ -771,7 +771,7 @@ button.link,
   width: max-content;
   height: 22px;
   background: #000;
-  border: 1px solid #3b2412;
+  border: 1px solid rgb(var(--color-foreground-rgb) / 0.28);
   pointer-events: auto;
 }
 
@@ -806,8 +806,8 @@ button.link,
   flex: 0 0 auto;
   height: 100%;
   border: 0;
-  background: #3b2412;
-  color: #f0eee6;
+  background: #241206;
+  color: #7a5028;
   font-family: var(--font-accent--family, inherit);
   font-size: 0.52rem;
   letter-spacing: 0.06em;
@@ -818,7 +818,7 @@ button.link,
 }
 
 .mdr-fnav__submit:hover {
-  background: #4d2f17;
+  background: #180b03;
 }
 
 .mdr-fnav__msg {
