@@ -1385,12 +1385,15 @@ cart-drawer [class*='price'] {
   color: #3a3ec4 !important;
 }
 
-/* ...and the count stays blue */
+/* ...and the count stays blue (incl. the header "CART (n)") */
 .cart-bubble,
 .cart-bubble *,
 .cart-bubble__text-count,
 [class*='cart-bubble'] [class*='count'],
 .cart-page__title .cart-bubble,
-.cart-page__title .cart-bubble * {
+.cart-page__title .cart-bubble *,
+.header__cart-link,
+#header-component .header__cart-link,
+#header-component a[href$='/cart'] {
   color: #3a3ec4 !important;
 }
