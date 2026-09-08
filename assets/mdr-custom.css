@@ -417,7 +417,8 @@ main .product-information__grid {
 }
 
 main .product-information__grid :is(h1, h2, h3, h4, h5, h6, p, li, legend,
-  .rte, .text-block, .product-title, .product-description):not(.price):not(product-price),
+  .rte, .text-block, .product-title, .product-description,
+  .size-chart, .size-chart__trigger, .size-chart__trigger-text):not(.price):not(product-price),
 main .product-information__grid .rte:not(product-price) :is(span, p, li, a, strong, em),
 main .product-information__grid .text-block:not(product-price) :is(span, p, li, a, strong, em) {
   color: rgba(240, 238, 230, 0.6) !important;
@@ -713,10 +714,24 @@ body {
   inset-inline: 0;
   top: 0;
   height: 42px;
-  background: #7a4a24;
+  background: #6b3f1e;
   mix-blend-mode: color;
   pointer-events: none;
   z-index: 4;
+}
+
+/* deepen the mid-tones toward dark chocolate; `overlay` leaves the white
+   highlights (logo + text) essentially untouched */
+.shopify-payment-button::after {
+  content: "";
+  position: absolute;
+  inset-inline: 0;
+  top: 0;
+  height: 42px;
+  background: #24140a;
+  mix-blend-mode: overlay;
+  pointer-events: none;
+  z-index: 5;
 }
 
 /* ==========================================================================
