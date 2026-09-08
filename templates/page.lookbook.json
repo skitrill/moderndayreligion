@@ -9,6 +9,20 @@
  */
 {
   "sections": {
+    "lookbook": {
+      "type": "mdr-lookbook",
+      "settings": {
+        "heading": "Lookbook",
+        "desktop_columns": 3,
+        "mobile_columns": 2,
+        "gap": 4,
+        "grid_max_width": 880,
+        "image_ratio": "square",
+        "center_vertically": true,
+        "hover_effect": "zoom",
+        "background_color": "#000000"
+      }
+    },
     "main": {
       "type": "main-page",
       "settings": {
@@ -21,6 +35,7 @@
     }
   },
   "order": [
+    "lookbook",
     "main"
   ]
 }

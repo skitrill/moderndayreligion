@@ -1,0 +1,308 @@
+{%- doc -%}
+  MDR Lookbook -- a tight, uniform image grid centred in the page on every
+  viewport. Drop images into the "Image" blocks in the theme editor; with no
+  blocks it falls back to tiling the store's product imagery so the layout is
+  always visible.
+{%- enddoc -%}
+
+{%- liquid
+  assign s = section.settings
+
+  case s.image_ratio
+    when 'portrait'
+      assign ratio = '4 / 5'
+    when 'landscape'
+      assign ratio = '4 / 3'
+    else
+      assign ratio = '1 / 1'
+  endcase
+
+  assign image_blocks = section.blocks | where: 'type', 'image'
+  assign has_images = false
+  for b in image_blocks
+    if b.settings.image != blank
+      assign has_images = true
+      break
+    endif
+  endfor
+-%}
+
+<section
+  id="mdr-lookbook-{{ section.id }}"
+  class="mdr-lookbook mdr-lookbook--hover-{{ s.hover_effect }}{% if s.center_vertically %} mdr-lookbook--center{% endif %}"
+  style="
+    --mdr-lb-cols: {{ s.desktop_columns }};
+    --mdr-lb-cols-m: {{ s.mobile_columns }};
+    --mdr-lb-gap: {{ s.gap }}px;
+    --mdr-lb-maxw: {{ s.grid_max_width }}px;
+    --mdr-lb-ratio: {{ ratio }};
+    --mdr-lb-bg: {{ s.background_color | default: '#000000' }};
+  "
+>
+  {%- if s.heading != blank -%}
+    <h1 class="mdr-lookbook__heading">{{ s.heading }}</h1>
+  {%- endif -%}
+
+  <div class="mdr-lookbook__grid">
+    {%- if has_images -%}
+      {%- assign i = 0 -%}
+      {%- for b in image_blocks -%}
+        {%- if b.settings.image == blank -%}{%- continue -%}{%- endif -%}
+        {%- capture tile -%}
+          {{
+            b.settings.image
+            | image_url: width: 1400
+            | image_tag:
+              loading: 'lazy',
+              widths: '200, 300, 400, 600, 800, 1000, 1400',
+              sizes: '(max-width: 749px) 46vw, 320px',
+              class: 'mdr-lookbook__img'
+          }}
+        {%- endcapture -%}
+        <div class="mdr-lookbook__item" style="--i: {{ i }}" {{ b.shopify_attributes }}>
+          {%- if b.settings.link != blank -%}
+            <a class="mdr-lookbook__link" href="{{ b.settings.link }}">{{ tile }}</a>
+          {%- else -%}
+            {{ tile }}
+          {%- endif -%}
+        </div>
+        {%- assign i = i | plus: 1 -%}
+      {%- endfor -%}
+    {%- else -%}
+      {%- assign max_tiles = 12 -%}
+      {%- assign shown = 0 -%}
+      {%- for pass in (1..4) -%}
+        {%- assign media_index = pass | minus: 1 -%}
+        {%- for product in collections.all.products -%}
+          {%- if shown >= max_tiles -%}{%- break -%}{%- endif -%}
+          {%- assign media = product.media[media_index] -%}
+          {%- if media == blank -%}{%- assign media = product.featured_media -%}{%- endif -%}
+          {%- if media == blank or media.preview_image == blank -%}{%- continue -%}{%- endif -%}
+          <div class="mdr-lookbook__item" style="--i: {{ shown }}">
+            {{
+              media.preview_image
+              | image_url: width: 1200
+              | image_tag:
+                loading: 'lazy',
+                widths: '200, 300, 400, 600, 800, 1000, 1200',
+                sizes: '(max-width: 749px) 46vw, 320px',
+                class: 'mdr-lookbook__img'
+            }}
+          </div>
+          {%- assign shown = shown | plus: 1 -%}
+        {%- endfor -%}
+      {%- endfor -%}
+    {%- endif -%}
+  </div>
+</section>
+
+{% stylesheet %}
+  .mdr-lookbook {
+    background: var(--mdr-lb-bg, #000);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: clamp(16px, 5vw, 56px) clamp(10px, 4vw, 40px);
+  }
+
+  .mdr-lookbook--center {
+    min-height: calc(100svh - var(--header-height, 60px));
+    justify-content: center;
+  }
+
+  .mdr-lookbook__heading {
+    margin: 0 0 clamp(12px, 3vw, 26px);
+    font-size: clamp(0.7rem, 2.4vw, 0.9rem);
+    font-weight: 400;
+    letter-spacing: 0.24em;
+    text-transform: uppercase;
+    text-align: center;
+    color: rgba(240, 238, 230, 0.6);
+  }
+
+  .mdr-lookbook__grid {
+    display: grid;
+    grid-template-columns: repeat(var(--mdr-lb-cols-m, 2), 1fr);
+    gap: var(--mdr-lb-gap, 4px);
+    width: min(var(--mdr-lb-maxw, 880px), 100%);
+    margin-inline: auto;
+  }
+
+  @media (min-width: 750px) {
+    .mdr-lookbook__grid {
+      grid-template-columns: repeat(var(--mdr-lb-cols, 3), 1fr);
+    }
+  }
+
+  .mdr-lookbook__item,
+  .mdr-lookbook__link {
+    display: block;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .mdr-lookbook__item img {
+    display: block;
+    width: 100%;
+    height: 100%;
+    aspect-ratio: var(--mdr-lb-ratio, 1 / 1);
+    object-fit: cover;
+    background: #0a0a0a;
+    transition: transform 0.55s cubic-bezier(0.22, 1, 0.36, 1),
+      filter 0.45s ease, opacity 0.6s ease;
+  }
+
+  .mdr-lookbook--hover-zoom .mdr-lookbook__item:hover img {
+    transform: scale(1.045);
+  }
+
+  .mdr-lookbook--hover-reveal .mdr-lookbook__item img {
+    filter: grayscale(1) contrast(1.04);
+  }
+
+  .mdr-lookbook--hover-reveal .mdr-lookbook__item:hover img {
+    filter: grayscale(0) contrast(1);
+  }
+
+  @media (hover: none) {
+    .mdr-lookbook--hover-reveal .mdr-lookbook__item img {
+      filter: none;
+    }
+  }
+
+  @media (prefers-reduced-motion: no-preference) {
+    .mdr-lookbook__item {
+      animation: mdr-lookbook-in 0.6s both;
+      animation-delay: calc(var(--i, 0) * 35ms);
+    }
+  }
+
+  @keyframes mdr-lookbook-in {
+    from {
+      opacity: 0;
+      transform: translateY(9px);
+    }
+    to {
+      opacity: 1;
+      transform: none;
+    }
+  }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "MDR Lookbook",
+  "tag": "section",
+  "class": "mdr-lookbook-section",
+  "settings": [
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Heading",
+      "default": "Lookbook",
+      "info": "Leave blank to hide."
+    },
+    {
+      "type": "header",
+      "content": "Grid"
+    },
+    {
+      "type": "range",
+      "id": "desktop_columns",
+      "label": "Columns (desktop)",
+      "min": 2,
+      "max": 6,
+      "step": 1,
+      "default": 3
+    },
+    {
+      "type": "range",
+      "id": "mobile_columns",
+      "label": "Columns (mobile)",
+      "min": 1,
+      "max": 4,
+      "step": 1,
+      "default": 2
+    },
+    {
+      "type": "range",
+      "id": "gap",
+      "label": "Gap",
+      "min": 0,
+      "max": 24,
+      "step": 1,
+      "unit": "px",
+      "default": 4
+    },
+    {
+      "type": "range",
+      "id": "grid_max_width",
+      "label": "Grid max width",
+      "min": 380,
+      "max": 1400,
+      "step": 20,
+      "unit": "px",
+      "default": 880
+    },
+    {
+      "type": "select",
+      "id": "image_ratio",
+      "label": "Image shape",
+      "options": [
+        { "value": "square", "label": "Square" },
+        { "value": "portrait", "label": "Portrait" },
+        { "value": "landscape", "label": "Landscape" }
+      ],
+      "default": "square"
+    },
+    {
+      "type": "checkbox",
+      "id": "center_vertically",
+      "label": "Centre in viewport",
+      "default": true
+    },
+    {
+      "type": "select",
+      "id": "hover_effect",
+      "label": "Hover effect",
+      "options": [
+        { "value": "zoom", "label": "Zoom" },
+        { "value": "reveal", "label": "Greyscale to colour" },
+        { "value": "none", "label": "None" }
+      ],
+      "default": "zoom"
+    },
+    {
+      "type": "color",
+      "id": "background_color",
+      "label": "Background",
+      "default": "#000000"
+    }
+  ],
+  "blocks": [
+    {
+      "type": "image",
+      "name": "Image",
+      "settings": [
+        {
+          "type": "image_picker",
+          "id": "image",
+          "label": "Image"
+        },
+        {
+          "type": "url",
+          "id": "link",
+          "label": "Link (optional)"
+        }
+      ]
+    }
+  ],
+  "max_blocks": 40,
+  "presets": [
+    {
+      "name": "MDR Lookbook",
+      "blocks": []
+    }
+  ]
+}
+{% endschema %}
