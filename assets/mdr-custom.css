@@ -188,6 +188,10 @@ footer .utilities {
   -webkit-tap-highlight-color: transparent !important;
 }
 
+.mdr-jump-wrap a.mdr-jump:hover,
+.mdr-jump-wrap a.mdr-jump:active,
+.mdr-jump-wrap a.mdr-jump:focus,
+.mdr-jump-wrap a.mdr-jump:focus-visible,
 .mdr-jump:hover,
 .mdr-jump:active,
 .mdr-jump:focus,
