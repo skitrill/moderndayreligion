@@ -840,13 +840,13 @@ button.link,
   border-bottom: 0 !important;
 }
 
-/* "more payment options" -> red highlight pill */
+/* "more payment options" -> mango-yellow highlight pill */
 .shopify-payment-button__more-options,
 [class*='more-options'] {
   display: inline-block !important;
   padding: 2px 8px !important;
-  background: #cc2b1f !important;
-  color: #fff !important;
+  background: #fdb92e !important;
+  color: #1a1a1a !important;
   border-radius: 0 !important;
 }
 
