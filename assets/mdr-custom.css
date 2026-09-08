@@ -43,11 +43,8 @@ html {
   display: none !important;
 }
 
-/* Flat tile: a barely-there warm-orange wash, no border, no hairlines. */
+/* Card tile look is defined further down (hazard-tape pattern + glow). */
 .product-card__content {
-  background: rgba(255, 132, 48, 0.035) !important;
-  border: 0 !important;
-  box-shadow: none !important;
   padding: 3px !important;
 }
 
@@ -369,12 +366,12 @@ product-price *,
   opacity: 0.35;
 }
 
-/* ---- Mobile: product hero image is too large -------------------------------- */
+/* ---- Mobile: product hero image size ------------------------------------- */
 @media screen and (max-width: 749px) {
   .product-information__grid .product-information__media,
   .product-information__grid [class*='media-gallery'],
   .product-information__grid .product-media-container {
-    max-width: 70% !important;
+    max-width: 91% !important;
     margin-inline: auto !important;
   }
 }
@@ -491,4 +488,201 @@ main[data-template='index'] .resource-list--grid,
 main[data-template='index'] [id$='__product_list_fa6P9H'] .resource-list--grid {
   max-width: none !important;
   margin-inline: 0 !important;
+}
+
+/* ==========================================================================
+   Batch: hazard-tape bg + card tiles, card spacing + glow, cart lines,
+   mobile buy-buttons row, red Shop Pay
+   ========================================================================== */
+
+/* ---- Subtle diagonal orange/black "tape" pattern: whole page + card tiles -- */
+:root {
+  --mdr-tape-page: repeating-linear-gradient(
+    45deg,
+    rgba(255, 128, 40, 0.028) 0 7px,
+    rgba(255, 128, 40, 0) 7px 15px
+  );
+  --mdr-tape-card: repeating-linear-gradient(
+    45deg,
+    rgba(255, 128, 40, 0.06) 0 7px,
+    rgba(255, 128, 40, 0) 7px 15px
+  );
+}
+
+body {
+  background-color: #000 !important;
+  background-image: var(--mdr-tape-page) !important;
+  /* scroll, not fixed -- fixed backgrounds jank hard on mobile Safari */
+  background-attachment: scroll !important;
+}
+
+.product-card__content {
+  background-color: #000 !important;
+  background-image: var(--mdr-tape-card) !important;
+  border: 0 !important;
+  box-shadow: none !important;
+}
+
+/* Glow hugs the product PNG cutout itself (~5%), not the card. */
+.product-card .product-media__image,
+.product-card .product-media img,
+.product-card img.product-media__image,
+.product-information__media .product-media__image,
+.product-information__media img,
+.product-media__image {
+  filter: drop-shadow(0 0 14px rgba(240, 238, 230, 0.05)) !important;
+}
+
+/* ---- Slight visible gap between cards so they don't look merged ----------- */
+.resource-list--grid,
+.product-recommendations .resource-list,
+.product-recommendations .resource-list--grid {
+  column-gap: 6px !important;
+  row-gap: 6px !important;
+}
+
+/* ---- Cart page: no divider lines ---------------------------------------- */
+.cart-actions,
+.cart-page hr,
+.cart-summary hr,
+.cart-page__summary hr,
+.cart-page [class*='divider'],
+.cart-totals,
+.cart-totals__subtotal,
+.cart-totals__container,
+.cart-discount,
+.cart-items__table,
+.cart-items__table-row,
+.cart-items__table-row td,
+.cart-items__footer {
+  border: 0 !important;
+}
+
+/* keep the discount input's own outline */
+.cart-discount__input {
+  border: 1px solid var(--color-input-border, #5c564a) !important;
+}
+
+/* ---- Product form: quantity + ADD TO CART + Buy-with-Shop on one line,
+   same height / same shape, every viewport. ------------------------------- */
+.product-form-buttons,
+.product-form__buttons {
+  display: flex !important;
+  flex-direction: row !important;
+  flex-wrap: nowrap !important;
+  align-items: stretch !important;
+  gap: 6px !important;
+}
+
+.product-form-buttons > .quantity-selector-wrapper,
+.product-form-buttons > .quantity-selector {
+  flex: 0 0 auto !important;
+}
+
+/* the ADD TO CART button sits in an unclassed <span> wrapper */
+.product-form-buttons > span:not(.product-form-text__error) {
+  flex: 0 1 auto !important;
+  max-width: 34% !important;
+  min-width: 0 !important;
+  display: flex !important;
+}
+
+.product-form-buttons .add-to-cart-button:not(.sticky-add-to-cart__button),
+.product-form-buttons .product-form__submit {
+  width: 100% !important;
+  min-width: 0 !important;
+  max-width: none !important;
+  padding-inline: 8px !important;
+  white-space: nowrap !important;
+}
+
+.product-form-buttons > .accelerated-checkout-block {
+  flex: 1 1 auto !important;
+  min-width: 96px !important;
+  max-width: none !important;
+  margin: 0 !important;
+}
+
+.product-form-buttons .shopify-payment-button {
+  max-width: none !important;
+  margin: 0 !important;
+}
+
+/* equal height + flat shape across all three */
+.product-form-buttons > .quantity-selector-wrapper,
+.product-form-buttons .quantity-selector,
+.product-form-buttons > span:not(.product-form-text__error),
+.product-form-buttons .add-to-cart-button:not(.sticky-add-to-cart__button),
+.product-form-buttons .product-form__submit,
+.product-form-buttons > .accelerated-checkout-block,
+.product-form-buttons .shopify-payment-button,
+.product-form-buttons .shopify-payment-button > * {
+  height: 46px !important;
+  min-height: 46px !important;
+  border-radius: 0 !important;
+  align-self: stretch !important;
+}
+
+.product-form-buttons .add-to-cart-button:not(.sticky-add-to-cart__button) {
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+}
+
+/* ---- "Buy with Shop" button -> red ------------------------------------- */
+.shopify-payment-button,
+.shopify-payment-button__button {
+  filter: hue-rotate(122deg) saturate(1.35) brightness(0.95) !important;
+}
+
+/* ==========================================================================
+   Batch: no link underlines anywhere, snappier feel
+   ========================================================================== */
+
+/* ---- No underline on any link, in any state (incl. "more payment options") */
+a,
+a:link,
+a:visited,
+a:hover,
+a:active,
+a:focus,
+a:focus-visible,
+.shopify-payment-button__more-options,
+.link,
+button.link,
+[class*='more-options'] {
+  text-decoration: none !important;
+  text-decoration-line: none !important;
+  border-bottom: 0 !important;
+}
+
+/* the footer menu's current-page marker used an underline -- drop it */
+.footer-content .menu__item a[aria-current='page'] {
+  text-decoration: none !important;
+}
+
+/* ---- Snappier transitions site-wide, calmer on phones ------------------- */
+:root {
+  --animation-speed: 0.11s;
+  --animation-speed-slow: 0.18s;
+  --animation-speed-fast: 0.07s;
+}
+
+@media screen and (max-width: 749px) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.14s !important;
+    transition-duration: 0.14s !important;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001s !important;
+    transition-duration: 0.001s !important;
+    scroll-behavior: auto !important;
+  }
 }
