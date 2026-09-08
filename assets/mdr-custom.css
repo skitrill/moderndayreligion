@@ -1311,3 +1311,17 @@ a:not([class*='button']):not(.header-logo):focus-visible {
   background-color: #d6d1c4 !important;
   color: #1a1a1a !important;
 }
+
+/* ==========================================================================
+   Default font colour -> dark brown site-wide. Explicitly-coloured bits
+   (yellow size chart / cart titles, blue prices, deep-off-white selection)
+   keep their own colour.
+   ========================================================================== */
+*,
+::before,
+::after {
+  --color-foreground: #9a6134 !important;
+  --color-foreground-rgb: 154 97 52 !important;
+  --color-foreground-muted: rgb(154 97 52 / 0.68) !important;
+  --color-foreground-subdued: rgb(154 97 52 / 0.42) !important;
+}
