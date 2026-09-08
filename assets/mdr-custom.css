@@ -456,6 +456,13 @@ main .product-information__grid .text-block:not(product-price) :is(span, p, li, 
   font-size: 0.75rem !important;
 }
 
+/* cart product titles -> mango yellow (prices stay blue) */
+.cart-items__title,
+.cart-items__title a,
+.cart-items__title * {
+  color: #fdb92e !important;
+}
+
 .cart-items__price,
 .cart-items__price *,
 .cart-items__unit-price-wrapper,
