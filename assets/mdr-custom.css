@@ -1247,15 +1247,17 @@ product-price *,
   color: var(--mdr-contrast) !important;
 }
 
-/* smaller "Total" amount */
+/* smaller "Total" amount -- down to the line-item price size */
 .cart-totals__total-value,
 .cart-totals__total-value *,
 [class*='total-value'],
 [class*='cart-totals'] [class*='total'] [class*='value'],
+[class*='cart-totals'] [class*='total'] .price,
 .cart-drawer__total .price,
 .cart__total .price,
 .totals__total-value {
-  font-size: 0.78rem !important;
+  font-size: 0.66rem !important;
+  letter-spacing: 0.02em !important;
 }
 
 /* ---- USER dropdown -> on-brand: hazard-black panel, orange edge + mark --- */
