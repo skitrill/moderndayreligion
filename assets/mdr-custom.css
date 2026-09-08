@@ -1280,12 +1280,12 @@ body:has(#Details-menu-drawer-container[open]) {
 }
 
 .variant-option--buttons .variant-option__button-label:has(input:checked) {
-  color: #1a1a1a !important;
+  color: #cc2b1f !important;
 }
 
 .variant-option--buttons .variant-option__button-label:has(input:checked)
   :is(.variant-option__button-label__text, span) {
-  color: #1a1a1a !important;
+  color: #cc2b1f !important;
 }
 
 /* phone: narrower side gutters */
@@ -1317,12 +1317,12 @@ main .product-information__grid .size-chart:not(._):not(._):not(._) * {
 
 ::selection {
   background: #d6d1c4;
-  color: #1a1a1a;
+  color: #cc2b1f;
 }
 
 ::-moz-selection {
   background: #d6d1c4;
-  color: #1a1a1a;
+  color: #cc2b1f;
 }
 
 /* link highlight on hover / active (overrides the dark-brown in base.css) */
@@ -1330,7 +1330,7 @@ a:not([class*='button']):not(.header-logo):hover,
 a:not([class*='button']):not(.header-logo):active,
 a:not([class*='button']):not(.header-logo):focus-visible {
   background-color: #d6d1c4 !important;
-  color: #1a1a1a !important;
+  color: #cc2b1f !important;
 }
 
 /* ==========================================================================
