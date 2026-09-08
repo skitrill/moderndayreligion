@@ -678,6 +678,8 @@ body {
 }
 
 /* ADD TO CART: text only, drop the cart icon */
+.add-to-cart-button .add-to-cart-icon,
+.add-to-cart-button > .svg-wrapper,
 .add-to-cart-button .add-to-cart-text > .svg-wrapper {
   display: none !important;
 }
