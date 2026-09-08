@@ -59,7 +59,12 @@
               class: 'mdr-lookbook__img'
           }}
         {%- endcapture -%}
-        <div class="mdr-lookbook__item" style="--i: {{ i }}" {{ b.shopify_attributes }}>
+        <div
+          class="mdr-lookbook__item"
+          style="--i: {{ i }}"
+          data-full="{{ b.settings.image | image_url: width: 1600 }}"
+          {{ b.shopify_attributes }}
+        >
           {%- if b.settings.link != blank -%}
             <a class="mdr-lookbook__link" href="{{ b.settings.link }}">{{ tile }}</a>
           {%- else -%}
@@ -78,7 +83,11 @@
           {%- assign media = product.media[media_index] -%}
           {%- if media == blank -%}{%- assign media = product.featured_media -%}{%- endif -%}
           {%- if media == blank or media.preview_image == blank -%}{%- continue -%}{%- endif -%}
-          <div class="mdr-lookbook__item" style="--i: {{ shown }}">
+          <div
+            class="mdr-lookbook__item"
+            style="--i: {{ shown }}"
+            data-full="{{ media.preview_image | image_url: width: 1400 }}"
+          >
             {{
               media.preview_image
               | image_url: width: 800
@@ -95,6 +104,167 @@
     {%- endif -%}
   </div>
 </section>
+
+<script>
+  (function () {
+    var SECTION_ID = {{ section.id | json }};
+
+    function build(root) {
+      if (!root || root.__mdrLbViewer) return;
+      root.__mdrLbViewer = true;
+
+      var tiles = Array.prototype.slice.call(root.querySelectorAll('.mdr-lookbook__item'));
+      if (!tiles.length) return;
+      var grid = root.querySelector('.mdr-lookbook__grid');
+
+      var items = tiles.map(function (t) {
+        var img = t.querySelector('img');
+        return {
+          tile: t,
+          full: t.getAttribute('data-full') || (img && (img.currentSrc || img.src)) || '',
+          alt: (img && img.alt) || ''
+        };
+      });
+
+      var viewer = document.querySelector('.mdr-lb-viewer');
+      if (!viewer) {
+        viewer = document.createElement('div');
+        viewer.className = 'mdr-lb-viewer';
+        viewer.hidden = true;
+        viewer.innerHTML =
+          '<div class="mdr-lb-viewer__backdrop"></div>' +
+          '<figure class="mdr-lb-viewer__figure"><img class="mdr-lb-viewer__img" alt=""></figure>';
+        document.body.appendChild(viewer);
+      }
+      var figure = viewer.querySelector('.mdr-lb-viewer__figure');
+      var vImg = viewer.querySelector('.mdr-lb-viewer__img');
+      var backdrop = viewer.querySelector('.mdr-lb-viewer__backdrop');
+
+      var idx = -1;
+      var isOpen = false;
+
+      /* ~50% of the whole grid layout, clamped to the viewport, centred. */
+      function sizeFigure() {
+        var r = grid.getBoundingClientRect();
+        var base = Math.min(r.width, r.height) * 0.5;
+        var cap = Math.min(window.innerWidth, window.innerHeight) * 0.86;
+        var size = Math.max(240, Math.min(base, cap));
+        figure.style.width = size + 'px';
+        figure.style.height = size + 'px';
+      }
+
+      function mark(i) {
+        items.forEach(function (it, k) {
+          it.tile.classList.toggle('is-selected', k === i);
+        });
+      }
+
+      function show(i, dir) {
+        i = (i + items.length) % items.length;
+        idx = i;
+        mark(i);
+        vImg.classList.remove('mdr-lb-in-up', 'mdr-lb-in-down');
+        void vImg.offsetWidth;
+        vImg.src = items[i].full;
+        vImg.alt = items[i].alt;
+        if (dir === 1) vImg.classList.add('mdr-lb-in-up');
+        else if (dir === -1) vImg.classList.add('mdr-lb-in-down');
+      }
+
+      function openAt(i) {
+        sizeFigure();
+        viewer.hidden = false;
+        document.documentElement.classList.add('mdr-lb-lock');
+        requestAnimationFrame(function () { viewer.classList.add('is-open'); });
+        isOpen = true;
+        show(i, 0);
+      }
+
+      function close() {
+        isOpen = false;
+        viewer.classList.remove('is-open');
+        document.documentElement.classList.remove('mdr-lb-lock');
+        items.forEach(function (it) { it.tile.classList.remove('is-selected'); });
+        setTimeout(function () { if (!isOpen) viewer.hidden = true; }, 260);
+      }
+
+      function next() { show(idx + 1, 1); }
+      function prev() { show(idx - 1, -1); }
+
+      tiles.forEach(function (t, i) {
+        t.addEventListener('click', function (e) {
+          e.preventDefault();
+          openAt(i);
+        });
+      });
+
+      viewer.addEventListener('click', function (e) {
+        if (e.target === viewer || e.target === backdrop) close();
+      });
+
+      /* desktop: vertical wheel steps through images */
+      var wheelLock = false;
+      viewer.addEventListener('wheel', function (e) {
+        if (!isOpen) return;
+        e.preventDefault();
+        if (wheelLock || Math.abs(e.deltaY) < 6) return;
+        wheelLock = true;
+        (e.deltaY > 0 ? next : prev)();
+        setTimeout(function () { wheelLock = false; }, 240);
+      }, { passive: false });
+
+      document.addEventListener('keydown', function (e) {
+        if (!isOpen) return;
+        if (e.key === 'Escape') close();
+        else if (e.key === 'ArrowDown') { e.preventDefault(); next(); }
+        else if (e.key === 'ArrowUp') { e.preventDefault(); prev(); }
+      });
+
+      /* touch: vertical swipe only (up = next, down = prev) */
+      var sy = 0, sx = 0, dragging = false;
+      viewer.addEventListener('touchstart', function (e) {
+        if (!isOpen) return;
+        var t = e.touches[0];
+        sy = t.clientY; sx = t.clientX; dragging = true;
+        figure.style.transition = 'none';
+      }, { passive: true });
+      viewer.addEventListener('touchmove', function (e) {
+        if (!dragging) return;
+        var t = e.touches[0];
+        var dy = t.clientY - sy;
+        var dx = t.clientX - sx;
+        if (Math.abs(dx) > Math.abs(dy)) return;
+        figure.style.transform = 'translateY(' + (dy * 0.32) + 'px)';
+      }, { passive: true });
+      viewer.addEventListener('touchend', function (e) {
+        if (!dragging) return;
+        dragging = false;
+        figure.style.transition = '';
+        figure.style.transform = '';
+        var t = (e.changedTouches && e.changedTouches[0]) || null;
+        if (!t) return;
+        var dy = t.clientY - sy;
+        var dx = t.clientX - sx;
+        if (Math.abs(dy) > 44 && Math.abs(dy) > Math.abs(dx)) {
+          (dy < 0 ? next : prev)();
+        }
+      }, { passive: true });
+
+      window.addEventListener('resize', function () { if (isOpen) sizeFigure(); }, { passive: true });
+    }
+
+    function boot() { build(document.getElementById('mdr-lookbook-' + SECTION_ID)); }
+
+    if (document.readyState !== 'loading') boot();
+    else document.addEventListener('DOMContentLoaded', boot);
+
+    document.addEventListener('shopify:section:load', function (e) {
+      var r = (e.target && e.target.querySelector('#mdr-lookbook-' + SECTION_ID)) ||
+        document.getElementById('mdr-lookbook-' + SECTION_ID);
+      if (r) { r.__mdrLbViewer = false; build(r); }
+    });
+  })();
+</script>
 
 {% stylesheet %}
   .mdr-lookbook {
@@ -144,6 +314,18 @@
     overflow: hidden;
   }
 
+  .mdr-lookbook__item {
+    cursor: pointer;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  /* slim brown ring on the tapped tile, just before it pops open */
+  .mdr-lookbook__item.is-selected {
+    outline: 1px solid #8a5a2f;
+    outline-offset: 1px;
+    z-index: 2;
+  }
+
   .mdr-lookbook__item img {
     display: block;
     width: 100%;
@@ -188,6 +370,93 @@
     to {
       opacity: 1;
       transform: none;
+    }
+  }
+
+  /* ==== Expanded viewer (tap a tile -> pops to ~50% of the grid) ========== */
+  :root.mdr-lb-lock {
+    overflow: hidden;
+  }
+
+  .mdr-lb-viewer {
+    position: fixed;
+    inset: 0;
+    z-index: 2147482000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 4vmin;
+    opacity: 0;
+    pointer-events: none;
+    touch-action: none;
+    transition: opacity 0.2s ease;
+  }
+
+  .mdr-lb-viewer.is-open {
+    opacity: 1;
+    pointer-events: auto;
+  }
+
+  .mdr-lb-viewer__backdrop {
+    position: absolute;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.86);
+    -webkit-backdrop-filter: blur(2px);
+    backdrop-filter: blur(2px);
+  }
+
+  .mdr-lb-viewer__figure {
+    position: relative;
+    margin: 0;
+    padding: 0;
+    max-width: 92vw;
+    max-height: 90vh;
+    background: #000;
+    border: 3px solid #fff;
+    box-shadow: 0 24px 70px rgba(0, 0, 0, 0.55);
+    overflow: hidden;
+    transform: scale(0.72);
+    transition: transform 0.34s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+
+  .mdr-lb-viewer.is-open .mdr-lb-viewer__figure {
+    transform: scale(1);
+  }
+
+  .mdr-lb-viewer__img {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    background: #000;
+  }
+
+  .mdr-lb-in-up {
+    animation: mdr-lb-slide-up 0.24s cubic-bezier(0.16, 1, 0.3, 1) both;
+  }
+
+  .mdr-lb-in-down {
+    animation: mdr-lb-slide-down 0.24s cubic-bezier(0.16, 1, 0.3, 1) both;
+  }
+
+  @keyframes mdr-lb-slide-up {
+    from { opacity: 0; transform: translateY(26px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  @keyframes mdr-lb-slide-down {
+    from { opacity: 0; transform: translateY(-26px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .mdr-lb-viewer,
+    .mdr-lb-viewer__figure {
+      transition: none;
+    }
+    .mdr-lb-in-up,
+    .mdr-lb-in-down {
+      animation: none;
     }
   }
 {% endstylesheet %}
