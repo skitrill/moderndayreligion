@@ -143,12 +143,12 @@
       var idx = -1;
       var isOpen = false;
 
-      /* ~50% of the whole grid layout, clamped to the viewport, centred. */
+      /* ~50% of the whole grid layout + 15%, clamped to the viewport, centred. */
       function sizeFigure() {
         var r = grid.getBoundingClientRect();
-        var base = Math.min(r.width, r.height) * 0.5;
-        var cap = Math.min(window.innerWidth, window.innerHeight) * 0.86;
-        var size = Math.max(240, Math.min(base, cap));
+        var base = Math.min(r.width, r.height) * 0.575;
+        var cap = Math.min(window.innerWidth, window.innerHeight) * 0.9;
+        var size = Math.max(276, Math.min(base, cap));
         figure.style.width = size + 'px';
         figure.style.height = size + 'px';
       }
@@ -220,27 +220,17 @@
         else if (e.key === 'ArrowUp') { e.preventDefault(); prev(); }
       });
 
-      /* touch: vertical swipe only (up = next, down = prev) */
+      /* touch: vertical swipe only (up = next, down = prev).
+         The frame stays put -- we only read the gesture on touchend. */
       var sy = 0, sx = 0, dragging = false;
       viewer.addEventListener('touchstart', function (e) {
         if (!isOpen) return;
         var t = e.touches[0];
         sy = t.clientY; sx = t.clientX; dragging = true;
-        figure.style.transition = 'none';
-      }, { passive: true });
-      viewer.addEventListener('touchmove', function (e) {
-        if (!dragging) return;
-        var t = e.touches[0];
-        var dy = t.clientY - sy;
-        var dx = t.clientX - sx;
-        if (Math.abs(dx) > Math.abs(dy)) return;
-        figure.style.transform = 'translateY(' + (dy * 0.32) + 'px)';
       }, { passive: true });
       viewer.addEventListener('touchend', function (e) {
         if (!dragging) return;
         dragging = false;
-        figure.style.transition = '';
-        figure.style.transform = '';
         var t = (e.changedTouches && e.changedTouches[0]) || null;
         if (!t) return;
         var dy = t.clientY - sy;
@@ -409,10 +399,10 @@
     position: relative;
     margin: 0;
     padding: 0;
-    max-width: 92vw;
-    max-height: 90vh;
+    max-width: 94vw;
+    max-height: 92vh;
     background: #000;
-    border: 3px solid #fff;
+    border: 0;
     box-shadow: 0 24px 70px rgba(0, 0, 0, 0.55);
     overflow: hidden;
     transform: scale(0.72);
