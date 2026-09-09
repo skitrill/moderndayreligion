@@ -31,7 +31,8 @@
 [
 {%- assign _mdr_n = 0 -%}
 {%- for collection in collections limit: 24 -%}
-  {%- unless collection.handle == 'all' or collection.all_products_count == 0 -%}
+  {%- assign _h = collection.handle -%}
+  {%- unless _h == 'all' or _h == 'frontpage' or collection.all_products_count == 0 -%}
     {%- if _mdr_n > 0 -%},{%- endif -%}
     {"t": {{ collection.title | json }}, "u": {{ collection.url | json }}}
     {%- assign _mdr_n = _mdr_n | plus: 1 -%}
@@ -520,6 +521,35 @@
       bar.appendChild(list);
       wrap.appendChild(bar);
       sec.parentNode.insertBefore(wrap, sec);
+
+      /* keep the bar's left edge + width locked to the grid box, in every
+         featured mode (grid8 / zoom) and at every viewport */
+      function align() {
+        var grid = sec.querySelector('.resource-list--grid') ||
+          sec.querySelector('.resource-list');
+        if (!grid) return;
+        var gr = grid.getBoundingClientRect();
+        var pr = wrap.parentNode.getBoundingClientRect();
+        if (!gr.width) return;
+        wrap.style.width = Math.round(gr.width) + 'px';
+        wrap.style.maxWidth = 'none';
+        wrap.style.marginLeft = Math.round(gr.left - pr.left) + 'px';
+        wrap.style.marginRight = '0';
+      }
+      align();
+      window.addEventListener('resize', align, { passive: true });
+      if (window.ResizeObserver) {
+        var grid = sec.querySelector('.resource-list--grid') ||
+          sec.querySelector('.resource-list');
+        if (grid) new ResizeObserver(align).observe(grid);
+      }
+      /* featured toggle flips a <html data-featured> attr -> re-align */
+      if (window.MutationObserver) {
+        new MutationObserver(align).observe(D.documentElement, {
+          attributes: true,
+          attributeFilter: ['data-featured']
+        });
+      }
 
       function setOpen(on) {
         bar.classList.toggle('is-open', on);
