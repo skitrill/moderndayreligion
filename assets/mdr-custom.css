@@ -1432,17 +1432,17 @@ cart-drawer [class*='price'] {
   display: inline-block !important;
   padding: 4px 10px !important;
   color: #ffffff !important;
-  background-color: #ff127f !important;
+  background-color: #3b2412 !important;
   background-image:
     repeating-conic-gradient(
       from 0deg at 50% 50%,
-      rgba(255, 255, 255, 0.24) 0deg 0.7deg,
+      rgba(255, 255, 255, 0.22) 0deg 0.7deg,
       transparent 0.7deg 22.5deg
     ),
     repeating-radial-gradient(
       circle at 50% 50%,
       transparent 0 5px,
-      rgba(255, 255, 255, 0.22) 5px 5.9px
+      rgba(255, 255, 255, 0.2) 5px 5.9px
     ) !important;
   border: 0 !important;
   border-radius: 0 !important;
@@ -1454,7 +1454,7 @@ cart-drawer [class*='price'] {
 
 .header__cart-link:hover,
 #header-component .header__cart-link:hover {
-  background-color: #ff3b96 !important;
+  background-color: #4a2f1c !important;
   color: #ffffff !important;
 }
 
