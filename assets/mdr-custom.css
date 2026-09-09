@@ -1481,10 +1481,8 @@ main[data-template='index'] [id$='__product_list_fa6P9H'] *,
    Mobile page-zoom toggle -- [+ page-icon] / [- page-icon], bottom-right
    ========================================================================== */
 .mdr-zoom {
-  position: fixed;
-  right: 8px;
-  bottom: 10px;
-  z-index: 2147483600;
+  /* JS sets position:absolute + right + top, anchored to the footer */
+  z-index: 40;
   display: none;
   align-items: center;
   gap: 1px;

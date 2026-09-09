@@ -450,9 +450,10 @@
   })();
 
   /* =====================================================================
-     Mobile page-zoom toggle -- [+ page] / [- page] in the bottom-right.
-     Tapping zooms the whole page by 20% (persists while browsing); tap
-     again to go back. The button lives outside <body> so it isn't zoomed.
+     Mobile page-zoom toggle -- [+ page] / [- page]. Sits at the bottom of
+     the page, on the "Refund policy" line (not floating -- only visible
+     once you scroll to the footer). Tapping zooms the whole page by 20%
+     (persists while browsing); tap again to go back.
      ===================================================================== */
   (function () {
     if (window.__mdrZoom) return;
@@ -474,17 +475,6 @@
       '<span class="mdr-zoom__pg" aria-hidden="true"><i></i><i></i><i></i><i></i></span>' +
       '<span class="mdr-bracket">]</span>';
 
-    function apply(on) {
-      try { D.body.style.zoom = on ? Z : ''; } catch (e) {}
-      btn.classList.toggle('is-zoomed', on);
-      var s = btn.querySelector('.mdr-zoom__sign');
-      if (s) s.textContent = on ? '−' : '+';
-      btn.setAttribute('aria-pressed', on ? 'true' : 'false');
-      try { sessionStorage.setItem('mdrZoom', on ? '1' : '0'); } catch (e) {}
-      place();
-    }
-
-    /* keep the button level with the "Refund policy" footer line */
     function refundLine() {
       var links = D.querySelectorAll('footer a, .footer-utilities a, .footer a');
       for (var i = 0; i < links.length; i++) {
@@ -492,19 +482,41 @@
       }
       return null;
     }
+
     function place() {
-      var el = refundLine();
-      if (!el) { btn.style.bottom = '10px'; return; }
-      var r = el.getBoundingClientRect();
-      var fromBottom = window.innerHeight - r.top - r.height / 2 - btn.offsetHeight / 2;
-      var b = Math.min(Math.max(fromBottom, 6), window.innerHeight - btn.offsetHeight - 6);
-      btn.style.bottom = Math.round(b) + 'px';
+      var line = refundLine();
+      var host = btn.parentElement;
+      if (!line || !host) return;
+      var hr = host.getBoundingClientRect();
+      var lr = line.getBoundingClientRect();
+      btn.style.top =
+        Math.round(lr.top - hr.top + lr.height / 2 - btn.offsetHeight / 2) + 'px';
+    }
+
+    function apply(on) {
+      try { D.body.style.zoom = on ? Z : ''; } catch (e) {}
+      btn.classList.toggle('is-zoomed', on);
+      var s = btn.querySelector('.mdr-zoom__sign');
+      if (s) s.textContent = on ? '−' : '+';
+      btn.setAttribute('aria-pressed', on ? 'true' : 'false');
+      try { sessionStorage.setItem('mdrZoom', on ? '1' : '0'); } catch (e) {}
+      requestAnimationFrame(place);
     }
 
     btn.addEventListener('click', function () { apply(!stored()); });
 
     function mount() {
-      if (!btn.isConnected) (D.documentElement || D.body).appendChild(btn);
+      var line = refundLine();
+      var host =
+        (line && (line.closest('.utilities') || line.closest('.section--page-width'))) ||
+        D.querySelector('footer');
+      if (!host) return;
+      if (btn.parentElement !== host) {
+        host.style.position = 'relative';
+        btn.style.position = 'absolute';
+        btn.style.right = '8px';
+        host.appendChild(btn);
+      }
       apply(stored());
       place();
     }
@@ -512,7 +524,6 @@
     if (D.readyState !== 'loading') mount();
     D.addEventListener('DOMContentLoaded', mount);
     window.addEventListener('load', mount);
-    window.addEventListener('scroll', place, { passive: true });
-    window.addEventListener('resize', place, { passive: true });
+    window.addEventListener('resize', function () { place(); }, { passive: true });
   })();
 </script>
