@@ -1486,12 +1486,12 @@ main[data-template='index'] [id$='__product_list_fa6P9H'] *,
   display: none;
   align-items: center;
   gap: 1px;
-  padding: 1px 5px;
+  padding: 2px 5px;
   border: 0;
   background: transparent;
   color: var(--color-foreground);
   font-family: var(--font-accent--family, 'Anonymous Pro', ui-monospace, monospace);
-  font-size: 0.6rem;
+  font-size: 0.62rem;
   line-height: 1;
   cursor: pointer;
   -webkit-tap-highlight-color: transparent;
