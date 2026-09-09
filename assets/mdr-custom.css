@@ -1551,7 +1551,7 @@ main[data-template='index'] [id$='__product_list_fa6P9H'] .mdr-allbar {
   overflow: hidden;
   white-space: nowrap;
   padding: 4px 8px;
-  border: 0.7px solid rgb(204 43 31 / 0.5) !important;
+  border: 0.7px solid rgba(255, 255, 255, 0.18) !important;
   background: #3b2412;
   color: #cc2b1f;
   font-family: 'Anonymous Pro', ui-monospace, monospace;
