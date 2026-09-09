@@ -26,6 +26,20 @@
   </a>
 </div>
 
+{%- comment -%} Collection titles for the [ALL >] bar (read by __mdrAllBar). {%- endcomment -%}
+<script type="application/json" id="mdr-allbar-data">
+[
+{%- assign _mdr_n = 0 -%}
+{%- for collection in collections limit: 24 -%}
+  {%- unless collection.handle == 'all' or collection.all_products_count == 0 -%}
+    {%- if _mdr_n > 0 -%},{%- endif -%}
+    {"t": {{ collection.title | json }}, "u": {{ collection.url | json }}}
+    {%- assign _mdr_n = _mdr_n | plus: 1 -%}
+  {%- endunless -%}
+{%- endfor -%}
+]
+</script>
+
 <script>
   (function () {
     if (window.__mdrHeaderEnhance) return;
@@ -438,6 +452,87 @@
         nav.appendChild(a);
       }
       main.insertBefore(nav, main.firstChild);
+    }
+
+    if (D.readyState !== 'loading') build();
+    D.addEventListener('DOMContentLoaded', build);
+    window.addEventListener('load', build);
+    var m = D.querySelector('main') || D.body;
+    if (window.MutationObserver) {
+      new MutationObserver(build).observe(m, { childList: true });
+    }
+  })();
+
+  /* =====================================================================
+     [ALL >] bar: a collapsed red pill above the grid. Tap it and it slides
+     open to the right, revealing the collection titles. Tap again -- or
+     tap anywhere outside -- to collapse it back to [ALL >].
+     ===================================================================== */
+  (function () {
+    if (window.__mdrAllBar) return;
+    window.__mdrAllBar = true;
+    var D = document;
+
+    function collections() {
+      var el = D.getElementById('mdr-allbar-data');
+      if (!el) return [];
+      try { return JSON.parse(el.textContent) || []; } catch (e) { return []; }
+    }
+
+    function build() {
+      var main = D.querySelector('main[data-template="index"]');
+      if (!main) return;
+      var sec = D.querySelector('[id$="__product_list_fa6P9H"]');
+      if (!sec || !sec.parentNode || D.querySelector('.mdr-allbar-wrap')) return;
+
+      var data = collections();
+
+      var wrap = D.createElement('div');
+      wrap.className = 'mdr-allbar-wrap';
+
+      var bar = D.createElement('div');
+      bar.className = 'mdr-allbar';
+
+      var toggle = D.createElement('button');
+      toggle.type = 'button';
+      toggle.className = 'mdr-allbar__toggle';
+      toggle.setAttribute('aria-expanded', 'false');
+      toggle.innerHTML =
+        '<span class="mdr-bracket">[</span>' +
+        '<span class="mdr-allbar__label">All</span>' +
+        '<span class="mdr-allbar__chev" aria-hidden="true">›</span>' +
+        '<span class="mdr-bracket">]</span>';
+
+      var list = D.createElement('div');
+      list.className = 'mdr-allbar__list';
+      for (var i = 0; i < data.length; i++) {
+        if (!data[i] || !data[i].u) continue;
+        var a = D.createElement('a');
+        a.href = data[i].u;
+        a.textContent = data[i].t;
+        if (data[i].u !== '/' && location.pathname.indexOf(data[i].u) === 0) {
+          a.setAttribute('aria-current', 'page');
+        }
+        list.appendChild(a);
+      }
+
+      bar.appendChild(toggle);
+      bar.appendChild(list);
+      wrap.appendChild(bar);
+      sec.parentNode.insertBefore(wrap, sec);
+
+      function setOpen(on) {
+        bar.classList.toggle('is-open', on);
+        toggle.setAttribute('aria-expanded', on ? 'true' : 'false');
+      }
+      toggle.addEventListener('click', function (e) {
+        e.preventDefault();
+        e.stopPropagation();
+        setOpen(!bar.classList.contains('is-open'));
+      });
+      D.addEventListener('click', function (e) {
+        if (!bar.contains(e.target)) setOpen(false);
+      });
     }
 
     if (D.readyState !== 'loading') build();

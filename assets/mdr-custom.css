@@ -1507,6 +1507,103 @@ main[data-template='index'] [id$='__product_list_fa6P9H'] *,
   outline: 0 !important;
 }
 
+/* ==========================================================================
+   [ALL >] collapsible bar: a small red bracketed pill above the grid whose
+   left edge lines up with the box. Tap it and it slides open to the right,
+   revealing the collection titles; tap again (or tap away) to close.
+   ========================================================================== */
+main[data-template='index'] .mdr-allbar-wrap {
+  box-sizing: border-box;
+  width: 82vw;
+  max-width: 300px;
+  margin: 4px auto -2px;
+}
+
+@media (min-width: 750px) {
+  main[data-template='index'] .mdr-allbar-wrap {
+    width: 100%;
+    max-width: 440px;
+  }
+}
+
+main[data-template='index'] .mdr-allbar {
+  box-sizing: border-box;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  max-width: 68px;
+  overflow: hidden;
+  white-space: nowrap;
+  padding: 4px 8px;
+  border: 0.7px solid rgb(204 43 31 / 0.5) !important;
+  background: rgb(204 43 31 / 0.06);
+  color: #cc2b1f;
+  font-family: 'Anonymous Pro', ui-monospace, monospace;
+  font-size: 0.56rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  line-height: 1;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  transition: max-width 0.5s cubic-bezier(0.16, 1, 0.3, 1), background 0.25s ease;
+}
+
+main[data-template='index'] .mdr-allbar.is-open {
+  max-width: 100%;
+  background: rgb(204 43 31 / 0.12);
+}
+
+main[data-template='index'] .mdr-allbar__toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  flex: 0 0 auto;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  background: none;
+  color: inherit;
+  font: inherit;
+  letter-spacing: inherit;
+  text-transform: inherit;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+
+main[data-template='index'] .mdr-allbar__chev {
+  display: inline-block;
+  transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+main[data-template='index'] .mdr-allbar.is-open .mdr-allbar__chev {
+  transform: rotate(90deg);
+}
+
+main[data-template='index'] .mdr-allbar__list {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  flex: 0 0 auto;
+  opacity: 0;
+  transition: opacity 0.3s ease 0.05s;
+}
+
+main[data-template='index'] .mdr-allbar.is-open .mdr-allbar__list {
+  opacity: 1;
+}
+
+main[data-template='index'] .mdr-allbar__list a {
+  color: #cc2b1f;
+  text-decoration: none;
+  opacity: 0.62;
+  transition: opacity 0.15s ease;
+}
+
+main[data-template='index'] .mdr-allbar__list a:hover,
+main[data-template='index'] .mdr-allbar__list a[aria-current='page'] {
+  opacity: 1;
+}
+
 /* The ALL grid is a borderless rectangular window: the cards scroll UP inside
    it while the page itself stays still. overscroll-behavior keeps the scroll
    from chaining out to the document once the box hits its end. */
