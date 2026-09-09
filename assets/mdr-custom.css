@@ -1552,7 +1552,7 @@ main[data-template='index'] [id$='__product_list_fa6P9H'] .mdr-allbar {
   white-space: nowrap;
   padding: 4px 8px;
   border: 0.7px solid rgb(204 43 31 / 0.5) !important;
-  background: rgb(204 43 31 / 0.06);
+  background: #3b2412;
   color: #cc2b1f;
   font-family: 'Anonymous Pro', ui-monospace, monospace;
   font-size: 0.56rem;
@@ -1566,7 +1566,7 @@ main[data-template='index'] [id$='__product_list_fa6P9H'] .mdr-allbar {
 
 main[data-template='index'] [id$='__product_list_fa6P9H'] .mdr-allbar.is-open {
   max-width: 100%;
-  background: rgb(204 43 31 / 0.12);
+  background: #3b2412;
 }
 
 main[data-template='index'] [id$='__product_list_fa6P9H'] .mdr-allbar__toggle {
