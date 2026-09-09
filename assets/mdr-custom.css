@@ -1516,7 +1516,7 @@ main[data-template='index'] [id$='__product_list_fa6P9H'] .resource-list--grid {
   overflow-x: hidden !important;
   overscroll-behavior: contain !important;
   -webkit-overflow-scrolling: touch !important;
-  border: 0 !important;
+  border: 0.5px solid rgba(255, 255, 255, 0.18) !important;
   padding: 6px 3px 6px 6px !important;
   scrollbar-width: thin;
   scrollbar-color: rgba(255, 255, 255, 0.25) transparent;
@@ -1541,13 +1541,13 @@ main[data-template='index'] [id$='__product_list_fa6P9H'] .resource-list--grid::
   border-radius: 0;
 }
 
-/* Hairline border only in the zoomed-OUT (dense) view; none when cards are
-   zoomed in. */
+/* Hairline border only when the cards are zoomed IN (large 2/4-col view);
+   the zoomed-OUT dense grid shows no border. */
 html[data-featured='grid8']
   main[data-template='index']
   [id$='__product_list_fa6P9H']
   .resource-list--grid {
-  border: 0.5px solid rgba(255, 255, 255, 0.18) !important;
+  border: 0 !important;
 }
 
 /* ==========================================================================
