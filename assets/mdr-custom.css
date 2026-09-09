@@ -1415,17 +1415,35 @@ cart-drawer [class*='price'] {
   color: #3a3ec4 !important;
 }
 
-/* ...and the count stays blue (incl. the header "CART (n)") */
+/* the cart-page count badge stays blue */
 .cart-bubble,
 .cart-bubble *,
 .cart-bubble__text-count,
 [class*='cart-bubble'] [class*='count'],
 .cart-page__title .cart-bubble,
-.cart-page__title .cart-bubble *,
+.cart-page__title .cart-bubble * {
+  color: #3a3ec4 !important;
+}
+
+/* header cart -> a solid blue rectangle block with white text */
 .header__cart-link,
 #header-component .header__cart-link,
 #header-component a[href$='/cart'] {
-  color: #3a3ec4 !important;
+  display: inline-block !important;
+  padding: 3px 8px !important;
+  background: #3a3ec4 !important;
+  color: #ffffff !important;
+  border: 0 !important;
+  border-radius: 0 !important;
+  text-transform: uppercase !important;
+  line-height: 1.1 !important;
+  letter-spacing: 0.06em !important;
+}
+
+.header__cart-link:hover,
+#header-component .header__cart-link:hover {
+  background: #2f329e !important;
+  color: #ffffff !important;
 }
 
 /* lookbook heading -> follow the red default */
