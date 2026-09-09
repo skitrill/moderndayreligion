@@ -487,15 +487,12 @@
       var line = refundLine();
       var host = btn.parentElement;
       if (!line || !host) return;
-
-      /* only exist once the page is long enough to scroll -- otherwise it
-         just adds clutter to a short page */
-      var doc = D.documentElement;
-      btn.style.display = doc.scrollHeight > window.innerHeight + 12 ? '' : 'none';
-
       var hr = host.getBoundingClientRect();
       var lr = line.getBoundingClientRect();
-      /* line the button's optical centre onto the text baseline of the line */
+      /* line the button's optical centre onto the text baseline of the line.
+         It's position:absolute in the footer, so it only comes into view
+         when you reach the bottom of the page (or immediately, on a short
+         page) -- it never floats over content. */
       btn.style.top =
         Math.round(lr.top - hr.top + lr.height / 2 - btn.offsetHeight / 2) + 'px';
     }
