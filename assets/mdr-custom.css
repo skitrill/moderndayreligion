@@ -154,7 +154,7 @@ footer .utilities {
   justify-content: flex-end;
   position: absolute;
   right: var(--page-margin, 20px);
-  top: calc(var(--header-height, 60px) / 2 + 13px);
+  top: calc(var(--header-height, 60px) / 2 + 9px);
   z-index: 6;
 }
 
@@ -1486,12 +1486,12 @@ main[data-template='index'] [id$='__product_list_fa6P9H'] *,
   display: none;
   align-items: center;
   gap: 1px;
-  padding: 4px 5px;
+  padding: 1px 5px;
   border: 0;
   background: transparent;
   color: var(--color-foreground);
   font-family: var(--font-accent--family, 'Anonymous Pro', ui-monospace, monospace);
-  font-size: 0.66rem;
+  font-size: 0.6rem;
   line-height: 1;
   cursor: pointer;
   -webkit-tap-highlight-color: transparent;

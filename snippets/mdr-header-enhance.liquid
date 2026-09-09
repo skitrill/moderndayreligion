@@ -487,8 +487,15 @@
       var line = refundLine();
       var host = btn.parentElement;
       if (!line || !host) return;
+
+      /* only exist once the page is long enough to scroll -- otherwise it
+         just adds clutter to a short page */
+      var doc = D.documentElement;
+      btn.style.display = doc.scrollHeight > window.innerHeight + 12 ? '' : 'none';
+
       var hr = host.getBoundingClientRect();
       var lr = line.getBoundingClientRect();
+      /* line the button's optical centre onto the text baseline of the line */
       btn.style.top =
         Math.round(lr.top - hr.top + lr.height / 2 - btn.offsetHeight / 2) + 'px';
     }
@@ -524,6 +531,7 @@
     if (D.readyState !== 'loading') mount();
     D.addEventListener('DOMContentLoaded', mount);
     window.addEventListener('load', mount);
-    window.addEventListener('resize', function () { place(); }, { passive: true });
+    window.addEventListener('resize', place, { passive: true });
+    window.addEventListener('scroll', place, { passive: true });
   })();
 </script>
