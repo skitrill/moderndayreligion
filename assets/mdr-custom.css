@@ -1478,9 +1478,8 @@ cart-drawer [class*='price'] {
 }
 
 .mdr-home-nav a {
-  font-family: 'Anonymous Pro', ui-monospace, monospace;
-  font-size: 0.625rem;
-  letter-spacing: 0.12em;
+  /* inherit the site's default type -- no custom family / tracking / size */
+  font: inherit;
   text-transform: uppercase;
   color: #cc2b1f;
   text-decoration: none;
@@ -1547,17 +1546,17 @@ main[data-template='index'] [id$='__product_list_fa6P9H'] .mdr-allbar {
   display: flex;
   align-items: center;
   gap: 14px;
-  max-width: 52px;
+  max-width: 48px;
   overflow: hidden;
   white-space: nowrap;
   padding: 4px 8px;
   border: 0.7px solid rgba(255, 255, 255, 0.18) !important;
-  background: #cc2b1f;
+  background: #8a2417;
   color: #d6d1c4;
-  font-family: 'Anonymous Pro', ui-monospace, monospace;
-  font-size: 0.56rem;
+  /* inherit the site's default type (family, size, spacing) -- only the
+     weight + casing are ours */
+  font: inherit;
   font-weight: 700;
-  letter-spacing: 0.14em;
   text-transform: uppercase;
   line-height: 1;
   cursor: pointer;
@@ -1567,7 +1566,7 @@ main[data-template='index'] [id$='__product_list_fa6P9H'] .mdr-allbar {
 
 main[data-template='index'] [id$='__product_list_fa6P9H'] .mdr-allbar.is-open {
   max-width: 100%;
-  background: #cc2b1f;
+  background: #8a2417;
 }
 
 main[data-template='index'] [id$='__product_list_fa6P9H'] .mdr-allbar__toggle {
