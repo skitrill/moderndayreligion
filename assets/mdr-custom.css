@@ -1556,6 +1556,7 @@ main[data-template='index'] [id$='__product_list_fa6P9H'] .mdr-allbar {
   color: #d6d1c4;
   font-family: 'Anonymous Pro', ui-monospace, monospace;
   font-size: 0.56rem;
+  font-weight: 700;
   letter-spacing: 0.14em;
   text-transform: uppercase;
   line-height: 1;
@@ -1616,6 +1617,7 @@ main[data-template='index']
 
 main[data-template='index'] [id$='__product_list_fa6P9H'] .mdr-allbar__list a {
   color: #d6d1c4;
+  font-weight: 700;
   text-decoration: none;
   opacity: 0.72;
   transition: opacity 0.15s ease;
