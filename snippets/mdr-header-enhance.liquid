@@ -448,4 +448,50 @@
       new MutationObserver(build).observe(m, { childList: true });
     }
   })();
+
+  /* =====================================================================
+     Mobile page-zoom toggle -- [+ page] / [- page] in the bottom-right.
+     Tapping zooms the whole page by 20% (persists while browsing); tap
+     again to go back. The button lives outside <body> so it isn't zoomed.
+     ===================================================================== */
+  (function () {
+    if (window.__mdrZoom) return;
+    window.__mdrZoom = true;
+    var D = document;
+    var Z = 1.2;
+
+    function stored() {
+      try { return sessionStorage.getItem('mdrZoom') === '1'; } catch (e) { return false; }
+    }
+
+    var btn = D.createElement('button');
+    btn.className = 'mdr-zoom';
+    btn.type = 'button';
+    btn.setAttribute('aria-label', 'Zoom the page');
+    btn.innerHTML =
+      '<span class="mdr-bracket">[</span>' +
+      '<span class="mdr-zoom__sign">+</span>' +
+      '<span class="mdr-zoom__pg" aria-hidden="true"><i></i><i></i><i></i><i></i></span>' +
+      '<span class="mdr-bracket">]</span>';
+
+    function apply(on) {
+      try { D.body.style.zoom = on ? Z : ''; } catch (e) {}
+      btn.classList.toggle('is-zoomed', on);
+      var s = btn.querySelector('.mdr-zoom__sign');
+      if (s) s.textContent = on ? '−' : '+';
+      btn.setAttribute('aria-pressed', on ? 'true' : 'false');
+      try { sessionStorage.setItem('mdrZoom', on ? '1' : '0'); } catch (e) {}
+    }
+
+    btn.addEventListener('click', function () { apply(!stored()); });
+
+    function mount() {
+      if (!btn.isConnected) (D.documentElement || D.body).appendChild(btn);
+      apply(stored());
+    }
+
+    if (D.readyState !== 'loading') mount();
+    D.addEventListener('DOMContentLoaded', mount);
+    window.addEventListener('load', mount);
+  })();
 </script>
