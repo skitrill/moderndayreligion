@@ -481,6 +481,24 @@
       if (s) s.textContent = on ? '−' : '+';
       btn.setAttribute('aria-pressed', on ? 'true' : 'false');
       try { sessionStorage.setItem('mdrZoom', on ? '1' : '0'); } catch (e) {}
+      place();
+    }
+
+    /* keep the button level with the "Refund policy" footer line */
+    function refundLine() {
+      var links = D.querySelectorAll('footer a, .footer-utilities a, .footer a');
+      for (var i = 0; i < links.length; i++) {
+        if (/refund\s*policy/i.test(links[i].textContent)) return links[i];
+      }
+      return null;
+    }
+    function place() {
+      var el = refundLine();
+      if (!el) { btn.style.bottom = '10px'; return; }
+      var r = el.getBoundingClientRect();
+      var fromBottom = window.innerHeight - r.top - r.height / 2 - btn.offsetHeight / 2;
+      var b = Math.min(Math.max(fromBottom, 6), window.innerHeight - btn.offsetHeight - 6);
+      btn.style.bottom = Math.round(b) + 'px';
     }
 
     btn.addEventListener('click', function () { apply(!stored()); });
@@ -488,10 +506,13 @@
     function mount() {
       if (!btn.isConnected) (D.documentElement || D.body).appendChild(btn);
       apply(stored());
+      place();
     }
 
     if (D.readyState !== 'loading') mount();
     D.addEventListener('DOMContentLoaded', mount);
     window.addEventListener('load', mount);
+    window.addEventListener('scroll', place, { passive: true });
+    window.addEventListener('resize', place, { passive: true });
   })();
 </script>
