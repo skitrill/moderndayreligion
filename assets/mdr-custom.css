@@ -1432,3 +1432,47 @@ cart-drawer [class*='price'] {
 .mdr-lookbook__heading {
   color: #cc2b1f !important;
 }
+
+/* ==========================================================================
+   Home ("ALL") layout: red navbar above the grid, no exposed borders.
+   ========================================================================== */
+.mdr-home-nav {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: center;
+  gap: 16px;
+  padding: 12px 14px 4px;
+  border: 0;
+  background: transparent;
+}
+
+.mdr-home-nav a {
+  font-family: 'Anonymous Pro', ui-monospace, monospace;
+  font-size: 0.625rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: #cc2b1f;
+  text-decoration: none;
+  border: 0;
+  line-height: 1;
+  opacity: 0.62;
+  transition: opacity 0.15s ease;
+}
+
+.mdr-home-nav a[aria-current='page'] {
+  opacity: 1;
+}
+
+.mdr-home-nav a:hover {
+  opacity: 1;
+}
+
+/* the ALL section + its navbar: never show a border line */
+main[data-template='index'] [id$='__product_list_fa6P9H'],
+main[data-template='index'] [id$='__product_list_fa6P9H'] *,
+.mdr-home-nav,
+.mdr-home-nav * {
+  border: 0 !important;
+  outline: 0 !important;
+}

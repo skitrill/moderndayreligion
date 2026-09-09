@@ -403,4 +403,49 @@
       new MutationObserver(tidy).observe(hc, { childList: true, subtree: true });
     }
   })();
+
+  /* =====================================================================
+     Home ("ALL") gets its own layout: a red navbar above the grid.
+     ===================================================================== */
+  (function () {
+    if (window.__mdrHomeNav) return;
+    window.__mdrHomeNav = true;
+    var D = document;
+
+    var LINKS = [
+      ['All', '/'],
+      ['Tops', '/collections/tops-t-shirts'],
+      ['Lookbook', '/pages/lookbook']
+    ];
+
+    function build() {
+      var main = D.querySelector('main[data-template="index"]');
+      if (!main || D.querySelector('.mdr-home-nav')) return;
+
+      var nav = D.createElement('nav');
+      nav.className = 'mdr-home-nav';
+      nav.setAttribute('aria-label', 'Shop');
+      for (var i = 0; i < LINKS.length; i++) {
+        var a = D.createElement('a');
+        a.href = LINKS[i][1];
+        a.textContent = LINKS[i][0];
+        if (
+          (LINKS[i][1] === '/' && (location.pathname === '/' || location.pathname === '')) ||
+          (LINKS[i][1] !== '/' && location.pathname.indexOf(LINKS[i][1]) === 0)
+        ) {
+          a.setAttribute('aria-current', 'page');
+        }
+        nav.appendChild(a);
+      }
+      main.insertBefore(nav, main.firstChild);
+    }
+
+    if (D.readyState !== 'loading') build();
+    D.addEventListener('DOMContentLoaded', build);
+    window.addEventListener('load', build);
+    var m = D.querySelector('main') || D.body;
+    if (window.MutationObserver) {
+      new MutationObserver(build).observe(m, { childList: true });
+    }
+  })();
 </script>
