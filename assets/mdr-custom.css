@@ -1508,25 +1508,41 @@ main[data-template='index'] [id$='__product_list_fa6P9H'] *,
 }
 
 /* ==========================================================================
-   [ALL >] collapsible bar: a small red bracketed pill above the grid whose
-   left edge lines up with the box. Tap it and it slides open to the right,
-   revealing the collection titles; tap again (or tap away) to close.
+   [ALL >] collapsible bar: sits in the exact slot of the "ALL" section title
+   (the real heading text is hidden). Closed = a small red bracketed pill
+   whose left edge lines up with the grid box; tap it and it slides open to
+   the right, revealing the collection titles. Tap again / away to close.
    ========================================================================== */
-main[data-template='index'] .mdr-allbar-wrap {
+
+/* Drop the real heading text, let the header box become the bar's slot. */
+main[data-template='index']
+  [id$='__product_list_fa6P9H']
+  .section-resource-list__header
+  > *:not(.mdr-allbar-wrap) {
+  display: none !important;
+}
+
+main[data-template='index']
+  [id$='__product_list_fa6P9H']
+  .section-resource-list__header:has(.mdr-allbar-wrap) {
+  display: block !important;
+}
+
+main[data-template='index'] [id$='__product_list_fa6P9H'] .mdr-allbar-wrap {
   box-sizing: border-box;
   width: 82vw;
   max-width: 300px;
-  margin: 4px auto -2px;
+  margin: 0 auto;
 }
 
 @media (min-width: 750px) {
-  main[data-template='index'] .mdr-allbar-wrap {
+  main[data-template='index'] [id$='__product_list_fa6P9H'] .mdr-allbar-wrap {
     width: 100%;
     max-width: 440px;
   }
 }
 
-main[data-template='index'] .mdr-allbar {
+main[data-template='index'] [id$='__product_list_fa6P9H'] .mdr-allbar {
   box-sizing: border-box;
   display: flex;
   align-items: center;
@@ -1548,12 +1564,12 @@ main[data-template='index'] .mdr-allbar {
   transition: max-width 0.5s cubic-bezier(0.16, 1, 0.3, 1), background 0.25s ease;
 }
 
-main[data-template='index'] .mdr-allbar.is-open {
+main[data-template='index'] [id$='__product_list_fa6P9H'] .mdr-allbar.is-open {
   max-width: 100%;
   background: rgb(204 43 31 / 0.12);
 }
 
-main[data-template='index'] .mdr-allbar__toggle {
+main[data-template='index'] [id$='__product_list_fa6P9H'] .mdr-allbar__toggle {
   display: inline-flex;
   align-items: center;
   gap: 3px;
@@ -1570,16 +1586,19 @@ main[data-template='index'] .mdr-allbar__toggle {
   -webkit-tap-highlight-color: transparent;
 }
 
-main[data-template='index'] .mdr-allbar__chev {
+main[data-template='index'] [id$='__product_list_fa6P9H'] .mdr-allbar__chev {
   display: inline-block;
   transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
-main[data-template='index'] .mdr-allbar.is-open .mdr-allbar__chev {
+main[data-template='index']
+  [id$='__product_list_fa6P9H']
+  .mdr-allbar.is-open
+  .mdr-allbar__chev {
   transform: rotate(90deg);
 }
 
-main[data-template='index'] .mdr-allbar__list {
+main[data-template='index'] [id$='__product_list_fa6P9H'] .mdr-allbar__list {
   display: flex;
   align-items: center;
   gap: 16px;
@@ -1588,19 +1607,26 @@ main[data-template='index'] .mdr-allbar__list {
   transition: opacity 0.3s ease 0.05s;
 }
 
-main[data-template='index'] .mdr-allbar.is-open .mdr-allbar__list {
+main[data-template='index']
+  [id$='__product_list_fa6P9H']
+  .mdr-allbar.is-open
+  .mdr-allbar__list {
   opacity: 1;
 }
 
-main[data-template='index'] .mdr-allbar__list a {
+main[data-template='index'] [id$='__product_list_fa6P9H'] .mdr-allbar__list a {
   color: #cc2b1f;
   text-decoration: none;
   opacity: 0.62;
   transition: opacity 0.15s ease;
 }
 
-main[data-template='index'] .mdr-allbar__list a:hover,
-main[data-template='index'] .mdr-allbar__list a[aria-current='page'] {
+main[data-template='index']
+  [id$='__product_list_fa6P9H']
+  .mdr-allbar__list a:hover,
+main[data-template='index']
+  [id$='__product_list_fa6P9H']
+  .mdr-allbar__list a[aria-current='page'] {
   opacity: 1;
 }
 

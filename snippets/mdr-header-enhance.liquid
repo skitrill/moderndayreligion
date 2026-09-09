@@ -334,6 +334,7 @@
        dense; in "zoom" view, card taps navigate to the product as normal. */
     D.addEventListener('click', function (e) {
       if (read() !== 'grid8') return;
+      if (e.target.closest && e.target.closest('.mdr-allbar-wrap')) return;
       var sec = featured();
       if (!sec || !sec.contains(e.target)) return;
       e.preventDefault();
@@ -520,7 +521,15 @@
       bar.appendChild(toggle);
       bar.appendChild(list);
       wrap.appendChild(bar);
-      sec.parentNode.insertBefore(wrap, sec);
+
+      /* drop the bar into the exact slot of the "ALL" section title
+         (the heading text itself is hidden in CSS) */
+      var header = sec.querySelector('.section-resource-list__header');
+      if (header) {
+        header.insertBefore(wrap, header.firstChild);
+      } else {
+        sec.parentNode.insertBefore(wrap, sec);
+      }
 
       /* keep the bar's left edge + width locked to the grid box, in every
          featured mode (grid8 / zoom) and at every viewport */
