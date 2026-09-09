@@ -1507,6 +1507,39 @@ main[data-template='index'] [id$='__product_list_fa6P9H'] *,
   outline: 0 !important;
 }
 
+/* The ALL grid is a borderless rectangular window: the cards scroll UP inside
+   it while the page itself stays still. overscroll-behavior keeps the scroll
+   from chaining out to the document once the box hits its end. */
+main[data-template='index'] [id$='__product_list_fa6P9H'] .resource-list--grid {
+  max-height: 62vh !important;
+  overflow-y: auto !important;
+  overflow-x: hidden !important;
+  overscroll-behavior: contain !important;
+  -webkit-overflow-scrolling: touch !important;
+  padding-inline-end: 3px !important;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(255, 255, 255, 0.25) transparent;
+}
+
+@media screen and (max-width: 749px) {
+  main[data-template='index'] [id$='__product_list_fa6P9H'] .resource-list--grid {
+    max-height: 58vh !important;
+  }
+}
+
+main[data-template='index'] [id$='__product_list_fa6P9H'] .resource-list--grid::-webkit-scrollbar {
+  width: 3px;
+}
+
+main[data-template='index'] [id$='__product_list_fa6P9H'] .resource-list--grid::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+main[data-template='index'] [id$='__product_list_fa6P9H'] .resource-list--grid::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.25);
+  border-radius: 0;
+}
+
 /* ==========================================================================
    Mobile page-zoom toggle -- [+ page-icon] / [- page-icon], bottom-right
    ========================================================================== */
