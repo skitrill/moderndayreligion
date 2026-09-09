@@ -1511,7 +1511,7 @@ main[data-template='index'] [id$='__product_list_fa6P9H'] *,
    it while the page itself stays still. overscroll-behavior keeps the scroll
    from chaining out to the document once the box hits its end. */
 main[data-template='index'] [id$='__product_list_fa6P9H'] .resource-list--grid {
-  max-height: 40vh !important;
+  max-height: 48vh !important;
   overflow-y: auto !important;
   overflow-x: hidden !important;
   overscroll-behavior: contain !important;
@@ -1524,7 +1524,7 @@ main[data-template='index'] [id$='__product_list_fa6P9H'] .resource-list--grid {
 
 @media screen and (max-width: 749px) {
   main[data-template='index'] [id$='__product_list_fa6P9H'] .resource-list--grid {
-    max-height: 38vh !important;
+    max-height: 46vh !important;
   }
 }
 
