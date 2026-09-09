@@ -1425,24 +1425,36 @@ cart-drawer [class*='price'] {
   color: #3a3ec4 !important;
 }
 
-/* header cart -> a solid blue rectangle block with white text */
+/* header cart -> outstanding magenta rectangle with a spun spider-web + white text */
 .header__cart-link,
 #header-component .header__cart-link,
 #header-component a[href$='/cart'] {
   display: inline-block !important;
-  padding: 3px 8px !important;
-  background: #3a3ec4 !important;
+  padding: 4px 10px !important;
   color: #ffffff !important;
+  background-color: #ff127f !important;
+  background-image:
+    repeating-conic-gradient(
+      from 0deg at 50% 50%,
+      rgba(255, 255, 255, 0.24) 0deg 0.7deg,
+      transparent 0.7deg 22.5deg
+    ),
+    repeating-radial-gradient(
+      circle at 50% 50%,
+      transparent 0 5px,
+      rgba(255, 255, 255, 0.22) 5px 5.9px
+    ) !important;
   border: 0 !important;
   border-radius: 0 !important;
   text-transform: uppercase !important;
   line-height: 1.1 !important;
   letter-spacing: 0.06em !important;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.35) !important;
 }
 
 .header__cart-link:hover,
 #header-component .header__cart-link:hover {
-  background: #2f329e !important;
+  background-color: #ff3b96 !important;
   color: #ffffff !important;
 }
 
