@@ -1590,8 +1590,8 @@ main[data-template='index']
   white-space: nowrap;
   padding: 4px 7px;
   border: 0 !important;
-  background: #0f3d2a;
-  color: #ffffff;
+  background: #e9e1c4;
+  color: #1a1a1a;
   font: inherit;
   font-size: 0.62rem;
   text-transform: uppercase;
@@ -1636,8 +1636,8 @@ main[data-template='index']
 }
 
 .mdr-allbar.is-open .mdr-allbar__chev {
-  background: #ffffff;
-  color: #0f3d2a;
+  background: #1a1a1a;
+  color: #e9e1c4;
   padding: 2px 4px;
   margin-inline-start: 2px;
   letter-spacing: 0.04em;
@@ -1658,9 +1658,9 @@ main[data-template='index']
 }
 
 .mdr-allbar__list a {
-  color: #ffffff;
+  color: #1a1a1a;
   text-decoration: none;
-  opacity: 0.72;
+  opacity: 0.62;
   white-space: nowrap;
   transition: opacity 0.15s ease;
 }
