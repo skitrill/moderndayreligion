@@ -1711,6 +1711,14 @@ main[data-template='index'] [id$='__product_list_fa6P9H'] .product-card__link {
   height: 100% !important;
 }
 
+/* no tap flash anywhere on a product card */
+main[data-template='index'] [id$='__product_list_fa6P9H'] .product-card,
+main[data-template='index'] [id$='__product_list_fa6P9H'] .product-card a,
+main[data-template='index'] [id$='__product_list_fa6P9H'] .resource-list__item,
+main[data-template='index'] [id$='__product_list_fa6P9H'] .resource-list__item a {
+  -webkit-tap-highlight-color: transparent !important;
+}
+
 /* the image panel keeps OUR pattern -- black + faint hazard-tape */
 main[data-template='index'] [id$='__product_list_fa6P9H'] .card-gallery,
 main[data-template='index'] [id$='__product_list_fa6P9H'] .product-media-container {
