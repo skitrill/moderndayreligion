@@ -1287,12 +1287,12 @@ body:has(#Details-menu-drawer-container[open]) {
 }
 
 .variant-option--buttons .variant-option__button-label:has(input:checked) {
-  color: #e9e1c4 !important;
+  color: #1a1a1a !important;
 }
 
 .variant-option--buttons .variant-option__button-label:has(input:checked)
   :is(.variant-option__button-label__text, span) {
-  color: #e9e1c4 !important;
+  color: #1a1a1a !important;
 }
 
 /* phone: narrower side gutters */
