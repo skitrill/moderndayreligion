@@ -1539,7 +1539,9 @@ main[data-template='index']
 .mdr-allbar-wrap {
   display: inline-flex;
   align-items: center;
-  margin-inline-start: 10px;
+  align-self: center;
+  flex: 0 0 auto;
+  margin-inline-start: 12px;
   vertical-align: middle;
 }
 
@@ -1547,11 +1549,12 @@ main[data-template='index']
   box-sizing: border-box;
   display: inline-flex;
   align-items: center;
+  flex: 0 0 auto;
   gap: 12px;
-  max-width: 74px;
+  max-width: 94px;
   overflow: hidden;
   white-space: nowrap;
-  padding: 3px 7px;
+  padding: 4px 7px;
   border: 0 !important;
   background: #160f0a;
   color: #e9e1c4;
@@ -1565,7 +1568,7 @@ main[data-template='index']
 }
 
 .mdr-allbar.is-open {
-  max-width: 60vw;
+  max-width: min(64vw, 320px);
   background: #160f0a;
 }
 
@@ -1629,45 +1632,17 @@ main[data-template='index']
   opacity: 1;
 }
 
-/* The ALL grid is a borderless rectangular window: the cards scroll UP inside
-   it while the page itself stays still. overscroll-behavior keeps the scroll
-   from chaining out to the document once the box hits its end. */
+/* supreme-style: the grid just flows down the page, no inner scroll window */
 main[data-template='index'] [id$='__product_list_fa6P9H'] .resource-list--grid {
-  max-height: 48vh !important;
-  overflow-y: auto !important;
-  overflow-x: hidden !important;
-  overscroll-behavior: contain !important;
-  -webkit-overflow-scrolling: touch !important;
+  max-height: none !important;
+  overflow: visible !important;
   border: 0 !important;
-  padding: 6px 3px 6px 6px !important;
-  scrollbar-width: thin;
-  scrollbar-color: rgba(255, 255, 255, 0.25) transparent;
+  padding: 0 !important;
 }
 
 main[data-template='index'] [id$='__product_list_fa6P9H'] .mdr-scrollfade {
   position: relative;
-  width: fit-content;
-  max-width: 100%;
-  margin-inline: auto;
-}
-
-@media screen and (max-width: 749px) {
-  main[data-template='index'] [id$='__product_list_fa6P9H'] .resource-list--grid {
-    max-height: 46vh !important;
-  }
-}
-
-main[data-template='index'] [id$='__product_list_fa6P9H'] .resource-list--grid::-webkit-scrollbar {
-  width: 3px;
-}
-
-main[data-template='index'] [id$='__product_list_fa6P9H'] .resource-list--grid::-webkit-scrollbar-track {
-  background: transparent;
-}
-
-main[data-template='index'] [id$='__product_list_fa6P9H'] .resource-list--grid::-webkit-scrollbar-thumb {
-  background: rgba(255, 255, 255, 0.25);
-  border-radius: 0;
+  width: 100%;
 }
 
 /* ==========================================================================
@@ -1723,8 +1698,16 @@ main[data-template='index'] [id$='__product_list_fa6P9H'] .card-gallery::after {
   font: inherit;
   font-size: 0.6rem;
   letter-spacing: 0.02em;
-  color: rgba(120, 120, 120, 0.6);
+  text-transform: none !important;
+  color: rgba(120, 120, 120, 0.75);
   pointer-events: none;
+}
+
+/* dense (logo-tap) view: drop the name / price / tag so the mini tiles stay clean */
+html[data-featured='grid8'] main[data-template='index'] [id$='__product_list_fa6P9H'] .product-card a.contents.user-select-text,
+html[data-featured='grid8'] main[data-template='index'] [id$='__product_list_fa6P9H'] .product-card product-price,
+html[data-featured='grid8'] main[data-template='index'] [id$='__product_list_fa6P9H'] .card-gallery::after {
+  display: none !important;
 }
 
 /* hide the quick-add / choose overlay button -- supreme cards are just tap-through */
