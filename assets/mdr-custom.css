@@ -1534,6 +1534,9 @@ main[data-template='index'] [id$='__product_list_fa6P9H'] .mdr-allbar-wrap {
   width: 82vw;
   max-width: 300px;
   margin: 0 auto;
+  /* the section header centres its text; keep the inline-flex bar pinned left
+     so it stays on the grid box's left edge */
+  text-align: left !important;
 }
 
 @media (min-width: 750px) {
