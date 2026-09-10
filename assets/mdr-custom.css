@@ -1348,6 +1348,24 @@ a:not([class*='button']):not(.header-logo):focus-visible {
   --color-foreground-subdued: rgb(233 225 196 / 0.45) !important;
 }
 
+/* ==========================================================================
+   Whole site in caps.
+   ========================================================================== */
+body,
+body *,
+body ::before,
+body ::after {
+  text-transform: uppercase !important;
+}
+
+/* ...but never transform the actual value a shopper typed into a field */
+input,
+textarea,
+select,
+[contenteditable] {
+  text-transform: none !important;
+}
+
 /* product description column -> muted, NOT red (via the foreground var, so
    buttons / inputs with their own colours are untouched) */
 main .product-information__grid,
@@ -1711,7 +1729,7 @@ main[data-template='index'] [id$='__product_list_fa6P9H'] .card-gallery::after {
   font: inherit;
   font-size: 0.6rem;
   letter-spacing: 0.02em;
-  text-transform: none !important;
+  text-transform: uppercase !important;
   color: rgba(233, 225, 196, 0.45);
   pointer-events: none;
 }
@@ -1756,7 +1774,7 @@ main[data-template='index'] [id$='__product_list_fa6P9H'] .product-card product-
   letter-spacing: normal !important;
   text-align: left !important;
   color: #e9e1c4 !important;
-  text-transform: none !important;
+  text-transform: uppercase !important;
 }
 
 main[data-template='index'] [id$='__product_list_fa6P9H'] .product-card product-price,
