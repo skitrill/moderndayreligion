@@ -626,7 +626,7 @@ main[data-template='index'] [id$='__product_list_fa6P9H'] .section-resource-list
   :is(h1, h2, h3, h4, .text-block, [class*='title']),
 main[data-template='index'] [id$='__product_list_fa6P9H'] .section-resource-list__header
   :is(h1, h2, h3, h4, .text-block) * {
-  color: #cc2b1f !important;
+  color: #e9e1c4 !important;
 }
 
 /* dense mode: the whole layout is one tap target -> zoom back to 2/4 */
@@ -1285,12 +1285,12 @@ body:has(#Details-menu-drawer-container[open]) {
 }
 
 .variant-option--buttons .variant-option__button-label:has(input:checked) {
-  color: #cc2b1f !important;
+  color: #e9e1c4 !important;
 }
 
 .variant-option--buttons .variant-option__button-label:has(input:checked)
   :is(.variant-option__button-label__text, span) {
-  color: #cc2b1f !important;
+  color: #e9e1c4 !important;
 }
 
 /* phone: narrower side gutters */
@@ -1322,12 +1322,12 @@ main .product-information__grid .size-chart:not(._):not(._):not(._) * {
 
 ::selection {
   background: #d6d1c4;
-  color: #cc2b1f;
+  color: #1a1a1a;
 }
 
 ::-moz-selection {
   background: #d6d1c4;
-  color: #cc2b1f;
+  color: #1a1a1a;
 }
 
 /* link highlight on hover / active (overrides the dark-brown in base.css) */
@@ -1335,7 +1335,7 @@ a:not([class*='button']):not(.header-logo):hover,
 a:not([class*='button']):not(.header-logo):active,
 a:not([class*='button']):not(.header-logo):focus-visible {
   background-color: #d6d1c4 !important;
-  color: #cc2b1f !important;
+  color: #1a1a1a !important;
 }
 
 /* ==========================================================================
@@ -1344,10 +1344,10 @@ a:not([class*='button']):not(.header-logo):focus-visible {
 *,
 ::before,
 ::after {
-  --color-foreground: #cc2b1f !important;
-  --color-foreground-rgb: 204 43 31 !important;
-  --color-foreground-muted: rgb(204 43 31 / 0.72) !important;
-  --color-foreground-subdued: rgb(204 43 31 / 0.45) !important;
+  --color-foreground: #e9e1c4 !important;
+  --color-foreground-rgb: 233 225 196 !important;
+  --color-foreground-muted: rgb(233 225 196 / 0.72) !important;
+  --color-foreground-subdued: rgb(233 225 196 / 0.45) !important;
 }
 
 /* product description column -> muted, NOT red (via the foreground var, so
@@ -1460,7 +1460,7 @@ cart-drawer [class*='price'] {
 
 /* lookbook heading -> follow the red default */
 .mdr-lookbook__heading {
-  color: #cc2b1f !important;
+  color: #e9e1c4 !important;
 }
 
 /* ==========================================================================
@@ -1481,7 +1481,7 @@ cart-drawer [class*='price'] {
   /* inherit the site's default type -- no custom family / tracking / size */
   font: inherit;
   text-transform: uppercase;
-  color: #cc2b1f;
+  color: #e9e1c4;
   text-decoration: none;
   border: 0;
   line-height: 1;
