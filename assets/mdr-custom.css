@@ -1742,7 +1742,8 @@ main[data-template='index'] [id$='__product_list_fa6P9H'] .product-card product-
 }
 
 main[data-template='index'] [id$='__product_list_fa6P9H'] .product-card .text-block {
-  margin-top: 8px !important;
+  margin: 8px 0 0 !important;
+  padding: 0 !important;
 }
 
 main[data-template='index'] [id$='__product_list_fa6P9H'] .product-card .text-block p,
@@ -1756,12 +1757,16 @@ main[data-template='index'] [id$='__product_list_fa6P9H'] .product-card product-
   text-transform: none !important;
 }
 
-main[data-template='index'] [id$='__product_list_fa6P9H'] .product-card product-price {
-  margin-top: 0 !important;
+main[data-template='index'] [id$='__product_list_fa6P9H'] .product-card product-price,
+main[data-template='index'] [id$='__product_list_fa6P9H'] .product-card product-price.spacing-style,
+main[data-template='index'] [id$='__product_list_fa6P9H'] .product-card product-price > div {
+  margin: 0 !important;
+  padding: 0 !important;
 }
 
 main[data-template='index'] [id$='__product_list_fa6P9H'] .product-card .text-block p {
-  margin-bottom: 0 !important;
+  margin: 0 !important;
+  padding: 0 !important;
 }
 
 /* mobile 2-up: the right-hand column right-aligns its name + price */
