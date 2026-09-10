@@ -1547,12 +1547,10 @@ main[data-template='index']
 
 .mdr-allbar {
   box-sizing: border-box;
+  position: relative;
   display: inline-flex;
   align-items: center;
   flex: 0 0 auto;
-  gap: 12px;
-  max-width: 94px;
-  overflow: hidden;
   white-space: nowrap;
   padding: 4px 7px;
   border: 0 !important;
@@ -1564,12 +1562,6 @@ main[data-template='index']
   line-height: 1;
   cursor: pointer;
   -webkit-tap-highlight-color: transparent;
-  transition: max-width 0.5s cubic-bezier(0.16, 1, 0.3, 1), background 0.25s ease;
-}
-
-.mdr-allbar.is-open {
-  max-width: min(64vw, 320px);
-  background: #160f0a;
 }
 
 .mdr-allbar__toggle {
@@ -1607,23 +1599,37 @@ main[data-template='index']
   letter-spacing: 0.04em;
 }
 
+/* the collection list drops DOWN from the pill (supreme-style menu) */
 .mdr-allbar__list {
+  position: absolute;
+  top: calc(100% + 4px);
+  left: 0;
   display: flex;
-  align-items: center;
-  gap: 14px;
-  flex: 0 0 auto;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 9px;
+  min-width: 130px;
+  max-width: 60vw;
+  padding: 10px 11px;
+  background: #160f0a;
   opacity: 0;
-  transition: opacity 0.3s ease 0.05s;
+  visibility: hidden;
+  transform: translateY(-4px);
+  transition: opacity 0.2s ease, transform 0.2s ease, visibility 0.2s;
+  z-index: 60;
 }
 
 .mdr-allbar.is-open .mdr-allbar__list {
   opacity: 1;
+  visibility: visible;
+  transform: translateY(0);
 }
 
 .mdr-allbar__list a {
   color: #e9e1c4;
   text-decoration: none;
   opacity: 0.72;
+  white-space: nowrap;
   transition: opacity 0.15s ease;
 }
 
