@@ -1532,20 +1532,20 @@ main[data-template='index']
    grid's left edge. Closed = a dim pill; tap and it slides open sideways
    into the collection list; tap again / away to collapse.
    ========================================================================== */
-/* a full-width line sitting just under the site header (present on every
-   page), its text aligned to the page gutter == under the MDR logo */
+/* a full-width strip pinned just under the site header (present on every
+   page). It stays put while the page scrolls -- a persistent function bar
+   right below the MDR logo. */
 .mdr-allbar-wrap {
   display: flex;
   align-items: center;
   width: 100%;
-  margin: 8px 0 10px;
-  padding-inline-start: var(--page-margin, 20px);
-}
-
-@media screen and (min-width: 750px) {
-  .mdr-allbar-wrap {
-    margin: 12px 0 14px;
-  }
+  box-sizing: border-box;
+  position: sticky;
+  top: calc(var(--header-height, 60px) - 1px);
+  z-index: 15;
+  margin: 0;
+  padding: 7px 0 7px var(--page-margin, 20px);
+  background: #000;
 }
 
 .mdr-allbar {
