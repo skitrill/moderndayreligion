@@ -1672,13 +1672,46 @@ main[data-template='index'] [id$='__product_list_fa6P9H'] .resource-list--grid {
   padding: 6px 3px 6px 6px !important;
   scrollbar-width: thin;
   scrollbar-color: rgba(255, 255, 255, 0.25) transparent;
-  /* soft dark-brown glow bleeding in from the inner edges (~10%) -- gives the
-     scrolling product wall a framed, fading feel at the box edges */
-  box-shadow:
-    inset 0 22px 26px -14px rgba(54, 37, 24, 0.1),
-    inset 0 -22px 26px -14px rgba(54, 37, 24, 0.1),
-    inset 20px 0 24px -18px rgba(54, 37, 24, 0.06),
-    inset -20px 0 24px -18px rgba(54, 37, 24, 0.06) !important;
+}
+
+/* Dark-brown edge glow over the scrolling product wall. It lives on a JS-added
+   wrapper (.mdr-scrollfade) so it can sit ON TOP of the cards and stay pinned
+   while they scroll -- an inset shadow on the grid itself renders behind the
+   cards and is invisible. */
+main[data-template='index'] [id$='__product_list_fa6P9H'] .mdr-scrollfade {
+  position: relative;
+  width: fit-content;
+  max-width: 100%;
+  margin-inline: auto;
+}
+
+main[data-template='index'] [id$='__product_list_fa6P9H'] .mdr-scrollfade::before,
+main[data-template='index'] [id$='__product_list_fa6P9H'] .mdr-scrollfade::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  height: 44px;
+  pointer-events: none;
+  z-index: 4;
+}
+
+main[data-template='index'] [id$='__product_list_fa6P9H'] .mdr-scrollfade::before {
+  top: 0;
+  background: linear-gradient(
+    to bottom,
+    rgba(46, 31, 20, 0.55),
+    rgba(46, 31, 20, 0)
+  );
+}
+
+main[data-template='index'] [id$='__product_list_fa6P9H'] .mdr-scrollfade::after {
+  bottom: 0;
+  background: linear-gradient(
+    to top,
+    rgba(46, 31, 20, 0.55),
+    rgba(46, 31, 20, 0)
+  );
 }
 
 @media screen and (max-width: 749px) {

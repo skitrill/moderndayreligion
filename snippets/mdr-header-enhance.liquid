@@ -595,6 +595,38 @@
   })();
 
   /* =====================================================================
+     Wrap the ALL product grid so a dark-brown edge glow can sit on top of
+     the cards (an inset shadow on the grid renders behind them).
+     ===================================================================== */
+  (function () {
+    if (window.__mdrScrollFade) return;
+    window.__mdrScrollFade = true;
+    var D = document;
+
+    function build() {
+      var sec = D.querySelector('[id$="__product_list_fa6P9H"]');
+      if (!sec) return;
+      var grid = sec.querySelector('.resource-list--grid') ||
+        sec.querySelector('.resource-list');
+      if (!grid) return;
+      if (grid.parentElement &&
+          grid.parentElement.classList.contains('mdr-scrollfade')) return;
+      var frame = D.createElement('div');
+      frame.className = 'mdr-scrollfade';
+      grid.parentElement.insertBefore(frame, grid);
+      frame.appendChild(grid);
+    }
+
+    if (D.readyState !== 'loading') build();
+    D.addEventListener('DOMContentLoaded', build);
+    window.addEventListener('load', build);
+    var m = D.querySelector('main') || D.body;
+    if (window.MutationObserver) {
+      new MutationObserver(build).observe(m, { childList: true, subtree: true });
+    }
+  })();
+
+  /* =====================================================================
      Mobile page-zoom toggle -- [+ page] / [- page]. Sits at the bottom of
      the page, on the "Refund policy" line (not floating -- only visible
      once you scroll to the footer). Tapping zooms the whole page by 20%
