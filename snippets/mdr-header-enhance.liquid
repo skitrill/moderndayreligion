@@ -62,9 +62,17 @@
       return Math.max(0, D.documentElement.scrollHeight - window.innerHeight);
     }
 
-    /* Fast launch, long soft glide to a stop (yeezy-style momentum). */
-    function easeOutExpo(p) {
-      return p >= 1 ? 1 : 1 - Math.pow(2, -10 * p);
+    /* Smooth + wavy: an ease-in-out S-curve with a gentle spring settle at the
+       end -- fluid to watch, still lands quickly. */
+    function easeWavy(p) {
+      if (p >= 1) return 1;
+      /* easeInOutCubic base -- soft start, soft stop */
+      var base = p < 0.5
+        ? 4 * p * p * p
+        : 1 - Math.pow(-2 * p + 2, 3) / 2;
+      /* one low, fast-decaying ripple over the travel -> the "wave" */
+      var wave = Math.sin(p * Math.PI * 3) * 0.045 * (1 - p) * (1 - p);
+      return base + wave;
     }
 
     /* Windy + snappy: eased travel you can see, bailing out the moment the
@@ -84,7 +92,7 @@
       }
 
       D.documentElement.style.scrollBehavior = 'auto';
-      var dur = Math.max(430, Math.min(880, 300 + Math.abs(dist) * 0.16));
+      var dur = Math.max(560, Math.min(1150, 360 + Math.abs(dist) * 0.2));
       var t0 = null;
       var stopped = false;
 
@@ -114,7 +122,7 @@
         if (stopped) return;
         if (t0 === null) t0 = now;
         var p = Math.min(1, (now - t0) / dur);
-        window.scrollTo(0, Math.round(startY + dist * easeOutExpo(p)));
+        window.scrollTo(0, Math.round(startY + dist * easeWavy(p)));
         if (p < 1) {
           glideRAF = requestAnimationFrame(step);
         } else {
