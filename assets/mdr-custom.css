@@ -1555,10 +1555,9 @@ main[data-template='index'] [id$='__product_list_fa6P9H'] .mdr-allbar {
   border: 0.7px solid rgba(233, 225, 196, 0.22) !important;
   background: #201812;
   color: #e9e1c4;
-  /* inherit the site's default type (family, size, spacing) -- only the
-     weight + casing are ours */
+  /* inherit the site's default type (family, size, spacing, weight) --
+     only the casing is ours */
   font: inherit;
-  font-weight: 700;
   text-transform: uppercase;
   line-height: 1;
   cursor: pointer;
@@ -1622,7 +1621,6 @@ main[data-template='index']
 
 main[data-template='index'] [id$='__product_list_fa6P9H'] .mdr-allbar__list a {
   color: #e9e1c4;
-  font-weight: 700;
   text-decoration: none;
   opacity: 0.72;
   transition: opacity 0.15s ease;
