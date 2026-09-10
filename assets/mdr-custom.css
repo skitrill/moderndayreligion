@@ -1536,13 +1536,18 @@ main[data-template='index']
    logo. Closed = a dim little pill; tap to slide it open into the list of
    collection titles, tap again / away to collapse.
    ========================================================================== */
+/* a quiet line sitting just under the MDR logo, aligned to the page gutter */
 .mdr-allbar-wrap {
-  display: inline-flex;
+  display: flex;
   align-items: center;
-  align-self: center;
-  flex: 0 0 auto;
-  margin-inline-start: 12px;
-  vertical-align: middle;
+  margin: 6px 0 14px;
+  padding-inline-start: var(--page-margin, 20px);
+}
+
+@media screen and (min-width: 750px) {
+  .mdr-allbar-wrap {
+    margin: 10px 0 20px;
+  }
 }
 
 .mdr-allbar {
@@ -1670,11 +1675,12 @@ main[data-template='index'] [id$='__product_list_fa6P9H'] .product-card__content
   gap: 8px !important;
 }
 
-/* the product image sits on a light grey panel */
+/* the image panel keeps OUR pattern -- black + faint hazard-tape */
 main[data-template='index'] [id$='__product_list_fa6P9H'] .card-gallery,
 main[data-template='index'] [id$='__product_list_fa6P9H'] .product-media-container {
   position: relative;
-  background: #f4f4f4 !important;
+  background-color: #000 !important;
+  background-image: var(--mdr-tape) !important;
   border: 0 !important;
   border-radius: 0 !important;
   overflow: hidden;
@@ -1688,10 +1694,10 @@ main[data-template='index'] [id$='__product_list_fa6P9H'] .product-media-contain
 
 main[data-template='index'] [id$='__product_list_fa6P9H'] .product-card .product-media__image,
 main[data-template='index'] [id$='__product_list_fa6P9H'] .product-card .product-media img {
-  filter: none !important;
-  mix-blend-mode: multiply;
+  filter: drop-shadow(0 0 11px rgba(122, 84, 52, 0.1)) !important;
+  mix-blend-mode: normal;
   object-fit: contain !important;
-  padding: 10% !important;
+  padding: 9% !important;
 }
 
 /* ghost "new" tag, top-right of the image panel */
@@ -1705,7 +1711,7 @@ main[data-template='index'] [id$='__product_list_fa6P9H'] .card-gallery::after {
   font-size: 0.6rem;
   letter-spacing: 0.02em;
   text-transform: none !important;
-  color: rgba(120, 120, 120, 0.75);
+  color: rgba(233, 225, 196, 0.45);
   pointer-events: none;
 }
 

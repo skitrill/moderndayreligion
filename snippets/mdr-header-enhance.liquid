@@ -473,9 +473,12 @@
 
     function build() {
       if (D.querySelector('.mdr-allbar-wrap')) return;
-      var logo = D.querySelector('#header-component a.header-logo') ||
-        D.querySelector('a.header-logo');
-      if (!logo || !logo.parentNode) return;
+      /* mount point: the top of the page content, so it reads as a line
+         sitting directly under the MDR logo (keeps the header row itself
+         uncluttered) */
+      var host = D.querySelector('main[data-template="index"]') ||
+        D.querySelector('main');
+      if (!host) return;
 
       var data = collections();
 
@@ -511,8 +514,8 @@
       bar.appendChild(list);
       wrap.appendChild(bar);
 
-      /* sit it immediately after the logo */
-      logo.parentNode.insertBefore(wrap, logo.nextSibling);
+      /* sit it at the very top of the page, under the logo */
+      host.insertBefore(wrap, host.firstChild);
 
       var chev = toggle.querySelector('.mdr-allbar__chev');
       function setOpen(on) {
@@ -535,9 +538,9 @@
     if (D.readyState !== 'loading') build();
     D.addEventListener('DOMContentLoaded', build);
     window.addEventListener('load', build);
-    var hc = D.querySelector('#header-component') || D.body;
+    var m = D.querySelector('main') || D.body;
     if (window.MutationObserver) {
-      new MutationObserver(build).observe(hc, { childList: true, subtree: true });
+      new MutationObserver(build).observe(m, { childList: true });
     }
   })();
 
