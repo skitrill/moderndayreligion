@@ -1465,6 +1465,15 @@ cart-drawer [class*='price'] {
   color: #e9e1c4 !important;
 }
 
+/* collection / product page headings render in the theme's brighter #f0eee6 --
+   pull them onto the site off-white so every heading matches */
+main[data-template='collection'] h1,
+main[data-template='collection'] .text-block :is(h1, h2, h3),
+main[data-template='product'] .product-title,
+main[data-template='product'] .product-title * {
+  color: #e9e1c4 !important;
+}
+
 /* ==========================================================================
    Home ("ALL") layout: red navbar above the grid, no exposed borders.
    ========================================================================== */
