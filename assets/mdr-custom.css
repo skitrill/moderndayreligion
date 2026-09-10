@@ -1543,10 +1543,12 @@ main[data-template='index'] [id$='__product_list_fa6P9H'] .mdr-allbar-wrap {
 
 main[data-template='index'] [id$='__product_list_fa6P9H'] .mdr-allbar {
   box-sizing: border-box;
-  display: flex;
+  /* inline-flex so the bar only ever hugs its own content -- no dead space
+     after the last item (or after the chevron when closed) */
+  display: inline-flex;
   align-items: center;
   gap: 14px;
-  max-width: 84px;
+  max-width: 78px;
   overflow: hidden;
   white-space: nowrap;
   padding: 4px 8px;
@@ -1588,14 +1590,18 @@ main[data-template='index'] [id$='__product_list_fa6P9H'] .mdr-allbar__toggle {
 
 main[data-template='index'] [id$='__product_list_fa6P9H'] .mdr-allbar__chev {
   display: inline-block;
-  transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
+/* open state: the chevron becomes a solid |<| block that collapses the bar */
 main[data-template='index']
   [id$='__product_list_fa6P9H']
   .mdr-allbar.is-open
   .mdr-allbar__chev {
-  transform: rotate(90deg);
+  background: #e9e1c4;
+  color: #201812;
+  padding: 2px 4px;
+  margin-inline-start: 2px;
+  letter-spacing: 0.04em;
 }
 
 main[data-template='index'] [id$='__product_list_fa6P9H'] .mdr-allbar__list {

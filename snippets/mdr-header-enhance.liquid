@@ -559,9 +559,11 @@
         });
       }
 
+      var chev = toggle.querySelector('.mdr-allbar__chev');
       function setOpen(on) {
         bar.classList.toggle('is-open', on);
         toggle.setAttribute('aria-expanded', on ? 'true' : 'false');
+        if (chev) chev.textContent = on ? '|<|' : '›';
       }
       toggle.addEventListener('click', function (e) {
         e.preventDefault();
