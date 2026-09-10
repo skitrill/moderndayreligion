@@ -1585,7 +1585,7 @@ main[data-template='index']
   align-items: center;
   flex: 0 0 auto;
   gap: 12px;
-  max-width: 96px;
+  max-width: 118px;
   overflow: hidden;
   white-space: nowrap;
   padding: 2px 0;
@@ -1593,7 +1593,7 @@ main[data-template='index']
   background: transparent;
   color: #e9e1c4;
   font: inherit;
-  font-size: 0.62rem;
+  font-size: 0.74rem;
   text-transform: uppercase;
   letter-spacing: 0.04em;
   line-height: 1;
