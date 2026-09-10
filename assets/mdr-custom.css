@@ -1635,21 +1635,6 @@ main[data-template='index']
   line-height: 0.6;
 }
 
-.mdr-allbar__chev:empty {
-  display: none;
-}
-
-/* small cloth-rack icon in place of the arrow on the WEBRACK button */
-.mdr-allbar__rack {
-  display: inline-flex;
-  align-items: center;
-}
-
-.mdr-allbar__rack svg {
-  width: 1.55em;
-  height: 1.55em;
-  display: block;
-}
 
 .mdr-allbar.is-open .mdr-allbar__chev:not(.mdr-allbar__chev--back) {
   background: #e9e1c4;
@@ -1871,68 +1856,4 @@ main[data-template='index'] [id$='__product_list_fa6P9H'] .product-card .price--
   color: rgba(233, 225, 196, 0.4) !important;
 }
 
-/* ==========================================================================
-   Mobile page-zoom toggle -- [+ page-icon] / [- page-icon], bottom-right
-   ========================================================================== */
-.mdr-zoom {
-  /* JS sets position:absolute + right + top, anchored to the footer */
-  z-index: 40;
-  display: none;
-  align-items: center;
-  gap: 1px;
-  padding: 2px 5px;
-  border: 0;
-  background: transparent;
-  color: var(--color-foreground);
-  font-family: var(--font-accent--family, 'Anonymous Pro', ui-monospace, monospace);
-  font-size: 0.62rem;
-  line-height: 1;
-  cursor: pointer;
-  -webkit-tap-highlight-color: transparent;
-}
-
-@media screen and (max-width: 749px) {
-  .mdr-zoom {
-    display: inline-flex;
-  }
-}
-
-.mdr-zoom .mdr-bracket {
-  font-size: 0.82rem;
-  opacity: 0.85;
-}
-
-.mdr-zoom__sign {
-  margin: 0 2px;
-  font-size: 0.74rem;
-}
-
-/* the "=" -> a four-line, centre-aligned page glyph */
-.mdr-zoom__pg {
-  display: inline-flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: 1.5px;
-  width: 10px;
-  margin-inline-end: 1px;
-}
-
-.mdr-zoom__pg i {
-  display: block;
-  width: 10px;
-  height: 1px;
-  background: currentColor;
-}
-
-.mdr-zoom__pg i:nth-child(2) {
-  width: 7px;
-}
-
-.mdr-zoom__pg i:nth-child(4) {
-  width: 5px;
-}
-
-.mdr-zoom:active {
-  opacity: 0.55;
-}
+/* The bottom [+ page] page-zoom toggle has been removed. */
