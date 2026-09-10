@@ -1585,21 +1585,22 @@ main[data-template='index']
   align-items: center;
   flex: 0 0 auto;
   gap: 12px;
-  max-width: 112px;
+  max-width: 96px;
   overflow: hidden;
   white-space: nowrap;
-  padding: 4px 8px;
-  border: 1px solid #e9e1c4 !important;
+  padding: 2px 0;
+  border: 0 !important;
   background: transparent;
   color: #e9e1c4;
   font: inherit;
   font-size: 0.62rem;
   text-transform: uppercase;
+  letter-spacing: 0.04em;
   line-height: 1;
   cursor: pointer;
   -webkit-tap-highlight-color: transparent;
-  /* dim while idle, full colour once opened */
-  opacity: 0.6;
+  /* plain text, no chrome -- dim while idle, full once opened */
+  opacity: 0.5;
   transition: max-width 0.5s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.2s ease;
 }
 
