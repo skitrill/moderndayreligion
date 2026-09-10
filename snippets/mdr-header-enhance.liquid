@@ -518,6 +518,19 @@
       /* sit it directly below the header, on every page */
       header.parentNode.insertBefore(wrap, header.nextSibling);
 
+      /* line its label up under the logo, at every breakpoint (the header
+         centres its own content on desktop, so a fixed gutter won't do) */
+      function alignLeft() {
+        var logo = D.querySelector('#header-component a.header-logo') ||
+          D.querySelector('a.header-logo');
+        if (!logo) return;
+        var x = Math.max(0, Math.round(logo.getBoundingClientRect().left));
+        wrap.style.paddingInlineStart = x + 'px';
+      }
+      alignLeft();
+      window.addEventListener('resize', alignLeft, { passive: true });
+      window.addEventListener('load', alignLeft);
+
       var chev = toggle.querySelector('.mdr-allbar__chev');
       function setOpen(on) {
         bar.classList.toggle('is-open', on);
