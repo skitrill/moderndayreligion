@@ -1700,7 +1700,7 @@ main[data-template='index'] [id$='__product_list_fa6P9H'] .mdr-scrollfade::befor
   top: 0;
   background: linear-gradient(
     to bottom,
-    rgba(46, 31, 20, 0.55),
+    rgba(46, 31, 20, 0.3),
     rgba(46, 31, 20, 0)
   );
 }
@@ -1709,7 +1709,7 @@ main[data-template='index'] [id$='__product_list_fa6P9H'] .mdr-scrollfade::after
   bottom: 0;
   background: linear-gradient(
     to top,
-    rgba(46, 31, 20, 0.55),
+    rgba(46, 31, 20, 0.3),
     rgba(46, 31, 20, 0)
   );
 }
