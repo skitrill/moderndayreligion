@@ -1599,6 +1599,16 @@ main[data-template='index'] [id$='__product_list_fa6P9H'] .mdr-allbar__toggle {
   text-transform: inherit;
   cursor: pointer;
   -webkit-tap-highlight-color: transparent;
+  /* dim until the bar is opened */
+  opacity: 0.45;
+  transition: opacity 0.2s ease;
+}
+
+main[data-template='index']
+  [id$='__product_list_fa6P9H']
+  .mdr-allbar.is-open
+  .mdr-allbar__toggle {
+  opacity: 1;
 }
 
 main[data-template='index'] [id$='__product_list_fa6P9H'] .mdr-allbar__chev {
