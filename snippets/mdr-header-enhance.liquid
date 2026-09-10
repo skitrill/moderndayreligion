@@ -500,17 +500,18 @@
       toggle.className = 'mdr-allbar__toggle';
       toggle.setAttribute('aria-expanded', 'false');
       toggle.innerHTML =
-        '<span class="mdr-allbar__label">All</span>' +
+        '<span class="mdr-allbar__label">Webrack</span>' +
         '<span class="mdr-allbar__chev" aria-hidden="true">›</span>';
 
       var list = D.createElement('div');
       list.className = 'mdr-allbar__list';
-      for (var i = 0; i < data.length; i++) {
-        if (!data[i] || !data[i].u) continue;
+      var items = [{ t: 'All', u: '/collections/all' }].concat(data);
+      for (var i = 0; i < items.length; i++) {
+        if (!items[i] || !items[i].u) continue;
         var a = D.createElement('a');
-        a.href = data[i].u;
-        a.textContent = data[i].t;
-        if (data[i].u !== '/' && location.pathname.indexOf(data[i].u) === 0) {
+        a.href = items[i].u;
+        a.textContent = items[i].t;
+        if (items[i].u !== '/' && location.pathname.indexOf(items[i].u) === 0) {
           a.setAttribute('aria-current', 'page');
         }
         list.appendChild(a);
