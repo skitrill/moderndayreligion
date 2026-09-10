@@ -560,26 +560,22 @@ main[data-template='index'] .resource-list--grid,
   row-gap: 2px !important;
 }
 
-/* ---- Featured grid: a centred, compact block like the lookbook (never
-   full-width). Zoom-out view = 2 cols on phone, 4 on pc; dense 8x8 only
-   when the logo toggles data-featured="grid8" on <html>. -------------- */
+/* ---- Featured grid: supreme.com style -- spans the content width, hairline
+   seams between cards. Zoom-out view = 2 cols on phone, 4 on pc; dense 8x8
+   only when the logo toggles data-featured="grid8" on <html>. ------------- */
 main[data-template='index'] [id$='__product_list_fa6P9H'] .resource-list--grid {
   display: grid !important;
   grid-template-columns: repeat(2, 1fr) !important;
-  column-gap: 6px !important;
-  row-gap: 6px !important;
-  width: 82vw !important;
-  max-width: 300px !important;
-  margin-inline: auto !important;
+  column-gap: 1px !important;
+  row-gap: 1px !important;
+  width: 100% !important;
+  max-width: none !important;
+  margin-inline: 0 !important;
 }
 
 @media (min-width: 750px) {
   main[data-template='index'] [id$='__product_list_fa6P9H'] .resource-list--grid {
     grid-template-columns: repeat(4, 1fr) !important;
-    /* explicit width -- inside the section's own CSS grid, width:auto let the
-       1fr tracks collapse to ~6px on desktop */
-    width: min(440px, 84vw) !important;
-    max-width: 440px !important;
   }
 }
 
@@ -1532,30 +1528,32 @@ main[data-template='index']
 }
 
 /* ==========================================================================
-   WEBRACK » collapsible bar -- now sits in the header, right next to the
-   logo. Closed = a dim little pill; tap to slide it open into the list of
-   collection titles, tap again / away to collapse.
+   WEBRACK » bar -- a line under the MDR logo, its left edge on the product
+   grid's left edge. Closed = a dim pill; tap and it slides open sideways
+   into the collection list; tap again / away to collapse.
    ========================================================================== */
-/* a quiet line sitting just under the MDR logo, aligned to the page gutter */
 .mdr-allbar-wrap {
   display: flex;
   align-items: center;
-  margin: 6px 0 14px;
+  margin: 6px 0 12px;
+  /* the grid spans the content width, so the page gutter == the grid's left edge */
   padding-inline-start: var(--page-margin, 20px);
 }
 
 @media screen and (min-width: 750px) {
   .mdr-allbar-wrap {
-    margin: 10px 0 20px;
+    margin: 10px 0 16px;
   }
 }
 
 .mdr-allbar {
   box-sizing: border-box;
-  position: relative;
   display: inline-flex;
   align-items: center;
   flex: 0 0 auto;
+  gap: 12px;
+  max-width: 94px;
+  overflow: hidden;
   white-space: nowrap;
   padding: 4px 7px;
   border: 0 !important;
@@ -1567,6 +1565,11 @@ main[data-template='index']
   line-height: 1;
   cursor: pointer;
   -webkit-tap-highlight-color: transparent;
+  transition: max-width 0.5s cubic-bezier(0.16, 1, 0.3, 1), background 0.25s ease;
+}
+
+.mdr-allbar.is-open {
+  max-width: min(88vw, 380px);
 }
 
 .mdr-allbar__toggle {
@@ -1604,30 +1607,18 @@ main[data-template='index']
   letter-spacing: 0.04em;
 }
 
-/* the collection list drops DOWN from the pill (supreme-style menu) */
+/* the collection list rides out horizontally when the pill opens */
 .mdr-allbar__list {
-  position: absolute;
-  top: calc(100% + 4px);
-  left: 0;
   display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  gap: 9px;
-  min-width: 130px;
-  max-width: 60vw;
-  padding: 10px 11px;
-  background: #160f0a;
+  align-items: center;
+  gap: 14px;
+  flex: 0 0 auto;
   opacity: 0;
-  visibility: hidden;
-  transform: translateY(-4px);
-  transition: opacity 0.2s ease, transform 0.2s ease, visibility 0.2s;
-  z-index: 60;
+  transition: opacity 0.3s ease 0.05s;
 }
 
 .mdr-allbar.is-open .mdr-allbar__list {
   opacity: 1;
-  visibility: visible;
-  transform: translateY(0);
 }
 
 .mdr-allbar__list a {
@@ -1657,22 +1648,29 @@ main[data-template='index'] [id$='__product_list_fa6P9H'] .mdr-scrollfade {
 }
 
 /* ==========================================================================
-   Homepage product cards -- supreme.com style: product on a light panel,
-   name + price stacked below, a ghost "new" tag in the corner.
-   Scoped to the ALL grid only; collection pages keep their own look.
+   Homepage product cards -- supreme.com style: image panel keeps our tape
+   pattern, name + price stacked below, ghost "new" tag, hairline seams.
    ========================================================================== */
+
+/* 1px grid gaps read as hairlines: the grid paints a faint line colour and
+   every card fills its cell with solid black on top. */
 main[data-template='index'] [id$='__product_list_fa6P9H'] .resource-list--grid {
-  column-gap: 10px !important;
-  row-gap: 26px !important;
+  background: rgba(233, 225, 196, 0.14) !important;
+  border-block: 1px solid rgba(233, 225, 196, 0.14) !important;
 }
 
-/* card = a plain column; kill the old tape/border/glow treatment */
+main[data-template='index'] [id$='__product_list_fa6P9H'] .resource-list__item {
+  background: #000 !important;
+}
+
+/* card = a plain column */
+main[data-template='index'] [id$='__product_list_fa6P9H'] .product-card,
 main[data-template='index'] [id$='__product_list_fa6P9H'] .product-card__content {
-  background: transparent !important;
+  background: #000 !important;
   background-image: none !important;
   box-shadow: none !important;
-  padding: 0 !important;
-  gap: 8px !important;
+  padding: 0 0 12px !important;
+  gap: 6px !important;
 }
 
 /* the image panel keeps OUR pattern -- black + faint hazard-tape */
@@ -1689,15 +1687,16 @@ main[data-template='index'] [id$='__product_list_fa6P9H'] .product-media-contain
 main[data-template='index'] [id$='__product_list_fa6P9H'] .product-media-container {
   max-width: 100% !important;
   margin-inline: 0 !important;
-  aspect-ratio: 1 / 1;
+  aspect-ratio: 4 / 5;
 }
 
+/* bigger product cutouts -- much less padding than before */
 main[data-template='index'] [id$='__product_list_fa6P9H'] .product-card .product-media__image,
 main[data-template='index'] [id$='__product_list_fa6P9H'] .product-card .product-media img {
   filter: drop-shadow(0 0 11px rgba(122, 84, 52, 0.1)) !important;
   mix-blend-mode: normal;
   object-fit: contain !important;
-  padding: 9% !important;
+  padding: 3% !important;
 }
 
 /* ghost "new" tag, top-right of the image panel */
