@@ -1567,7 +1567,7 @@ main[data-template='index'] [id$='__product_list_fa6P9H'] .mdr-allbar {
   white-space: nowrap;
   padding: 4px 8px;
   border: 0 !important;
-  background: #201812;
+  background: #160f0a;
   color: #e9e1c4;
   /* inherit the site's default type (family, size, spacing, weight) --
      only the casing is ours */
@@ -1581,7 +1581,7 @@ main[data-template='index'] [id$='__product_list_fa6P9H'] .mdr-allbar {
 
 main[data-template='index'] [id$='__product_list_fa6P9H'] .mdr-allbar.is-open {
   max-width: 100%;
-  background: #201812;
+  background: #160f0a;
 }
 
 main[data-template='index'] [id$='__product_list_fa6P9H'] .mdr-allbar__toggle {

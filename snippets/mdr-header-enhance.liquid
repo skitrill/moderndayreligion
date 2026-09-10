@@ -507,7 +507,7 @@
       toggle.setAttribute('aria-expanded', 'false');
       toggle.innerHTML =
         '<span class="mdr-allbar__label">Webrack</span>' +
-        '<span class="mdr-allbar__chev" aria-hidden="true">›</span>';
+        '<span class="mdr-allbar__chev" aria-hidden="true">»</span>';
 
       var list = D.createElement('div');
       list.className = 'mdr-allbar__list';
@@ -562,7 +562,7 @@
       function setOpen(on) {
         bar.classList.toggle('is-open', on);
         toggle.setAttribute('aria-expanded', on ? 'true' : 'false');
-        if (chev) chev.textContent = on ? '|<|' : '›';
+        if (chev) chev.textContent = on ? '|<|' : '»';
       }
       /* let the dense-view tap handler open the drop-down after it zooms out */
       window.__mdrAllbarOpen = function () { setOpen(true); };
