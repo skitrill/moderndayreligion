@@ -341,6 +341,11 @@
       e.preventDefault();
       e.stopPropagation();
       setView('zoom', true);
+      /* a tap on the WEBRACK bar zooms out AND opens its drop-down */
+      if (e.target.closest && e.target.closest('.mdr-allbar-wrap') &&
+          typeof window.__mdrAllbarOpen === 'function') {
+        window.__mdrAllbarOpen();
+      }
     }, true);
 
     /* The logo is the ONLY control that brings back the dense 8x8. */
@@ -531,23 +536,16 @@
         sec.parentNode.insertBefore(wrap, sec);
       }
 
-      /* keep the bar's left edge + width locked to the grid box, in every
-         featured mode (grid8 / zoom) and at every viewport */
+      /* Anchor the bar to the grid box ONCE, using the zoomed-in (default)
+         view as the single reference. We deliberately never re-measure for
+         the dense view or mid-animation -- that is what made the bar jump
+         around on every toggle. It only re-aligns on viewport resize. */
       function align() {
+        if (D.documentElement.getAttribute('data-featured') === 'grid8') return;
+        if (D.documentElement.classList.contains('mdr-featured-anim')) return;
         var grid = sec.querySelector('.resource-list--grid') ||
           sec.querySelector('.resource-list');
-        if (!grid) return;
-        /* the featured-view switch runs a scale() zoom animation on the grid;
-           measuring while that transform is live bakes in a wrong width /
-           offset. Wait it out, then align against the settled geometry. */
-        if (
-          D.documentElement.classList.contains('mdr-featured-anim') ||
-          getComputedStyle(grid).transform !== 'none'
-        ) {
-          clearTimeout(align._t);
-          align._t = setTimeout(align, 120);
-          return;
-        }
+        if (!grid || getComputedStyle(grid).transform !== 'none') return;
         var gr = grid.getBoundingClientRect();
         var pr = wrap.parentNode.getBoundingClientRect();
         if (!gr.width) return;
@@ -557,22 +555,8 @@
         wrap.style.marginRight = '0';
       }
       align();
+      window.addEventListener('load', align);
       window.addEventListener('resize', align, { passive: true });
-      if (window.ResizeObserver) {
-        var grid = sec.querySelector('.resource-list--grid') ||
-          sec.querySelector('.resource-list');
-        if (grid) new ResizeObserver(align).observe(grid);
-      }
-      /* featured toggle flips a <html data-featured> attr -> re-align */
-      if (window.MutationObserver) {
-        new MutationObserver(align).observe(D.documentElement, {
-          attributes: true,
-          attributeFilter: ['data-featured']
-        });
-      }
-      /* the moment the zoom animation ends, snap the bar back into place */
-      sec.addEventListener('animationend', align);
-      sec.addEventListener('transitionend', align);
 
       var chev = toggle.querySelector('.mdr-allbar__chev');
       function setOpen(on) {
@@ -580,6 +564,9 @@
         toggle.setAttribute('aria-expanded', on ? 'true' : 'false');
         if (chev) chev.textContent = on ? '|<|' : '›';
       }
+      /* let the dense-view tap handler open the drop-down after it zooms out */
+      window.__mdrAllbarOpen = function () { setOpen(true); };
+
       toggle.addEventListener('click', function (e) {
         e.preventDefault();
         e.stopPropagation();
