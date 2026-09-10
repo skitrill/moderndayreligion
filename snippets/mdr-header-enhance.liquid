@@ -435,54 +435,30 @@
   })();
 
   /* =====================================================================
-     Home ("ALL") gets its own layout: a red navbar above the grid.
+     The old "ALL / TOPS / LOOKBOOK" strip above the grid is gone -- strip
+     any stale copy the theme cached and never rebuild it.
      ===================================================================== */
   (function () {
     if (window.__mdrHomeNav) return;
     window.__mdrHomeNav = true;
     var D = document;
-
-    var LINKS = [
-      ['All', '/'],
-      ['Tops', '/collections/tops-t-shirts'],
-      ['Lookbook', '/pages/lookbook']
-    ];
-
-    function build() {
-      var main = D.querySelector('main[data-template="index"]');
-      if (!main || D.querySelector('.mdr-home-nav')) return;
-
-      var nav = D.createElement('nav');
-      nav.className = 'mdr-home-nav';
-      nav.setAttribute('aria-label', 'Shop');
-      for (var i = 0; i < LINKS.length; i++) {
-        var a = D.createElement('a');
-        a.href = LINKS[i][1];
-        a.textContent = LINKS[i][0];
-        if (
-          (LINKS[i][1] === '/' && (location.pathname === '/' || location.pathname === '')) ||
-          (LINKS[i][1] !== '/' && location.pathname.indexOf(LINKS[i][1]) === 0)
-        ) {
-          a.setAttribute('aria-current', 'page');
-        }
-        nav.appendChild(a);
-      }
-      main.insertBefore(nav, main.firstChild);
+    function strip() {
+      var n = D.querySelectorAll('.mdr-home-nav');
+      for (var i = 0; i < n.length; i++) n[i].remove();
     }
-
-    if (D.readyState !== 'loading') build();
-    D.addEventListener('DOMContentLoaded', build);
-    window.addEventListener('load', build);
+    strip();
+    D.addEventListener('DOMContentLoaded', strip);
+    window.addEventListener('load', strip);
     var m = D.querySelector('main') || D.body;
     if (window.MutationObserver) {
-      new MutationObserver(build).observe(m, { childList: true });
+      new MutationObserver(strip).observe(m, { childList: true });
     }
   })();
 
   /* =====================================================================
-     [ALL >] bar: a collapsed red pill above the grid. Tap it and it slides
-     open to the right, revealing the collection titles. Tap again -- or
-     tap anywhere outside -- to collapse it back to [ALL >].
+     WEBRACK » bar: a small collapsed pill in the header, right next to the
+     logo. Tap it and it slides open into the list of collection titles;
+     tap again -- or tap anywhere outside -- to collapse it.
      ===================================================================== */
   (function () {
     if (window.__mdrAllBar) return;
@@ -496,10 +472,10 @@
     }
 
     function build() {
-      var main = D.querySelector('main[data-template="index"]');
-      if (!main) return;
-      var sec = D.querySelector('[id$="__product_list_fa6P9H"]');
-      if (!sec || !sec.parentNode || D.querySelector('.mdr-allbar-wrap')) return;
+      if (D.querySelector('.mdr-allbar-wrap')) return;
+      var logo = D.querySelector('#header-component a.header-logo') ||
+        D.querySelector('a.header-logo');
+      if (!logo || !logo.parentNode) return;
 
       var data = collections();
 
@@ -535,36 +511,8 @@
       bar.appendChild(list);
       wrap.appendChild(bar);
 
-      /* drop the bar into the exact slot of the "ALL" section title
-         (the heading text itself is hidden in CSS) */
-      var header = sec.querySelector('.section-resource-list__header');
-      if (header) {
-        header.insertBefore(wrap, header.firstChild);
-      } else {
-        sec.parentNode.insertBefore(wrap, sec);
-      }
-
-      /* Anchor the bar to the grid box ONCE, using the zoomed-in (default)
-         view as the single reference. We deliberately never re-measure for
-         the dense view or mid-animation -- that is what made the bar jump
-         around on every toggle. It only re-aligns on viewport resize. */
-      function align() {
-        if (D.documentElement.getAttribute('data-featured') === 'grid8') return;
-        if (D.documentElement.classList.contains('mdr-featured-anim')) return;
-        var grid = sec.querySelector('.resource-list--grid') ||
-          sec.querySelector('.resource-list');
-        if (!grid || getComputedStyle(grid).transform !== 'none') return;
-        var gr = grid.getBoundingClientRect();
-        var pr = wrap.parentNode.getBoundingClientRect();
-        if (!gr.width) return;
-        wrap.style.width = Math.round(gr.width) + 'px';
-        wrap.style.maxWidth = 'none';
-        wrap.style.marginLeft = Math.round(gr.left - pr.left) + 'px';
-        wrap.style.marginRight = '0';
-      }
-      align();
-      window.addEventListener('load', align);
-      window.addEventListener('resize', align, { passive: true });
+      /* sit it immediately after the logo */
+      logo.parentNode.insertBefore(wrap, logo.nextSibling);
 
       var chev = toggle.querySelector('.mdr-allbar__chev');
       function setOpen(on) {
@@ -572,7 +520,6 @@
         toggle.setAttribute('aria-expanded', on ? 'true' : 'false');
         if (chev) chev.textContent = on ? '|<|' : '»';
       }
-      /* let the dense-view tap handler open the drop-down after it zooms out */
       window.__mdrAllbarOpen = function () { setOpen(true); };
 
       toggle.addEventListener('click', function (e) {
@@ -588,9 +535,9 @@
     if (D.readyState !== 'loading') build();
     D.addEventListener('DOMContentLoaded', build);
     window.addEventListener('load', build);
-    var m = D.querySelector('main') || D.body;
+    var hc = D.querySelector('#header-component') || D.body;
     if (window.MutationObserver) {
-      new MutationObserver(build).observe(m, { childList: true });
+      new MutationObserver(build).observe(hc, { childList: true, subtree: true });
     }
   })();
 
