@@ -1628,13 +1628,9 @@ main[data-template='index']
 
 .mdr-allbar__chev {
   display: inline-block;
-  font-size: 1.15em;
-}
-
-.mdr-allbar__tm {
-  font-size: 0.6em;
-  vertical-align: baseline;
-  margin-inline-start: 1px;
+  /* as tall as the WEBRACK cap height */
+  font-size: 1.7em;
+  line-height: 0.6;
 }
 
 .mdr-allbar.is-open .mdr-allbar__chev {
