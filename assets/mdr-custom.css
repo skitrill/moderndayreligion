@@ -1628,12 +1628,13 @@ main[data-template='index']
 
 .mdr-allbar__chev {
   display: inline-block;
+  font-size: 1.15em;
 }
 
 .mdr-allbar__tm {
-  font-size: 0.62em;
-  vertical-align: super;
-  margin-inline-start: 0.5px;
+  font-size: 0.6em;
+  vertical-align: baseline;
+  margin-inline-start: 1px;
 }
 
 .mdr-allbar.is-open .mdr-allbar__chev {
