@@ -1760,6 +1760,17 @@ main[data-template='index'] [id$='__product_list_fa6P9H'] .product-card product-
   margin-top: 3px !important;
 }
 
+/* mobile 2-up: the right-hand column right-aligns its name + price */
+@media screen and (max-width: 749px) {
+  main[data-template='index'] [id$='__product_list_fa6P9H'] .resource-list__item:nth-child(2n) .text-block,
+  main[data-template='index'] [id$='__product_list_fa6P9H'] .resource-list__item:nth-child(2n) .text-block p,
+  main[data-template='index'] [id$='__product_list_fa6P9H'] .resource-list__item:nth-child(2n) product-price,
+  main[data-template='index'] [id$='__product_list_fa6P9H'] .resource-list__item:nth-child(2n) product-price > div,
+  main[data-template='index'] [id$='__product_list_fa6P9H'] .resource-list__item:nth-child(2n) product-price .price {
+    text-align: right !important;
+  }
+}
+
 /* "sold out" price copy -> dim grey like supreme */
 main[data-template='index'] [id$='__product_list_fa6P9H'] .product-card product-price:has(.price--sold-out) .price,
 main[data-template='index'] [id$='__product_list_fa6P9H'] .product-card .price--sold-out {
