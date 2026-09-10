@@ -11,20 +11,7 @@
   rendered once from the `actions` capture in sections/header.liquid.
 {%- enddoc -%}
 
-<div class="mdr-jump-wrap" data-mdr-jump>
-  <a
-    href="#"
-    class="mdr-jump mdr-jump--bottom"
-    role="button"
-    aria-label="Jump to bottom"
-  >
-    <span class="mdr-bracket">[</span>
-    <svg class="mdr-arrow" viewBox="0 0 12 8" width="12" height="8" aria-hidden="true" focusable="false">
-      <path d="M1 1.5 6 6.5l5-5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" />
-    </svg>
-    <span class="mdr-bracket">]</span>
-  </a>
-</div>
+{%- comment -%} The [v] jump-to-bottom control under the cart has been removed. {%- endcomment -%}
 
 {%- comment -%} Collection titles for the [ALL >] bar (read by __mdrAllBar). {%- endcomment -%}
 <script type="application/json" id="mdr-allbar-data">
@@ -607,10 +594,82 @@
     }
   })();
 
-  /* The bottom [+ page] zoom toggle has been removed. Clear any zoom a
-     previous session left applied. */
+  /* =====================================================================
+     Mobile page-zoom toggle -- [+ page] / [- page]. Sits at the bottom of
+     the page, on the "Refund policy" line (not floating -- only visible
+     once you scroll to the footer). Tapping zooms the whole page by 20%
+     (persists while browsing); tap again to go back.
+     ===================================================================== */
   (function () {
-    try { document.body.style.zoom = ''; } catch (e) {}
-    try { sessionStorage.removeItem('mdrZoom'); } catch (e) {}
+    if (window.__mdrZoom) return;
+    window.__mdrZoom = true;
+    var D = document;
+    var Z = 1.2;
+
+    function stored() {
+      try { return sessionStorage.getItem('mdrZoom') === '1'; } catch (e) { return false; }
+    }
+
+    var btn = D.createElement('button');
+    btn.className = 'mdr-zoom';
+    btn.type = 'button';
+    btn.setAttribute('aria-label', 'Zoom the page');
+    btn.innerHTML =
+      '<span class="mdr-bracket">[</span>' +
+      '<span class="mdr-zoom__sign">+</span>' +
+      '<span class="mdr-zoom__pg" aria-hidden="true"><i></i><i></i><i></i><i></i></span>' +
+      '<span class="mdr-bracket">]</span>';
+
+    function refundLine() {
+      var links = D.querySelectorAll('footer a, .footer-utilities a, .footer a');
+      for (var i = 0; i < links.length; i++) {
+        if (/refund\s*policy/i.test(links[i].textContent)) return links[i];
+      }
+      return null;
+    }
+
+    function place() {
+      var line = refundLine();
+      var host = btn.parentElement;
+      if (!line || !host) return;
+      var hr = host.getBoundingClientRect();
+      var lr = line.getBoundingClientRect();
+      btn.style.top =
+        Math.round(lr.top - hr.top + lr.height / 2 - btn.offsetHeight / 2) + 'px';
+    }
+
+    function apply(on) {
+      try { D.body.style.zoom = on ? Z : ''; } catch (e) {}
+      btn.classList.toggle('is-zoomed', on);
+      var s = btn.querySelector('.mdr-zoom__sign');
+      if (s) s.textContent = on ? '−' : '+';
+      btn.setAttribute('aria-pressed', on ? 'true' : 'false');
+      try { sessionStorage.setItem('mdrZoom', on ? '1' : '0'); } catch (e) {}
+      requestAnimationFrame(place);
+    }
+
+    btn.addEventListener('click', function () { apply(!stored()); });
+
+    function mount() {
+      var line = refundLine();
+      var host =
+        (line && (line.closest('.utilities') || line.closest('.section--page-width'))) ||
+        D.querySelector('footer');
+      if (!host) return;
+      if (btn.parentElement !== host) {
+        host.style.position = 'relative';
+        btn.style.position = 'absolute';
+        btn.style.right = '8px';
+        host.appendChild(btn);
+      }
+      apply(stored());
+      place();
+    }
+
+    if (D.readyState !== 'loading') mount();
+    D.addEventListener('DOMContentLoaded', mount);
+    window.addEventListener('load', mount);
+    window.addEventListener('resize', place, { passive: true });
+    window.addEventListener('scroll', place, { passive: true });
   })();
 </script>
