@@ -1552,7 +1552,7 @@ main[data-template='index'] [id$='__product_list_fa6P9H'] .mdr-allbar {
   overflow: hidden;
   white-space: nowrap;
   padding: 4px 8px;
-  border: 0.7px solid rgba(233, 225, 196, 0.22) !important;
+  border: 0 !important;
   background: #201812;
   color: #e9e1c4;
   /* inherit the site's default type (family, size, spacing, weight) --
