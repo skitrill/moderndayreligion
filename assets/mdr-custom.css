@@ -1635,12 +1635,27 @@ main[data-template='index']
   line-height: 0.6;
 }
 
-.mdr-allbar.is-open .mdr-allbar__chev {
+.mdr-allbar.is-open .mdr-allbar__chev:not(.mdr-allbar__chev--back) {
   background: #e9e1c4;
   color: #1a1a1a;
   padding: 2px 4px;
   margin-inline-start: 2px;
   letter-spacing: 0.04em;
+}
+
+/* off-home: the bar is a back button -- big left chevron before the word */
+.mdr-allbar--back {
+  max-width: none !important;
+  overflow: visible;
+}
+
+.mdr-allbar__chev--back {
+  margin-inline-end: 7px;
+}
+
+/* the stock "«" beside the logo is gone -- the WEBRACK bar takes that job */
+.header-logo__back-arrow {
+  display: none !important;
 }
 
 /* the collection list rides out horizontally when the pill opens */

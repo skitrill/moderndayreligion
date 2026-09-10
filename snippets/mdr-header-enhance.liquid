@@ -482,33 +482,38 @@
       if (!header || !header.parentNode) return;
 
       var data = collections();
+      var isHome = location.pathname === '/' || location.pathname === '';
 
       var wrap = D.createElement('div');
       wrap.className = 'mdr-allbar-wrap';
 
       var bar = D.createElement('div');
-      bar.className = 'mdr-allbar';
+      bar.className = 'mdr-allbar' + (isHome ? '' : ' mdr-allbar--back');
 
       var toggle = D.createElement('button');
       toggle.type = 'button';
       toggle.className = 'mdr-allbar__toggle';
       toggle.setAttribute('aria-expanded', 'false');
-      toggle.innerHTML =
-        '<span class="mdr-allbar__label">Webrack</span>' +
-        '<span class="mdr-allbar__chev" aria-hidden="true">»</span>';
+      toggle.innerHTML = isHome
+        ? '<span class="mdr-allbar__label">Webrack</span>' +
+          '<span class="mdr-allbar__chev" aria-hidden="true">»</span>'
+        : '<span class="mdr-allbar__chev mdr-allbar__chev--back" aria-hidden="true">«</span>' +
+          '<span class="mdr-allbar__label">Webrack</span>';
 
       var list = D.createElement('div');
       list.className = 'mdr-allbar__list';
-      var items = [{ t: 'All', u: '/collections/all' }].concat(data);
-      for (var i = 0; i < items.length; i++) {
-        if (!items[i] || !items[i].u) continue;
-        var a = D.createElement('a');
-        a.href = items[i].u;
-        a.textContent = items[i].t;
-        if (items[i].u !== '/' && location.pathname.indexOf(items[i].u) === 0) {
-          a.setAttribute('aria-current', 'page');
+      if (isHome) {
+        var items = [{ t: 'All', u: '/collections/all' }].concat(data);
+        for (var i = 0; i < items.length; i++) {
+          if (!items[i] || !items[i].u) continue;
+          var a = D.createElement('a');
+          a.href = items[i].u;
+          a.textContent = items[i].t;
+          if (items[i].u !== '/' && location.pathname.indexOf(items[i].u) === 0) {
+            a.setAttribute('aria-current', 'page');
+          }
+          list.appendChild(a);
         }
-        list.appendChild(a);
       }
 
       bar.appendChild(toggle);
@@ -538,6 +543,19 @@
         if (chev) chev.textContent = on ? '|<|' : '»';
       }
       window.__mdrAllbarOpen = function () { setOpen(true); };
+
+      if (!isHome) {
+        /* off the home page this bar IS the back button */
+        toggle.setAttribute('aria-label', 'Back');
+        toggle.addEventListener('click', function (e) {
+          e.preventDefault();
+          e.stopPropagation();
+          if (typeof window.mdrGoBack === 'function') window.mdrGoBack();
+          else if (history.length > 1) history.back();
+          else location.href = '/';
+        });
+        return;
+      }
 
       toggle.addEventListener('click', function (e) {
         e.preventDefault();
