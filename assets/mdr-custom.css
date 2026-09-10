@@ -1532,17 +1532,19 @@ main[data-template='index']
    grid's left edge. Closed = a dim pill; tap and it slides open sideways
    into the collection list; tap again / away to collapse.
    ========================================================================== */
-/* it's a grid item inside the section's page-width grid, so it lines up with
-   the product grid's left edge on its own */
+/* a full-width line sitting just under the site header (present on every
+   page), its text aligned to the page gutter == under the MDR logo */
 .mdr-allbar-wrap {
   display: flex;
   align-items: center;
-  margin: 8px 0 12px;
+  width: 100%;
+  margin: 8px 0 10px;
+  padding-inline-start: var(--page-margin, 20px);
 }
 
 @media screen and (min-width: 750px) {
   .mdr-allbar-wrap {
-    margin: 12px 0 16px;
+    margin: 12px 0 14px;
   }
 }
 

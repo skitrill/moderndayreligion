@@ -473,14 +473,13 @@
 
     function build() {
       if (D.querySelector('.mdr-allbar-wrap')) return;
-      /* mount inside the product section's page-width grid so its left edge
-         lands exactly on the product grid's left edge, and it reads as a
-         line just under the MDR logo */
-      var sec = D.querySelector('[id$="__product_list_fa6P9H"]');
-      var host = (sec && sec.querySelector('.section--page-width')) ||
-        D.querySelector('main[data-template="index"]') ||
-        D.querySelector('main');
-      if (!host) return;
+      /* mount right under the site header so it shows on EVERY page, sitting
+         under the logo (a full-width line aligned to the page gutter) */
+      var header = D.querySelector('header.shopify-section-group-header-group') ||
+        (D.querySelector('#header-component') &&
+          D.querySelector('#header-component').closest('header')) ||
+        D.querySelector('header');
+      if (!header || !header.parentNode) return;
 
       var data = collections();
 
@@ -516,8 +515,8 @@
       bar.appendChild(list);
       wrap.appendChild(bar);
 
-      /* sit it at the very top of the page, under the logo */
-      host.insertBefore(wrap, host.firstChild);
+      /* sit it directly below the header, on every page */
+      header.parentNode.insertBefore(wrap, header.nextSibling);
 
       var chev = toggle.querySelector('.mdr-allbar__chev');
       function setOpen(on) {
@@ -540,9 +539,8 @@
     if (D.readyState !== 'loading') build();
     D.addEventListener('DOMContentLoaded', build);
     window.addEventListener('load', build);
-    var m = D.querySelector('main') || D.body;
     if (window.MutationObserver) {
-      new MutationObserver(build).observe(m, { childList: true });
+      new MutationObserver(build).observe(D.body, { childList: true, subtree: true });
     }
   })();
 
