@@ -331,10 +331,11 @@
     }
 
     /* Tap anywhere on the dense layout -> zoom out to 2/4. Only active while
-       dense; in "zoom" view, card taps navigate to the product as normal. */
+       dense; in "zoom" view, card taps navigate to the product as normal.
+       The WEBRACK bar counts too: a tap on it while dense zooms out (its
+       drop-down toggle only runs in the zoomed-in view). */
     D.addEventListener('click', function (e) {
       if (read() !== 'grid8') return;
-      if (e.target.closest && e.target.closest('.mdr-allbar-wrap')) return;
       var sec = featured();
       if (!sec || !sec.contains(e.target)) return;
       e.preventDefault();
