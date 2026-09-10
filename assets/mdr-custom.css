@@ -576,7 +576,9 @@ main[data-template='index'] [id$='__product_list_fa6P9H'] .resource-list--grid {
 @media (min-width: 750px) {
   main[data-template='index'] [id$='__product_list_fa6P9H'] .resource-list--grid {
     grid-template-columns: repeat(4, 1fr) !important;
-    width: auto !important;
+    /* explicit width -- inside the section's own CSS grid, width:auto let the
+       1fr tracks collapse to ~6px on desktop */
+    width: min(440px, 84vw) !important;
     max-width: 440px !important;
   }
 }
