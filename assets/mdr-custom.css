@@ -1587,7 +1587,7 @@ main[data-template='index']
   align-items: center;
   flex: 0 0 auto;
   gap: 12px;
-  max-width: 118px;
+  max-width: 132px;
   overflow: hidden;
   white-space: nowrap;
   padding: 2px 0;
@@ -1633,6 +1633,22 @@ main[data-template='index']
   /* as tall as the WEBRACK cap height */
   font-size: 1.7em;
   line-height: 0.6;
+}
+
+.mdr-allbar__chev:empty {
+  display: none;
+}
+
+/* small cloth-rack icon in place of the arrow on the WEBRACK button */
+.mdr-allbar__rack {
+  display: inline-flex;
+  align-items: center;
+}
+
+.mdr-allbar__rack svg {
+  width: 1.55em;
+  height: 1.55em;
+  display: block;
 }
 
 .mdr-allbar.is-open .mdr-allbar__chev:not(.mdr-allbar__chev--back) {
