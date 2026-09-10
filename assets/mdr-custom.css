@@ -1686,13 +1686,13 @@ main[data-template='index'] [id$='__product_list_fa6P9H'] .mdr-scrollfade {
    ========================================================================== */
 
 /* 1px grid gaps read as hairlines: the grid paints a faint line colour and
-   every card fills its cell with solid black on top. Only in the zoomed-OUT
-   (dense) view -- the zoomed-in large cards get no seams. */
+   every card fills its cell with solid black on top. Only on the large
+   (zoomed-in) cards -- the dense zoomed-out tiles get no seams. */
 main[data-template='index'] [id$='__product_list_fa6P9H'] .resource-list__item {
   background: #000 !important;
 }
 
-html[data-featured='grid8']
+html:not([data-featured='grid8'])
   main[data-template='index']
   [id$='__product_list_fa6P9H']
   .resource-list--grid {
@@ -1700,14 +1700,12 @@ html[data-featured='grid8']
   border-block: 1px solid rgba(233, 225, 196, 0.14) !important;
 }
 
-html:not([data-featured='grid8'])
+html[data-featured='grid8']
   main[data-template='index']
   [id$='__product_list_fa6P9H']
   .resource-list--grid {
   background: transparent !important;
   border-block: 0 !important;
-  column-gap: 0 !important;
-  row-gap: 0 !important;
 }
 
 /* card = a plain column, ending right at the price (no dead tappable space) */
