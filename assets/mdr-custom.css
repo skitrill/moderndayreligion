@@ -1590,19 +1590,22 @@ main[data-template='index']
   white-space: nowrap;
   padding: 4px 7px;
   border: 0 !important;
-  background: #160f0a;
-  color: #e9e1c4;
+  background: #fdb92e;
+  color: #1a1a1a;
   font: inherit;
   font-size: 0.62rem;
   text-transform: uppercase;
   line-height: 1;
   cursor: pointer;
   -webkit-tap-highlight-color: transparent;
-  transition: max-width 0.5s cubic-bezier(0.16, 1, 0.3, 1), background 0.25s ease;
+  /* dim while idle, full colour once opened */
+  opacity: 0.6;
+  transition: max-width 0.5s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.2s ease;
 }
 
 .mdr-allbar.is-open {
   max-width: min(88vw, 380px);
+  opacity: 1;
 }
 
 .mdr-allbar__toggle {
@@ -1620,12 +1623,6 @@ main[data-template='index']
   text-transform: inherit;
   cursor: pointer;
   -webkit-tap-highlight-color: transparent;
-  opacity: 0.45;
-  transition: opacity 0.2s ease;
-}
-
-.mdr-allbar.is-open .mdr-allbar__toggle {
-  opacity: 1;
 }
 
 .mdr-allbar__chev {
@@ -1633,8 +1630,8 @@ main[data-template='index']
 }
 
 .mdr-allbar.is-open .mdr-allbar__chev {
-  background: #e9e1c4;
-  color: #201812;
+  background: #1a1a1a;
+  color: #fdb92e;
   padding: 2px 4px;
   margin-inline-start: 2px;
   letter-spacing: 0.04em;
@@ -1655,9 +1652,9 @@ main[data-template='index']
 }
 
 .mdr-allbar__list a {
-  color: #e9e1c4;
+  color: #1a1a1a;
   text-decoration: none;
-  opacity: 0.72;
+  opacity: 0.62;
   white-space: nowrap;
   transition: opacity 0.15s ease;
 }
