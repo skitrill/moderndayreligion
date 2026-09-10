@@ -1699,14 +1699,7 @@ html:not([data-featured='grid8'])
   background: rgba(233, 225, 196, 0.14) !important;
   border-block: 1px solid rgba(233, 225, 196, 0.14) !important;
 }
-
-html[data-featured='grid8']
-  main[data-template='index']
-  [id$='__product_list_fa6P9H']
-  .resource-list--grid {
-  background: transparent !important;
-  border-block: 0 !important;
-}
+/* dense (grid8) view: no rule adds a grid background/border, so no seams */
 
 /* card = a plain column, ending right at the price (no dead tappable space) */
 main[data-template='index'] [id$='__product_list_fa6P9H'] .product-card,
