@@ -1336,6 +1336,19 @@ a:not([class*='button']):not(.header-logo):focus-visible {
   color: #1a1a1a !important;
 }
 
+/* ...but the homepage product cards never take that white highlight */
+main[data-template='index'] [id$='__product_list_fa6P9H'] .product-card a:hover,
+main[data-template='index'] [id$='__product_list_fa6P9H'] .product-card a:active,
+main[data-template='index'] [id$='__product_list_fa6P9H'] .product-card a:focus-visible,
+main[data-template='index'] [id$='__product_list_fa6P9H'] .resource-list__item a:hover,
+main[data-template='index'] [id$='__product_list_fa6P9H'] .resource-list__item a:active,
+main[data-template='index'] [id$='__product_list_fa6P9H'] .resource-list__item a:focus-visible {
+  background: none !important;
+  background-color: transparent !important;
+  color: inherit !important;
+  -webkit-tap-highlight-color: transparent !important;
+}
+
 /* ==========================================================================
    Default font colour -> a softer red site-wide (not neon).
    ========================================================================== */
@@ -1683,14 +1696,19 @@ main[data-template='index'] [id$='__product_list_fa6P9H'] .resource-list__item {
   background: #000 !important;
 }
 
-/* card = a plain column */
+/* card = a plain column, ending right at the price (no dead tappable space) */
 main[data-template='index'] [id$='__product_list_fa6P9H'] .product-card,
 main[data-template='index'] [id$='__product_list_fa6P9H'] .product-card__content {
   background: #000 !important;
   background-image: none !important;
   box-shadow: none !important;
-  padding: 0 0 12px !important;
+  padding: 0 !important;
   gap: 0 !important;
+}
+
+/* the full-card overlay link stops at the content -- not below the price */
+main[data-template='index'] [id$='__product_list_fa6P9H'] .product-card__link {
+  height: 100% !important;
 }
 
 /* the image panel keeps OUR pattern -- black + faint hazard-tape */
