@@ -536,6 +536,17 @@
         var grid = sec.querySelector('.resource-list--grid') ||
           sec.querySelector('.resource-list');
         if (!grid) return;
+        /* the featured-view switch runs a scale() zoom animation on the grid;
+           measuring while that transform is live bakes in a wrong width /
+           offset. Wait it out, then align against the settled geometry. */
+        if (
+          D.documentElement.classList.contains('mdr-featured-anim') ||
+          getComputedStyle(grid).transform !== 'none'
+        ) {
+          clearTimeout(align._t);
+          align._t = setTimeout(align, 120);
+          return;
+        }
         var gr = grid.getBoundingClientRect();
         var pr = wrap.parentNode.getBoundingClientRect();
         if (!gr.width) return;
@@ -558,6 +569,9 @@
           attributeFilter: ['data-featured']
         });
       }
+      /* the moment the zoom animation ends, snap the bar back into place */
+      sec.addEventListener('animationend', align);
+      sec.addEventListener('transitionend', align);
 
       var chev = toggle.querySelector('.mdr-allbar__chev');
       function setOpen(on) {
