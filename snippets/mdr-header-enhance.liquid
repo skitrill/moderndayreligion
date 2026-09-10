@@ -473,10 +473,12 @@
 
     function build() {
       if (D.querySelector('.mdr-allbar-wrap')) return;
-      /* mount point: the top of the page content, so it reads as a line
-         sitting directly under the MDR logo (keeps the header row itself
-         uncluttered) */
-      var host = D.querySelector('main[data-template="index"]') ||
+      /* mount inside the product section's page-width grid so its left edge
+         lands exactly on the product grid's left edge, and it reads as a
+         line just under the MDR logo */
+      var sec = D.querySelector('[id$="__product_list_fa6P9H"]');
+      var host = (sec && sec.querySelector('.section--page-width')) ||
+        D.querySelector('main[data-template="index"]') ||
         D.querySelector('main');
       if (!host) return;
 
