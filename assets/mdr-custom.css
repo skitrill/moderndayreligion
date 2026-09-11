@@ -148,54 +148,12 @@ footer .utilities {
   min-width: 0 !important;
 }
 
-/* ---- [bottom] control (in header) --------------------------------------------- */
-.mdr-jump-wrap {
-  display: flex;
-  justify-content: flex-end;
-  position: absolute;
-  right: var(--page-margin, 20px);
-  top: calc(var(--header-height, 60px) / 2 + 9px);
-  z-index: 6;
-}
-
-.mdr-jump {
-  display: inline-flex;
-  align-items: center;
-  gap: 1px;
-  padding: 2px;
-  border: 0;
-  background: none;
-  cursor: pointer;
-  text-decoration: none;
-  color: var(--color-foreground);
-  font-family: var(--font-accent--family, inherit);
-  font-size: 0.6rem;
-  line-height: 1;
-  letter-spacing: 0;
-  transition: opacity 0.15s ease;
-}
-
-.mdr-jump.mdr-off {
-  opacity: 0;
-  pointer-events: none;
-}
-
-/* Arrows never take a tap highlight or a hover/active colour fill. */
-.mdr-jump,
-.mdr-jump *,
+/* Arrow never takes a tap highlight or a hover/active colour fill. */
 .mdr-scrolltop,
 .mdr-scrolltop * {
   -webkit-tap-highlight-color: transparent !important;
 }
 
-.mdr-jump-wrap a.mdr-jump:hover,
-.mdr-jump-wrap a.mdr-jump:active,
-.mdr-jump-wrap a.mdr-jump:focus,
-.mdr-jump-wrap a.mdr-jump:focus-visible,
-.mdr-jump:hover,
-.mdr-jump:active,
-.mdr-jump:focus,
-.mdr-jump:focus-visible,
 .mdr-scrolltop:hover,
 .mdr-scrolltop:active,
 .mdr-scrolltop:focus,
@@ -206,11 +164,6 @@ footer .utilities {
   outline: none !important;
   box-shadow: none !important;
   text-decoration: none !important;
-}
-
-.mdr-jump:hover,
-.mdr-jump:focus-visible {
-  opacity: 0.6;
 }
 
 /* ---- [top] control (fixed, bottom-right) ------------------------------------ */
@@ -269,13 +222,11 @@ footer .utilities {
   100% { opacity: 1; transform: translateY(0); }
 }
 
-.mdr-jump.mdr-zap,
 .mdr-scrolltop.mdr-visible.mdr-zap {
   animation: mdr-zap 0.42s cubic-bezier(0.22, 1, 0.36, 1);
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .mdr-jump.mdr-zap,
   .mdr-scrolltop.mdr-zap {
     animation: none;
   }
@@ -444,11 +395,6 @@ main .product-information__grid .text-block:not(product-price) :is(span, p, li, 
     max-width: 91% !important;
     margin-inline: auto !important;
   }
-}
-
-/* ---- [bottom] control: line its right edge up with the CART link ----------- */
-.mdr-jump-wrap {
-  right: var(--mdr-cart-right, var(--page-margin, 20px)) !important;
 }
 
 /* ---- Cart line items: smaller type; highlight only on the title ------------ */

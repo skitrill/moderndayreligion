@@ -34,7 +34,6 @@
     window.__mdrHeaderEnhance = true;
 
     var D = document;
-    var botBtn = null;
     var topBtn = null;
     var REDUCE = window.matchMedia &&
       window.matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -147,18 +146,6 @@
       glideScroll(y, topBtn);
     }
 
-    function goBottom() {
-      var now = scrollTop();
-      var cards = productCards();
-      var last = cards[cards.length - 1];
-      var y = last
-        ? last.getBoundingClientRect().bottom + now - window.innerHeight + 24
-        : maxScroll();
-      /* never jump upward -- fall back to the page bottom */
-      if (y <= now + 2) y = maxScroll();
-      glideScroll(y, botBtn);
-    }
-
     /* Build the fixed [top] control and pin it to <body> */
     function ensureTopButton() {
       if (topBtn && topBtn.isConnected && topBtn.parentNode === D.body) return;
@@ -186,50 +173,17 @@
       var maxY = maxScroll();
       var atBottom = maxY > 40 && y >= maxY - 4;
       if (topBtn) topBtn.classList.toggle('mdr-visible', y > 80 || atBottom);
-      /* only dim [v] when there is real scroll room AND we're near the end */
-      if (botBtn) botBtn.classList.toggle('mdr-off', maxY > 260 && y > maxY - 140);
-    }
-
-    function wireBottom() {
-      var wrap = D.querySelector('[data-mdr-jump]');
-      if (!wrap) return;
-      botBtn = wrap.querySelector('.mdr-jump--bottom');
-      if (botBtn && !botBtn.__mdrWired) {
-        botBtn.__mdrWired = true;
-        botBtn.addEventListener('click', function (e) {
-          e.preventDefault();
-          goBottom();
-        });
-      }
-    }
-
-    /* Line the [v] control's right edge up with the CART link, whatever the
-       viewport / page gutter is. */
-    function syncCartEdge() {
-      var cart =
-        D.querySelector('.header__cart-link') ||
-        D.querySelector('.header__column--right .action__cart') ||
-        D.querySelector('.header__column--right a[href*="/cart"]');
-      if (!cart) return;
-      var right = cart.getBoundingClientRect().right;
-      var fromEdge = Math.max(0, Math.round(D.documentElement.clientWidth - right));
-      D.documentElement.style.setProperty('--mdr-cart-right', fromEdge + 'px');
     }
 
     function init() {
       ensureTopButton();
-      wireBottom();
-      syncCartEdge();
       updateVisibility();
     }
 
     /* Catch scrolling regardless of which node emits the event */
     window.addEventListener('scroll', updateVisibility, { passive: true });
     D.addEventListener('scroll', updateVisibility, { passive: true, capture: true });
-    window.addEventListener('resize', function () {
-      syncCartEdge();
-      updateVisibility();
-    }, { passive: true });
+    window.addEventListener('resize', updateVisibility, { passive: true });
 
     if (D.readyState !== 'loading') init();
     D.addEventListener('DOMContentLoaded', init);
