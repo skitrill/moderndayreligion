@@ -1575,7 +1575,8 @@ main[data-template='index']
   top: calc(var(--header-height, 60px) - 1px);
   z-index: 15;
   margin: 0;
-  padding: 7px 0 7px var(--page-margin, 20px);
+  /* sits a touch closer to the header, leaving a bigger clear tap zone below */
+  padding: 3px 0 11px var(--page-margin, 20px);
   background: #000;
   /* hairline so scrolling content doesn't seem to slide out of nowhere */
   border-bottom: 1px solid rgba(233, 225, 196, 0.16);
@@ -1629,12 +1630,18 @@ main[data-template='index']
 }
 
 .mdr-allbar__chev {
-  display: inline-block;
+  display: inline-flex;
+  align-items: center;
   /* as tall as the WEBRACK cap height */
   font-size: 1.7em;
   line-height: 0.6;
 }
 
+.mdr-allbar__chev svg {
+  display: block;
+  width: 0.62em;
+  height: 0.62em;
+}
 
 .mdr-allbar.is-open .mdr-allbar__chev:not(.mdr-allbar__chev--back) {
   background: #e9e1c4;
@@ -1652,6 +1659,10 @@ main[data-template='index']
 
 .mdr-allbar__chev--back {
   margin-inline-end: 7px;
+}
+
+.mdr-allbar__chev--back svg {
+  transform: scaleX(-1);
 }
 
 /* the stock "«" beside the logo is gone -- the WEBRACK bar takes that job */

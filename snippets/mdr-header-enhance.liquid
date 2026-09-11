@@ -477,14 +477,21 @@
       var bar = D.createElement('div');
       bar.className = 'mdr-allbar' + (isHome ? '' : ' mdr-allbar--back');
 
+      /* a clean double-chevron, not the raw "»" glyph -- flipped via CSS for
+         the back-button state */
+      var CHEV_SVG =
+        '<svg viewBox="0 0 14 12" fill="none" stroke="currentColor" ' +
+        'stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">' +
+        '<path d="M1.5 2l4 4-4 4"/><path d="M7.5 2l4 4-4 4"/></svg>';
+
       var toggle = D.createElement('button');
       toggle.type = 'button';
       toggle.className = 'mdr-allbar__toggle';
       toggle.setAttribute('aria-expanded', 'false');
       toggle.innerHTML = isHome
         ? '<span class="mdr-allbar__label">Webrack</span>' +
-          '<span class="mdr-allbar__chev" aria-hidden="true">»</span>'
-        : '<span class="mdr-allbar__chev mdr-allbar__chev--back" aria-hidden="true">«</span>' +
+          '<span class="mdr-allbar__chev" aria-hidden="true">' + CHEV_SVG + '</span>'
+        : '<span class="mdr-allbar__chev mdr-allbar__chev--back" aria-hidden="true">' + CHEV_SVG + '</span>' +
           '<span class="mdr-allbar__label">Return</span>';
 
       var list = D.createElement('div');
@@ -527,7 +534,7 @@
       function setOpen(on) {
         bar.classList.toggle('is-open', on);
         toggle.setAttribute('aria-expanded', on ? 'true' : 'false');
-        if (chev) chev.textContent = on ? '|<|' : '»';
+        if (chev) chev.innerHTML = on ? '|&lt;|' : CHEV_SVG;
       }
       window.__mdrAllbarOpen = function () { setOpen(true); };
 
