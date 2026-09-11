@@ -1521,8 +1521,10 @@ main[data-template='index']
   top: calc(var(--header-height, 60px) - 1px);
   z-index: 15;
   margin: 0;
-  /* sits a touch closer to the header, leaving a bigger clear tap zone below */
-  padding: 3px 0 11px var(--page-margin, 20px);
+  /* most of the strip's height now belongs to the bar itself (below), not
+     dead wrap padding, so a fat-fingered swipe near the bottom hairline
+     still lands on the scrollable title list */
+  padding: 3px 0 3px var(--page-margin, 20px);
   background: #000;
   /* hairline so scrolling content doesn't seem to slide out of nowhere */
   border-bottom: 1px solid rgba(233, 225, 196, 0.16);
@@ -1537,7 +1539,7 @@ main[data-template='index']
   max-width: 132px;
   overflow: hidden;
   white-space: nowrap;
-  padding: 2px 0;
+  padding: 4px 0;
   border: 0 !important;
   background: transparent;
   color: #e9e1c4;
@@ -1626,6 +1628,10 @@ main[data-template='index']
      don't fit */
   flex: 1 1 auto;
   min-width: 0;
+  /* the scrollable box itself is taller than the text line -- a bigger,
+     fat-finger-friendly zone reaching down near the strip's bottom border,
+     not just the thin baseline of the titles */
+  padding-block: 9px;
   overflow-x: auto;
   overflow-y: hidden;
   overscroll-behavior-x: contain;
