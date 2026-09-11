@@ -559,6 +559,114 @@
       D.addEventListener('click', function (e) {
         if (!bar.contains(e.target)) setOpen(false);
       });
+
+      /* ---------------------------------------------------------------
+         Tapping a title in the drop-down never leaves the page: fetch
+         that collection, slide the current cards out to the left, and
+         slide the new ones in from the right -- in place, on "/".
+         --------------------------------------------------------------- */
+      var currentUrl = location.pathname + location.search;
+
+      function markCurrent(url) {
+        var links = list.querySelectorAll('a');
+        for (var i = 0; i < links.length; i++) {
+          var href = links[i].getAttribute('href');
+          if (href === url) links[i].setAttribute('aria-current', 'page');
+          else links[i].removeAttribute('aria-current');
+        }
+      }
+
+      function findGrid(root) {
+        return root.querySelector('.resource-list--grid') ||
+          root.querySelector('.resource-list');
+      }
+
+      function extractItems(doc) {
+        var selectors = [
+          '.resource-list--grid > .resource-list__item',
+          '.resource-list > .resource-list__item',
+          '.resource-list__item',
+          'product-card'
+        ];
+        for (var i = 0; i < selectors.length; i++) {
+          var found = doc.querySelectorAll(selectors[i]);
+          if (found.length) return found;
+        }
+        return null;
+      }
+
+      function switchCollection(url, fromPopstate) {
+        if (window.__mdrSwitching) return;
+        var sec = D.querySelector('[id$="__product_list_fa6P9H"]');
+        var frame = sec && sec.querySelector('.mdr-scrollfade');
+        var grid = sec && findGrid(sec);
+        if (!frame || !grid) { location.href = url; return; }
+
+        if (url === currentUrl) { setOpen(false); return; }
+
+        window.__mdrSwitching = true;
+        setOpen(false);
+
+        fetch(url, { credentials: 'same-origin' })
+          .then(function (res) {
+            if (!res.ok) throw new Error('mdr: bad response');
+            return res.text();
+          })
+          .then(function (html) {
+            var doc = new DOMParser().parseFromString(html, 'text/html');
+            var newItems = extractItems(doc);
+            if (!newItems || !newItems.length) throw new Error('mdr: no products found');
+
+            var REDUCE = window.matchMedia &&
+              window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+            var outMs = REDUCE ? 0 : 220;
+
+            frame.classList.add('mdr-swiping-out');
+
+            setTimeout(function () {
+              grid.innerHTML = '';
+              var frag = D.createDocumentFragment();
+              for (var i = 0; i < newItems.length; i++) {
+                frag.appendChild(D.importNode(newItems[i], true));
+              }
+              grid.appendChild(frag);
+
+              currentUrl = url;
+              if (!fromPopstate) {
+                try { history.pushState({ mdrAllbarUrl: url }, '', url); } catch (e) {}
+              }
+              markCurrent(url);
+
+              frame.classList.remove('mdr-swiping-out');
+              frame.classList.add('mdr-swiping-in');
+              setTimeout(function () {
+                frame.classList.remove('mdr-swiping-in');
+                window.__mdrSwitching = false;
+              }, REDUCE ? 0 : 340);
+            }, outMs);
+          })
+          .catch(function () {
+            window.__mdrSwitching = false;
+            location.href = url;
+          });
+      }
+
+      list.addEventListener('click', function (e) {
+        var a = e.target.closest('a');
+        if (!a) return;
+        var href = a.getAttribute('href');
+        if (!href) return;
+        e.preventDefault();
+        e.stopPropagation();
+        switchCollection(href, false);
+      });
+
+      /* back/forward after an in-place switch: safest correct behaviour is
+         a real reload of whatever URL is now in the bar */
+      window.addEventListener('popstate', function () {
+        if (window.__mdrSwitching) return;
+        if (location.pathname + location.search !== currentUrl) location.reload();
+      });
     }
 
     if (D.readyState !== 'loading') build();

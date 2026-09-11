@@ -1708,6 +1708,46 @@ main[data-template='index'] [id$='__product_list_fa6P9H'] .resource-list--grid {
 main[data-template='index'] [id$='__product_list_fa6P9H'] .mdr-scrollfade {
   position: relative;
   width: 100%;
+  overflow-x: hidden;
+}
+
+/* WEBRACK title tap: swipe the grid out left, swap it, swipe the new one in
+   from the right -- all without leaving the page. */
+main[data-template='index'] [id$='__product_list_fa6P9H'] .mdr-scrollfade .resource-list--grid {
+  transition: transform 0.22s cubic-bezier(0.4, 0, 1, 1), opacity 0.22s ease;
+}
+
+main[data-template='index']
+  [id$='__product_list_fa6P9H']
+  .mdr-scrollfade.mdr-swiping-out
+  .resource-list--grid {
+  transform: translateX(-5%);
+  opacity: 0;
+}
+
+main[data-template='index']
+  [id$='__product_list_fa6P9H']
+  .mdr-scrollfade.mdr-swiping-in
+  .resource-list--grid {
+  animation: mdr-swipe-in 0.34s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@keyframes mdr-swipe-in {
+  from {
+    transform: translateX(5%);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  main[data-template='index'] [id$='__product_list_fa6P9H'] .mdr-scrollfade .resource-list--grid {
+    transition: none;
+    animation: none;
+  }
 }
 
 /* ==========================================================================
