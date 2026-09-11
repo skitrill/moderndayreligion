@@ -19,7 +19,7 @@
 {%- assign _mdr_n = 0 -%}
 {%- for collection in collections limit: 24 -%}
   {%- assign _h = collection.handle -%}
-  {%- unless _h == 'all' or _h == 'frontpage' or collection.all_products_count == 0 -%}
+  {%- unless _h == 'all' or _h == 'frontpage' -%}
     {%- if _mdr_n > 0 -%},{%- endif -%}
     {"t": {{ collection.title | json }}, "u": {{ collection.url | json }}}
     {%- assign _mdr_n = _mdr_n | plus: 1 -%}
