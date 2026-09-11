@@ -620,6 +620,42 @@
         switchCollection(href, false);
       });
 
+      /* Invisible drag-catcher living in the wrap's own existing bottom
+         padding (never overlapping the titles, never resizing anything --
+         see the CSS) so a fat-fingered swipe that lands a little low still
+         scrolls the title list. */
+      var touchzone = D.createElement('div');
+      touchzone.className = 'mdr-allbar__touchzone';
+      touchzone.setAttribute('aria-hidden', 'true');
+      wrap.appendChild(touchzone);
+
+      (function () {
+        var dragging = false;
+        var startX = 0;
+        var startScroll = 0;
+
+        function pointerX(e) {
+          return (e.touches && e.touches.length) ? e.touches[0].clientX : e.clientX;
+        }
+        function dragStart(e) {
+          dragging = true;
+          startX = pointerX(e);
+          startScroll = list.scrollLeft;
+        }
+        function dragMove(e) {
+          if (!dragging) return;
+          list.scrollLeft = startScroll - (pointerX(e) - startX);
+        }
+        function dragEnd() { dragging = false; }
+
+        touchzone.addEventListener('touchstart', dragStart, { passive: true });
+        touchzone.addEventListener('pointerdown', dragStart);
+        window.addEventListener('touchmove', dragMove, { passive: true });
+        window.addEventListener('pointermove', dragMove);
+        window.addEventListener('touchend', dragEnd, { passive: true });
+        window.addEventListener('pointerup', dragEnd);
+      })();
+
       /* back/forward after an in-place switch: safest correct behaviour is
          a real reload of whatever URL is now in the bar */
       window.addEventListener('popstate', function () {

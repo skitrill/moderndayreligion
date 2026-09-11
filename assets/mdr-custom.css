@@ -1517,14 +1517,14 @@ main[data-template='index']
   align-items: center;
   width: 100%;
   box-sizing: border-box;
+  /* sticky already gives absolutely-positioned children (the drag-catcher
+     below) a containing block, same as position:relative would -- nothing
+     extra needed, and this rule's own size is untouched either way */
   position: sticky;
   top: calc(var(--header-height, 60px) - 1px);
   z-index: 15;
   margin: 0;
-  /* most of the strip's height now belongs to the bar itself (below), not
-     dead wrap padding, so a fat-fingered swipe near the bottom hairline
-     still lands on the scrollable title list */
-  padding: 3px 0 3px var(--page-margin, 20px);
+  padding: 3px 0 11px var(--page-margin, 20px);
   background: #000;
   /* hairline so scrolling content doesn't seem to slide out of nowhere */
   border-bottom: 1px solid rgba(233, 225, 196, 0.16);
@@ -1539,7 +1539,7 @@ main[data-template='index']
   max-width: 132px;
   overflow: hidden;
   white-space: nowrap;
-  padding: 4px 0;
+  padding: 2px 0;
   border: 0 !important;
   background: transparent;
   color: #e9e1c4;
@@ -1628,10 +1628,6 @@ main[data-template='index']
      don't fit */
   flex: 1 1 auto;
   min-width: 0;
-  /* the scrollable box itself is taller than the text line -- a bigger,
-     fat-finger-friendly zone reaching down near the strip's bottom border,
-     not just the thin baseline of the titles */
-  padding-block: 9px;
   overflow-x: auto;
   overflow-y: hidden;
   overscroll-behavior-x: contain;
@@ -1664,6 +1660,22 @@ main[data-template='index']
 .mdr-allbar__list a:hover,
 .mdr-allbar__list a[aria-current='page'] {
   opacity: 1;
+}
+
+/* Invisible drag-catcher for the title scroll: a fat-fingered swipe that
+   lands slightly below the titles still scrolls them. position:absolute
+   takes it fully out of the page flow -- it can never resize the bar, the
+   wrap, or push anything on any page -- and it's sized to sit strictly
+   inside the wrap's own existing (already-dead) bottom padding, never
+   overlapping the titles themselves, so it never blocks a tap on them. */
+.mdr-allbar__touchzone {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 11px;
+  touch-action: pan-x;
+  cursor: grab;
 }
 
 /* supreme-style: the grid just flows down the page, no inner scroll window */
