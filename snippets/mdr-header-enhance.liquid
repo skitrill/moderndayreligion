@@ -581,18 +581,20 @@
           root.querySelector('.resource-list');
       }
 
-      function extractItems(doc) {
-        var selectors = [
-          '.resource-list--grid > .resource-list__item',
-          '.resource-list > .resource-list__item',
-          '.resource-list__item',
-          'product-card'
-        ];
-        for (var i = 0; i < selectors.length; i++) {
-          var found = doc.querySelectorAll(selectors[i]);
-          if (found.length) return found;
+      /* Collection pages use Horizon's stock grid (.product-grid > li.product-
+         grid__item > product-card), NOT this section's own markup
+         (.resource-list--grid > .resource-list__item). <product-card> is the
+         one element both share, so pull that and re-wrap it in a fresh
+         .resource-list__item -- the shape every rule on this page expects. */
+      function extractCards(doc) {
+        var containers = ['.resource-list--grid', '.product-grid', '.resource-list'];
+        var scope = null;
+        for (var i = 0; i < containers.length; i++) {
+          scope = doc.querySelector(containers[i]);
+          if (scope) break;
         }
-        return null;
+        var cards = (scope || doc).querySelectorAll('product-card');
+        return cards.length ? cards : null;
       }
 
       function switchCollection(url, fromPopstate) {
@@ -614,8 +616,8 @@
           })
           .then(function (html) {
             var doc = new DOMParser().parseFromString(html, 'text/html');
-            var newItems = extractItems(doc);
-            if (!newItems || !newItems.length) throw new Error('mdr: no products found');
+            var newCards = extractCards(doc);
+            if (!newCards || !newCards.length) throw new Error('mdr: no products found');
 
             var REDUCE = window.matchMedia &&
               window.matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -626,8 +628,11 @@
             setTimeout(function () {
               grid.innerHTML = '';
               var frag = D.createDocumentFragment();
-              for (var i = 0; i < newItems.length; i++) {
-                frag.appendChild(D.importNode(newItems[i], true));
+              for (var i = 0; i < newCards.length; i++) {
+                var item = D.createElement('div');
+                item.className = 'resource-list__item';
+                item.appendChild(D.importNode(newCards[i], true));
+                frag.appendChild(item);
               }
               grid.appendChild(frag);
 
