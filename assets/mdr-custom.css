@@ -1757,7 +1757,8 @@ main[data-template='index'] [id$='__product_list_fa6P9H'] .product-media-contain
 main[data-template='index'] [id$='__product_list_fa6P9H'] .product-media-container {
   max-width: 100% !important;
   margin-inline: 0 !important;
-  aspect-ratio: 4 / 5;
+  /* 15% shorter than the old 4:5 panel */
+  aspect-ratio: 4 / 4.25;
 }
 
 /* bigger product cutouts -- much less padding than before */
