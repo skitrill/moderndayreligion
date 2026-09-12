@@ -400,9 +400,13 @@ product-price *,
   width: 100% !important;
   /* these are themselves column-flex containers; flex-direction:column
      means horizontal centering of the (block) child is align-items, not
-     justify-content or text-align */
+     text-align. Their own children are centered via `.text-block > *
+     { text-align: var(--text-align) }` in the theme's base CSS, which
+     reads this custom property rather than inheriting the computed
+     text-align -- so it has to be set here too, not just text-align. */
   align-items: center !important;
   text-align: center !important;
+  --text-align: center !important;
 }
 
 .group-block-content:has(> product-price) > product-price .price {
