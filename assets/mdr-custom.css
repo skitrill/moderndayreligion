@@ -1631,7 +1631,8 @@ main[data-template='index']
   -webkit-tap-highlight-color: transparent;
   /* plain text, no chrome -- dim while idle, full once opened */
   opacity: 0.5;
-  transition: max-width 0.5s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.2s ease;
+  transition: max-width 0.34s cubic-bezier(0.16, 1, 0.3, 1),
+    opacity var(--animation-speed) var(--animation-easing);
 }
 
 .mdr-allbar.is-open {
@@ -1648,14 +1649,20 @@ main[data-template='index']
   gap: 0;
   flex: 0 0 auto;
   margin: 0;
-  /* a little breathing room around the bigger label/chevron below widens
-     the actual tap target too, not just what's visually drawn -- and now
-     gives the border below room to sit clear of the text */
-  padding: 3px 8px;
-  /* a border tracing the button's own rectangle -- same hairline used for
-     the wrap's bottom edge and the product-grid seams, so it reads as
-     more of that same grid language rather than a one-off box */
-  border: 1px solid rgba(233, 225, 196, 0.16);
+  /* Sits above the drag-catcher touchzone (z-index:2) instead of relying
+     on its tap-passthrough (elementFromPoint + a synthetic .click()) to
+     reach this button. That indirection was the likely source of both
+     "sometimes refreshes" and general unresponsiveness: a real tap now
+     hits this element directly, every time, like any other native
+     button -- no drag-threshold timing, no passthrough to get wrong. */
+  position: relative;
+  isolation: isolate;
+  z-index: 3;
+  /* extra inline-end room clears the pointed tip added below; swapped to
+     inline-start in the --back (RETURN) variant, where the point faces
+     the other way */
+  padding: 3px 18px 3px 9px;
+  border: 0;
   background: none;
   color: inherit;
   font: inherit;
@@ -1666,6 +1673,46 @@ main[data-template='index']
   text-transform: inherit;
   cursor: pointer;
   -webkit-tap-highlight-color: transparent;
+  /* the button's own silhouette -- a rectangle with its outer (pointing)
+     edge cut into a chevron point, echoing the » / « glyph inside it */
+  clip-path: polygon(0 0, calc(100% - 10px) 0, 100% 50%, calc(100% - 10px) 100%, 0 100%);
+}
+
+/* off-home (RETURN): mirror the point to the left, where its own chevron
+   points, and give the breathing room back to that side instead */
+.mdr-allbar--back .mdr-allbar__toggle {
+  padding: 3px 9px 3px 18px;
+  clip-path: polygon(10px 0, 100% 0, 100% 100%, 10px 100%, 0 50%);
+}
+
+/* A plain border + clip-path can't coexist -- clipping a rectangle's
+   painted border leaves the diagonal edge bare (the border only ever ran
+   along the original 4 straight sides). So the outline here is built from
+   two stacked, identically-clipped layers instead: ::before is the full
+   silhouette in the hairline colour, ::after sits 1px inset from it in
+   solid black (matching the wrap's own background), punching the middle
+   out and leaving a ~1px outline that follows the point all the way round. */
+.mdr-allbar__toggle::before,
+.mdr-allbar__toggle::after {
+  content: '';
+  position: absolute;
+  z-index: -1;
+  clip-path: inherit;
+}
+
+.mdr-allbar__toggle::before {
+  inset: 0;
+  background: rgba(233, 225, 196, 0.16);
+}
+
+.mdr-allbar__toggle::after {
+  inset: 1px;
+  background: #000;
+  clip-path: polygon(0 0, calc(100% - 11px) 0, 100% 50%, calc(100% - 11px) 100%, 0 100%);
+}
+
+.mdr-allbar--back .mdr-allbar__toggle::after {
+  clip-path: polygon(11px 0, 100% 0, 100% 100%, 11px 100%, 0 50%);
 }
 
 /* an internal divider between the label and the chevron -- whichever sits
