@@ -1678,31 +1678,30 @@ main[data-template='index']
 }
 
 /* closes the gap between the button's own top border and the wrap's
-   permanent bottom line with a single thin diagonal -- the same 1px
-   weight as every other line here, not a filled wedge. It stretches all
-   the way to the end of the bottom line (under CART), not just straight
-   down from the button, so the short top edge and the full-width bottom
-   edge read as one structured, uniform shape instead of two mismatched
-   pieces. Geometry (--mdr-tip-x/-len/-angle) is measured in JS off the
-   toggle, whose own size never changes between open/closed -- only the
-   list next to it does -- so these values hold in both states, and the
-   same measurement works for RETURN too since it's the same toggle
-   element, just with different content. Lives on the WRAP (not the
-   button) since it needs to reach past the button's own edge; hidden
-   once open, below, when the top border already reaches the same width
-   as the bottom one and there's a plain right border instead. */
+   permanent bottom line with a single short, thin diagonal notch -- the
+   same 1px weight as every other line here, not a filled wedge. It's a
+   fixed, short cut right at the button's edge (not a long slope reaching
+   all the way to the far right) -- the wrap's OWN bottom border is
+   already permanent and full-width on its own, so this only needs to
+   drop the vertical gap between the two, exactly the way the reference
+   box shape does: short diagonal near the button, then the existing flat
+   line continues on its own. --mdr-tip-x (button's right edge) is
+   measured in JS since the toggle's width varies with its own content
+   (RETURN vs WEBRACK, WEBRACK's own chevron) and moves with alignLeft.
+   Lives on the WRAP so it can sit right at that edge; hidden once open,
+   when a plain right border closes the box instead. */
 .mdr-allbar-wrap::before {
   content: '';
   position: absolute;
   left: var(--mdr-tip-x, 100px);
   top: 3px;
   width: 1px;
-  height: var(--mdr-tip-len, 36.5px);
+  height: 36.5px;
   background: rgba(233, 225, 196, 0.16);
   transform-origin: top left;
   /* negative = counter-clockwise, swinging the bottom end rightward --
      "\", not "/" */
-  transform: rotate(calc(-1 * var(--mdr-tip-angle, 12deg)));
+  transform: rotate(-12deg);
   pointer-events: none;
   z-index: 0;
 }
@@ -1770,6 +1769,11 @@ main[data-template='index']
   color: #1a1a1a;
   padding: 2px 4px;
   margin-inline-start: 2px;
+  /* the divider marking the end of "WEBRACK «" now sits right after the
+     chevron chip, not between the label and the chevron -- so the label
+     and its chevron read as one unit before the list starts */
+  margin-inline-end: 8px;
+  border-inline-end: 1px solid rgba(233, 225, 196, 0.16);
   letter-spacing: 0.04em;
 }
 
@@ -1831,14 +1835,6 @@ main[data-template='index']
      top/bottom border as the button next to it -- one continuous shape,
      two visually distinct sections */
   background: rgba(233, 225, 196, 0.16);
-}
-
-/* a thin line marking the end of "WEBRACK" once open, before the list
-   starts -- distinct from the closed state, which has no list to divide
-   the label from yet */
-.mdr-allbar.is-open .mdr-allbar__label {
-  padding-inline-end: 8px;
-  border-inline-end: 1px solid rgba(233, 225, 196, 0.16);
 }
 
 .mdr-allbar__list a {

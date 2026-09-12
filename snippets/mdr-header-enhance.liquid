@@ -358,24 +358,30 @@
       var bar = D.createElement('div');
       bar.className = 'mdr-allbar' + (isHome ? '' : ' mdr-allbar--back');
 
-      /* a clean double-chevron, not the raw "»" glyph -- flipped via CSS for
-         the back-button state */
+      /* WEBRACK: a clean double-chevron, not the raw "»" glyph. RETURN
+         gets a single chevron instead -- the two read as distinct icons,
+         not the same mark flipped, matching the reference. */
       var CHEV_SVG =
         '<svg viewBox="0 0 14 12" fill="none" stroke="currentColor" ' +
         'stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">' +
         '<path d="M1.5 2l4 4-4 4"/><path d="M7.5 2l4 4-4 4"/></svg>';
+      /* authored right-pointing, same as CHEV_SVG -- .mdr-allbar__chev--back
+         svg { transform: scaleX(-1) } already flips it to point left */
+      var CHEV_SVG_SINGLE =
+        '<svg viewBox="0 0 8 12" fill="none" stroke="currentColor" ' +
+        'stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">' +
+        '<path d="M2 2l4 4-4 4"/></svg>';
 
       var toggle = D.createElement('button');
       toggle.type = 'button';
       toggle.className = 'mdr-allbar__toggle';
       toggle.setAttribute('aria-expanded', 'false');
       /* RETURN and WEBRACK now share one box style (border + diagonal tip,
-         see CSS), so RETURN gets its chevron back too -- flipped via
-         .mdr-allbar__chev--back, same icon as WEBRACK's */
+         see CSS), so RETURN gets its chevron back too. */
       toggle.innerHTML = isHome
         ? '<span class="mdr-allbar__label">Webrack</span>' +
           '<span class="mdr-allbar__chev" aria-hidden="true">' + CHEV_SVG + '</span>'
-        : '<span class="mdr-allbar__chev mdr-allbar__chev--back" aria-hidden="true">' + CHEV_SVG + '</span>' +
+        : '<span class="mdr-allbar__chev mdr-allbar__chev--back" aria-hidden="true">' + CHEV_SVG_SINGLE + '</span>' +
           '<span class="mdr-allbar__label">Return</span>';
 
       var list = D.createElement('div');
@@ -451,14 +457,11 @@
       function sizeTip() {
         var tRect = toggle.getBoundingClientRect();
         var wRect = wrap.getBoundingClientRect();
-        var dx = wRect.right - tRect.right;
-        var dy = wRect.bottom - tRect.top;
-        if (dx <= 0 || dy <= 0) return;
-        var len = Math.sqrt(dx * dx + dy * dy);
-        var angleDeg = Math.atan2(dx, dy) * 180 / Math.PI;
+        /* just the button's own right edge -- the diagonal itself stays a
+           short, fixed notch (in CSS); the wrap's own bottom border is
+           already permanent and full-width on its own, so this is the
+           only measurement actually needed: where that short notch starts */
         wrap.style.setProperty('--mdr-tip-x', (tRect.right - wRect.left) + 'px');
-        wrap.style.setProperty('--mdr-tip-len', len + 'px');
-        wrap.style.setProperty('--mdr-tip-angle', angleDeg + 'deg');
       }
       sizeTip();
       window.addEventListener('resize', sizeTip, { passive: true });
