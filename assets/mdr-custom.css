@@ -724,10 +724,12 @@ body {
   background: #000 !important;
 }
 
-@media screen and (max-width: 749px) {
-  .product-recommendations .resource-list--grid {
-    grid-template-columns: repeat(4, 1fr) !important;
-  }
+/* auto-fit (not a fixed repeat count) so a lone recommendation doesn't
+   leave 3-7 empty, still-tinted grid tracks reading as a big blank box --
+   this store's tiny catalog means most products only have 1-2 real
+   recommendations. Settles near 4 cols on phone / 8 on desktop anyway. */
+.product-recommendations .resource-list--grid {
+  grid-template-columns: repeat(auto-fit, minmax(110px, 1fr)) !important;
 }
 
 /* ---- Cart page: no divider lines ---------------------------------------- */
@@ -1736,6 +1738,15 @@ main[data-template='index']
 
 .mdr-allbar--back .mdr-allbar__toggle::after {
   clip-path: polygon(11px 0, 100% 0, 100% 100%, 11px 100%, 0 50%);
+}
+
+/* open: square the tip back off instead of keeping the pointed chevron --
+   the filled/shaded chevron chip is the "collapse" cue once it's open, so
+   the point (which read as "expand") is dropped for a plain rectangle */
+.mdr-allbar.is-open .mdr-allbar__toggle,
+.mdr-allbar.is-open .mdr-allbar__toggle::before,
+.mdr-allbar.is-open .mdr-allbar__toggle::after {
+  clip-path: none !important;
 }
 
 /* an internal divider between the label and the chevron -- whichever sits
