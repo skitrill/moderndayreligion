@@ -398,7 +398,10 @@ product-price *,
 .group-block-content:has(> product-price) > .text-block,
 .group-block-content:has(> product-price) > product-price {
   width: 100% !important;
-  justify-content: center !important;
+  /* these are themselves column-flex containers; flex-direction:column
+     means horizontal centering of the (block) child is align-items, not
+     justify-content or text-align */
+  align-items: center !important;
   text-align: center !important;
 }
 
