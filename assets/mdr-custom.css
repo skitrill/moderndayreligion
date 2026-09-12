@@ -1802,12 +1802,11 @@ main[data-template='index']
   display: flex;
   align-items: center;
   gap: 14px;
-  /* no flex-grow while closed -- it used to stretch (invisibly, opacity:0)
-     to fill the bar's full 132px cap even though there was nothing to
-     show, which is why the closed pill read as longer than "WEBRACK »"
-     itself needed. Grows once open, below, when there's an actual list to
-     give the room to. */
-  flex: 0 1 auto;
+  /* zero basis while closed -- flex:auto still claimed its own content
+     width (invisibly, opacity:0) even without growing, which is why the
+     closed pill read as longer than "WEBRACK »" itself needed. Grows from
+     true zero once open, below, when there's an actual list to show. */
+  flex: 0 0 0;
   min-width: 0;
   overflow-x: auto;
   overflow-y: hidden;
