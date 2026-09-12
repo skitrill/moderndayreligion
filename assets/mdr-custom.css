@@ -1630,9 +1630,10 @@ main[data-template='index']
   margin: 0;
   padding: 3px 0 11px var(--page-margin, 20px);
   background: #000;
-  /* the old plain border-bottom is gone -- replaced by ::after below, a
-     line the WEBRACK button visually sits on top of / straddles, instead
-     of a line sitting underneath the whole row */
+  /* permanent, full width -- "stretch the bottom... across thru to the
+     cart end" -- unlike the button's own top border below, this one
+     never depends on WEBRACK being open or closed. */
+  border-bottom: 1px solid rgba(233, 225, 196, 0.16);
 }
 
 .mdr-allbar {
@@ -1663,29 +1664,33 @@ main[data-template='index']
     opacity var(--animation-speed) var(--animation-easing);
 }
 
-/* WEBRACK: top/bottom border wraps the WHOLE bar -- button AND the list
-   next to it -- not just the button. Closed, the list has no visible
-   width so the border just hugs "WEBRACK »"; open, .mdr-allbar's own
-   max-width below carries the border out to frame the full list too --
-   "a long container for the list items so users know where they're
-   scrolling thru", not only a line under the button. */
+/* WEBRACK: only the TOP border belongs to the button/list bar itself --
+   the bottom is the wrap's own permanent full-width line above. Closed,
+   the list has no visible width so the top border just hugs "WEBRACK »";
+   open, .mdr-allbar's own max-width below carries it out to frame the
+   full list too -- "a long container for the list items so users know
+   where they're scrolling thru", not only a line under the button. */
 .mdr-allbar:not(.mdr-allbar--back) {
   border-top: 1px solid rgba(233, 225, 196, 0.16);
-  border-bottom: 1px solid rgba(233, 225, 196, 0.16);
 }
 
-/* closes the right end into a point instead of leaving the two border
-   lines dangling open -- a small filled triangle sits inside the toggle's
-   own trailing padding, so it doesn't add any extra width of its own */
+/* closes the gap between the button's own top border and the wrap's
+   permanent bottom line with a single thin diagonal -- the same 1px
+   weight as every other line here, not a filled wedge (which read as an
+   out-of-place solid arrow against all these hairlines). Fixed length:
+   the bar's height (top border to the wrap's bottom edge) doesn't change
+   between closed and open, only its width does, so one size works for
+   both -- it just rides along whatever the current right edge is. */
 .mdr-allbar:not(.mdr-allbar--back)::after {
   content: '';
   position: absolute;
   right: 0;
   top: 0;
-  bottom: 0;
-  width: 9px;
+  width: 1px;
+  height: 37px;
   background: rgba(233, 225, 196, 0.16);
-  clip-path: polygon(0 0, 100% 50%, 0 100%);
+  transform-origin: top center;
+  transform: rotate(10deg);
   pointer-events: none;
 }
 
@@ -1826,6 +1831,17 @@ main[data-template='index']
 .mdr-allbar.is-open .mdr-allbar__list {
   flex: 1 1 auto;
   opacity: 1;
+  /* the list's own background, once open -- same tint as RETURN's fill,
+     so both "extra" surfaces on this bar read as one consistent colour */
+  background: rgba(233, 225, 196, 0.16);
+}
+
+/* a thin line marking the end of "WEBRACK" once open, before the list
+   starts -- distinct from the closed state, which has no list to divide
+   the label from yet */
+.mdr-allbar.is-open .mdr-allbar__label {
+  padding-inline-end: 8px;
+  border-inline-end: 1px solid rgba(233, 225, 196, 0.16);
 }
 
 .mdr-allbar__list a {
