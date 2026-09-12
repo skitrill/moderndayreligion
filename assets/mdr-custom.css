@@ -431,7 +431,7 @@ product-price *,
 
 /* tighter rhythm between each block in the details column (was 24px) ---- */
 .product-details > .group-block > .group-block-content {
-  gap: 16px !important;
+  gap: 11px !important;
 }
 
 /* ---- Product-page block order: title/price -> description -> size/color
@@ -1233,7 +1233,7 @@ body:has(#Details-menu-drawer-container[open]) {
   position: relative !important;
   border: 1px solid rgb(var(--color-foreground-rgb) / 0.3) !important;
   padding: 0 !important;
-  margin-top: 22px !important;
+  margin-top: 16px !important;
   display: flex !important;
   flex-wrap: nowrap !important;
   gap: 0 !important;
@@ -1243,7 +1243,7 @@ body:has(#Details-menu-drawer-container[open]) {
 /* "SIZE" legend lifted clear of the box (absolute -> out of the flex flow) */
 .variant-option--buttons > legend {
   position: absolute !important;
-  top: -20px !important;
+  top: -14px !important;
   left: 0 !important;
   float: none !important;
   width: auto !important;
@@ -1256,8 +1256,8 @@ body:has(#Details-menu-drawer-container[open]) {
   flex: 1 1 0 !important;
   border: 0 !important;
   border-left: 1px solid rgb(var(--color-foreground-rgb) / 0.16) !important;
-  padding: 6px 4px !important;
-  min-height: 32px !important;
+  padding: 4px 4px !important;
+  min-height: 24px !important;
   align-items: center !important;
   justify-content: center !important;
   text-align: center !important;
@@ -1395,9 +1395,15 @@ main .product-information__grid.product-information__grid .size-chart * {
 /* ...product title -> full brightness, matching the homepage product-card
    title colour instead of the muted description-column tone. Needs to
    out-specify the earlier :is(h1,...):not(.price):not(product-price) rule
-   (0,2,3), hence the extra .product-details qualifier here (0,3,2). ------ */
+   (0,2,3), hence the extra .product-details qualifier here (0,3,2). The
+   raw font-size already matched (both 9.375px) -- the visible mismatch was
+   line-height/letter-spacing: the PDP title uses the "h5" preset (tight,
+   no tracking) while the homepage card title uses "rte" (1.1 line-height,
+   0.1875px tracking). Match those too so they read the same size. -------- */
 main .product-information__grid.product-information__grid .product-details h1 {
   color: #f0eee6 !important;
+  line-height: 1.1 !important;
+  letter-spacing: 0.1875px !important;
 }
 
 /* ==========================================================================
