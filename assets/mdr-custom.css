@@ -1642,13 +1642,20 @@ main[data-template='index']
 .mdr-allbar__toggle {
   display: inline-flex;
   align-items: center;
-  gap: 3px;
+  /* no gap here -- the divider's own padding-inline-end (below) is the
+     one source of spacing between the two halves, so it's identical
+     whichever half comes first (label vs. chevron) */
+  gap: 0;
   flex: 0 0 auto;
   margin: 0;
   /* a little breathing room around the bigger label/chevron below widens
-     the actual tap target too, not just what's visually drawn */
-  padding: 4px 0;
-  border: 0;
+     the actual tap target too, not just what's visually drawn -- and now
+     gives the border below room to sit clear of the text */
+  padding: 3px 8px;
+  /* a border tracing the button's own rectangle -- same hairline used for
+     the wrap's bottom edge and the product-grid seams, so it reads as
+     more of that same grid language rather than a one-off box */
+  border: 1px solid rgba(233, 225, 196, 0.16);
   background: none;
   color: inherit;
   font: inherit;
@@ -1659,6 +1666,15 @@ main[data-template='index']
   text-transform: inherit;
   cursor: pointer;
   -webkit-tap-highlight-color: transparent;
+}
+
+/* an internal divider between the label and the chevron -- whichever sits
+   first (label on WEBRACK, chevron on RETURN) -- so the one button reads
+   as a small two-cell grid, the same "segmented box" language already
+   used for the SIZE / COLOR selectors, rather than a plain outlined box */
+.mdr-allbar__toggle > :first-child {
+  padding-inline-end: 6px;
+  border-inline-end: 1px solid rgba(233, 225, 196, 0.16);
 }
 
 .mdr-allbar__chev {
@@ -1689,9 +1705,9 @@ main[data-template='index']
   overflow: visible;
 }
 
-.mdr-allbar__chev--back {
-  margin-inline-end: 7px;
-}
+/* spacing before the label now comes from the toggle's own divider
+   (border-inline-end + padding on the first child, see .mdr-allbar__toggle
+   > :first-child) instead of a one-off margin here */
 
 .mdr-allbar__chev--back svg {
   transform: scaleX(-1);
