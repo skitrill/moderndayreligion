@@ -700,10 +700,12 @@
   })();
 
   /* =====================================================================
-     Mobile page-zoom toggle -- [+ page] / [- page]. Sits at the bottom of
+     Mobile page sizing -- [+ page] / [- page]. Sits at the bottom of
      the page, on the "Refund policy" line (not floating -- only visible
-     once you scroll to the footer). Tapping zooms the whole page by 20%
-     (persists while browsing); tap again to go back.
+     once you scroll to the footer). The 20%-enlarged size is now the
+     page's DEFAULT (loads already zoomed, every fresh session); the
+     control shows "[- page]" in that default state -- tap it to switch
+     back down to normal size, tap again to switch back up.
      ===================================================================== */
   (function () {
     if (window.__mdrZoom) return;
@@ -712,16 +714,21 @@
     var Z = 1.2;
 
     function stored() {
-      try { return sessionStorage.getItem('mdrZoom') === '1'; } catch (e) { return false; }
+      try {
+        var v = sessionStorage.getItem('mdrZoom');
+        /* no explicit choice yet this session -> default to zoomed */
+        if (v === null) return true;
+        return v === '1';
+      } catch (e) { return true; }
     }
 
     var btn = D.createElement('button');
     btn.className = 'mdr-zoom';
     btn.type = 'button';
-    btn.setAttribute('aria-label', 'Zoom the page');
+    btn.setAttribute('aria-label', 'Switch page size');
     btn.innerHTML =
       '<span class="mdr-bracket">[</span>' +
-      '<span class="mdr-zoom__sign">+</span>' +
+      '<span class="mdr-zoom__sign">-</span>' +
       '<span class="mdr-zoom__pg" aria-hidden="true"><i></i><i></i><i></i><i></i></span>' +
       '<span class="mdr-bracket">]</span>';
 
