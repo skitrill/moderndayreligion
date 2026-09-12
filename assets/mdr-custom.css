@@ -384,25 +384,24 @@ product-price *,
   opacity: 0.35;
 }
 
-/* ---- Product-page header: title left, price right, one row -- the price
-   stands out (bold, larger) the way a bold detail sits opposite the price
-   on a Supreme-style PDP. Scoped to the exact block pairing a title
-   text-block with <product-price> so no other group-block is touched. ---- */
+/* ---- Product-page header: title centered on top, price centered below it.
+   The price still stands out (bold, larger). Scoped to the exact block
+   pairing a title text-block with <product-price> so no other group-block
+   is touched. -------------------------------------------------------------- */
 .group-block-content:has(> product-price) {
-  flex-direction: row !important;
-  flex-wrap: nowrap !important;
-  align-items: baseline !important;
-  justify-content: space-between !important;
+  flex-direction: column !important;
+  align-items: center !important;
+  text-align: center !important;
 }
 
 .group-block-content:has(> product-price) > .text-block {
-  flex: 1 1 auto !important;
-  min-width: 0 !important;
+  width: 100% !important;
+  text-align: center !important;
 }
 
 .group-block-content:has(> product-price) > product-price {
-  flex: 0 0 auto !important;
-  white-space: nowrap !important;
+  width: 100% !important;
+  text-align: center !important;
 }
 
 .group-block-content:has(> product-price) > product-price .price {
@@ -410,9 +409,25 @@ product-price *,
   font-size: 1.1em !important;
 }
 
-/* ---- Pull "Size Chart" out of the SIZE -> ADD TO CART flow: it now sits
-   right after the description instead of wedged between them, so the size
-   box reads straight into the buy-buttons row underneath it. ------------- */
+/* ---- Product-page block order: title/price -> description -> size/color
+   selectors -> buy-buttons row -> Size Chart last. The description now
+   reads right under the price instead of after the buy-buttons row. ------ */
+.product-information__grid .product-details > .group-block {
+  order: 1 !important;
+}
+
+.product-information__grid .product-details > rte-formatter[class*='__text_aEtTtq'] {
+  order: 2 !important;
+}
+
+.product-information__grid .product-details > variant-picker {
+  order: 3 !important;
+}
+
+.product-information__grid .product-details > .buy-buttons-block {
+  order: 4 !important;
+}
+
 .product-information__grid .product-details > .details.size-chart {
   order: 5 !important;
 }
