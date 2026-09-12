@@ -507,8 +507,8 @@ main[data-template='index'] .resource-list--grid,
 }
 
 /* ---- Featured grid: supreme.com style -- spans the content width, hairline
-   seams between cards. Zoom-out view = 2 cols on phone, 4 on pc; dense 8x8
-   only when the logo toggles data-featured="grid8" on <html>. ------------- */
+   seams between cards. Always 2 cols on phone, 4 on pc -- fixed, no
+   dense/zoom toggle. ------------------------------------------------------- */
 main[data-template='index'] [id$='__product_list_fa6P9H'] .resource-list--grid {
   display: grid !important;
   grid-template-columns: repeat(2, 1fr) !important;
@@ -522,27 +522,6 @@ main[data-template='index'] [id$='__product_list_fa6P9H'] .resource-list--grid {
 @media (min-width: 750px) {
   main[data-template='index'] [id$='__product_list_fa6P9H'] .resource-list--grid {
     grid-template-columns: repeat(4, 1fr) !important;
-  }
-}
-
-/* Dense 8x8: fixed-size tiles, up to 8 per row, and the items themselves
-   stay centred even when there aren't enough to fill the grid.
-   (auto-fit collapses the empty tracks so justify-content can centre.) */
-html[data-featured='grid8'] main[data-template='index'] [id$='__product_list_fa6P9H'] .resource-list--grid {
-  grid-template-columns: repeat(auto-fit, 32px) !important;
-  justify-content: center !important;
-  justify-items: stretch !important;
-  column-gap: 2px !important;
-  row-gap: 2px !important;
-  width: auto !important;
-  max-width: calc(32px * 8 + 2px * 7) !important;
-  margin-inline: auto !important;
-}
-
-@media (min-width: 750px) {
-  html[data-featured='grid8'] main[data-template='index'] [id$='__product_list_fa6P9H'] .resource-list--grid {
-    grid-template-columns: repeat(auto-fit, 58px) !important;
-    max-width: calc(58px * 8 + 2px * 7) !important;
   }
 }
 
@@ -571,37 +550,6 @@ main[data-template='index'] [id$='__product_list_fa6P9H'] .section-resource-list
 main[data-template='index'] [id$='__product_list_fa6P9H'] .section-resource-list__header
   :is(h1, h2, h3, h4, .text-block) * {
   color: #e9e1c4 !important;
-}
-
-/* dense mode: the whole layout is one tap target -> zoom back to 2/4 */
-html[data-featured='grid8'] main[data-template='index'] [id$='__product_list_fa6P9H'] {
-  cursor: zoom-in;
-}
-
-html[data-featured='grid8'] main[data-template='index'] [id$='__product_list_fa6P9H'] :is(a, button, .product-card__content) {
-  pointer-events: none !important;
-}
-
-/* snappy settle when switching modes */
-html.mdr-featured-anim main[data-template='index'] [id$='__product_list_fa6P9H'] .resource-list--grid {
-  animation: mdr-featured-zoom 0.34s cubic-bezier(0.16, 1, 0.3, 1);
-}
-
-@keyframes mdr-featured-zoom {
-  from {
-    transform: scale(0.955);
-    opacity: 0.45;
-  }
-  to {
-    transform: none;
-    opacity: 1;
-  }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  html.mdr-featured-anim main[data-template='index'] [id$='__product_list_fa6P9H'] .resource-list--grid {
-    animation: none;
-  }
 }
 
 /* ==========================================================================
@@ -1735,20 +1683,15 @@ main[data-template='index']
    ========================================================================== */
 
 /* 1px grid gaps read as hairlines: the grid paints a faint line colour and
-   every card fills its cell with solid black on top. Only on the large
-   (zoomed-in) cards -- the dense zoomed-out tiles get no seams. */
+   every card fills its cell with solid black on top. */
 main[data-template='index'] [id$='__product_list_fa6P9H'] .resource-list__item {
   background: #000 !important;
 }
 
-html:not([data-featured='grid8'])
-  main[data-template='index']
-  [id$='__product_list_fa6P9H']
-  .resource-list--grid {
+main[data-template='index'] [id$='__product_list_fa6P9H'] .resource-list--grid {
   background: rgba(233, 225, 196, 0.14) !important;
   border-bottom: 1px solid rgba(233, 225, 196, 0.14) !important;
 }
-/* dense (grid8) view: no rule adds a grid background/border, so no seams */
 
 /* card = a plain column, a touch of breathing room below the price so it
    doesn't sit flush on the row's hairline */
@@ -1818,13 +1761,6 @@ main[data-template='index'] [id$='__product_list_fa6P9H'] .card-gallery::after {
   text-transform: uppercase !important;
   color: rgba(233, 225, 196, 0.45);
   pointer-events: none;
-}
-
-/* dense (logo-tap) view: drop the name / price / tag so the mini tiles stay clean */
-html[data-featured='grid8'] main[data-template='index'] [id$='__product_list_fa6P9H'] .product-card a.contents.user-select-text,
-html[data-featured='grid8'] main[data-template='index'] [id$='__product_list_fa6P9H'] .product-card product-price,
-html[data-featured='grid8'] main[data-template='index'] [id$='__product_list_fa6P9H'] .card-gallery::after {
-  display: none !important;
 }
 
 /* hide the quick-add / choose overlay button -- supreme cards are just tap-through */

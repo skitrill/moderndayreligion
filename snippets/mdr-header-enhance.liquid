@@ -197,52 +197,25 @@
   })();
 
   /* =====================================================================
-     Homepage featured grid: dense 8x8 (reached ONLY by tapping the logo)
-     <-> "zoom" view of 2 cols on mobile / 4 on desktop (default; also what
-     a tap anywhere on the dense layout returns you to). The HOME link --
-     or anything else -- never brings the 8x8 back.
+     Homepage grid: a fixed 2-col (mobile) / 4-col (desktop) layout, always
+     -- the old dense/zoom-toggle-by-tapping-the-logo feature is gone. This
+     just keeps the "pad the grid with inert clones so it looks full"
+     behaviour, since the store only has a few real products right now.
      ===================================================================== */
   (function () {
-    if (window.__mdrFeaturedGrid) return;
-    window.__mdrFeaturedGrid = true;
+    if (window.__mdrGridPad) return;
+    window.__mdrGridPad = true;
 
     var D = document;
-    var root = D.documentElement;
-    var KEY = 'mdrFeaturedView'; /* 'grid8' | 'zoom' */
-
-    function read() {
-      try { return sessionStorage.getItem(KEY) === 'grid8' ? 'grid8' : 'zoom'; }
-      catch (e) { return 'zoom'; }
-    }
-    function write(v) {
-      try { sessionStorage.setItem(KEY, v); } catch (e) {}
-    }
-    function apply(v, animate) {
-      root.setAttribute('data-featured', v);
-      if (animate) {
-        root.classList.remove('mdr-featured-anim');
-        void root.offsetWidth;
-        root.classList.add('mdr-featured-anim');
-        setTimeout(function () { root.classList.remove('mdr-featured-anim'); }, 400);
-      }
-    }
-    function setView(v, animate) {
-      write(v);
-      apply(v, animate);
-      padFill(v);
-    }
-
-    /* reflect stored state as early as possible */
-    apply(read(), false);
 
     function featured() {
       return D.querySelector('[id$="__product_list_fa6P9H"]');
     }
 
-    /* TEMP: only 3 products -- clone the tiles so the 8x8 (and the zoom
-       view) look full while we test. Clones are inert + tagged
-       [data-mdr-clone]; delete this block + its 2 calls when done. */
-    function padFill(mode) {
+    /* TEMP: only a few products -- clone the tiles so the grid looks full
+       while we test. Clones are inert + tagged [data-mdr-clone]; delete
+       this function + its calls when done. */
+    function padFill() {
       var sec = featured();
       if (!sec) return;
       var grid = sec.querySelector('.resource-list--grid') || sec.querySelector('.resource-list');
@@ -258,8 +231,7 @@
       }
       if (!originals.length) return;
 
-      var target = mode === 'grid8' ? 64 : 24;
-      var need = target - originals.length;
+      var need = 24 - originals.length;
       if (need <= 0) return;
 
       var frag = D.createDocumentFragment();
@@ -279,57 +251,12 @@
       grid.appendChild(frag);
     }
 
-    /* Tap anywhere on the dense layout -> zoom out to 2/4. Only active while
-       dense; in "zoom" view, card taps navigate to the product as normal.
-       The WEBRACK bar counts too: a tap on it while dense zooms out (its
-       drop-down toggle only runs in the zoomed-in view). */
-    D.addEventListener('click', function (e) {
-      if (read() !== 'grid8') return;
-      var sec = featured();
-      if (!sec || !sec.contains(e.target)) return;
-      e.preventDefault();
-      e.stopPropagation();
-      setView('zoom', true);
-      /* a tap on the WEBRACK bar zooms out AND opens its drop-down */
-      if (e.target.closest && e.target.closest('.mdr-allbar-wrap') &&
-          typeof window.__mdrAllbarOpen === 'function') {
-        window.__mdrAllbarOpen();
-      }
-    }, true);
-
-    /* The logo is the ONLY control that brings back the dense 8x8. */
-    function wireLogo() {
-      var logo = D.querySelector('a.header-logo');
-      if (!logo || logo.__mdrFeaturedWired) return;
-      logo.__mdrFeaturedWired = true;
-      logo.addEventListener('click', function (e) {
-        var onHome = location.pathname === '/' || location.pathname === '';
-        write('grid8');
-        if (onHome) {
-          e.preventDefault();
-          e.stopPropagation();
-          apply('grid8', true);
-          window.scrollTo(0, 0);
-        }
-        /* off-home: allow navigation to "/"; it will load in dense mode */
-      }, true);
-    }
-
-    function boot() {
-      wireLogo();
-      padFill(read());
-    }
+    function boot() { padFill(); }
 
     boot();
     if (D.readyState !== 'loading') boot();
     D.addEventListener('DOMContentLoaded', boot);
     window.addEventListener('load', boot);
-    if (window.MutationObserver) {
-      new MutationObserver(wireLogo).observe(
-        D.querySelector('#header-component') || D.body,
-        { childList: true, subtree: true }
-      );
-    }
   })();
 
   /* =====================================================================
