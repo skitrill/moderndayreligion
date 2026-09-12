@@ -1670,10 +1670,8 @@ main[data-template='index']
    overlapping the titles themselves, so it never blocks a tap on them. */
 .mdr-allbar__touchzone {
   position: absolute;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  height: 11px;
+  inset: 0;
+  z-index: 2;
   touch-action: pan-x;
   cursor: grab;
 }

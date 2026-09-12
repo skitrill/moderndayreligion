@@ -484,11 +484,32 @@
       window.addEventListener('resize', alignLeft, { passive: true });
       window.addEventListener('load', alignLeft);
 
+      /* While the drop-down is open, the page can't scroll underneath it --
+         the sticky bar (and the header above it) stay put, so a diagonal
+         drag on the title list never turns into a page scroll fighting it. */
+      var scrollLockY = 0;
+      function lockPageScroll(on) {
+        if (on) {
+          scrollLockY = window.scrollY || D.documentElement.scrollTop || 0;
+          D.body.style.position = 'fixed';
+          D.body.style.top = -scrollLockY + 'px';
+          D.body.style.left = '0';
+          D.body.style.right = '0';
+        } else {
+          D.body.style.position = '';
+          D.body.style.top = '';
+          D.body.style.left = '';
+          D.body.style.right = '';
+          window.scrollTo(0, scrollLockY);
+        }
+      }
+
       var chev = toggle.querySelector('.mdr-allbar__chev');
       function setOpen(on) {
         bar.classList.toggle('is-open', on);
         toggle.setAttribute('aria-expanded', on ? 'true' : 'false');
         if (chev) chev.innerHTML = on ? '|&lt;|' : CHEV_SVG;
+        lockPageScroll(on);
       }
       window.__mdrAllbarOpen = function () { setOpen(true); };
 
@@ -511,6 +532,11 @@
         setOpen(!bar.classList.contains('is-open'));
       });
       D.addEventListener('click', function (e) {
+        /* the drag-catcher is a sibling of the bar (so it can cover the
+           whole wrap, escaping the bar's own clip) -- a tap on it fires a
+           native click that bubbles here too, and it must NOT count as
+           "outside" or every tap would open-then-immediately-close it */
+        if (e.target.classList && e.target.classList.contains('mdr-allbar__touchzone')) return;
         if (!bar.contains(e.target)) setOpen(false);
       });
 
@@ -620,40 +646,72 @@
         switchCollection(href, false);
       });
 
-      /* Invisible drag-catcher living in the wrap's own existing bottom
-         padding (never overlapping the titles, never resizing anything --
-         see the CSS) so a fat-fingered swipe that lands a little low still
-         scrolls the title list. */
+      /* Invisible drag-catcher covering the WHOLE wrap (still strictly
+         position:absolute inside it -- zero layout footprint, on any page).
+         A drag anywhere in it scrolls the title list; a plain tap is
+         forwarded to whatever real link/button actually sits underneath, so
+         nothing's tap-ability is lost by being covered. */
       var touchzone = D.createElement('div');
       touchzone.className = 'mdr-allbar__touchzone';
       touchzone.setAttribute('aria-hidden', 'true');
       wrap.appendChild(touchzone);
 
       (function () {
+        var THRESHOLD = 6;
         var dragging = false;
+        var moved = false;
         var startX = 0;
+        var startY = 0;
         var startScroll = 0;
 
-        function pointerX(e) {
-          return (e.touches && e.touches.length) ? e.touches[0].clientX : e.clientX;
+        function point(e) {
+          var t = (e.changedTouches && e.changedTouches.length) ? e.changedTouches[0]
+            : (e.touches && e.touches.length) ? e.touches[0]
+            : e;
+          return { x: t.clientX, y: t.clientY };
         }
         function dragStart(e) {
           dragging = true;
-          startX = pointerX(e);
+          moved = false;
+          var p = point(e);
+          startX = p.x;
+          startY = p.y;
           startScroll = list.scrollLeft;
         }
         function dragMove(e) {
           if (!dragging) return;
-          list.scrollLeft = startScroll - (pointerX(e) - startX);
+          var p = point(e);
+          var dx = p.x - startX;
+          if (!moved && (Math.abs(dx) > THRESHOLD || Math.abs(p.y - startY) > THRESHOLD)) {
+            moved = true;
+          }
+          if (moved) list.scrollLeft = startScroll - dx;
         }
-        function dragEnd() { dragging = false; }
+        function dragEnd(e) {
+          if (!dragging) return;
+          dragging = false;
+          if (moved) return;
+          /* a plain tap, not a drag -- pass it through to the real element */
+          var p = point(e);
+          touchzone.style.pointerEvents = 'none';
+          var real = D.elementFromPoint(p.x, p.y);
+          touchzone.style.pointerEvents = '';
+          var target = real && real.closest ? real.closest('a, button') : null;
+          if (target) target.click();
+        }
 
         touchzone.addEventListener('touchstart', dragStart, { passive: true });
         touchzone.addEventListener('pointerdown', dragStart);
         window.addEventListener('touchmove', dragMove, { passive: true });
         window.addEventListener('pointermove', dragMove);
-        window.addEventListener('touchend', dragEnd, { passive: true });
+        window.addEventListener('touchend', dragEnd);
         window.addEventListener('pointerup', dragEnd);
+
+        /* the zone now sits on top of the list, so forward desktop
+           wheel/trackpad scroll to it too -- otherwise it'd stop dead */
+        touchzone.addEventListener('wheel', function (e) {
+          list.scrollLeft += Math.abs(e.deltaX) > Math.abs(e.deltaY) ? e.deltaX : e.deltaY;
+        }, { passive: true });
       })();
 
       /* back/forward after an in-place switch: safest correct behaviour is
