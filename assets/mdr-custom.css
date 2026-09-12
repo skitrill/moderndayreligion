@@ -1696,12 +1696,16 @@ main[data-template='index']
   left: var(--mdr-tip-x, 100px);
   top: 3px;
   width: 1px;
-  height: 36.5px;
+  /* 35.7px straight down (measured) / cos(35deg) -- a proper visible
+     diagonal, not a near-vertical sliver: the previous 12deg angle only
+     drifted ~7px sideways over its whole length and read as barely more
+     than a vertical tick, nothing like the clear cut in the reference */
+  height: 43.6px;
   background: rgba(233, 225, 196, 0.16);
   transform-origin: top left;
   /* negative = counter-clockwise, swinging the bottom end rightward --
      "\", not "/" */
-  transform: rotate(-12deg);
+  transform: rotate(-35deg);
   pointer-events: none;
   z-index: 0;
 }
