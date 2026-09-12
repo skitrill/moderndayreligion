@@ -455,13 +455,15 @@
          open/closed -- only the list next to it does -- so this holds
          good in both states without needing to re-run on open/close. */
       function sizeTip() {
-        var tRect = toggle.getBoundingClientRect();
+        /* .mdr-allbar's own right edge (not the toggle's) -- .mdr-allbar
+           is what actually carries the top/left border, and closed it's
+           wider than the toggle alone by the bar's 12px gap to the
+           (zero-width but still gapped) list next to it. Measuring off
+           the toggle left the diagonal starting ~13px short of where the
+           top border actually ended, an open gap between the two. */
+        var bRect = bar.getBoundingClientRect();
         var wRect = wrap.getBoundingClientRect();
-        /* just the button's own right edge -- the diagonal itself stays a
-           short, fixed notch (in CSS); the wrap's own bottom border is
-           already permanent and full-width on its own, so this is the
-           only measurement actually needed: where that short notch starts */
-        wrap.style.setProperty('--mdr-tip-x', (tRect.right - wRect.left) + 'px');
+        wrap.style.setProperty('--mdr-tip-x', (bRect.right - wRect.left) + 'px');
       }
       sizeTip();
       window.addEventListener('resize', sizeTip, { passive: true });
