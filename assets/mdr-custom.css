@@ -1619,6 +1619,10 @@ main[data-template='index']
 .mdr-allbar-wrap {
   display: flex;
   align-items: center;
+  /* centred on the page instead of lined up under the logo's left edge --
+     symmetric left/right padding (was left-only, sized for the old
+     JS-measured logo offset) so the centering is actually centred */
+  justify-content: center;
   width: 100%;
   box-sizing: border-box;
   /* sticky already gives absolutely-positioned children (the drag-catcher
@@ -1628,7 +1632,7 @@ main[data-template='index']
   top: calc(var(--header-height, 60px) - 1px);
   z-index: 15;
   margin: 0;
-  padding: 3px 0 11px var(--page-margin, 20px);
+  padding: 3px var(--page-margin, 20px) 11px;
   background: #000;
   /* hairline so scrolling content doesn't seem to slide out of nowhere */
   border-bottom: 1px solid rgba(233, 225, 196, 0.16);
