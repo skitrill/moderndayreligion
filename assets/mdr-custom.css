@@ -1610,12 +1610,14 @@ main[data-template='index']
   opacity: 1;
 }
 
-/* Invisible drag-catcher for the title scroll: a fat-fingered swipe that
-   lands slightly below the titles still scrolls them. position:absolute
-   takes it fully out of the page flow -- it can never resize the bar, the
-   wrap, or push anything on any page -- and it's sized to sit strictly
-   inside the wrap's own existing (already-dead) bottom padding, never
-   overlapping the titles themselves, so it never blocks a tap on them. */
+/* Invisible drag-catcher covering the WHOLE wrap -- position:absolute takes
+   it fully out of the page flow, so it can never resize the bar, the wrap,
+   or push anything on any page, on any breakpoint. A drag anywhere in it
+   scrolls the title list (JS); touch-action:pan-x keeps that drag from also
+   scrolling the page, for free, without any JS-side scroll lock. Since it
+   sits ON TOP of the titles and the toggle too, a plain tap is forwarded in
+   JS to whatever real link/button is actually underneath, so nothing loses
+   its tap-ability by being covered. */
 .mdr-allbar__touchzone {
   position: absolute;
   inset: 0;
