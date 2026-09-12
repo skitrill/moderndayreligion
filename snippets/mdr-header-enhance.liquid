@@ -380,8 +380,19 @@
 
       var list = D.createElement('div');
       list.className = 'mdr-allbar__list';
+      /* endless scroll: once past a full copy's width, silently snap back
+         by that same width -- pixel-identical, so it reads as the last
+         title pulling the first one back into view rather than a jump.
+         Declared here (build()'s own scope) so both the wheel handler and
+         the drag handler below can read/adjust it via closure. */
+      var loopWidth = 0;
+      function measureLoop() {
+        loopWidth = realCount > 1 ? list.scrollWidth / 2 : 0;
+      }
+      var realCount = 0;
       if (isHome) {
         var items = [{ t: 'All', u: '/collections/all' }].concat(data);
+        var realItems = [];
         for (var i = 0; i < items.length; i++) {
           if (!items[i] || !items[i].u) continue;
           var a = D.createElement('a');
@@ -391,7 +402,22 @@
             a.setAttribute('aria-current', 'page');
           }
           list.appendChild(a);
+          realItems.push(items[i]);
         }
+        realCount = realItems.length;
+        /* a second, identical copy right after the first -- aria-hidden
+           and unfocusable since it's a visual duplicate, not new content */
+        for (var j = 0; j < realItems.length; j++) {
+          var b = D.createElement('a');
+          b.href = realItems[j].u;
+          b.textContent = realItems[j].t;
+          b.setAttribute('aria-hidden', 'true');
+          b.tabIndex = -1;
+          list.appendChild(b);
+        }
+        measureLoop();
+        window.addEventListener('resize', measureLoop, { passive: true });
+        window.addEventListener('load', measureLoop);
       }
 
       bar.appendChild(toggle);
@@ -409,13 +435,34 @@
         if (!logo) return;
         var x = Math.max(0, Math.round(logo.getBoundingClientRect().left));
         wrap.style.paddingInlineStart = x + 'px';
-        /* the grid line (.mdr-allbar-wrap::after) starts at the same x, so
-           it sits right under the button rather than the page edge */
-        wrap.style.setProperty('--mdr-allbar-x', x + 'px');
       }
       alignLeft();
       window.addEventListener('resize', alignLeft, { passive: true });
       window.addEventListener('load', alignLeft);
+
+      /* The closing "\" needs to reach the far end of the wrap's own
+         permanent bottom line (all the way under CART), not just drop
+         straight down from the button -- otherwise the short top border
+         and the full-width bottom border read as two mismatched pieces
+         instead of one structured shape. Measured off the TOGGLE (not
+         the bar), since the toggle's own size never changes between
+         open/closed -- only the list next to it does -- so this holds
+         good in both states without needing to re-run on open/close. */
+      function sizeTip() {
+        var tRect = toggle.getBoundingClientRect();
+        var wRect = wrap.getBoundingClientRect();
+        var dx = wRect.right - tRect.right;
+        var dy = wRect.bottom - tRect.top;
+        if (dx <= 0 || dy <= 0) return;
+        var len = Math.sqrt(dx * dx + dy * dy);
+        var angleDeg = Math.atan2(dx, dy) * 180 / Math.PI;
+        wrap.style.setProperty('--mdr-tip-x', (tRect.right - wRect.left) + 'px');
+        wrap.style.setProperty('--mdr-tip-len', len + 'px');
+        wrap.style.setProperty('--mdr-tip-angle', angleDeg + 'deg');
+      }
+      sizeTip();
+      window.addEventListener('resize', sizeTip, { passive: true });
+      window.addEventListener('load', sizeTip);
 
       /* A body-position:fixed page-lock here was expensive (forces a full
          reflow the instant WEBRACK opens -- the mobile lag/freeze) and
@@ -620,7 +667,21 @@
           if (!moved && (Math.abs(dx) > THRESHOLD || Math.abs(p.y - startY) > THRESHOLD)) {
             moved = true;
           }
-          if (moved) list.scrollLeft = startScroll - dx;
+          if (moved) {
+            list.scrollLeft = startScroll - dx;
+            /* keep the drag's own baseline in sync with the jump, or the
+               very next move event would compute against the pre-wrap
+               position and yank the list straight back */
+            if (loopWidth > 0) {
+              if (list.scrollLeft >= loopWidth) {
+                list.scrollLeft -= loopWidth;
+                startScroll -= loopWidth;
+              } else if (list.scrollLeft < 0) {
+                list.scrollLeft += loopWidth;
+                startScroll += loopWidth;
+              }
+            }
+          }
         }
         function dragEnd(e) {
           if (!dragging) return;
@@ -646,6 +707,10 @@
            wheel/trackpad scroll to it too -- otherwise it'd stop dead */
         touchzone.addEventListener('wheel', function (e) {
           list.scrollLeft += Math.abs(e.deltaX) > Math.abs(e.deltaY) ? e.deltaX : e.deltaY;
+          if (loopWidth > 0) {
+            if (list.scrollLeft >= loopWidth) list.scrollLeft -= loopWidth;
+            else if (list.scrollLeft < 0) list.scrollLeft += loopWidth;
+          }
         }, { passive: true });
       })();
 

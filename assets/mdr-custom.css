@@ -1676,27 +1676,35 @@ main[data-template='index']
 
 /* closes the gap between the button's own top border and the wrap's
    permanent bottom line with a single thin diagonal -- the same 1px
-   weight as every other line here, not a filled wedge (which read as an
-   out-of-place solid arrow against all these hairlines). Fixed length:
-   the bar's height (top border to the wrap's bottom edge) doesn't change
-   between closed and open, only its width does, so one size works for
-   both -- it just rides along whatever the current right edge is. */
-.mdr-allbar:not(.mdr-allbar--back)::after {
+   weight as every other line here, not a filled wedge. It stretches all
+   the way to the end of the bottom line (under CART), not just straight
+   down from the button, so the short top edge and the full-width bottom
+   edge read as one structured, uniform shape instead of two mismatched
+   pieces. Geometry (--mdr-tip-x/-len/-angle) is measured in JS off the
+   toggle, whose own size never changes between open/closed -- only the
+   list next to it does -- so these values hold in both states. Lives on
+   the WRAP (not the button) since it needs to reach past the button's own
+   edge; hidden once open, below, when the top border already reaches the
+   same width as the bottom one and there's nothing left to close. */
+.mdr-allbar-wrap::before {
   content: '';
   position: absolute;
-  right: 0;
-  top: 0;
+  left: var(--mdr-tip-x, 100px);
+  top: 3px;
   width: 1px;
-  /* length chosen so the rotated endpoint lands exactly on the wrap's
-     bottom border (35.7px straight down) rather than falling short of or
-     overshooting it: 35.7 / cos(12deg) */
-  height: 36.5px;
+  height: var(--mdr-tip-len, 36.5px);
   background: rgba(233, 225, 196, 0.16);
-  transform-origin: top center;
+  transform-origin: top left;
   /* negative = counter-clockwise, swinging the bottom end rightward --
      "\", not "/" */
-  transform: rotate(-12deg);
+  transform: rotate(calc(-1 * var(--mdr-tip-angle, 12deg)));
   pointer-events: none;
+  z-index: 0;
+}
+
+.mdr-allbar-wrap:has(.mdr-allbar--back)::before,
+.mdr-allbar-wrap:has(.mdr-allbar.is-open)::before {
+  display: none;
 }
 
 .mdr-allbar.is-open {
@@ -1836,9 +1844,6 @@ main[data-template='index']
 .mdr-allbar.is-open .mdr-allbar__list {
   flex: 1 1 auto;
   opacity: 1;
-  /* the list's own background, once open -- same tint as RETURN's fill,
-     so both "extra" surfaces on this bar read as one consistent colour */
-  background: rgba(233, 225, 196, 0.16);
 }
 
 /* a thin line marking the end of "WEBRACK" once open, before the list
