@@ -700,11 +700,34 @@ body {
 }
 
 /* ---- Slight visible gap between cards so they don't look merged ----------- */
-.resource-list--grid,
-.product-recommendations .resource-list,
-.product-recommendations .resource-list--grid {
+.resource-list--grid {
   column-gap: 6px !important;
   row-gap: 6px !important;
+}
+
+/* ---- PDP "Recommended" section: hairline grid lines between the cards,
+   the same background-bleeds-through-the-gap trick as the homepage grid,
+   plus half-size cards (8 cols desktop / 4 on phone, was 4 / 2). -------- */
+.product-recommendations .resource-list,
+.product-recommendations .resource-list--grid {
+  column-gap: 2px !important;
+  row-gap: 2px !important;
+  background: rgba(233, 225, 196, 0.14) !important;
+}
+
+.product-recommendations .resource-list__item {
+  background: #000 !important;
+}
+
+.product-recommendations .product-card,
+.product-recommendations .product-card__content {
+  background: #000 !important;
+}
+
+@media screen and (max-width: 749px) {
+  .product-recommendations .resource-list--grid {
+    grid-template-columns: repeat(4, 1fr) !important;
+  }
 }
 
 /* ---- Cart page: no divider lines ---------------------------------------- */

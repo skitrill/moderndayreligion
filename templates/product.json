@@ -6,8 +6,7 @@
  * or related systems. Please exercise caution as any changes
  * made to this file may be overwritten.
  * ------------------------------------------------------------
- */
-{
+ */{
   "sections": {
     "main": {
       "type": "product-information",
@@ -206,7 +205,11 @@
               "settings": {
                 "trigger_label": "Size Chart",
                 "open_by_default": false,
+                "chart_mode": "auto",
+                "bottoms_keywords": "short,pant,trouser,bottom,jean,cargo,sweatpant,jort",
+                "units_note": "EU sizing. Measurements in cm, garment laid flat.",
                 "chart_content": "<table><thead><tr><th>EU</th><th>Chest</th><th>Shoulder</th><th>Length</th><th>Sleeve</th></tr></thead><tbody><tr><td>44 (XS)</td><td>96</td><td>43</td><td>68</td><td>21</td></tr><tr><td>46 (S)</td><td>100</td><td>44</td><td>70</td><td>21.5</td></tr><tr><td>48 (M)</td><td>104</td><td>45</td><td>72</td><td>22</td></tr><tr><td>50 (L)</td><td>108</td><td>46</td><td>74</td><td>22.5</td></tr><tr><td>52 (XL)</td><td>112</td><td>47</td><td>76</td><td>23</td></tr><tr><td>54 (XXL)</td><td>116</td><td>48</td><td>78</td><td>23.5</td></tr></tbody></table>",
+                "chart_content_bottoms": "<table><thead><tr><th>EU</th><th>Waist</th><th>Hip</th><th>Inseam</th><th>Leg opening</th></tr></thead><tbody><tr><td>44 (XS)</td><td>72</td><td>90</td><td>18.5</td><td>28</td></tr><tr><td>46 (S)</td><td>77</td><td>95</td><td>19</td><td>29</td></tr><tr><td>48 (M)</td><td>82</td><td>100</td><td>19.5</td><td>30</td></tr><tr><td>50 (L)</td><td>87</td><td>105</td><td>20</td><td>31</td></tr><tr><td>52 (XL)</td><td>92</td><td>110</td><td>20.5</td><td>32</td></tr><tr><td>54 (XXL)</td><td>97</td><td>115</td><td>21</td><td>33</td></tr></tbody></table>",
                 "padding-block-start": 8,
                 "padding-block-end": 0
               },
@@ -330,10 +333,10 @@
           "type": "text",
           "name": "t:names.header",
           "settings": {
-            "text": "<h3>You may also like </h3>",
-            "width": "fit-content",
+            "text": "<h3>Recommended</h3>",
+            "width": "100%",
             "max_width": "normal",
-            "alignment": "left",
+            "alignment": "center",
             "type_preset": "h4",
             "font": "var(--font-body--family)",
             "font_size": "1rem",
@@ -452,10 +455,10 @@
         "layout_type": "grid",
         "carousel_on_mobile": false,
         "max_products": 4,
-        "columns": 4,
+        "columns": 8,
         "mobile_columns": "2",
-        "columns_gap": 12,
-        "rows_gap": 24,
+        "columns_gap": 8,
+        "rows_gap": 16,
         "icons_style": "arrow",
         "icons_shape": "none",
         "section_width": "page-width",
