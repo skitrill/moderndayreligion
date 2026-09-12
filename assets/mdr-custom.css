@@ -1687,10 +1687,15 @@ main[data-template='index']
   right: 0;
   top: 0;
   width: 1px;
-  height: 37px;
+  /* length chosen so the rotated endpoint lands exactly on the wrap's
+     bottom border (35.7px straight down) rather than falling short of or
+     overshooting it: 35.7 / cos(12deg) */
+  height: 36.5px;
   background: rgba(233, 225, 196, 0.16);
   transform-origin: top center;
-  transform: rotate(10deg);
+  /* negative = counter-clockwise, swinging the bottom end rightward --
+     "\", not "/" */
+  transform: rotate(-12deg);
   pointer-events: none;
 }
 
