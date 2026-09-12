@@ -1674,6 +1674,21 @@ main[data-template='index']
   border-bottom: 1px solid rgba(233, 225, 196, 0.16);
 }
 
+/* closes the right end into a point instead of leaving the two border
+   lines dangling open -- a small filled triangle sits inside the toggle's
+   own trailing padding, so it doesn't add any extra width of its own */
+.mdr-allbar:not(.mdr-allbar--back)::after {
+  content: '';
+  position: absolute;
+  right: 0;
+  top: 0;
+  bottom: 0;
+  width: 9px;
+  background: rgba(233, 225, 196, 0.16);
+  clip-path: polygon(0 0, 100% 50%, 0 100%);
+  pointer-events: none;
+}
+
 .mdr-allbar.is-open {
   /* was min(88vw,380px) -- the border above now needs to actually strike
      full width when open, not stop at a capped pill size */
@@ -1787,10 +1802,12 @@ main[data-template='index']
   display: flex;
   align-items: center;
   gap: 14px;
-  /* shrink to whatever room is left next to the label, then scroll its own
-     content sideways -- like a wheel -- instead of clipping titles that
-     don't fit */
-  flex: 1 1 auto;
+  /* no flex-grow while closed -- it used to stretch (invisibly, opacity:0)
+     to fill the bar's full 132px cap even though there was nothing to
+     show, which is why the closed pill read as longer than "WEBRACK »"
+     itself needed. Grows once open, below, when there's an actual list to
+     give the room to. */
+  flex: 0 1 auto;
   min-width: 0;
   overflow-x: auto;
   overflow-y: hidden;
@@ -1808,6 +1825,7 @@ main[data-template='index']
 }
 
 .mdr-allbar.is-open .mdr-allbar__list {
+  flex: 1 1 auto;
   opacity: 1;
 }
 
