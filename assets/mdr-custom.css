@@ -409,14 +409,33 @@ product-price *,
   --text-align: center !important;
 }
 
+/* title <-> price sit right on top of each other now */
+.group-block-content:has(> product-price) {
+  gap: 3px !important;
+}
+
+.group-block-content:has(> product-price) > product-price {
+  padding-block-start: 0 !important;
+}
+
 .group-block-content:has(> product-price) > product-price .price {
   font-weight: 700 !important;
   font-size: 1.1em !important;
 }
 
+/* image <-> title: the whole details column is wrapped in one shell
+   group-block whose own top padding was the gap under the image. --------- */
+.product-details > .group-block {
+  padding-block-start: 6px !important;
+}
+
+/* tighter rhythm between each block in the details column (was 24px) ---- */
+.product-details > .group-block > .group-block-content {
+  gap: 16px !important;
+}
+
 /* ---- Product-page block order: title/price -> description -> size/color
-   selectors -> buy-buttons row -> Size Chart last. The description now
-   reads right under the price instead of after the buy-buttons row.
+   selectors -> Size Chart (right under the size box) -> buy-buttons row.
    These blocks are direct children of the details column's OWN
    group-block > group-block-content wrapper, not of .product-details
    itself -- .product-details only wraps that one group-block. ----------- */
@@ -426,17 +445,23 @@ product-price *,
 
 .product-details > .group-block > .group-block-content > rte-formatter[class*='__text_aEtTtq'] {
   order: 2 !important;
+  /* a centered, comfortably narrow reading column -- the paragraph text
+     inside stays left-aligned (ragged edge), only the block is centered */
+  width: 92% !important;
+  margin-inline: auto !important;
+  text-align: left !important;
+  --text-align: left !important;
 }
 
 .product-details > .group-block > .group-block-content > variant-picker {
   order: 3 !important;
 }
 
-.product-details > .group-block > .group-block-content > .buy-buttons-block {
+.product-details > .group-block > .group-block-content > .details.size-chart {
   order: 4 !important;
 }
 
-.product-details > .group-block > .group-block-content > .details.size-chart {
+.product-details > .group-block > .group-block-content > .buy-buttons-block {
   order: 5 !important;
 }
 
@@ -1365,6 +1390,14 @@ main .product-information__grid.product-information__grid
 main .product-information__grid.product-information__grid .size-chart,
 main .product-information__grid.product-information__grid .size-chart * {
   color: #fdb92e !important;
+}
+
+/* ...product title -> full brightness, matching the homepage product-card
+   title colour instead of the muted description-column tone. Needs to
+   out-specify the earlier :is(h1,...):not(.price):not(product-price) rule
+   (0,2,3), hence the extra .product-details qualifier here (0,3,2). ------ */
+main .product-information__grid.product-information__grid .product-details h1 {
+  color: #f0eee6 !important;
 }
 
 /* ==========================================================================
