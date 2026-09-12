@@ -387,20 +387,18 @@ product-price *,
 /* ---- Product-page header: title centered on top, price centered below it.
    The price still stands out (bold, larger). Scoped to the exact block
    pairing a title text-block with <product-price> so no other group-block
-   is touched. -------------------------------------------------------------- */
+   is touched. `.text-block`/`product-price` are themselves flex containers
+   (Shopify drives their alignment with justify-content, not text-align),
+   so centering them needs justify-content, not text-align. -------------- */
 .group-block-content:has(> product-price) {
   flex-direction: column !important;
   align-items: center !important;
-  text-align: center !important;
 }
 
-.group-block-content:has(> product-price) > .text-block {
-  width: 100% !important;
-  text-align: center !important;
-}
-
+.group-block-content:has(> product-price) > .text-block,
 .group-block-content:has(> product-price) > product-price {
   width: 100% !important;
+  justify-content: center !important;
   text-align: center !important;
 }
 
@@ -411,24 +409,27 @@ product-price *,
 
 /* ---- Product-page block order: title/price -> description -> size/color
    selectors -> buy-buttons row -> Size Chart last. The description now
-   reads right under the price instead of after the buy-buttons row. ------ */
-.product-information__grid .product-details > .group-block {
+   reads right under the price instead of after the buy-buttons row.
+   These blocks are direct children of the details column's OWN
+   group-block > group-block-content wrapper, not of .product-details
+   itself -- .product-details only wraps that one group-block. ----------- */
+.product-details > .group-block > .group-block-content > .group-block {
   order: 1 !important;
 }
 
-.product-information__grid .product-details > rte-formatter[class*='__text_aEtTtq'] {
+.product-details > .group-block > .group-block-content > rte-formatter[class*='__text_aEtTtq'] {
   order: 2 !important;
 }
 
-.product-information__grid .product-details > variant-picker {
+.product-details > .group-block > .group-block-content > variant-picker {
   order: 3 !important;
 }
 
-.product-information__grid .product-details > .buy-buttons-block {
+.product-details > .group-block > .group-block-content > .buy-buttons-block {
   order: 4 !important;
 }
 
-.product-information__grid .product-details > .details.size-chart {
+.product-details > .group-block > .group-block-content > .details.size-chart {
   order: 5 !important;
 }
 
