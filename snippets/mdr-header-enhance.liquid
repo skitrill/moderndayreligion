@@ -435,16 +435,9 @@
 
       /* line its label up under the logo, at every breakpoint (the header
          centres its own content on desktop, so a fixed gutter won't do) */
-      function alignLeft() {
-        var logo = D.querySelector('#header-component a.header-logo') ||
-          D.querySelector('a.header-logo');
-        if (!logo) return;
-        var x = Math.max(0, Math.round(logo.getBoundingClientRect().left));
-        wrap.style.paddingInlineStart = x + 'px';
-      }
-      alignLeft();
-      window.addEventListener('resize', alignLeft, { passive: true });
-      window.addEventListener('load', alignLeft);
+      /* the button now starts flush at the true left edge (CSS:
+         .mdr-allbar-wrap padding-inline-start: 0) instead of lined up
+         under the logo, so there's no JS alignment needed here any more */
 
       /* The closing "\" needs to reach the far end of the wrap's own
          permanent bottom line (all the way under CART), not just drop
@@ -698,7 +691,15 @@
           var real = D.elementFromPoint(p.x, p.y);
           touchzone.style.pointerEvents = '';
           var target = real && real.closest ? real.closest('a, button') : null;
-          if (target) target.click();
+          if (target) {
+            target.click();
+          } else {
+            /* tapped empty space in the bar -- the touchzone covers the
+               whole permanent bottom-line strip (full page width), not
+               just the button box, so a tap anywhere in it still opens
+               / closes WEBRACK instead of doing nothing */
+            toggle.click();
+          }
         }
 
         touchzone.addEventListener('touchstart', dragStart, { passive: true });

@@ -1628,7 +1628,8 @@ main[data-template='index']
   top: calc(var(--header-height, 60px) - 1px);
   z-index: 15;
   margin: 0;
-  padding: 3px 0 11px var(--page-margin, 20px);
+  /* flush at the true left edge now, not lined up under the logo */
+  padding: 3px 0 11px 0;
   background: #000;
   /* permanent, full width -- "stretch the bottom... across thru to the
      cart end" -- unlike the button's own top border below, this one
