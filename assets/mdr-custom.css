@@ -303,15 +303,19 @@ product-price *,
   }
 }
 
-/* ---- Quantity selector: bare up / down chevrons; smaller footprint --------
-   (~40% narrower, ~30% shorter than stock) */
+/* ---- Quantity selector: bordered segmented box, matches the SIZE box's
+   hairline-divided look instead of a plain white slab -------------------- */
 .quantity-selector {
-  --quantity-selector-width: 74px !important;
-  --minimum-touch-target: 25px !important;
+  --quantity-selector-width: 90px !important;
+  --minimum-touch-target: 30px !important;
   flex: 0 0 auto !important;
   align-self: center !important;
-  background: #fff !important;
-  color: #000 !important;
+  display: flex !important;
+  align-items: stretch !important;
+  background: transparent !important;
+  color: rgb(var(--color-foreground-rgb) / 0.85) !important;
+  border: 1px solid rgb(var(--color-foreground-rgb) / 0.3) !important;
+  overflow: hidden !important;
 }
 
 .quantity-selector :is(.quantity-minus, .quantity-plus) .svg-wrapper {
@@ -320,20 +324,29 @@ product-price *,
 
 .quantity-selector :is(.quantity-minus, .quantity-plus) {
   position: relative;
-  width: 25px !important;
-  height: 28px !important;
-  background: #fff !important;
-  color: #000 !important;
+  width: 29px !important;
+  height: 100% !important;
+  background: transparent !important;
+  color: inherit !important;
   box-shadow: none !important;
   border: 0 !important;
 }
 
+.quantity-selector .quantity-minus {
+  border-right: 1px solid rgb(var(--color-foreground-rgb) / 0.16) !important;
+}
+
+.quantity-selector .quantity-plus {
+  border-left: 1px solid rgb(var(--color-foreground-rgb) / 0.16) !important;
+}
+
 .quantity-selector input[type='number'] {
-  width: 22px !important;
+  width: 32px !important;
   min-width: 0 !important;
-  height: 28px !important;
-  background: #fff !important;
-  color: #000 !important;
+  height: 100% !important;
+  background: transparent !important;
+  color: rgb(var(--color-foreground-rgb) / 0.95) !important;
+  text-align: center !important;
   /* very small -- matches the PDP product title (0.625rem) */
   font-size: 0.625rem !important;
 }
@@ -343,10 +356,10 @@ product-price *,
   position: absolute;
   left: 50%;
   top: 50%;
-  width: 6px;
-  height: 6px;
-  border: solid #000;
-  border-width: 0 1px 1px 0;
+  width: 8px;
+  height: 8px;
+  border: solid currentColor;
+  border-width: 0 1.2px 1.2px 0;
 }
 
 /* plus = increase = chevron pointing up */
@@ -359,12 +372,49 @@ product-price *,
   transform: translate(-50%, -75%) rotate(45deg);
 }
 
+.quantity-selector :is(.quantity-minus, .quantity-plus):active {
+  background: rgb(var(--color-foreground-rgb) / 0.12) !important;
+}
+
 .quantity-selector :is(.quantity-minus, .quantity-plus):active::after {
-  opacity: 0.55;
+  opacity: 0.7;
 }
 
 .quantity-selector :is(.quantity-minus, .quantity-plus)[disabled] {
   opacity: 0.35;
+}
+
+/* ---- Product-page header: title left, price right, one row -- the price
+   stands out (bold, larger) the way a bold detail sits opposite the price
+   on a Supreme-style PDP. Scoped to the exact block pairing a title
+   text-block with <product-price> so no other group-block is touched. ---- */
+.group-block-content:has(> product-price) {
+  flex-direction: row !important;
+  flex-wrap: nowrap !important;
+  align-items: baseline !important;
+  justify-content: space-between !important;
+}
+
+.group-block-content:has(> product-price) > .text-block {
+  flex: 1 1 auto !important;
+  min-width: 0 !important;
+}
+
+.group-block-content:has(> product-price) > product-price {
+  flex: 0 0 auto !important;
+  white-space: nowrap !important;
+}
+
+.group-block-content:has(> product-price) > product-price .price {
+  font-weight: 700 !important;
+  font-size: 1.1em !important;
+}
+
+/* ---- Pull "Size Chart" out of the SIZE -> ADD TO CART flow: it now sits
+   right after the description instead of wedged between them, so the size
+   box reads straight into the buy-buttons row underneath it. ------------- */
+.product-information__grid .product-details > .details.size-chart {
+  order: 5 !important;
 }
 
 /* ---- Product-page copy + colour option: match the "© 2026" footer text
