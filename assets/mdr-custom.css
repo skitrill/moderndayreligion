@@ -330,6 +330,7 @@ product-price *,
   color: inherit !important;
   box-shadow: none !important;
   border: 0 !important;
+  transition: background-color var(--animation-speed) var(--animation-easing);
 }
 
 .quantity-selector .quantity-minus {
@@ -360,6 +361,7 @@ product-price *,
   height: 8px;
   border: solid currentColor;
   border-width: 0 1.2px 1.2px 0;
+  transition: opacity var(--animation-speed-fast) var(--animation-easing);
 }
 
 /* plus = increase = chevron pointing up */
@@ -878,21 +880,31 @@ button.link,
   text-decoration: none !important;
 }
 
-/* ---- Snappier transitions site-wide, calmer on phones ------------------- */
+/* ---- Fluid, consistent motion site-wide -----------------------------------
+   Horizon wires most of its own interactions (variant-picker selection,
+   cart/menu drawers, filters, search, submenus, popups) to these same
+   --animation-speed* / --animation-easing custom properties, so raising
+   them here is a single lever for the whole theme, not just our own bits.
+   The previous values (0.07/0.11/0.18s, plain "ease-out") were tuned for
+   raw snappiness and read as an instant snap rather than motion; these are
+   still quick, just long enough to actually be seen as smooth easing.
+   --animation-easing wasn't overridden before (stock plain "ease-out") --
+   using the same cubic curve as Horizon's own --animation-timing-fade-in
+   here makes the two consistent instead of two different motion "feels". */
 :root {
-  --animation-speed: 0.11s;
-  --animation-speed-slow: 0.18s;
-  --animation-speed-fast: 0.07s;
+  --animation-speed-fast: 0.14s;
+  --animation-speed: 0.22s;
+  --animation-speed-slow: 0.32s;
+  --animation-easing: cubic-bezier(0.16, 1, 0.3, 1);
 }
 
-@media screen and (max-width: 749px) {
-  *,
-  *::before,
-  *::after {
-    animation-duration: 0.14s !important;
-    transition-duration: 0.14s !important;
-  }
-}
+/* A blanket transition-duration:0.14s !important on every element (mobile
+   only, previously here) clamped EVERY animation on the page -- including
+   the WEBRACK dropdown's 0.5s open and the 0.34s collection-swipe -- down
+   to the same flat 140ms, which is exactly what made them feel abrupt
+   rather than fluid. Removed: the values above and each element's own
+   authored duration are what should govern instead. prefers-reduced-motion
+   below still fully disables motion for anyone who wants that. */
 
 @media (prefers-reduced-motion: reduce) {
   *,
@@ -1320,7 +1332,14 @@ main .product-information__grid .size-chart:not(._):not(._):not(._) * {
   color: #1a1a1a;
 }
 
-/* link highlight on hover / active (overrides the dark-brown in base.css) */
+/* link highlight on hover / active (overrides the dark-brown in base.css) --
+   transition lives on the base (unhovered) rule since that's the state the
+   animation plays FROM; without it the highlight just snapped on/off. */
+a:not([class*='button']):not(.header-logo) {
+  transition: background-color var(--animation-speed) var(--animation-easing),
+    color var(--animation-speed) var(--animation-easing);
+}
+
 a:not([class*='button']):not(.header-logo):hover,
 a:not([class*='button']):not(.header-logo):active,
 a:not([class*='button']):not(.header-logo):focus-visible {
