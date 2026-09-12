@@ -1630,11 +1630,39 @@ main[data-template='index']
   margin: 0;
   padding: 3px 0 11px var(--page-margin, 20px);
   background: #000;
-  /* hairline so scrolling content doesn't seem to slide out of nowhere */
-  border-bottom: 1px solid rgba(233, 225, 196, 0.16);
+  /* the old plain border-bottom is gone -- replaced by ::after below, a
+     line the WEBRACK button visually sits on top of / straddles, instead
+     of a line sitting underneath the whole row */
+}
+
+/* the grid line WEBRACK straddles: short and lined up with the button by
+   default (same x-offset as the button, via --mdr-allbar-x, set alongside
+   paddingInlineStart in alignLeft()), full-bleed edge-to-edge once open --
+   "the line ... should open straight across the menu bar" */
+.mdr-allbar-wrap::after {
+  content: '';
+  position: absolute;
+  left: var(--mdr-allbar-x, 20px);
+  top: 50%;
+  height: 1px;
+  width: 132px;
+  background: rgba(233, 225, 196, 0.16);
+  transform: translateY(-50%);
+  transition: width 0.5s cubic-bezier(0.16, 1, 0.3, 1), left 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+  z-index: 0;
+  pointer-events: none;
+}
+
+.mdr-allbar-wrap:has(.mdr-allbar.is-open)::after {
+  left: 0;
+  width: 100%;
 }
 
 .mdr-allbar {
+  /* above the wrap's ::after line (z-index:0) so the button's own pointed
+     silhouette reads as sitting ON the line, not hidden behind it */
+  position: relative;
+  z-index: 1;
   box-sizing: border-box;
   display: inline-flex;
   align-items: center;

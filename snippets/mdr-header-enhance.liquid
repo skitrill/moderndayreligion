@@ -409,6 +409,9 @@
         if (!logo) return;
         var x = Math.max(0, Math.round(logo.getBoundingClientRect().left));
         wrap.style.paddingInlineStart = x + 'px';
+        /* the grid line (.mdr-allbar-wrap::after) starts at the same x, so
+           it sits right under the button rather than the page edge */
+        wrap.style.setProperty('--mdr-allbar-x', x + 'px');
       }
       alignLeft();
       window.addEventListener('resize', alignLeft, { passive: true });
