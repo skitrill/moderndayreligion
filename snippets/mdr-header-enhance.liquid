@@ -411,32 +411,17 @@
       window.addEventListener('resize', alignLeft, { passive: true });
       window.addEventListener('load', alignLeft);
 
-      /* While the drop-down is open, the page can't scroll underneath it --
-         the sticky bar (and the header above it) stay put, so a diagonal
-         drag on the title list never turns into a page scroll fighting it. */
-      var scrollLockY = 0;
-      function lockPageScroll(on) {
-        if (on) {
-          scrollLockY = window.scrollY || D.documentElement.scrollTop || 0;
-          D.body.style.position = 'fixed';
-          D.body.style.top = -scrollLockY + 'px';
-          D.body.style.left = '0';
-          D.body.style.right = '0';
-        } else {
-          D.body.style.position = '';
-          D.body.style.top = '';
-          D.body.style.left = '';
-          D.body.style.right = '';
-          window.scrollTo(0, scrollLockY);
-        }
-      }
-
+      /* A body-position:fixed page-lock here was expensive (forces a full
+         reflow the instant WEBRACK opens -- the mobile lag/freeze) and
+         locked the WHOLE page, not just this bar. Dropped entirely: the
+         touchzone's own `touch-action: pan-x` (see CSS) already keeps a
+         drag on the titles from also scrolling the page, for free, scoped
+         to just that gesture -- no page-wide lock needed or wanted. */
       var chev = toggle.querySelector('.mdr-allbar__chev');
       function setOpen(on) {
         bar.classList.toggle('is-open', on);
         toggle.setAttribute('aria-expanded', on ? 'true' : 'false');
         if (chev) chev.innerHTML = on ? '|&lt;|' : CHEV_SVG;
-        lockPageScroll(on);
       }
       window.__mdrAllbarOpen = function () { setOpen(true); };
 
