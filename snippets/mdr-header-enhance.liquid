@@ -417,11 +417,13 @@
          touchzone's own `touch-action: pan-x` (see CSS) already keeps a
          drag on the titles from also scrolling the page, for free, scoped
          to just that gesture -- no page-wide lock needed or wanted. */
-      var chev = toggle.querySelector('.mdr-allbar__chev');
+      /* the open/closed chevron direction is a CSS flip of the same SVG
+         (.mdr-allbar.is-open .mdr-allbar__chev svg) -- previously this
+         swapped the icon's innerHTML for the literal text "|<|", which
+         read as a stray, oddly-spaced glyph instead of a real icon */
       function setOpen(on) {
         bar.classList.toggle('is-open', on);
         toggle.setAttribute('aria-expanded', on ? 'true' : 'false');
-        if (chev) chev.innerHTML = on ? '|&lt;|' : CHEV_SVG;
       }
       window.__mdrAllbarOpen = function () { setOpen(true); };
 

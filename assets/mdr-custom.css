@@ -1736,6 +1736,7 @@ main[data-template='index']
   display: block;
   width: 0.62em;
   height: 0.62em;
+  transition: transform var(--animation-speed) var(--animation-easing);
 }
 
 .mdr-allbar.is-open .mdr-allbar__chev:not(.mdr-allbar__chev--back) {
@@ -1744,6 +1745,12 @@ main[data-template='index']
   padding: 2px 4px;
   margin-inline-start: 2px;
   letter-spacing: 0.04em;
+}
+
+/* open state -> the same » icon flipped to point back at "WEBRACK", a
+   real reversed chevron instead of swapping in literal "|<|" text */
+.mdr-allbar.is-open .mdr-allbar__chev:not(.mdr-allbar__chev--back) svg {
+  transform: scaleX(-1);
 }
 
 /* off-home: the bar is a back button -- big left chevron before the word */
