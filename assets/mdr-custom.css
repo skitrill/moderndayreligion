@@ -1626,11 +1626,16 @@ main[data-template='index']
   gap: 3px;
   flex: 0 0 auto;
   margin: 0;
-  padding: 0;
+  /* a little breathing room around the bigger label/chevron below widens
+     the actual tap target too, not just what's visually drawn */
+  padding: 4px 0;
   border: 0;
   background: none;
   color: inherit;
   font: inherit;
+  /* WEBRACK / RETURN, 10% bigger than the 0.74rem it inherited, so it's
+     harder to miss / mistap next to the logo */
+  font-size: 0.814rem;
   letter-spacing: inherit;
   text-transform: inherit;
   cursor: pointer;

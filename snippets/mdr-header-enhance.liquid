@@ -489,6 +489,16 @@
         return cards.length ? cards : null;
       }
 
+      /* A genuinely empty collection (0 products) renders neither a grid nor
+         a single product-card -- Horizon's own "No products found." block
+         is the only thing on the page. That used to look identical to a
+         real fetch/parse failure and fell back to a full reload, which is
+         the "reloads" bug: tapping Pants & Shorts or Accessories (both
+         still empty) always hard-navigated instead of swapping in place. */
+      function emptyState(doc) {
+        return doc.querySelector('.main-collection-grid__empty');
+      }
+
       function switchCollection(url, fromPopstate) {
         if (window.__mdrSwitching) return;
         var sec = D.querySelector('[id$="__product_list_fa6P9H"]');
@@ -509,7 +519,8 @@
           .then(function (html) {
             var doc = new DOMParser().parseFromString(html, 'text/html');
             var newCards = extractCards(doc);
-            if (!newCards || !newCards.length) throw new Error('mdr: no products found');
+            var empty = newCards ? null : emptyState(doc);
+            if (!newCards && !empty) throw new Error('mdr: no products found');
 
             var REDUCE = window.matchMedia &&
               window.matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -520,11 +531,15 @@
             setTimeout(function () {
               grid.innerHTML = '';
               var frag = D.createDocumentFragment();
-              for (var i = 0; i < newCards.length; i++) {
-                var item = D.createElement('div');
-                item.className = 'resource-list__item';
-                item.appendChild(D.importNode(newCards[i], true));
-                frag.appendChild(item);
+              if (empty) {
+                frag.appendChild(D.importNode(empty, true));
+              } else {
+                for (var i = 0; i < newCards.length; i++) {
+                  var item = D.createElement('div');
+                  item.className = 'resource-list__item';
+                  item.appendChild(D.importNode(newCards[i], true));
+                  frag.appendChild(item);
+                }
               }
               grid.appendChild(frag);
 
@@ -637,8 +652,18 @@
     if (D.readyState !== 'loading') build();
     D.addEventListener('DOMContentLoaded', build);
     window.addEventListener('load', build);
+    /* Only re-check the header's own section (not the whole document body --
+       that fired build()'s early-return check on EVERY mutation anywhere on
+       the page: every swipe-animation class toggle, cart-drawer open, quantity
+       change, product-grid swap... a constant, needless tax on every tap,
+       which is very likely what read as general WEBRACK "lag". The wrap is
+       inserted as a sibling of <header>, so watching header's own parent
+       section is exactly as correct and vastly cheaper. */
     if (window.MutationObserver) {
-      new MutationObserver(build).observe(D.body, { childList: true, subtree: true });
+      var watchRoot = (D.querySelector('header.shopify-section-group-header-group') ||
+        D.querySelector('header'));
+      watchRoot = (watchRoot && watchRoot.parentNode) || D.body;
+      new MutationObserver(build).observe(watchRoot, { childList: true, subtree: true });
     }
   })();
 
