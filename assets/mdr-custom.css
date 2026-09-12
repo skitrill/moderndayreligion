@@ -1664,13 +1664,16 @@ main[data-template='index']
     opacity var(--animation-speed) var(--animation-easing);
 }
 
-/* WEBRACK: only the TOP border belongs to the button/list bar itself --
-   the bottom is the wrap's own permanent full-width line above. Closed,
-   the list has no visible width so the top border just hugs "WEBRACK »";
-   open, .mdr-allbar's own max-width below carries it out to frame the
-   full list too -- "a long container for the list items so users know
-   where they're scrolling thru", not only a line under the button. */
-.mdr-allbar:not(.mdr-allbar--back) {
+/* WEBRACK and RETURN share one box style: left + top border on the bar
+   itself, the wrap's permanent full-width line as the bottom, and the
+   diagonal (below) closing the top-right corner and running on out to
+   the end of that bottom line -- one consistent, structured shape for
+   both buttons, not two different treatments. Closed, the list has no
+   visible width so the top border just hugs the label; open (WEBRACK
+   only), .mdr-allbar's own max-width carries the top border out to frame
+   the full list too, with a plain right border closing it off (below). */
+.mdr-allbar {
+  border-left: 1px solid rgba(233, 225, 196, 0.16);
   border-top: 1px solid rgba(233, 225, 196, 0.16);
 }
 
@@ -1682,10 +1685,12 @@ main[data-template='index']
    edge read as one structured, uniform shape instead of two mismatched
    pieces. Geometry (--mdr-tip-x/-len/-angle) is measured in JS off the
    toggle, whose own size never changes between open/closed -- only the
-   list next to it does -- so these values hold in both states. Lives on
-   the WRAP (not the button) since it needs to reach past the button's own
-   edge; hidden once open, below, when the top border already reaches the
-   same width as the bottom one and there's nothing left to close. */
+   list next to it does -- so these values hold in both states, and the
+   same measurement works for RETURN too since it's the same toggle
+   element, just with different content. Lives on the WRAP (not the
+   button) since it needs to reach past the button's own edge; hidden
+   once open, below, when the top border already reaches the same width
+   as the bottom one and there's a plain right border instead. */
 .mdr-allbar-wrap::before {
   content: '';
   position: absolute;
@@ -1702,7 +1707,6 @@ main[data-template='index']
   z-index: 0;
 }
 
-.mdr-allbar-wrap:has(.mdr-allbar--back)::before,
 .mdr-allbar-wrap:has(.mdr-allbar.is-open)::before {
   display: none;
 }
@@ -1712,6 +1716,9 @@ main[data-template='index']
      full width when open, not stop at a capped pill size */
   max-width: 100%;
   opacity: 1;
+  /* the diagonal is hidden once open (nothing left to close diagonally --
+     top and bottom already match), so a plain edge closes the box instead */
+  border-right: 1px solid rgba(233, 225, 196, 0.16);
 }
 
 .mdr-allbar__toggle {
@@ -1741,30 +1748,6 @@ main[data-template='index']
   text-transform: inherit;
   cursor: pointer;
   -webkit-tap-highlight-color: transparent;
-}
-
-/* RETURN: a standalone button, not part of the expanding-line treatment
-   above -- its own small pointed-tip box, unaffected by WEBRACK's open
-   state (there's nothing to "open" here, it's just a back button). */
-.mdr-allbar--back .mdr-allbar__toggle {
-  padding: 3px 9px 3px 18px;
-  clip-path: polygon(10px 0, 100% 0, 100% 100%, 10px 100%, 0 50%);
-}
-
-/* A plain border + clip-path can't coexist -- clipping a rectangle's
-   painted border leaves the diagonal edge bare (the border only ever ran
-   along the original 4 straight sides). So RETURN's outline is built from
-   two stacked, identically-clipped layers instead: ::before is the full
-   silhouette in the hairline colour; with no ::after cutout on top of it,
-   that silhouette shows solid, i.e. the button's whole background is the
-   grid-line hairline colour rather than a thin ring. */
-.mdr-allbar--back .mdr-allbar__toggle::before {
-  content: '';
-  position: absolute;
-  z-index: -1;
-  inset: 0;
-  clip-path: inherit;
-  background: rgba(233, 225, 196, 0.16);
 }
 
 .mdr-allbar__chev {
@@ -1802,9 +1785,9 @@ main[data-template='index']
   overflow: visible;
 }
 
-/* spacing before the label now comes from the toggle's own divider
-   (border-inline-end + padding on the first child, see .mdr-allbar__toggle
-   > :first-child) instead of a one-off margin here */
+.mdr-allbar__chev--back {
+  margin-inline-end: 6px;
+}
 
 .mdr-allbar__chev--back svg {
   transform: scaleX(-1);
@@ -1844,6 +1827,10 @@ main[data-template='index']
 .mdr-allbar.is-open .mdr-allbar__list {
   flex: 1 1 auto;
   opacity: 1;
+  /* the list gets its own tinted panel once open, framed by the same
+     top/bottom border as the button next to it -- one continuous shape,
+     two visually distinct sections */
+  background: rgba(233, 225, 196, 0.16);
 }
 
 /* a thin line marking the end of "WEBRACK" once open, before the list

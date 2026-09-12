@@ -369,14 +369,14 @@
       toggle.type = 'button';
       toggle.className = 'mdr-allbar__toggle';
       toggle.setAttribute('aria-expanded', 'false');
-      /* RETURN has no chevron icon -- the button's own pointed tip (CSS
-         clip-path) is the "back" cue, so there's nothing to divide the
-         label from and no risk of it drifting out of sync with the tip's
-         direction */
+      /* RETURN and WEBRACK now share one box style (border + diagonal tip,
+         see CSS), so RETURN gets its chevron back too -- flipped via
+         .mdr-allbar__chev--back, same icon as WEBRACK's */
       toggle.innerHTML = isHome
         ? '<span class="mdr-allbar__label">Webrack</span>' +
           '<span class="mdr-allbar__chev" aria-hidden="true">' + CHEV_SVG + '</span>'
-        : '<span class="mdr-allbar__label">Return</span>';
+        : '<span class="mdr-allbar__chev mdr-allbar__chev--back" aria-hidden="true">' + CHEV_SVG + '</span>' +
+          '<span class="mdr-allbar__label">Return</span>';
 
       var list = D.createElement('div');
       list.className = 'mdr-allbar__list';
