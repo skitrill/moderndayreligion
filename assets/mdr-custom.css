@@ -1635,38 +1635,6 @@ main[data-template='index']
      of a line sitting underneath the whole row */
 }
 
-/* a top + bottom bracket around WEBRACK, converging at the button's own
-   pointed tip when closed (top rail stops short, near the tip; bottom
-   rail's diagonal is the tip itself) -- and on open, the top rail
-   continues "striking to the end", matching the bottom rail's full width,
-   so the two form a long horizontal channel that frames the open list --
-   a visible track for what's being scrolled through, not just a line. */
-.mdr-allbar-wrap::before,
-.mdr-allbar-wrap::after {
-  content: '';
-  position: absolute;
-  left: 0;
-  height: 1px;
-  width: calc(var(--mdr-allbar-x, 20px) + 132px);
-  background: rgba(233, 225, 196, 0.16);
-  transition: width 0.5s cubic-bezier(0.16, 1, 0.3, 1);
-  z-index: 0;
-  pointer-events: none;
-}
-
-.mdr-allbar-wrap::before {
-  top: 0;
-}
-
-.mdr-allbar-wrap::after {
-  bottom: 0;
-}
-
-.mdr-allbar-wrap:has(.mdr-allbar.is-open)::before,
-.mdr-allbar-wrap:has(.mdr-allbar.is-open)::after {
-  width: 100%;
-}
-
 .mdr-allbar {
   /* above the wrap's ::after line (z-index:0) so the button's own pointed
      silhouette reads as sitting ON the line, not hidden behind it */
@@ -1698,16 +1666,16 @@ main[data-template='index']
 }
 
 .mdr-allbar.is-open {
-  max-width: min(88vw, 380px);
+  /* was min(88vw,380px) -- WEBRACK's own top/bottom border now IS the
+     "grid line", so opening it needs to actually strike full width, not
+     stop at a capped pill size */
+  max-width: 100%;
   opacity: 1;
 }
 
 .mdr-allbar__toggle {
   display: inline-flex;
   align-items: center;
-  /* no gap here -- the divider's own padding-inline-end (below) is the
-     one source of spacing between the two halves, so it's identical
-     whichever half comes first (label vs. chevron) */
   gap: 0;
   flex: 0 0 auto;
   margin: 0;
@@ -1720,10 +1688,7 @@ main[data-template='index']
   position: relative;
   isolation: isolate;
   z-index: 3;
-  /* extra inline-end room clears the pointed tip added below; swapped to
-     inline-start in the --back (RETURN) variant, where the point faces
-     the other way */
-  padding: 3px 18px 3px 9px;
+  padding: 3px 9px;
   border: 0;
   background: none;
   color: inherit;
@@ -1735,13 +1700,22 @@ main[data-template='index']
   text-transform: inherit;
   cursor: pointer;
   -webkit-tap-highlight-color: transparent;
-  /* the button's own silhouette -- a rectangle with its outer (pointing)
-     edge cut into a chevron point, echoing the » / « glyph inside it */
-  clip-path: polygon(0 0, calc(100% - 10px) 0, 100% 50%, calc(100% - 10px) 100%, 0 100%);
 }
 
-/* off-home (RETURN): mirror the point to the left, where its own chevron
-   points, and give the breathing room back to that side instead */
+/* WEBRACK: the button's own shape IS the top/bottom bracket -- no
+   enclosing box, open on the left, one chevron as its only "point". Width
+   tracks .mdr-allbar's own max-width transition above (132px closed ->
+   100% open), so opening the bar strikes this border open with it. */
+.mdr-allbar:not(.mdr-allbar--back) .mdr-allbar__toggle {
+  width: 100%;
+  justify-content: space-between;
+  border-top: 1px solid rgba(233, 225, 196, 0.16);
+  border-bottom: 1px solid rgba(233, 225, 196, 0.16);
+}
+
+/* RETURN: a standalone button, not part of the expanding-line treatment
+   above -- its own small pointed-tip box, unaffected by WEBRACK's open
+   state (there's nothing to "open" here, it's just a back button). */
 .mdr-allbar--back .mdr-allbar__toggle {
   padding: 3px 9px 3px 18px;
   clip-path: polygon(10px 0, 100% 0, 100% 100%, 10px 100%, 0 50%);
@@ -1749,58 +1723,18 @@ main[data-template='index']
 
 /* A plain border + clip-path can't coexist -- clipping a rectangle's
    painted border leaves the diagonal edge bare (the border only ever ran
-   along the original 4 straight sides). So the outline here is built from
+   along the original 4 straight sides). So RETURN's outline is built from
    two stacked, identically-clipped layers instead: ::before is the full
-   silhouette in the hairline colour, ::after sits 1px inset from it in
-   solid black (matching the wrap's own background), punching the middle
-   out and leaving a ~1px outline that follows the point all the way round. */
-.mdr-allbar__toggle::before,
-.mdr-allbar__toggle::after {
+   silhouette in the hairline colour; with no ::after cutout on top of it,
+   that silhouette shows solid, i.e. the button's whole background is the
+   grid-line hairline colour rather than a thin ring. */
+.mdr-allbar--back .mdr-allbar__toggle::before {
   content: '';
   position: absolute;
   z-index: -1;
-  clip-path: inherit;
-}
-
-.mdr-allbar__toggle::before {
   inset: 0;
+  clip-path: inherit;
   background: rgba(233, 225, 196, 0.16);
-}
-
-.mdr-allbar__toggle::after {
-  inset: 1px;
-  background: #000;
-  clip-path: polygon(0 0, calc(100% - 11px) 0, 100% 50%, calc(100% - 11px) 100%, 0 100%);
-}
-
-/* RETURN has no ::after cutout -- dropping it leaves ::before's full
-   pointed silhouette showing as a solid fill instead of a thin ring, i.e.
-   the button's whole background is the same hairline colour as the
-   product-grid / SIZE-box lines ("a bg color of the grid lines") */
-.mdr-allbar--back .mdr-allbar__toggle::after {
-  display: none;
-}
-
-/* open (WEBRACK only): square the tip back off instead of keeping the
-   pointed chevron -- the filled/shaded chevron chip is the "collapse" cue
-   once it's open, so the point (which read as "expand") is dropped for a
-   plain rectangle, and the padding that used to clear the point collapses
-   back down so the chevron chip sits flush against the box's own edge. */
-.mdr-allbar.is-open .mdr-allbar__toggle,
-.mdr-allbar.is-open .mdr-allbar__toggle::before,
-.mdr-allbar.is-open .mdr-allbar__toggle::after {
-  clip-path: none !important;
-}
-
-.mdr-allbar.is-open .mdr-allbar__toggle {
-  padding-inline-end: 9px !important;
-}
-
-/* an internal divider between the label and the chevron -- only relevant
-   on WEBRACK, which has both; RETURN is label-only now, nothing to divide */
-.mdr-allbar__toggle > :first-child:not(:only-child) {
-  padding-inline-end: 6px;
-  border-inline-end: 1px solid rgba(233, 225, 196, 0.16);
 }
 
 .mdr-allbar__chev {
