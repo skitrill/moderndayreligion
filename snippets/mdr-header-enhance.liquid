@@ -369,11 +369,14 @@
       toggle.type = 'button';
       toggle.className = 'mdr-allbar__toggle';
       toggle.setAttribute('aria-expanded', 'false');
+      /* RETURN has no chevron icon -- the button's own pointed tip (CSS
+         clip-path) is the "back" cue, so there's nothing to divide the
+         label from and no risk of it drifting out of sync with the tip's
+         direction */
       toggle.innerHTML = isHome
         ? '<span class="mdr-allbar__label">Webrack</span>' +
           '<span class="mdr-allbar__chev" aria-hidden="true">' + CHEV_SVG + '</span>'
-        : '<span class="mdr-allbar__chev mdr-allbar__chev--back" aria-hidden="true">' + CHEV_SVG + '</span>' +
-          '<span class="mdr-allbar__label">Return</span>';
+        : '<span class="mdr-allbar__label">Return</span>';
 
       var list = D.createElement('div');
       list.className = 'mdr-allbar__list';
@@ -395,11 +398,21 @@
       bar.appendChild(list);
       wrap.appendChild(bar);
 
-      /* sit it directly below the header, on every page. Centred on the
-         page (CSS: justify-content on .mdr-allbar-wrap) rather than lined
-         up under the logo's left edge -- reads calmer under the centred
-         header content than a button pinned to the far edge. */
+      /* sit it directly below the header, on every page */
       header.parentNode.insertBefore(wrap, header.nextSibling);
+
+      /* line its label up under the logo, at every breakpoint (the header
+         centres its own content on desktop, so a fixed gutter won't do) */
+      function alignLeft() {
+        var logo = D.querySelector('#header-component a.header-logo') ||
+          D.querySelector('a.header-logo');
+        if (!logo) return;
+        var x = Math.max(0, Math.round(logo.getBoundingClientRect().left));
+        wrap.style.paddingInlineStart = x + 'px';
+      }
+      alignLeft();
+      window.addEventListener('resize', alignLeft, { passive: true });
+      window.addEventListener('load', alignLeft);
 
       /* A body-position:fixed page-lock here was expensive (forces a full
          reflow the instant WEBRACK opens -- the mobile lag/freeze) and

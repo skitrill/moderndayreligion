@@ -1619,10 +1619,6 @@ main[data-template='index']
 .mdr-allbar-wrap {
   display: flex;
   align-items: center;
-  /* centred on the page instead of lined up under the logo's left edge --
-     symmetric left/right padding (was left-only, sized for the old
-     JS-measured logo offset) so the centering is actually centred */
-  justify-content: center;
   width: 100%;
   box-sizing: border-box;
   /* sticky already gives absolutely-positioned children (the drag-catcher
@@ -1632,7 +1628,7 @@ main[data-template='index']
   top: calc(var(--header-height, 60px) - 1px);
   z-index: 15;
   margin: 0;
-  padding: 3px var(--page-margin, 20px) 11px;
+  padding: 3px 0 11px var(--page-margin, 20px);
   background: #000;
   /* hairline so scrolling content doesn't seem to slide out of nowhere */
   border-bottom: 1px solid rgba(233, 225, 196, 0.16);
@@ -1740,24 +1736,32 @@ main[data-template='index']
   clip-path: polygon(0 0, calc(100% - 11px) 0, 100% 50%, calc(100% - 11px) 100%, 0 100%);
 }
 
+/* RETURN has no ::after cutout -- dropping it leaves ::before's full
+   pointed silhouette showing as a solid fill instead of a thin ring, i.e.
+   the button's whole background is the same hairline colour as the
+   product-grid / SIZE-box lines ("a bg color of the grid lines") */
 .mdr-allbar--back .mdr-allbar__toggle::after {
-  clip-path: polygon(11px 0, 100% 0, 100% 100%, 11px 100%, 0 50%);
+  display: none;
 }
 
-/* open: square the tip back off instead of keeping the pointed chevron --
-   the filled/shaded chevron chip is the "collapse" cue once it's open, so
-   the point (which read as "expand") is dropped for a plain rectangle */
+/* open (WEBRACK only): square the tip back off instead of keeping the
+   pointed chevron -- the filled/shaded chevron chip is the "collapse" cue
+   once it's open, so the point (which read as "expand") is dropped for a
+   plain rectangle, and the padding that used to clear the point collapses
+   back down so the chevron chip sits flush against the box's own edge. */
 .mdr-allbar.is-open .mdr-allbar__toggle,
 .mdr-allbar.is-open .mdr-allbar__toggle::before,
 .mdr-allbar.is-open .mdr-allbar__toggle::after {
   clip-path: none !important;
 }
 
-/* an internal divider between the label and the chevron -- whichever sits
-   first (label on WEBRACK, chevron on RETURN) -- so the one button reads
-   as a small two-cell grid, the same "segmented box" language already
-   used for the SIZE / COLOR selectors, rather than a plain outlined box */
-.mdr-allbar__toggle > :first-child {
+.mdr-allbar.is-open .mdr-allbar__toggle {
+  padding-inline-end: 9px !important;
+}
+
+/* an internal divider between the label and the chevron -- only relevant
+   on WEBRACK, which has both; RETURN is label-only now, nothing to divide */
+.mdr-allbar__toggle > :first-child:not(:only-child) {
   padding-inline-end: 6px;
   border-inline-end: 1px solid rgba(233, 225, 196, 0.16);
 }
