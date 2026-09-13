@@ -487,6 +487,18 @@ main .product-information__grid .text-block:not(product-price) :is(span, p, li, 
   color: rgba(240, 238, 230, 0.6) !important;
 }
 
+/* ...except the description's own bullet list ("270gsm combed cotton
+   jersey" etc.) -- matches the homepage product-card font colour (same
+   #e9e1c4 the card title/price use) instead of the muted 0.6-alpha
+   off-white every other bit of copy in this column uses. More specific
+   than the blanket rule above (adds the rte-formatter[...] qualifier) so
+   only this list is affected, not the size chart trigger or variant
+   labels sharing the same column. */
+main .product-information__grid .product-details
+  rte-formatter[class*='__text_aEtTtq'] :is(li, p) {
+  color: #e9e1c4 !important;
+}
+
 /* ---- Mobile: product hero image size ------------------------------------- */
 @media screen and (max-width: 749px) {
   .product-information__grid .product-information__media,
@@ -876,43 +888,17 @@ body {
   display: none !important;
 }
 
-/* ---- "Buy with Shop" -> the same cream as the bar's own border
-   (rgba(233,225,196,...)) instead of navy, so the button reads as part
-   of the same bordered bar instead of a clashing brand-purple block. The
-   Shop Pay wallet button paints inside a closed shadow root; a
-   `mix-blend-mode` overlay recolours it directly rather than trying to
-   restyle anything inside. "color" blend keeps the ORIGINAL button's own
-   luminosity (so white text/logo on top stays legible) and only retints
-   its hue toward cream -- the result is a dark, warm cream tone, not a
-   bright flat fill, which is what the actual border reads as too (a
-   translucent cream over black, not a solid light block). */
+/* ---- "Buy with Shop" -- left in Shop Pay's own native colour. Two
+   different recolour attempts lived here (navy, then a cream/khaki
+   mix-blend-mode tint) and neither read well -- retinting a button that
+   renders inside a closed shadow root is inherently a hack (a colour
+   overlay, not real styling), and it also left a visible seam where the
+   overlay didn't quite cover the real content. Payment buttons are
+   commonly left in their platform's own colour anyway (users recognise
+   the real Shop Pay / Apple Pay / PayPal look as legitimate) -- simplest
+   and most reliable is to not fight it. */
 .shopify-payment-button {
   position: relative;
-  isolation: isolate;
-}
-
-.shopify-payment-button::before {
-  content: "";
-  position: absolute;
-  inset: 0;
-  /* bottom:0 (via inset) instead of a hardcoded height -- covers exactly
-     the button's own real rendered height whatever that turns out to be,
-     rather than a guessed px value that silently goes stale (and stops
-     lining up with the actual button) the moment that height changes */
-  background: #e9e1c4;
-  mix-blend-mode: color;
-  pointer-events: none;
-  z-index: 4;
-}
-
-.shopify-payment-button::after {
-  content: "";
-  position: absolute;
-  inset: 0;
-  background: #cbb98a;
-  mix-blend-mode: overlay;
-  pointer-events: none;
-  z-index: 5;
 }
 
 /* ==========================================================================
@@ -936,27 +922,35 @@ button.link,
   border-bottom: 0 !important;
 }
 
-/* "more payment options" -> full width of the whole bar (quantity + ADD
-   TO CART + Buy-with-Shop combined -- a JS position sync in
-   mdr-header-enhance.liquid handles the actual width/position, since this
-   link lives several levels deep inside Buy-with-Shop's own narrow flex
-   column and CSS alone can't break it out past that ancestor's width). A
-   soft cream tint fill now, echoing the recoloured Buy-with-Shop button
-   directly above it, instead of staying plain transparent -- the two read
-   as one cream-toned unit instead of the accent colour stopping dead at
-   the bar's bottom edge. */
+/* "more payment options" -> a real solid button, full width of the whole
+   bar (quantity + ADD TO CART + Buy-with-Shop combined -- a JS position
+   sync in mdr-header-enhance.liquid handles the actual width/position,
+   since this link lives several levels deep inside Buy-with-Shop's own
+   narrow flex column and CSS alone can't break it out past that
+   ancestor's width). A bordered/transparent treatment, then a faint
+   0.1-alpha tint, were both tried here and still read as "a strip of
+   text", not a button -- a solid fill with real padding is what actually
+   reads as one, so it borrows the exact same cream-fill/dark-text pairing
+   as ADD TO CART right above it. */
 .shopify-payment-button__more-options,
 [class*='more-options'] {
   display: block !important;
   width: 100%;
   box-sizing: border-box;
   text-align: center;
-  padding: 6px 8px !important;
-  background: rgba(233, 225, 196, 0.1) !important;
-  border: 1px solid rgba(233, 225, 196, 0.3) !important;
-  border-top: 0 !important;
-  color: rgba(233, 225, 196, 0.85) !important;
+  padding: 9px 8px !important;
+  background: #e9e1c4 !important;
+  color: #1a1a1a !important;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  border: 0 !important;
   border-radius: 0 !important;
+  transition: opacity var(--animation-speed-fast, 0.14s) var(--animation-easing, ease);
+}
+
+.shopify-payment-button__more-options:active,
+[class*='more-options']:active {
+  opacity: 0.8;
 }
 
 /* the footer menu's current-page marker used an underline -- drop it */
@@ -1496,15 +1490,18 @@ main .product-information__grid.product-information__grid .size-chart * {
 }
 
 /* ...product title -> full brightness, matching the homepage product-card
-   title colour instead of the muted description-column tone. Needs to
-   out-specify the earlier :is(h1,...):not(.price):not(product-price) rule
-   (0,2,3), hence the extra .product-details qualifier here (0,3,2). The
-   raw font-size already matched (both 9.375px) -- the visible mismatch was
+   title colour (#e9e1c4, not f0eee6 -- the card title itself uses e9e1c4,
+   see main[data-template='index'] ... .product-card .text-block p below;
+   this rule had drifted to the wrong hex) instead of the muted
+   description-column tone. Needs to out-specify the earlier
+   :is(h1,...):not(.price):not(product-price) rule (0,2,3), hence the
+   extra .product-details qualifier here (0,3,2). The raw font-size
+   already matched (both 9.375px) -- the visible mismatch was
    line-height/letter-spacing: the PDP title uses the "h5" preset (tight,
    no tracking) while the homepage card title uses "rte" (1.1 line-height,
    0.1875px tracking). Match those too so they read the same size. -------- */
 main .product-information__grid.product-information__grid .product-details h1 {
-  color: #f0eee6 !important;
+  color: #e9e1c4 !important;
   line-height: 1.1 !important;
   letter-spacing: 0.1875px !important;
 }
