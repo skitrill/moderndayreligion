@@ -487,18 +487,6 @@ main .product-information__grid .text-block:not(product-price) :is(span, p, li, 
   color: rgba(240, 238, 230, 0.6) !important;
 }
 
-/* ...except the description's own bullet list ("270gsm combed cotton
-   jersey" etc.) -- matches the homepage product-card font colour (same
-   #e9e1c4 the card title/price use) instead of the muted 0.6-alpha
-   off-white every other bit of copy in this column uses. More specific
-   than the blanket rule above (adds the rte-formatter[...] qualifier) so
-   only this list is affected, not the size chart trigger or variant
-   labels sharing the same column. */
-main .product-information__grid .product-details
-  rte-formatter[class*='__text_aEtTtq'] :is(li, p) {
-  color: #e9e1c4 !important;
-}
-
 /* ---- Mobile: product hero image size ------------------------------------- */
 @media screen and (max-width: 749px) {
   .product-information__grid .product-information__media,
