@@ -374,9 +374,23 @@
       borderSvg.setAttribute('viewBox', '0 0 95 33');
       borderSvg.setAttribute('preserveAspectRatio', 'none');
       borderSvg.setAttribute('aria-hidden', 'true');
+      /* the straight left/top edges are separate crispEdges lines, not
+         part of the same anti-aliased path as the diagonal -- a thin,
+         low-alpha stroke antialiases across a soft ~2px band on a
+         high-density mobile screen (worse once the page's own 1.1x zoom
+         -- see the mdr-zoom toggle further down -- lands the line on a
+         non-integer device pixel), which read as barely-there. Snapping
+         those two straight runs to the pixel grid instead makes them a
+         crisp, fully-opaque hairline at any density. The diagonal stays
+         on normal (smooth) rendering -- crisp edges on an angled line
+         looks jagged/stair-stepped instead of clean. */
       borderSvg.innerHTML =
-        '<path d="M0 33 L0 0 L77 0 L95 33" fill="none" ' +
-        'stroke="rgba(233,225,196,0.16)" stroke-width="1"/>';
+        '<line x1="0" y1="33" x2="0" y2="0" stroke="rgba(233,225,196,0.16)" ' +
+        'stroke-width="1" shape-rendering="crispEdges"/>' +
+        '<line x1="0" y1="0" x2="77" y2="0" stroke="rgba(233,225,196,0.16)" ' +
+        'stroke-width="1" shape-rendering="crispEdges"/>' +
+        '<line x1="77" y1="0" x2="95" y2="33" stroke="rgba(233,225,196,0.16)" ' +
+        'stroke-width="1"/>';
 
       /* WEBRACK: a clean double-chevron, not the raw "»" glyph. RETURN
          gets a single chevron instead -- the two read as distinct icons,
