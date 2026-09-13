@@ -2306,67 +2306,55 @@ main[data-template='index'] [id$='__product_list_fa6P9H'] .product-card .product
   padding: 3% !important;
 }
 
-/* "new" tag -- WEBRACK's own right-trapezoid, turned upside down: WEBRACK
-   is a full bottom + full left (the two right-angle sides) with the top
-   cut short and a diagonal running from that short top down to the
-   bottom-right. Flipped, the two full/right-angle sides become TOP and
-   (for this tag) whichever side is the OUTER one -- and this time that
-   full side is the one anchored exactly ON the grid's own vertical
-   divider (not floating near it), so the tag reads as growing directly
-   out of the grid line rather than sitting beside it. The diagonal runs
-   from the tag's outer-top corner -- itself sitting on the row's
-   horizontal divider -- down to a point just short of the vertical line,
-   so it visibly starts at the horizontal line and travels toward the
-   vertical one. Left-column and right-column mirror each other, so both
-   tags' full attaching edges land on the exact same vertical line and
-   read as one continuous edge, not two separate borders sitting side by
-   side. Border-only (no background) on the two real straight edges (top,
-   attaching side) -- clip-path clips a border same as it clips a fill,
-   so there's no way to draw one following the diagonal itself. */
-main[data-template='index'] [id$='__product_list_fa6P9H'] .card-gallery::after {
-  content: 'new';
+/* "new" tag -- WEBRACK's own right-trapezoid, turned upside down (full
+   top edge + full attaching edge, anchored exactly on the grid's own
+   vertical divider so left/right column tags share one continuous edge;
+   a diagonal runs from the outer-top corner, on the horizontal divider,
+   down to a point just short of the vertical one). A real element now
+   (built in mdr-header-enhance.liquid), not a ::after pseudo-element --
+   a plain CSS border can't be drawn along the diagonal at all (clip-path
+   clips a border same as it clips a fill), so the diagonal and the short
+   bottom edge were always left as bare ink. An SVG stroke, the same
+   technique WEBRACK's own border uses, draws a uniform-width line
+   around all FOUR edges, diagonal included. */
+.mdr-new-tag {
   position: absolute;
   top: 0;
   transform: translateY(-50%);
   z-index: 3;
+  width: 72px;
+  height: 27px;
   display: flex;
   align-items: center;
   justify-content: center;
+  pointer-events: none;
+}
+
+.mdr-new-tag--left {
+  right: 0;
+}
+
+.mdr-new-tag--right {
+  left: 0;
+}
+
+.mdr-new-tag__border {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+}
+
+.mdr-new-tag__label {
+  position: relative;
+  z-index: 1;
   font: inherit;
   font-size: 0.62rem;
   font-weight: 700;
   letter-spacing: 0.04em;
   line-height: 1;
-  text-transform: uppercase !important;
+  text-transform: uppercase;
   color: #f0eee6;
-  background: transparent;
-  padding: 9px 18px;
-  white-space: nowrap;
-  /* as visible as the grid's own divider lines -- those read as solid
-     hairlines despite a low 0.14 alpha because they're a flat colour
-     fill of an actual pixel gap, not an anti-aliased stroke; a thin CSS
-     border needs a lot more alpha to look equally "there". 1px (not
-     1.5px) too, to avoid the extra sub-pixel blur that came with it. */
-  border-top: 1px solid rgba(233, 225, 196, 0.85);
-  pointer-events: none;
-}
-
-/* left column: attaches on its own RIGHT (the shared vertical line);
-   diagonal starts at the outer top-left corner and tapers down toward
-   (but short of) that line */
-main[data-template='index'] [id$='__product_list_fa6P9H'] .resource-list__item:nth-child(odd) .card-gallery::after {
-  right: 0;
-  left: auto;
-  border-right: 1px solid rgba(233, 225, 196, 0.85);
-  clip-path: polygon(0 0, 100% 0, 100% 100%, 12px 100%);
-}
-
-/* right column: mirrored -- attaches on its own LEFT, diagonal starts at
-   the outer top-right corner and tapers down toward that line */
-main[data-template='index'] [id$='__product_list_fa6P9H'] .resource-list__item:nth-child(even) .card-gallery::after {
-  left: 0;
-  border-left: 1px solid rgba(233, 225, 196, 0.85);
-  clip-path: polygon(0 0, 100% 0, calc(100% - 12px) 100%, 0 100%);
 }
 
 /* hide the quick-add / choose overlay button -- supreme cards are just tap-through */
