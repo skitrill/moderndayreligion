@@ -809,6 +809,19 @@ body {
   display: flex !important;
 }
 
+/* the actual <button> isn't a direct flex child of the span above --
+   add-to-cart-component sits between them, and as an un-grown flex item
+   (default flex:0 1 auto) it was only ever as wide as its own button
+   needed to be (shrink-to-fit), which is what the button's own
+   width:100% below was actually resolving against -- 100% of THAT, not
+   of the span. Grow it to fill the span so the button's 100% means what
+   it says, in every state (normal width, and full-width once sold out
+   below). */
+.product-form-buttons add-to-cart-component {
+  flex: 1 1 auto !important;
+  width: 100% !important;
+}
+
 .product-form-buttons .add-to-cart-button:not(.sticky-add-to-cart__button),
 .product-form-buttons .product-form__submit {
   width: 100% !important;
