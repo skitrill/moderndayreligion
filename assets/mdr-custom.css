@@ -1648,13 +1648,17 @@ main[data-template='index']
   align-items: center;
   flex: 0 0 auto;
   gap: 12px;
-  max-width: 132px;
+  /* fixed and shared with RETURN (below) instead of a max-width cap that
+     just happens to land near the content's own size -- "the same and
+     stable" regardless of which label's actual text metrics render
+     slightly wider or narrower */
+  width: 95px;
   overflow: hidden;
   white-space: nowrap;
-  /* taller ribbon -- more room for an easy tap, and a taller track for
-     dragging/scrolling the list once open (was 2px, barely more than the
-     text's own height) */
-  padding: 9px 0;
+  /* taller ribbon for an easy tap and a taller drag track once open (was
+     2px originally); reduced back down ~20% from the first pass (9px),
+     which read as more height than actually needed */
+  padding: 7px 0;
   border: 0;
   background: transparent;
   color: #e9e1c4;
@@ -1667,7 +1671,7 @@ main[data-template='index']
   -webkit-tap-highlight-color: transparent;
   /* plain text, no chrome -- dim while idle, full once opened */
   opacity: 0.5;
-  transition: max-width 0.34s cubic-bezier(0.16, 1, 0.3, 1),
+  transition: width 0.34s cubic-bezier(0.16, 1, 0.3, 1),
     opacity var(--animation-speed) var(--animation-easing);
 }
 
@@ -1708,17 +1712,18 @@ main[data-template='index']
 
 .mdr-allbar::after {
   inset: 1px;
-  /* the ribbon's own interior now carries the same tint as the list panel
-     next to it once open -- "give the ribbon that bg too" -- instead of
-     just showing the page's black through a thin outline */
-  background: rgba(233, 225, 196, 0.16);
+  /* the ribbon's own interior, closed, carries the same dark-brown tape
+     pattern as the product cards -- "give the ribbon that bg too" --
+     instead of just showing the page's black through a thin outline */
+  background-color: #000;
+  background-image: var(--mdr-tape);
   clip-path: polygon(0 0, calc(100% - 19px) 0, 100% 100%, 0 100%);
 }
 
 .mdr-allbar.is-open {
-  /* was min(88vw,380px) -- the border above now needs to actually strike
-     full width when open, not stop at a capped pill size */
-  max-width: 100%;
+  /* overrides the fixed 95px above -- the border needs to actually strike
+     full width when open, not stay pinned to the closed pill size */
+  width: 100%;
   opacity: 1;
   /* square the corner back off instead of keeping the cut -- with no
      shape left to close diagonally (top and bottom already match), a
@@ -1729,6 +1734,13 @@ main[data-template='index']
 .mdr-allbar.is-open::before,
 .mdr-allbar.is-open::after {
   clip-path: none;
+}
+
+/* once open, the ribbon side goes plain black -- only the list panel next
+   to it keeps the tape pattern (see .mdr-allbar__list) -- so the two
+   sections read as visually distinct again instead of one flat surface */
+.mdr-allbar.is-open::after {
+  background-image: none;
 }
 
 .mdr-allbar__toggle {
@@ -1795,10 +1807,9 @@ main[data-template='index']
 }
 
 /* off-home: the bar is a back button -- big left chevron before the word */
-.mdr-allbar--back {
-  max-width: none !important;
-  overflow: visible;
-}
+/* RETURN now shares WEBRACK's fixed 95px width and hidden overflow from
+   the base .mdr-allbar rule instead of sizing to its own unlimited
+   content width -- "the same [length as WEBRACK] and stable" */
 
 .mdr-allbar__chev--back {
   margin-inline-end: 6px;
@@ -1847,10 +1858,13 @@ main[data-template='index']
 .mdr-allbar.is-open .mdr-allbar__list {
   flex: 1 1 auto;
   opacity: 1;
-  /* the list gets its own tinted panel once open, framed by the same
-     top/bottom border as the button next to it -- one continuous shape,
-     two visually distinct sections */
-  background: rgba(233, 225, 196, 0.16);
+  /* the list gets its own dark-brown tape-pattern panel once open (the
+     same material as the ribbon's own closed-state fill and the product
+     cards), framed by the same top/bottom border as the button next to it
+     -- while the ribbon itself goes plain black once open (see
+     .mdr-allbar.is-open::after), so the two stay visually distinct */
+  background-color: #000;
+  background-image: var(--mdr-tape);
 }
 
 .mdr-allbar__list a {
