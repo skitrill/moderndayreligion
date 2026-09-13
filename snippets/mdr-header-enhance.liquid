@@ -962,6 +962,21 @@
     function sync() {
       var GAP_ABOVE = 8;
       var GAP_BELOW = 16;
+      /* CSS zoom (the page's default [+/- page] mode, body.style.zoom)
+         scales EVERY CSS px unit in its scope, and getBoundingClientRect /
+         offsetHeight both report already-zoomed (visual) pixel values.
+         Feeding one of those numbers straight into an inline style like
+         `left: Npx` sets an AUTHORED value inside that same zoomed
+         context, which the browser then zooms AGAIN on render -- e.g. at
+         zoom 1.1, a measured 335px bar was coming out styled as
+         `width:335px` but rendering at 335*1.1 = 368px, visibly wider
+         than the real bar (and mis-positioned to match). Dividing every
+         zoomed measurement by the zoom factor before writing it back
+         cancels that out -- the browser's own re-zoom lands it back on
+         the real value. Only needed for MEASURED numbers, not the GAP_*
+         constants above -- those are meant to scale with zoom like any
+         other authored px value on the page. */
+      var zoomFactor = parseFloat(D.body.style.zoom) || 1;
       var bars = D.querySelectorAll('.product-form-buttons, .product-form__buttons');
       for (var i = 0; i < bars.length; i++) {
         var bar = bars[i];
@@ -973,8 +988,8 @@
         var anchorRect = anchor.getBoundingClientRect();
         link.style.position = 'absolute';
         link.style.top = 'calc(100% + ' + GAP_ABOVE + 'px)';
-        link.style.left = (barRect.left - anchorRect.left) + 'px';
-        link.style.width = barRect.width + 'px';
+        link.style.left = ((barRect.left - anchorRect.left) / zoomFactor) + 'px';
+        link.style.width = (barRect.width / zoomFactor) + 'px';
         /* position:absolute takes the link out of normal document flow,
            so nothing after it in the page reserves room for it -- the
            next thing in flow (the footer, once "Recommended" was removed
@@ -983,7 +998,7 @@
            the bar itself pushes that flow down by exactly the link's own
            height plus both gaps, closing that overlap and leaving real
            breathing room on both sides of the link. */
-        bar.style.marginBottom = (GAP_ABOVE + link.offsetHeight + GAP_BELOW) + 'px';
+        bar.style.marginBottom = (GAP_ABOVE + (link.offsetHeight / zoomFactor) + GAP_BELOW) + 'px';
       }
     }
 

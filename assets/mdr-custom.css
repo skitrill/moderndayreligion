@@ -903,6 +903,13 @@ body {
    and most reliable is to not fight it. */
 .shopify-payment-button {
   position: relative;
+  /* a backstop, not a recolour -- the page's default zoomed mode (CSS
+     zoom:1.1) doesn't always rasterize this cross-origin button in
+     perfect lockstep with the CSS border drawn right around it, leaving
+     an occasional hairline gap at the seam. Matching the button's own
+     native indigo behind it means any such gap shows more indigo, not a
+     stripe of the page's black. */
+  background: #5a31f4;
 }
 
 /* ==========================================================================
