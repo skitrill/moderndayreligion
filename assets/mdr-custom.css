@@ -2306,24 +2306,62 @@ main[data-template='index'] [id$='__product_list_fa6P9H'] .product-card .product
   padding: 3% !important;
 }
 
-/* ghost "new" tag -- back to the plain default: no shape, no border, no
-   fill, just quiet ghost text top-right of the image panel, homepage
-   grid only. Several shapes were tried here (bordered box, flag-on-a-
-   stem, hexagon on the grid line, WEBRACK-upside-down merged at the
-   corner) -- back to raw/default rather than keep iterating on a shape
-   that isn't landing. */
+/* "new" tag -- WEBRACK's own right-trapezoid, turned upside down: WEBRACK
+   is a full bottom + full left (the two right-angle sides) with the top
+   cut short and a diagonal running from that short top down to the
+   bottom-right. Flipped, the two full/right-angle sides become TOP and
+   (for this tag) whichever side is the OUTER one -- and this time that
+   full side is the one anchored exactly ON the grid's own vertical
+   divider (not floating near it), so the tag reads as growing directly
+   out of the grid line rather than sitting beside it. The diagonal runs
+   from the tag's outer-top corner -- itself sitting on the row's
+   horizontal divider -- down to a point just short of the vertical line,
+   so it visibly starts at the horizontal line and travels toward the
+   vertical one. Left-column and right-column mirror each other, so both
+   tags' full attaching edges land on the exact same vertical line and
+   read as one continuous edge, not two separate borders sitting side by
+   side. Border-only (no background) on the two real straight edges (top,
+   attaching side) -- clip-path clips a border same as it clips a fill,
+   so there's no way to draw one following the diagonal itself. */
 main[data-template='index'] [id$='__product_list_fa6P9H'] .card-gallery::after {
   content: 'new';
   position: absolute;
-  top: 6px;
-  right: 8px;
-  z-index: 2;
+  top: 0;
+  transform: translateY(-50%);
+  z-index: 3;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   font: inherit;
-  font-size: 0.6rem;
-  letter-spacing: 0.02em;
+  font-size: 0.62rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  line-height: 1;
   text-transform: uppercase !important;
-  color: rgba(233, 225, 196, 0.45);
+  color: #f0eee6;
+  background: transparent;
+  padding: 9px 18px;
+  white-space: nowrap;
+  border-top: 1.5px solid rgba(233, 225, 196, 0.4);
   pointer-events: none;
+}
+
+/* left column: attaches on its own RIGHT (the shared vertical line);
+   diagonal starts at the outer top-left corner and tapers down toward
+   (but short of) that line */
+main[data-template='index'] [id$='__product_list_fa6P9H'] .resource-list__item:nth-child(odd) .card-gallery::after {
+  right: 0;
+  left: auto;
+  border-right: 1.5px solid rgba(233, 225, 196, 0.4);
+  clip-path: polygon(0 0, 100% 0, 100% 100%, 12px 100%);
+}
+
+/* right column: mirrored -- attaches on its own LEFT, diagonal starts at
+   the outer top-right corner and tapers down toward that line */
+main[data-template='index'] [id$='__product_list_fa6P9H'] .resource-list__item:nth-child(even) .card-gallery::after {
+  left: 0;
+  border-left: 1.5px solid rgba(233, 225, 196, 0.4);
+  clip-path: polygon(0 0, 100% 0, calc(100% - 12px) 100%, 0 100%);
 }
 
 /* hide the quick-add / choose overlay button -- supreme cards are just tap-through */
