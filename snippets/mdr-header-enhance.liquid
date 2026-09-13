@@ -469,7 +469,14 @@
       }
 
       if (isHome) {
-        var items = [{ t: 'All', u: '/collections/all' }].concat(data);
+        /* points at "/" itself, not /collections/all -- with the logo no
+           longer doubling as a home button on this page (see
+           blocks/_header-logo.liquid), All is the way back to the true,
+           unfiltered homepage grid after switching to another title
+           in-place. The u!=='/' guard just below already excludes '/'
+           from the auto aria-current match (every path starts with "/"),
+           so this doesn't make it wrongly read as "current" everywhere. */
+        var items = [{ t: 'All', u: '/' }].concat(data);
         var realItems = [];
         for (var i = 0; i < items.length; i++) {
           if (!items[i] || !items[i].u) continue;
@@ -530,6 +537,7 @@
       function setOpen(on) {
         bar.classList.toggle('is-open', on);
         toggle.setAttribute('aria-expanded', on ? 'true' : 'false');
+        if (typeof positionTouchzone === 'function') requestAnimationFrame(positionTouchzone);
       }
       window.__mdrAllbarOpen = function () { setOpen(true); };
 
@@ -687,15 +695,33 @@
         switchCollection(href, false);
       });
 
-      /* Invisible drag-catcher covering the WHOLE wrap (still strictly
-         position:absolute inside it -- zero layout footprint, on any page).
-         A drag anywhere in it scrolls the title list; a plain tap is
-         forwarded to whatever real link/button actually sits underneath, so
-         nothing's tap-ability is lost by being covered. */
+      /* Invisible drag-catcher covering the wrap so a drag anywhere in it
+         (background, list items) scrolls the title list; taps that land on
+         a real link inside the list still forward through via elementFromPoint
+         below. The TOGGLE is the one exception: it's excluded from the zone
+         entirely (see positionTouchzone) rather than relying on that
+         passthrough for it too. .mdr-allbar__toggle's own z-index:3 looks
+         like it should already put it above this z-index:2 zone, but
+         z-index only competes among siblings within the SAME stacking
+         context -- toggle's is bar's (.mdr-allbar, z-index:1), and bar
+         itself is BELOW this zone (a sibling at z-index:2), so the toggle
+         was never actually reachable directly no matter its own z-index.
+         Taps on it were going through the same elementFromPoint+.click()
+         passthrough as everything else -- exactly the indirection the
+         "sometimes reloads / general unresponsiveness" fix elsewhere in
+         this file was meant to avoid, and the likely cause of that same
+         symptom coming back for the open/close tap specifically. */
       var touchzone = D.createElement('div');
       touchzone.className = 'mdr-allbar__touchzone';
       touchzone.setAttribute('aria-hidden', 'true');
       wrap.appendChild(touchzone);
+
+      function positionTouchzone() {
+        touchzone.style.left = toggle.getBoundingClientRect().width + 'px';
+      }
+      positionTouchzone();
+      window.addEventListener('resize', positionTouchzone, { passive: true });
+      window.addEventListener('load', positionTouchzone);
 
       (function () {
         var THRESHOLD = 6;
@@ -845,6 +871,22 @@
       window.addEventListener('popstate', function () {
         if (window.__mdrSwitching) return;
         if (location.pathname + location.search !== currentUrl) location.reload();
+      });
+
+      /* Leaving the page open a long time (backgrounding the tab, switching
+         apps mid-tap) can freeze it into the browser's back/forward cache
+         with a fetch still in flight -- that fetch's .then/.catch never
+         gets to run to clear window.__mdrSwitching, so it comes back from
+         bfcache stuck permanently true and every tap on a title silently
+         no-ops forever after (switchCollection's very first line bails
+         whenever it's set). pageshow's persisted flag is exactly "restored
+         from bfcache, not a fresh load" -- clear it there, and resync
+         currentUrl too in case the freeze landed mid-switch. This is the
+         "open/close messes up after sitting on a page a while" bug. */
+      window.addEventListener('pageshow', function (e) {
+        if (!e.persisted) return;
+        window.__mdrSwitching = false;
+        currentUrl = location.pathname + location.search;
       });
     }
 

@@ -36,7 +36,15 @@
   {% if template.name == 'index' and block_settings.hide_logo_on_home_page %}
     data-hidden-on-home-page
   {% endif %}
-  href="{{ routes.root_url }}"
+  {% comment %}
+    No href on the home page itself -- there's nowhere for it to usefully
+    go (you're already home), and WEBRACK's "All" title now covers that
+    job everywhere it's actually needed (see mdr-header-enhance.liquid).
+    Every other page keeps the logo as a normal link back to "/".
+  {% endcomment %}
+  {% unless is_home_page %}
+    href="{{ routes.root_url }}"
+  {% endunless %}
   class="size-style spacing-style header-logo"
   style="
     {% render 'size-style', settings: block_settings %}
