@@ -2123,21 +2123,35 @@ main[data-template='index'] [id$='__product_list_fa6P9H'] .product-card .product
   padding: 3% !important;
 }
 
-/* "new" tag -- a bordered pill, top-left of the image panel. Was plain
-   ghost text, top-right, and only ever showed on the homepage grid; now a
-   small boxed tag (matching the reference sketch) on EVERY product card
-   image, anywhere .card-gallery renders -- collections, product-page
-   recommendations, search, home -- not just the homepage. Left, not
-   right: the native Sold Out / Sale badge (settings.badge_position) sits
-   top-right, so the two can never land on top of each other on the same
-   card. .card-gallery is already position:relative site-wide (Horizon's
-   own badge system relies on the same thing), so no extra setup needed
-   for the absolute position to anchor correctly. */
+/* "new" tag -- a small flag hanging off a stem/branch, top-left of the
+   image panel: a thin vertical line (::before) dropping down from the
+   very corner, with the bordered tag (::after) hanging off its bottom
+   end. Was plain ghost text, top-right, and only ever showed on the
+   homepage grid; now on EVERY product card image, anywhere .card-gallery
+   renders -- collections, product-page recommendations, search, home --
+   not just the homepage. Left, not right: the native Sold Out / Sale
+   badge (settings.badge_position) sits top-right, so the two can never
+   land on top of each other on the same card. .card-gallery is already
+   position:relative site-wide (Horizon's own badge system relies on the
+   same thing), so no extra setup needed for the absolute position to
+   anchor correctly. */
+.card-gallery::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 16px;
+  width: 1px;
+  height: 18px;
+  background: rgba(233, 225, 196, 0.35);
+  z-index: 1;
+  pointer-events: none;
+}
+
 .card-gallery::after {
   content: 'new';
   position: absolute;
-  top: 8px;
-  left: 8px;
+  top: 16px;
+  left: 16px;
   z-index: 2;
   font: inherit;
   font-size: 0.6rem;
@@ -2147,6 +2161,7 @@ main[data-template='index'] [id$='__product_list_fa6P9H'] .product-card .product
   border: 1px solid rgba(233, 225, 196, 0.3);
   padding: 1px 6px;
   line-height: 1.4;
+  background: #000;
   pointer-events: none;
 }
 
