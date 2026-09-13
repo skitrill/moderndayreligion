@@ -416,9 +416,17 @@
          or viewport width. */
       function measureLoop() {
         if (realCount <= 1) { loopWidth = 0; return; }
+        /* list.clientWidth reads as 0 here -- this runs while WEBRACK is
+           still closed (flex:0 0 0), so it never reflects what the list's
+           width will actually be once opened. wrap.clientWidth (the full
+           bar's own row, always laid out regardless of open/closed) is a
+           safe upper-bound stand-in: the list can never end up wider than
+           the whole wrap once open, so sizing against it is a worst-case
+           estimate that still guarantees enough copies. */
         var guard = 0;
         var copies = list.children.length / realCount;
-        while (list.scrollWidth - list.clientWidth < list.scrollWidth / copies && guard < 8) {
+        var maxPossibleWidth = wrap.clientWidth;
+        while (list.scrollWidth - maxPossibleWidth < list.scrollWidth / copies && guard < 8) {
           appendCopy();
           copies = list.children.length / realCount;
           guard++;
