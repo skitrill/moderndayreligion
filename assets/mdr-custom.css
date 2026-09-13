@@ -905,7 +905,9 @@ body {
    slice with the rest of the bar just empty black space where
    Buy-with-Shop used to be. Let that wrapper claim the full row instead,
    and turn the button red/off-white so "sold out" reads as a clear state
-   change, not a dimmed version of the normal button. */
+   change. Both toned down a notch from full brightness/saturation --
+   a slightly muted red and a dimmed (not pure) off-white read as "off /
+   unavailable" rather than as loud as an active call-to-action. */
 .product-form-buttons > span:has(.add-to-cart-button[disabled]),
 .product-form-buttons > span:has(.product-form__submit[disabled]) {
   max-width: 100% !important;
@@ -914,8 +916,8 @@ body {
 
 .product-form-buttons .add-to-cart-button:not(.sticky-add-to-cart__button)[disabled] {
   width: 100% !important;
-  background: #8b1e1e !important;
-  color: #f0eee6 !important;
+  background: #6e1a1a !important;
+  color: rgba(240, 238, 230, 0.7) !important;
   opacity: 1 !important;
   border: 0 !important;
 }
