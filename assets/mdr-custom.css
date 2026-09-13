@@ -2111,6 +2111,45 @@ main[data-template='index'] [id$='__product_list_fa6P9H'] .resource-list--grid {
   padding: 0 !important;
 }
 
+/* ---- Homepage grid load-in: a staggered slide-up + fade, one card after
+   another, instead of the whole grid just appearing at once (inspired by
+   punkandyo.com's reveal). Hidden by default so the animation has
+   somewhere to animate FROM; mdr-header-enhance.liquid's IntersectionObserver
+   adds .mdr-revealed (with a per-card animation-delay) as each card
+   scrolls into view, home page AND after a WEBRACK in-place collection
+   switch alike. If that JS never runs for some reason, .mdr-reveal-ready
+   without .mdr-revealed would otherwise hide cards forever -- the
+   reduced-motion + no-JS fallback below guards against that. ------------ */
+main[data-template='index'] [id$='__product_list_fa6P9H'] .resource-list__item.mdr-reveal-ready {
+  opacity: 0;
+  transform: translateY(28px);
+}
+
+main[data-template='index'] [id$='__product_list_fa6P9H'] .resource-list__item.mdr-revealed {
+  animation: mdr-reveal-up 0.5s ease both;
+}
+
+@keyframes mdr-reveal-up {
+  from {
+    opacity: 0;
+    transform: translateY(28px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  main[data-template='index'] [id$='__product_list_fa6P9H'] .resource-list__item.mdr-reveal-ready {
+    opacity: 1;
+    transform: none;
+  }
+  main[data-template='index'] [id$='__product_list_fa6P9H'] .resource-list__item.mdr-revealed {
+    animation: none;
+  }
+}
+
 main[data-template='index'] [id$='__product_list_fa6P9H'] .mdr-scrollfade {
   position: relative;
   width: 100%;

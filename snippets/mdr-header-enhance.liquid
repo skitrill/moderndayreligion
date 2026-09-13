@@ -684,6 +684,12 @@
                 }
               }
               grid.appendChild(frag);
+              /* new cards just swapped in -- give them the same staggered
+                 reveal treatment as the initial page load (see the
+                 IntersectionObserver IIFE below); without this they'd
+                 stay stuck at opacity:0, .mdr-reveal-ready with nothing
+                 observing them */
+              if (typeof window.__mdrRevealInit === 'function') window.__mdrRevealInit();
 
               currentUrl = url;
               if (!fromPopstate) {
@@ -1106,6 +1112,61 @@
       var m2 = D.querySelector('main') || D.body;
       new MutationObserver(watch).observe(m2, { childList: true, subtree: true });
     }
+  })();
+
+  /* =====================================================================
+     Homepage grid load-in: a staggered slide-up + fade per card, inspired
+     by punkandyo.com's reveal (one after another, not the whole grid
+     appearing at once). An IntersectionObserver adds .mdr-revealed (see
+     mdr-custom.css for the actual keyframe) as each card scrolls into
+     view, with a short per-card animation-delay so a batch entering
+     together still cascades instead of popping in as one block. Exposed
+     as window.__mdrRevealInit so the WEBRACK in-place collection switch
+     (switchCollection, above) can call it again for freshly-swapped-in
+     cards -- without that second call those cards would stay stuck at
+     opacity:0 forever (.mdr-reveal-ready with nothing left to observe
+     them in).
+     ===================================================================== */
+  (function () {
+    if (window.__mdrReveal) return;
+    window.__mdrReveal = true;
+    var D = document;
+    var REDUCE = window.matchMedia &&
+      window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    var revealedCount = 0;
+    var io = null;
+
+    function reveal(el) {
+      if (io) io.unobserve(el);
+      var delay = Math.min(revealedCount * 0.08, 0.5);
+      revealedCount++;
+      el.style.animationDelay = delay + 's';
+      el.classList.add('mdr-revealed');
+    }
+
+    function initReveal() {
+      if (REDUCE || !window.IntersectionObserver) return;
+      var sec = D.querySelector('[id$="__product_list_fa6P9H"]');
+      if (!sec) return;
+      var items = sec.querySelectorAll('.resource-list__item:not(.mdr-reveal-ready)');
+      if (!items.length) return;
+      if (!io) {
+        io = new IntersectionObserver(function (entries) {
+          entries.forEach(function (entry) {
+            if (entry.isIntersecting) reveal(entry.target);
+          });
+        }, { threshold: 0.1 });
+      }
+      items.forEach(function (el) {
+        el.classList.add('mdr-reveal-ready');
+        io.observe(el);
+      });
+    }
+    window.__mdrRevealInit = initReveal;
+
+    if (D.readyState !== 'loading') initReveal();
+    D.addEventListener('DOMContentLoaded', initReveal);
+    window.addEventListener('load', initReveal);
   })();
 
   /* =====================================================================
