@@ -2306,15 +2306,20 @@ main[data-template='index'] [id$='__product_list_fa6P9H'] .product-card .product
   padding: 3% !important;
 }
 
-/* "new" tag -- a half-hexagon (cut hex), no fill, attached to the
-   vertical grid line between two cards: its flat edge sits flush on that
-   line, pointing outward into its own card. Left-column and right-column
-   cards mirror each other so the pair reads as one hexagon split by the
-   line, not two tags floating independently. Border-only (no
-   background), on the three straight edges (top, bottom, the flat
-   attached edge) -- clip-path clips a border same as it clips a fill, so
-   there's no way to draw one following the diagonal point itself; left
-   as open ink there rather than faked with a second layer. */
+/* "new" tag -- the WEBRACK button's own silhouette (full top + full outer
+   side, one corner cut diagonally down to a short inner edge) turned
+   upside down: WEBRACK cuts its TOP-outer corner down to its bottom-inner
+   corner, so flipped, this cuts the BOTTOM-inner corner instead, leaving
+   the top fully flat and square. Left-column and right-column cards
+   mirror each other and both anchor their inner edge exactly on the
+   shared grid line -- since the top corner is the one left square/
+   uncut on both, the two tags' top corners land on the exact same point,
+   reading as one shape merging at the grid intersection and then
+   splitting apart into two tapered points below it, not two tags
+   floating independently. Border-only (no background), on the two full
+   straight edges (top, outer side) -- clip-path clips a border same as
+   it clips a fill, so there's no way to draw one following the diagonal
+   itself; left as open ink there rather than faked with a second layer. */
 main[data-template='index'] [id$='__product_list_fa6P9H'] .card-gallery::after {
   content: 'new';
   position: absolute;
@@ -2327,38 +2332,32 @@ main[data-template='index'] [id$='__product_list_fa6P9H'] .card-gallery::after {
   letter-spacing: 0.04em;
   line-height: 1;
   text-transform: uppercase !important;
-  /* bright, full-strength text -- the FRAME is what matches the grid's
-     own subtle 0.14 hairline below, but the word "new" itself needs to
-     actually read at a glance, not fade into the same hairline weight as
-     its own border */
+  /* bright, full-strength text -- the frame is a hairline, but the word
+     "new" itself needs to actually read at a glance */
   color: #f0eee6;
   background: transparent;
-  padding: 4px 16px;
+  padding: 6px 16px 10px;
   white-space: nowrap;
-  /* matched the grid's own divider lines exactly (0.14) last round, which
-     turned out too faint to read as an intentional shape -- 0.3, the same
-     weight the site's other functional borders use (quantity box,
-     buttons), still reads as a hairline next to the grid but is clearly
-     a deliberate outline instead of a rendering artifact */
   border-top: 1px solid rgba(233, 225, 196, 0.3);
-  border-bottom: 1px solid rgba(233, 225, 196, 0.3);
   pointer-events: none;
 }
 
-/* left column: flat edge on the right (against the shared line), point
-   on the left */
+/* left column: full outer edge on the LEFT; inner edge (facing the
+   shared line, on the right) is square at the top and tapers inward
+   going down */
 main[data-template='index'] [id$='__product_list_fa6P9H'] .resource-list__item:nth-child(odd) .card-gallery::after {
   right: 0;
   left: auto;
-  border-right: 1px solid rgba(233, 225, 196, 0.3);
-  clip-path: polygon(8px 0, 100% 0, 100% 100%, 8px 100%, 0 50%);
+  border-left: 1px solid rgba(233, 225, 196, 0.3);
+  clip-path: polygon(0 0, 100% 0, calc(100% - 12px) 100%, 0 100%);
 }
 
-/* right column: mirrored -- flat edge on the left, point on the right */
+/* right column: mirrored -- full outer edge on the RIGHT, inner edge on
+   the left tapers inward going down */
 main[data-template='index'] [id$='__product_list_fa6P9H'] .resource-list__item:nth-child(even) .card-gallery::after {
   left: 0;
-  border-left: 1px solid rgba(233, 225, 196, 0.3);
-  clip-path: polygon(0 0, calc(100% - 8px) 0, 100% 50%, calc(100% - 8px) 100%, 0 100%);
+  border-right: 1px solid rgba(233, 225, 196, 0.3);
+  clip-path: polygon(0 0, 100% 0, 100% 100%, 12px 100%);
 }
 
 /* hide the quick-add / choose overlay button -- supreme cards are just tap-through */
