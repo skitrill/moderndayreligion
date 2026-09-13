@@ -1,3 +1,5 @@
+@import url('https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&display=swap');
+
 /* ==========================================================================
    MDR custom overrides (non-Horizon).
    Loaded from <head> in layout/theme.liquid so it applies before first paint
@@ -7,6 +9,15 @@
 /* ---- Global: shrink the whole page a touch ---------------------------------- */
 html {
   font-size: 15px;
+}
+
+/* ---- Site-wide font swap -- same sizes/spacing/weights already set
+   everywhere (--font-body--family etc. are still consumed the same way by
+   every component), just a different typeface loaded in on top of them. */
+:root {
+  --font-body--family: 'Space Mono', 'Anonymous Pro', monospace;
+  --font-heading--family: 'Space Mono', 'Anonymous Pro', monospace;
+  --font-accent--family: 'Space Mono', 'Anonymous Pro', monospace;
 }
 
 /* Desktop keeps the logo at its original size. */
@@ -127,7 +138,7 @@ footer > .shopify-section:has(.footer-content) a {
 }
 
 footer .utilities {
-  padding-block: 8px 8px !important;
+  padding-block: 4px 4px !important;
   gap: 10px !important;
 }
 
@@ -502,11 +513,11 @@ main .product-information__grid .text-block:not(product-price) :is(span, p, li, 
   font-size: 0.75rem !important;
 }
 
-/* cart product titles -> mango yellow (prices stay blue) */
+/* cart product titles -> off-white (prices stay blue, see below) */
 .cart-items__title,
 .cart-items__title a,
 .cart-items__title * {
-  color: #fdb92e !important;
+  color: #f0eee6 !important;
 }
 
 .cart-items__price,
@@ -627,7 +638,7 @@ main[data-template='index'] [id$='__product_list_fa6P9H'] .resource-list--grid {
 
 /* the grid starts right under the WEBRACK line -- no big top gap */
 main[data-template='index'] [id$='__product_list_fa6P9H'] {
-  padding-block: 0 clamp(28px, 8vw, 64px) !important;
+  padding-block: 0 clamp(14px, 3vw, 28px) !important;
 }
 
 main[data-template='index'] [id$='__product_list_fa6P9H'] .section-resource-list__header,
@@ -752,6 +763,16 @@ body {
 /* keep the discount input's own outline */
 .cart-discount__input {
   border: 1px solid var(--color-input-border, #5c564a) !important;
+}
+
+/* ---- Cart line items: much less air between each row ---------------------
+   Horizon's own row spacing is padding-bottom (a merchant "gap" setting,
+   usually 24px+) PLUS margin-bottom (--margin-lg, 1rem) stacked on top of
+   each other -- the two together are what read as "a lot of space between
+   each product cart item" in the screenshot. */
+.cart-items__table-row {
+  padding-bottom: 10px !important;
+  margin-bottom: 6px !important;
 }
 
 /* ---- Product form: quantity + ADD TO CART + Buy-with-Shop on one line,
@@ -1466,7 +1487,7 @@ main .product-information__grid.product-information__grid .product-details h1 {
 }
 
 
-/* cart text -> mango yellow */
+/* cart text -> off-white (was mango yellow) */
 .cart-page,
 .cart-page *,
 .cart-items-component,
@@ -1481,7 +1502,7 @@ cart-drawer,
 cart-drawer *,
 .cart-drawer,
 .cart-drawer * {
-  color: #fdb92e !important;
+  color: #f0eee6 !important;
 }
 
 /* ...but prices stay blue */
