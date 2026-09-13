@@ -893,8 +893,8 @@ body {
    Buy-with-Shop used to be. Let that wrapper claim the full row instead,
    and turn the button red/off-white so "sold out" reads as a clear state
    change, not a dimmed version of the normal button. */
-.product-form-buttons > span:has(> .add-to-cart-button[disabled]),
-.product-form-buttons > span:has(> .product-form__submit[disabled]) {
+.product-form-buttons > span:has(.add-to-cart-button[disabled]),
+.product-form-buttons > span:has(.product-form__submit[disabled]) {
   max-width: 100% !important;
   flex: 1 1 auto !important;
 }
