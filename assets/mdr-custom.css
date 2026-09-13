@@ -1738,8 +1738,11 @@ main[data-template='index']
      otherwise reads. No left edge either once open -- the bar already
      sits flush at the true left edge (see .mdr-allbar-wrap), so a
      leading vertical stroke there just cut the row in two instead of
-     reading as one open, unbroken strip top to end. */
-  border-top: 1px solid rgba(233, 225, 196, 0.3);
+     reading as one open, unbroken strip top to end. Same alpha as the
+     wrap's own permanent border-bottom (0.16, not the closed ribbon's
+     0.3) so top and bottom read as the same weight instead of the top
+     looking bolder than the bottom right below it. */
+  border-top: 1px solid rgba(233, 225, 196, 0.16);
 }
 
 .mdr-allbar.is-open .mdr-allbar__border {
