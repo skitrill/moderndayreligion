@@ -2306,59 +2306,30 @@ main[data-template='index'] [id$='__product_list_fa6P9H'] .product-card .product
   padding: 3% !important;
 }
 
-/* "new" tag -- WEBRACK's own right-trapezoid, turned upside down (full
-   top edge + full attaching edge, anchored exactly on the grid's own
-   vertical divider so left/right column tags share one continuous edge;
-   a diagonal runs from the outer-top corner, on the horizontal divider,
-   down to a point just short of the vertical one). A real element now
-   (built in mdr-header-enhance.liquid), not a ::after pseudo-element --
-   a plain CSS border can't be drawn along the diagonal at all (clip-path
-   clips a border same as it clips a fill), so the diagonal and the short
-   bottom edge were always left as bare ink. An SVG stroke, the same
-   technique WEBRACK's own border uses, draws a uniform-width line
-   around all FOUR edges, diagonal included. */
-.mdr-new-tag {
+/* "new" tag -- back to a small, plain bordered box, top-right corner of
+   every card, same as it was originally before several shape experiments
+   (bordered box, flag-on-a-stem, hexagon on the grid line, WEBRACK-
+   upside-down merged at the corner). Reference was Supreme's own site:
+   theirs is exactly this -- a small rectangle, thin muted border, quiet
+   text, tucked in the corner, identical on every card, no attempt to
+   merge with the grid. Kept the site's own all-caps convention (Supreme's
+   reads lowercase) rather than switch just this one label. */
+main[data-template='index'] [id$='__product_list_fa6P9H'] .card-gallery::after {
+  content: 'new';
   position: absolute;
-  /* sits flush at the card's own top edge, not straddling it -- .card-
-     gallery has overflow:hidden (it clips the product image to the
-     panel), so the earlier translateY(-50%) straddle was silently
-     clipping the whole top half of this tag, the part with the actual
-     flat top edge, leaving only a thin unreadable sliver visible */
-  top: 0;
-  z-index: 3;
-  width: 72px;
-  height: 27px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  pointer-events: none;
-}
-
-.mdr-new-tag--left {
-  right: 0;
-}
-
-.mdr-new-tag--right {
-  left: 0;
-}
-
-.mdr-new-tag__border {
-  position: absolute;
-  inset: 0;
-  width: 100%;
-  height: 100%;
-}
-
-.mdr-new-tag__label {
-  position: relative;
-  z-index: 1;
+  top: 8px;
+  right: 8px;
+  z-index: 2;
   font: inherit;
-  font-size: 0.62rem;
-  font-weight: 700;
-  letter-spacing: 0.04em;
+  font-size: 0.58rem;
+  letter-spacing: 0.03em;
   line-height: 1;
   text-transform: uppercase;
-  color: #f0eee6;
+  color: rgba(233, 225, 196, 0.55);
+  background: transparent;
+  padding: 2px 7px;
+  border: 1px solid rgba(233, 225, 196, 0.3);
+  pointer-events: none;
 }
 
 /* hide the quick-add / choose overlay button -- supreme cards are just tap-through */

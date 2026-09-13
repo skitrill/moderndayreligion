@@ -690,10 +690,6 @@
                  stay stuck at opacity:0, .mdr-reveal-ready with nothing
                  observing them */
               if (typeof window.__mdrRevealInit === 'function') window.__mdrRevealInit();
-              /* same deal for the "new" tag -- freshly-swapped-in cards
-                 need their own tag built, the same way the initial page
-                 load's cards did */
-              if (typeof window.__mdrNewTagsInit === 'function') window.__mdrNewTagsInit();
 
               currentUrl = url;
               if (!fromPopstate) {
@@ -1171,66 +1167,6 @@
     if (D.readyState !== 'loading') initReveal();
     D.addEventListener('DOMContentLoaded', initReveal);
     window.addEventListener('load', initReveal);
-  })();
-
-  /* =====================================================================
-     Homepage grid "new" tag -- WEBRACK's own right-trapezoid shape,
-     turned upside down, as a real element with an SVG-stroked border
-     (see mdr-custom.css .mdr-new-tag*) instead of a CSS ::after +
-     clip-path -- a plain border can't be drawn along the clipped
-     diagonal edge at all, so this uses the same SVG-stroke technique
-     WEBRACK's own border uses, which draws a uniform line around every
-     edge, diagonal included. Exposed as window.__mdrNewTagsInit so the
-     WEBRACK in-place collection switch can call it again for freshly-
-     swapped-in cards, same pattern as the reveal-animation hook above.
-     ===================================================================== */
-  (function () {
-    if (window.__mdrNewTags) return;
-    window.__mdrNewTags = true;
-    var D = document;
-    var W = 72, H = 27, CUT = 12;
-    var svgNS = 'http://www.w3.org/2000/svg';
-
-    function buildTag(isLeft) {
-      var tag = D.createElement('div');
-      tag.className = 'mdr-new-tag ' + (isLeft ? 'mdr-new-tag--left' : 'mdr-new-tag--right');
-      var svg = D.createElementNS(svgNS, 'svg');
-      svg.setAttribute('class', 'mdr-new-tag__border');
-      svg.setAttribute('viewBox', '0 0 ' + W + ' ' + H);
-      svg.setAttribute('preserveAspectRatio', 'none');
-      svg.setAttribute('aria-hidden', 'true');
-      /* left column: full top + full RIGHT (the attaching edge, on the
-         grid line), diagonal from top-left down to a point CUT px short
-         of the right edge. Right column: mirrored -- full LEFT attaches,
-         diagonal from top-right down to CUT px short of the left edge. */
-      var points = isLeft
-        ? '0,0 ' + W + ',0 ' + W + ',' + H + ' ' + (W - CUT) + ',' + H
-        : '0,0 ' + W + ',0 ' + CUT + ',' + H + ' 0,' + H;
-      svg.innerHTML = '<polygon points="' + points + '" fill="none" ' +
-        'stroke="rgba(233,225,196,0.85)" stroke-width="1"/>';
-      var label = D.createElement('span');
-      label.className = 'mdr-new-tag__label';
-      label.textContent = 'New';
-      tag.appendChild(svg);
-      tag.appendChild(label);
-      return tag;
-    }
-
-    function build() {
-      var sec = D.querySelector('[id$="__product_list_fa6P9H"]');
-      if (!sec) return;
-      var items = sec.querySelectorAll('.resource-list__item');
-      for (var i = 0; i < items.length; i++) {
-        var gal = items[i].querySelector('.card-gallery');
-        if (!gal || gal.querySelector('.mdr-new-tag')) continue;
-        gal.appendChild(buildTag(i % 2 === 0));
-      }
-    }
-    window.__mdrNewTagsInit = build;
-
-    if (D.readyState !== 'loading') build();
-    D.addEventListener('DOMContentLoaded', build);
-    window.addEventListener('load', build);
   })();
 
   /* =====================================================================
