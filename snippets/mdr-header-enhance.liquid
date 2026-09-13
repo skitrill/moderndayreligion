@@ -632,6 +632,19 @@
         var startX = 0;
         var startY = 0;
         var startScroll = 0;
+        /* momentum: dragging used to set scrollLeft 1:1 with the finger
+           and then just stop dead the instant it lifted -- the "hard
+           scroll". Tracking recent velocity and gliding it out with
+           decay on release makes a flick actually carry on, fast and
+           seamless, the way native momentum scrolling feels. */
+        var momentumRAF = null;
+        var lastX = 0;
+        var lastT = 0;
+        var velocity = 0;
+
+        function stopMomentum() {
+          if (momentumRAF) { cancelAnimationFrame(momentumRAF); momentumRAF = null; }
+        }
 
         function point(e) {
           var t = (e.changedTouches && e.changedTouches.length) ? e.changedTouches[0]
@@ -640,12 +653,16 @@
           return { x: t.clientX, y: t.clientY };
         }
         function dragStart(e) {
+          stopMomentum();
           dragging = true;
           moved = false;
           var p = point(e);
           startX = p.x;
           startY = p.y;
           startScroll = list.scrollLeft;
+          lastX = p.x;
+          lastT = e.timeStamp || Date.now();
+          velocity = 0;
         }
         function dragMove(e) {
           if (!dragging) return;
@@ -668,26 +685,60 @@
                 startScroll += loopWidth;
               }
             }
+            var now = e.timeStamp || Date.now();
+            var dt = now - lastT;
+            /* skip near-zero dt samples (event coalescing jitter) so one
+               noisy sample can't dominate the release velocity */
+            if (dt > 4) {
+              velocity = (p.x - lastX) / dt;
+              lastX = p.x;
+              lastT = now;
+            }
           }
         }
         function dragEnd(e) {
           if (!dragging) return;
           dragging = false;
-          if (moved) return;
-          /* a plain tap, not a drag -- pass it through to the real element */
-          var p = point(e);
-          touchzone.style.pointerEvents = 'none';
-          var real = D.elementFromPoint(p.x, p.y);
-          touchzone.style.pointerEvents = '';
-          var target = real && real.closest ? real.closest('a, button') : null;
-          if (target) {
-            target.click();
-          } else {
-            /* tapped empty space in the bar -- the touchzone covers the
-               whole permanent bottom-line strip (full page width), not
-               just the button box, so a tap anywhere in it still opens
-               / closes WEBRACK instead of doing nothing */
-            toggle.click();
+          if (!moved) {
+            /* a plain tap, not a drag -- pass it through to the real element */
+            var p = point(e);
+            touchzone.style.pointerEvents = 'none';
+            var real = D.elementFromPoint(p.x, p.y);
+            touchzone.style.pointerEvents = '';
+            var target = real && real.closest ? real.closest('a, button') : null;
+            if (target) {
+              target.click();
+            } else {
+              /* tapped empty space in the bar -- the touchzone covers the
+                 whole permanent bottom-line strip (full page width), not
+                 just the button box, so a tap anywhere in it still opens
+                 / closes WEBRACK instead of doing nothing */
+              toggle.click();
+            }
+            return;
+          }
+          /* release: glide the list on at the flick's own speed, decaying
+             to a stop instead of snapping to zero */
+          var v = -velocity;
+          var lastTs = null;
+          function glide(ts) {
+            if (lastTs === null) lastTs = ts;
+            var dt = ts - lastTs;
+            lastTs = ts;
+            list.scrollLeft += v * dt;
+            if (loopWidth > 0) {
+              if (list.scrollLeft >= loopWidth) list.scrollLeft -= loopWidth;
+              else if (list.scrollLeft < 0) list.scrollLeft += loopWidth;
+            }
+            v *= Math.pow(0.94, dt / 16.67);
+            if (Math.abs(v) > 0.01) {
+              momentumRAF = requestAnimationFrame(glide);
+            } else {
+              momentumRAF = null;
+            }
+          }
+          if (Math.abs(v) > 0.03) {
+            momentumRAF = requestAnimationFrame(glide);
           }
         }
 

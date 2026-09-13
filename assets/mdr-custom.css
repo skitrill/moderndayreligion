@@ -1651,7 +1651,10 @@ main[data-template='index']
   max-width: 132px;
   overflow: hidden;
   white-space: nowrap;
-  padding: 2px 0;
+  /* taller ribbon -- more room for an easy tap, and a taller track for
+     dragging/scrolling the list once open (was 2px, barely more than the
+     text's own height) */
+  padding: 9px 0;
   border: 0;
   background: transparent;
   color: #e9e1c4;
@@ -1697,12 +1700,18 @@ main[data-template='index']
 
 .mdr-allbar::before {
   inset: 0;
-  background: rgba(233, 225, 196, 0.16);
+  /* a touch stronger than the interior fill below (0.16) so the outline
+     stays visible against it instead of the two blending into one flat
+     tint with no visible edge */
+  background: rgba(233, 225, 196, 0.3);
 }
 
 .mdr-allbar::after {
   inset: 1px;
-  background: #000;
+  /* the ribbon's own interior now carries the same tint as the list panel
+     next to it once open -- "give the ribbon that bg too" -- instead of
+     just showing the page's black through a thin outline */
+  background: rgba(233, 225, 196, 0.16);
   clip-path: polygon(0 0, calc(100% - 19px) 0, 100% 100%, 0 100%);
 }
 
@@ -1807,7 +1816,12 @@ main[data-template='index']
 /* the collection list rides out horizontally when the pill opens */
 .mdr-allbar__list {
   display: flex;
-  align-items: center;
+  /* stretch, not center -- each title fills the ribbon's full height (own
+     rule below) instead of being a thin text-height target centered in
+     the row, and the row's own background then covers that same full
+     height instead of only wrapping a thin band around the labels */
+  align-items: stretch;
+  align-self: stretch;
   gap: 14px;
   /* zero basis while closed -- flex:auto still claimed its own content
      width (invisibly, opacity:0) even without growing, which is why the
@@ -1840,6 +1854,8 @@ main[data-template='index']
 }
 
 .mdr-allbar__list a {
+  display: inline-flex;
+  align-items: center;
   color: #e9e1c4;
   text-decoration: none;
   opacity: 0.72;
