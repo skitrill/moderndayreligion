@@ -885,6 +885,28 @@ body {
   justify-content: center !important;
 }
 
+/* Sold out: Shopify hides the whole Buy-with-Shop column outright
+   (accelerated-checkout-block goes display:none) once the selected
+   variant is unavailable, but ADD TO CART's own wrapper keeps its normal
+   34% max-width -- "Sold out" was landing squeezed into that narrow
+   slice with the rest of the bar just empty black space where
+   Buy-with-Shop used to be. Let that wrapper claim the full row instead,
+   and turn the button red/off-white so "sold out" reads as a clear state
+   change, not a dimmed version of the normal button. */
+.product-form-buttons > span:has(> .add-to-cart-button[disabled]),
+.product-form-buttons > span:has(> .product-form__submit[disabled]) {
+  max-width: 100% !important;
+  flex: 1 1 auto !important;
+}
+
+.product-form-buttons .add-to-cart-button:not(.sticky-add-to-cart__button)[disabled] {
+  width: 100% !important;
+  background: #8b1e1e !important;
+  color: #f0eee6 !important;
+  opacity: 1 !important;
+  border: 0 !important;
+}
+
 /* ADD TO CART: text only, drop the cart icon */
 .add-to-cart-button .add-to-cart-icon,
 .add-to-cart-button > .svg-wrapper,
