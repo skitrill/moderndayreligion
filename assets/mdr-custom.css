@@ -828,7 +828,23 @@ body {
 .product-form-buttons .shopify-payment-button {
   max-width: none !important;
   margin: 0 !important;
+  /* stays visible (not hidden) -- "more payment options" is an
+     absolutely-positioned sibling of shop-pay-wallet-button (both live
+     inside <shopify-accelerated-checkout>, this element's own child) that
+     intentionally sits just below this box; overflow:hidden here would
+     clip it away entirely, not just the wallet button's own overflow. */
   overflow: visible !important;
+}
+
+/* the wallet button itself, not its container -- clips its own rendered
+   content to its own box. In the page's default zoomed mode (CSS
+   zoom:1.1, see the [+/- page] control), this cross-origin embedded
+   button's real paint doesn't always re-rasterize in lockstep with the
+   zoomed CSS grid around it, so it can bleed a sliver past its own
+   border on that side -- overflow:hidden here contains it without
+   touching the more-options link next to it. */
+.product-form-buttons shop-pay-wallet-button {
+  overflow: hidden !important;
 }
 
 /* The Shop Pay wallet button renders at 41px -- match everything to it.
