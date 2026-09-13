@@ -1863,11 +1863,14 @@ main[data-template='index']
   opacity: 1;
   /* the list gets its own dark-brown tape-pattern panel once open (the
      same material as the ribbon's own closed-state fill and the product
-     cards), framed by the same top/bottom border as the button next to it
-     -- while the ribbon itself goes plain black once open (see
-     .mdr-allbar.is-open::after), so the two stay visually distinct */
+     cards), framed by the same top border (same 2px weight) as the button
+     next to it -- so the two read as one continuous bordered strip, not
+     the button's own border just stopping at its right edge -- while the
+     ribbon itself goes plain black once open (see .mdr-allbar.is-open::
+     after), so the two stay visually distinct */
   background-color: #000;
   background-image: var(--mdr-tape);
+  border-top: 2px solid rgba(233, 225, 196, 0.3);
 }
 
 .mdr-allbar__list a {
@@ -1879,6 +1882,12 @@ main[data-template='index']
   white-space: nowrap;
   flex: 0 0 auto;
   transition: opacity 0.15s ease;
+  /* without this, mobile browsers flash their own default grey/blue tap
+     overlay across the whole tappable box -- border included -- on every
+     tap. Only the label opacity above should respond to a tap, not the
+     box around it, so it's switched off here same as everywhere else this
+     bar is tappable (.mdr-allbar, .mdr-allbar__toggle). */
+  -webkit-tap-highlight-color: transparent;
 }
 
 .mdr-allbar__list a:hover,
@@ -1900,6 +1909,11 @@ main[data-template='index']
   z-index: 2;
   touch-action: pan-x;
   cursor: grab;
+  /* this sits on top of the ribbon's own border on every tap (it covers
+     the whole wrap) -- without this, that's what was actually flashing
+     the default tap overlay across the border/box instead of just the
+     label text dimming/brightening underneath */
+  -webkit-tap-highlight-color: transparent;
 }
 
 /* supreme-style: the grid just flows down the page, no inner scroll window */
@@ -1917,9 +1931,11 @@ main[data-template='index'] [id$='__product_list_fa6P9H'] .mdr-scrollfade {
 }
 
 /* WEBRACK title tap: swipe the grid out left, swap it, swipe the new one in
-   from the right -- all without leaving the page. */
+   from the right -- all without leaving the page. Quick/"zappy" -- was
+   0.22s out / 0.34s in, sped up to read as a fast flick instead of a
+   smooth glide (matching JS timings in mdr-header-enhance.liquid). */
 main[data-template='index'] [id$='__product_list_fa6P9H'] .mdr-scrollfade .resource-list--grid {
-  transition: transform 0.22s cubic-bezier(0.4, 0, 1, 1), opacity 0.22s ease;
+  transition: transform 0.11s cubic-bezier(0.4, 0, 1, 1), opacity 0.11s ease;
 }
 
 main[data-template='index']
@@ -1934,7 +1950,7 @@ main[data-template='index']
   [id$='__product_list_fa6P9H']
   .mdr-scrollfade.mdr-swiping-in
   .resource-list--grid {
-  animation: mdr-swipe-in 0.34s cubic-bezier(0.16, 1, 0.3, 1);
+  animation: mdr-swipe-in 0.2s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 @keyframes mdr-swipe-in {

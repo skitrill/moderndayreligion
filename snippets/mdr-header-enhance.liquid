@@ -600,10 +600,14 @@
         var grid = sec && findGrid(sec);
         if (!frame || !grid) { location.href = url; return; }
 
-        if (url === currentUrl) { setOpen(false); return; }
+        if (url === currentUrl) return;
 
         window.__mdrSwitching = true;
-        setOpen(false);
+        /* stays open and the tapped title highlights right away (instead
+           of closing the instant it's tapped) -- the grid swaps in place
+           behind it, so the pill you just picked is still visibly "on"
+           while its products land */
+        markCurrent(url);
 
         fetch(url, { credentials: 'same-origin' })
           .then(function (res) {
@@ -618,7 +622,9 @@
 
             var REDUCE = window.matchMedia &&
               window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-            var outMs = REDUCE ? 0 : 220;
+            /* quick/"zappy" -- was 220ms out, 340ms in; a snappier flick
+               reads faster and more responsive than a smooth glide */
+            var outMs = REDUCE ? 0 : 110;
 
             frame.classList.add('mdr-swiping-out');
 
@@ -648,7 +654,7 @@
               setTimeout(function () {
                 frame.classList.remove('mdr-swiping-in');
                 window.__mdrSwitching = false;
-              }, REDUCE ? 0 : 340);
+              }, REDUCE ? 0 : 200);
             }, outMs);
           })
           .catch(function () {
