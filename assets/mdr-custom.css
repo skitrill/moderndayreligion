@@ -790,10 +790,35 @@ body {
 .product-form__buttons {
   display: flex !important;
   flex-direction: row !important;
-  flex-wrap: nowrap !important;
+  /* wrap, not nowrap -- the quantity/limit error text (.product-form-text__
+     error, e.g. "This item has a maximum of X, Y already in your cart")
+     is a direct child of this SAME flex row with no width rule of its
+     own, so it was rendering inline next to the buttons in the nowrap
+     row, squeezing/overlapping everything else instead of taking its own
+     line -- the "layout glitch" when an item's already in the cart.
+     Normal state still renders as one line: quantity + ADD TO CART +
+     Buy-with-Shop's own flex-basis math already sums to the full row
+     width, so wrap never triggers unless the error text is also present. */
+  flex-wrap: wrap !important;
   align-items: stretch !important;
   gap: 0 !important;
   border: 1px solid rgba(233, 225, 196, 0.3) !important;
+}
+
+/* the error text itself, when shown -- its own full-width line above the
+   buttons (order:-1 -- it's normally last in DOM, after Buy-with-Shop),
+   with a divider closing it off from the row below, all still inside the
+   same outer border as the rest of the buy box. */
+.product-form-buttons .product-form-text__error:not(.hidden) {
+  flex: 1 1 100% !important;
+  width: 100% !important;
+  box-sizing: border-box !important;
+  order: -1;
+  padding: 6px 8px !important;
+  border-bottom: 1px solid rgba(233, 225, 196, 0.3) !important;
+  color: #f0eee6 !important;
+  font-size: 0.62rem !important;
+  line-height: 1.3 !important;
 }
 
 .product-form-buttons > .quantity-selector-wrapper,
