@@ -2336,9 +2336,12 @@ main[data-template='index'] [id$='__product_list_fa6P9H'] .card-gallery::after {
      "new" itself needs to actually read at a glance */
   color: #f0eee6;
   background: transparent;
-  padding: 6px 16px 10px;
+  /* a touch wider (was 16px sides) -- the shape's own narrow width (its
+     content is only ~4 letters) was leaving "new" cramped right up
+     against the diagonal taper */
+  padding: 6px 18px 11px;
   white-space: nowrap;
-  border-top: 1px solid rgba(233, 225, 196, 0.3);
+  border-top: 1.5px solid rgba(233, 225, 196, 0.4);
   pointer-events: none;
 }
 
@@ -2348,7 +2351,7 @@ main[data-template='index'] [id$='__product_list_fa6P9H'] .card-gallery::after {
 main[data-template='index'] [id$='__product_list_fa6P9H'] .resource-list__item:nth-child(odd) .card-gallery::after {
   right: 0;
   left: auto;
-  border-left: 1px solid rgba(233, 225, 196, 0.3);
+  border-left: 1.5px solid rgba(233, 225, 196, 0.4);
   clip-path: polygon(0 0, 100% 0, calc(100% - 12px) 100%, 0 100%);
 }
 
@@ -2356,7 +2359,7 @@ main[data-template='index'] [id$='__product_list_fa6P9H'] .resource-list__item:n
    the left tapers inward going down */
 main[data-template='index'] [id$='__product_list_fa6P9H'] .resource-list__item:nth-child(even) .card-gallery::after {
   left: 0;
-  border-right: 1px solid rgba(233, 225, 196, 0.3);
+  border-right: 1.5px solid rgba(233, 225, 196, 0.4);
   clip-path: polygon(0 0, 100% 0, 100% 100%, 12px 100%);
 }
 
