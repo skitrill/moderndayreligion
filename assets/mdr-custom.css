@@ -876,10 +876,16 @@ body {
   display: none !important;
 }
 
-/* ---- "Buy with Shop" -> #040061 --------------------------------------
-   The Shop Pay wallet button paints inside a closed shadow root; a
-   `mix-blend-mode` overlay repaints the purple toward #040061 while the
-   white logo + text stay white. */
+/* ---- "Buy with Shop" -> the same cream as the bar's own border
+   (rgba(233,225,196,...)) instead of navy, so the button reads as part
+   of the same bordered bar instead of a clashing brand-purple block. The
+   Shop Pay wallet button paints inside a closed shadow root; a
+   `mix-blend-mode` overlay recolours it directly rather than trying to
+   restyle anything inside. "color" blend keeps the ORIGINAL button's own
+   luminosity (so white text/logo on top stays legible) and only retints
+   its hue toward cream -- the result is a dark, warm cream tone, not a
+   bright flat fill, which is what the actual border reads as too (a
+   translucent cream over black, not a solid light block). */
 .shopify-payment-button {
   position: relative;
   isolation: isolate;
@@ -893,7 +899,7 @@ body {
      the button's own real rendered height whatever that turns out to be,
      rather than a guessed px value that silently goes stale (and stops
      lining up with the actual button) the moment that height changes */
-  background: #040061;
+  background: #e9e1c4;
   mix-blend-mode: color;
   pointer-events: none;
   z-index: 4;
@@ -903,7 +909,7 @@ body {
   content: "";
   position: absolute;
   inset: 0;
-  background: #02003a;
+  background: #cbb98a;
   mix-blend-mode: overlay;
   pointer-events: none;
   z-index: 5;
@@ -934,10 +940,11 @@ button.link,
    TO CART + Buy-with-Shop combined -- a JS position sync in
    mdr-header-enhance.liquid handles the actual width/position, since this
    link lives several levels deep inside Buy-with-Shop's own narrow flex
-   column and CSS alone can't break it out past that ancestor's width),
-   styled the same bordered/transparent way as the quantity box right
-   above it instead of a solid fill colour of its own -- one consistent
-   look across the whole buy-box instead of introducing a new material. */
+   column and CSS alone can't break it out past that ancestor's width). A
+   soft cream tint fill now, echoing the recoloured Buy-with-Shop button
+   directly above it, instead of staying plain transparent -- the two read
+   as one cream-toned unit instead of the accent colour stopping dead at
+   the bar's bottom edge. */
 .shopify-payment-button__more-options,
 [class*='more-options'] {
   display: block !important;
@@ -945,7 +952,7 @@ button.link,
   box-sizing: border-box;
   text-align: center;
   padding: 6px 8px !important;
-  background: transparent !important;
+  background: rgba(233, 225, 196, 0.1) !important;
   border: 1px solid rgba(233, 225, 196, 0.3) !important;
   border-top: 0 !important;
   color: rgba(233, 225, 196, 0.85) !important;
