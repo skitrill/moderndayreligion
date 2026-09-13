@@ -749,26 +749,34 @@
             return;
           }
           /* release: glide the list on at the flick's own speed, decaying
-             to a stop instead of snapping to zero */
-          var v = -velocity;
-          var lastTs = null;
-          function glide(ts) {
-            if (lastTs === null) lastTs = ts;
-            var dt = ts - lastTs;
-            lastTs = ts;
-            list.scrollLeft += v * dt;
-            if (loopWidth > 0) {
-              if (list.scrollLeft >= loopWidth) list.scrollLeft -= loopWidth;
-              else if (list.scrollLeft < 0) list.scrollLeft += loopWidth;
+             to a stop instead of snapping to zero. Computes an ABSOLUTE
+             target position analytically each frame (exponential-decay
+             kinematics, position = start + v0/k*(1-e^-kt)) rather than
+             repeatedly reading scrollLeft back and adding to it -- reading
+             it back turned out to be unreliable here (something about this
+             list's scroll-snap intercepts/rewrites relative `+=` writes
+             made outside a live pointer-event handler, silently discarding
+             them), so this keeps its own running position instead. */
+          var v0 = -velocity;
+          if (Math.abs(v0) > 0.03) {
+            var startPos = list.scrollLeft;
+            var startTs = null;
+            var k = 0.004;
+            function glide(ts) {
+              if (startTs === null) startTs = ts;
+              var t = ts - startTs;
+              var pos = startPos + (v0 / k) * (1 - Math.exp(-k * t));
+              if (loopWidth > 0) {
+                pos = ((pos % loopWidth) + loopWidth) % loopWidth;
+              }
+              list.scrollLeft = pos;
+              var currentV = v0 * Math.exp(-k * t);
+              if (Math.abs(currentV) > 0.015) {
+                momentumRAF = requestAnimationFrame(glide);
+              } else {
+                momentumRAF = null;
+              }
             }
-            v *= Math.pow(0.94, dt / 16.67);
-            if (Math.abs(v) > 0.01) {
-              momentumRAF = requestAnimationFrame(glide);
-            } else {
-              momentumRAF = null;
-            }
-          }
-          if (Math.abs(v) > 0.03) {
             momentumRAF = requestAnimationFrame(glide);
           }
         }
