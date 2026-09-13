@@ -2202,12 +2202,13 @@ main[data-template='index'] [id$='__product_list_fa6P9H'] .resource-list__item a
   -webkit-tap-highlight-color: transparent !important;
 }
 
-/* the image panel keeps OUR pattern -- black + faint hazard-tape */
+/* plain black image panel -- was black + a faint diagonal hazard-tape
+   pattern, dropped for a flat, cleaner look */
 main[data-template='index'] [id$='__product_list_fa6P9H'] .card-gallery,
 main[data-template='index'] [id$='__product_list_fa6P9H'] .product-media-container {
   position: relative;
   background-color: #000 !important;
-  background-image: var(--mdr-tape) !important;
+  background-image: none !important;
   border: 0 !important;
   border-radius: 0 !important;
   overflow: hidden;
@@ -2223,7 +2224,8 @@ main[data-template='index'] [id$='__product_list_fa6P9H'] .product-media-contain
 /* bigger product cutouts -- much less padding than before */
 main[data-template='index'] [id$='__product_list_fa6P9H'] .product-card .product-media__image,
 main[data-template='index'] [id$='__product_list_fa6P9H'] .product-card .product-media img {
-  filter: drop-shadow(0 0 11px rgba(122, 84, 52, 0.1)) !important;
+  /* the warm glow behind the cutout is gone -- flat now, no filter */
+  filter: none !important;
   mix-blend-mode: normal;
   object-fit: contain !important;
   padding: 3% !important;
@@ -2253,8 +2255,12 @@ main[data-template='index'] [id$='__product_list_fa6P9H'] .card-gallery::after {
   background: transparent;
   padding: 4px 16px;
   white-space: nowrap;
-  border-top: 1px solid rgba(233, 225, 196, 0.5);
-  border-bottom: 1px solid rgba(233, 225, 196, 0.5);
+  /* same colour/alpha as the grid's own divider lines
+     (.resource-list--grid background, rgba(233,225,196,0.14)) -- was a
+     brighter, unrelated 0.5, which is part of why the whole tag read as
+     an odd, disconnected extra element instead of belonging to the grid */
+  border-top: 1px solid rgba(233, 225, 196, 0.14);
+  border-bottom: 1px solid rgba(233, 225, 196, 0.14);
   pointer-events: none;
 }
 
@@ -2263,14 +2269,14 @@ main[data-template='index'] [id$='__product_list_fa6P9H'] .card-gallery::after {
 main[data-template='index'] [id$='__product_list_fa6P9H'] .resource-list__item:nth-child(odd) .card-gallery::after {
   right: 0;
   left: auto;
-  border-right: 1px solid rgba(233, 225, 196, 0.5);
+  border-right: 1px solid rgba(233, 225, 196, 0.14);
   clip-path: polygon(8px 0, 100% 0, 100% 100%, 8px 100%, 0 50%);
 }
 
 /* right column: mirrored -- flat edge on the left, point on the right */
 main[data-template='index'] [id$='__product_list_fa6P9H'] .resource-list__item:nth-child(even) .card-gallery::after {
   left: 0;
-  border-left: 1px solid rgba(233, 225, 196, 0.5);
+  border-left: 1px solid rgba(233, 225, 196, 0.14);
   clip-path: polygon(0 0, calc(100% - 8px) 0, 100% 50%, calc(100% - 8px) 100%, 0 100%);
 }
 
