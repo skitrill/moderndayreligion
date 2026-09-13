@@ -707,12 +707,24 @@ body {
 
 /* ---- PDP "Recommended" section: hairline grid lines between the cards,
    the same background-bleeds-through-the-gap trick as the homepage grid,
-   plus half-size cards (8 cols desktop / 4 on phone, was 4 / 2). -------- */
+   plus half-size cards (8 cols desktop / 4 on phone, was 4 / 2). Framed
+   top and bottom the same way the homepage grid is (border-top above the
+   heading, border-bottom closing the grid) -- without these the section
+   had internal card-to-card hairlines but no outer edge, reading as
+   incomplete/missing lines right where the section starts and ends. ---- */
+.product-recommendations {
+  border-top: 1px solid rgba(233, 225, 196, 0.14) !important;
+}
+
 .product-recommendations .resource-list,
 .product-recommendations .resource-list--grid {
   column-gap: 2px !important;
   row-gap: 2px !important;
   background: rgba(233, 225, 196, 0.14) !important;
+}
+
+.product-recommendations .resource-list--grid {
+  border-bottom: 1px solid rgba(233, 225, 196, 0.14) !important;
 }
 
 .product-recommendations .resource-list__item {
@@ -765,14 +777,31 @@ body {
 }
 
 /* ---- Product form: quantity + ADD TO CART + Buy-with-Shop on one line,
-   same height / same shape, every viewport. ------------------------------- */
+   same height / same shape, every viewport -- and now one unified bar
+   (shared outer border, no gaps between segments) instead of three
+   separate floating boxes. -------------------------------------------- */
 .product-form-buttons,
 .product-form__buttons {
   display: flex !important;
   flex-direction: row !important;
   flex-wrap: nowrap !important;
   align-items: stretch !important;
-  gap: 6px !important;
+  gap: 0 !important;
+  border: 1px solid rgba(233, 225, 196, 0.3) !important;
+}
+
+/* the quantity box already draws its own border (matches the size-picker
+   look); dropped in favour of the shared outer border above, plus one
+   divider on its trailing edge so the seam between it and ADD TO CART
+   still reads, now that there's no gap to imply it */
+.quantity-selector {
+  border: 0 !important;
+  border-right: 1px solid rgba(233, 225, 196, 0.3) !important;
+}
+
+/* same divider, ADD TO CART's trailing edge against Buy-with-Shop */
+.product-form-buttons > span:not(.product-form-text__error) {
+  border-right: 1px solid rgba(233, 225, 196, 0.3) !important;
 }
 
 .product-form-buttons > .quantity-selector-wrapper,
@@ -826,9 +855,11 @@ body {
 .product-form-buttons .shopify-payment-button,
 .product-form-buttons shop-pay-wallet-button,
 .product-form-buttons .shopify-payment-button__button {
-  height: 41px !important;
-  min-height: 41px !important;
-  max-height: 41px !important;
+  /* shrunk from 41px -- "reduce" to a slimmer, more compact bar now that
+     the three segments read as one piece instead of three */
+  height: 34px !important;
+  min-height: 34px !important;
+  max-height: 34px !important;
   border-radius: 0 !important;
   align-self: flex-start !important;
 }
@@ -860,7 +891,7 @@ body {
   position: absolute;
   inset-inline: 0;
   top: 0;
-  height: 42px;
+  height: 35px;
   background: #040061;
   mix-blend-mode: color;
   pointer-events: none;
@@ -872,7 +903,7 @@ body {
   position: absolute;
   inset-inline: 0;
   top: 0;
-  height: 42px;
+  height: 35px;
   background: #02003a;
   mix-blend-mode: overlay;
   pointer-events: none;
@@ -900,13 +931,23 @@ button.link,
   border-bottom: 0 !important;
 }
 
-/* "more payment options" -> mango-yellow highlight pill */
+/* "more payment options" -> a plain ash-gray bar, full width of the
+   Buy-with-Shop column it sits under (was a small mango-yellow pill,
+   clashing with the rest of the now-unified button bar right above it).
+   Actual full width of the WHOLE bar (matching quantity + ADD TO CART +
+   Buy-with-Shop combined) needs a JS position sync -- see
+   mdr-header-enhance.liquid -- since this link lives several levels deep
+   inside Buy-with-Shop's own narrow flex column and CSS alone can't break
+   it out past that ancestor's width. */
 .shopify-payment-button__more-options,
 [class*='more-options'] {
-  display: inline-block !important;
-  padding: 2px 8px !important;
-  background: #fdb92e !important;
-  color: #1a1a1a !important;
+  display: block !important;
+  width: 100%;
+  box-sizing: border-box;
+  text-align: center;
+  padding: 6px 8px !important;
+  background: #3a362f !important;
+  color: #f0eee6 !important;
   border-radius: 0 !important;
 }
 
@@ -2081,18 +2122,30 @@ main[data-template='index'] [id$='__product_list_fa6P9H'] .product-card .product
   padding: 3% !important;
 }
 
-/* ghost "new" tag, top-right of the image panel */
-main[data-template='index'] [id$='__product_list_fa6P9H'] .card-gallery::after {
+/* "new" tag -- a bordered pill, top-left of the image panel. Was plain
+   ghost text, top-right, and only ever showed on the homepage grid; now a
+   small boxed tag (matching the reference sketch) on EVERY product card
+   image, anywhere .card-gallery renders -- collections, product-page
+   recommendations, search, home -- not just the homepage. Left, not
+   right: the native Sold Out / Sale badge (settings.badge_position) sits
+   top-right, so the two can never land on top of each other on the same
+   card. .card-gallery is already position:relative site-wide (Horizon's
+   own badge system relies on the same thing), so no extra setup needed
+   for the absolute position to anchor correctly. */
+.card-gallery::after {
   content: 'new';
   position: absolute;
-  top: 6px;
-  right: 8px;
+  top: 8px;
+  left: 8px;
   z-index: 2;
   font: inherit;
   font-size: 0.6rem;
   letter-spacing: 0.02em;
   text-transform: uppercase !important;
-  color: rgba(233, 225, 196, 0.45);
+  color: rgba(233, 225, 196, 0.72);
+  border: 1px solid rgba(233, 225, 196, 0.3);
+  padding: 1px 6px;
+  line-height: 1.4;
   pointer-events: none;
 }
 

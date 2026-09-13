@@ -941,6 +941,68 @@
   })();
 
   /* =====================================================================
+     "More payment options" -- stretched to the FULL width of the unified
+     quantity/ADD TO CART/Buy-with-Shop bar, not just the Buy-with-Shop
+     column it lives in. CSS alone can't do this: the link sits several
+     levels inside .shopify-payment-button (a `position:relative` ancestor
+     needed for its own colour-overlay ::before/::after), so an
+     absolutely-positioned child of it is confined to ITS width, not the
+     whole bar's -- a plain `width:100%` or negative margin can't reach
+     past that ancestor boundary. Measuring both rects directly and
+     setting left/width in real pixels sidesteps it. The Shop Pay wallet
+     button is a lazy-loaded web component, so this can't just run once
+     at load -- a MutationObserver on its container catches the link
+     whenever that component actually finishes rendering it in.
+     ===================================================================== */
+  (function () {
+    if (window.__mdrMoreOptions) return;
+    window.__mdrMoreOptions = true;
+    var D = document;
+
+    function sync() {
+      var bars = D.querySelectorAll('.product-form-buttons, .product-form__buttons');
+      for (var i = 0; i < bars.length; i++) {
+        var bar = bars[i];
+        var link = bar.querySelector('.shopify-payment-button__more-options, [class*="more-options"]');
+        if (!link) continue;
+        var anchor = link.offsetParent;
+        if (!anchor) continue;
+        var barRect = bar.getBoundingClientRect();
+        var anchorRect = anchor.getBoundingClientRect();
+        link.style.position = 'absolute';
+        link.style.top = '100%';
+        link.style.left = (barRect.left - anchorRect.left) + 'px';
+        link.style.width = barRect.width + 'px';
+      }
+    }
+
+    /* attaches an observer to any bar found that doesn't have one yet --
+       called from sync() itself too, not just at startup, so a bar that
+       doesn't exist until later (or whose Buy-with-Shop wallet component
+       hasn't rendered its content yet) still gets covered whenever it
+       finally shows up */
+    function watch() {
+      if (!window.MutationObserver) return;
+      var bars = D.querySelectorAll('.product-form-buttons, .product-form__buttons');
+      for (var i = 0; i < bars.length; i++) {
+        if (bars[i].__mdrMoreOptionsWatched) continue;
+        bars[i].__mdrMoreOptionsWatched = true;
+        new MutationObserver(sync).observe(bars[i], { childList: true, subtree: true });
+      }
+    }
+
+    if (D.readyState !== 'loading') { sync(); watch(); }
+    D.addEventListener('DOMContentLoaded', function () { sync(); watch(); });
+    window.addEventListener('load', function () { sync(); watch(); });
+    window.addEventListener('resize', sync, { passive: true });
+
+    if (window.MutationObserver) {
+      var m = D.querySelector('main') || D.body;
+      new MutationObserver(watch).observe(m, { childList: true, subtree: true });
+    }
+  })();
+
+  /* =====================================================================
      Mobile page sizing -- [+ page] / [- page]. Sits at the bottom of
      the page, on the "Refund policy" line (not floating -- only visible
      once you scroll to the footer). The 20%-enlarged size is now the
