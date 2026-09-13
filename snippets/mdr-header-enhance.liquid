@@ -1049,6 +1049,66 @@
   })();
 
   /* =====================================================================
+     Quantity/limit error text (.product-form-text__error, e.g. "This item
+     has a maximum of X, Y already in your cart") floats above the button
+     bar via absolute positioning (see mdr-custom.css) rather than
+     sharing the bar's own flex row -- reserves nothing in flow by
+     itself, so margin-top on the bar makes real room for it whenever it
+     actually shows, using the same "measure it, reserve the space"
+     approach as the more-payment-options fix above.
+     ===================================================================== */
+  (function () {
+    if (window.__mdrFormError) return;
+    window.__mdrFormError = true;
+    var D = document;
+
+    function sync() {
+      /* same zoom double-scaling concern as the more-payment-options fix
+         above: offsetHeight is already a zoomed (visual) measurement, and
+         writing it straight into an inline style inside that same zoomed
+         context would get it re-scaled a second time on render. */
+      var zoomFactor = parseFloat(D.body.style.zoom) || 1;
+      var errors = D.querySelectorAll('.product-form-buttons .product-form-text__error, .product-form__buttons .product-form-text__error');
+      for (var i = 0; i < errors.length; i++) {
+        var err = errors[i];
+        var bar = err.closest('.product-form-buttons, .product-form__buttons');
+        if (!bar) continue;
+        if (err.classList.contains('hidden') || !err.textContent.trim()) {
+          bar.style.marginTop = '';
+          continue;
+        }
+        bar.style.marginTop = ((err.offsetHeight / zoomFactor) + 8) + 'px';
+      }
+    }
+
+    function watch() {
+      if (!window.MutationObserver) return;
+      var bars = D.querySelectorAll('.product-form-buttons, .product-form__buttons');
+      for (var i = 0; i < bars.length; i++) {
+        if (bars[i].__mdrFormErrorWatched) continue;
+        bars[i].__mdrFormErrorWatched = true;
+        new MutationObserver(sync).observe(bars[i], {
+          attributes: true,
+          attributeFilter: ['class'],
+          subtree: true,
+          childList: true,
+          characterData: true
+        });
+      }
+    }
+
+    if (D.readyState !== 'loading') { sync(); watch(); }
+    D.addEventListener('DOMContentLoaded', function () { sync(); watch(); });
+    window.addEventListener('load', function () { sync(); watch(); });
+    window.addEventListener('resize', sync, { passive: true });
+
+    if (window.MutationObserver) {
+      var m2 = D.querySelector('main') || D.body;
+      new MutationObserver(watch).observe(m2, { childList: true, subtree: true });
+    }
+  })();
+
+  /* =====================================================================
      Mobile page sizing -- [+ page] / [- page]. Sits at the bottom of
      the page, on the "Refund policy" line (not floating -- only visible
      once you scroll to the footer). The 20%-enlarged size is now the

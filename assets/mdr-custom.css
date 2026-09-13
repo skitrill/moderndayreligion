@@ -790,32 +790,42 @@ body {
 .product-form__buttons {
   display: flex !important;
   flex-direction: row !important;
-  /* wrap, not nowrap -- the quantity/limit error text (.product-form-text__
-     error, e.g. "This item has a maximum of X, Y already in your cart")
-     is a direct child of this SAME flex row with no width rule of its
-     own, so it was rendering inline next to the buttons in the nowrap
-     row, squeezing/overlapping everything else instead of taking its own
-     line -- the "layout glitch" when an item's already in the cart.
-     Normal state still renders as one line: quantity + ADD TO CART +
-     Buy-with-Shop's own flex-basis math already sums to the full row
-     width, so wrap never triggers unless the error text is also present. */
-  flex-wrap: wrap !important;
+  flex-wrap: nowrap !important;
   align-items: stretch !important;
   gap: 0 !important;
   border: 1px solid rgba(233, 225, 196, 0.3) !important;
+  /* anchor for the quantity/limit error message below -- position:
+     relative, not a layout change, so this doesn't disturb the row's own
+     sizing */
+  position: relative;
 }
 
-/* the error text itself, when shown -- its own full-width line above the
-   buttons (order:-1 -- it's normally last in DOM, after Buy-with-Shop),
-   with a divider closing it off from the row below, all still inside the
-   same outer border as the rest of the buy box. */
+/* the quantity/limit error text (.product-form-text__error, e.g. "This
+   item has a maximum of X, Y already in your cart") is a direct child of
+   this SAME flex row with no width rule of its own -- it was rendering
+   INLINE next to the buttons in the row, squeezing/overlapping
+   everything else instead of getting its own line, which is the "layout
+   glitch" when an item's already in the cart. flex-wrap:wrap was tried
+   first, but the three buttons' widths don't sum to EXACTLY 100% (one's
+   a fixed px, one's a %, one flex-grows to fill the rest) -- close enough
+   that they normally fit one line, but wrap treats any sub-pixel
+   overflow as a reason to wrap, and Buy-with-Shop was landing on a THIRD
+   line by itself instead of two clean rows. Pulling the message out of
+   the flex flow entirely with absolute positioning sidesteps that -- it
+   floats above the button row (its own bordered strip) without
+   participating in that row's own width math at all. margin-top on the
+   row itself (mdr-header-enhance.liquid) reserves real space above it so
+   the floated message doesn't overlap whatever precedes the buy box. */
 .product-form-buttons .product-form-text__error:not(.hidden) {
-  flex: 1 1 100% !important;
-  width: 100% !important;
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 100%;
+  margin-bottom: 8px;
   box-sizing: border-box !important;
-  order: -1;
   padding: 6px 8px !important;
-  border-bottom: 1px solid rgba(233, 225, 196, 0.3) !important;
+  border: 1px solid rgba(233, 225, 196, 0.3) !important;
+  background: #000;
   color: #f0eee6 !important;
   font-size: 0.62rem !important;
   line-height: 1.3 !important;
