@@ -2326,6 +2326,13 @@ main[data-template='index'] [id$='__product_list_fa6P9H'] .card-gallery::after {
   top: 0;
   transform: translateY(-50%);
   z-index: 3;
+  /* flex-centered, not just symmetric padding -- guarantees "new" sits
+     dead-centre both ways inside the box regardless of any future
+     padding/size tweak, rather than relying on the numbers happening to
+     match up */
+  display: flex;
+  align-items: center;
+  justify-content: center;
   font: inherit;
   font-size: 0.62rem;
   font-weight: 700;
@@ -2338,8 +2345,8 @@ main[data-template='index'] [id$='__product_list_fa6P9H'] .card-gallery::after {
   background: transparent;
   /* a touch wider (was 16px sides) -- the shape's own narrow width (its
      content is only ~4 letters) was leaving "new" cramped right up
-     against the diagonal taper */
-  padding: 6px 18px 11px;
+     against the diagonal taper. Even top/bottom now too (was 6px/11px). */
+  padding: 9px 18px;
   white-space: nowrap;
   border-top: 1.5px solid rgba(233, 225, 196, 0.4);
   pointer-events: none;
