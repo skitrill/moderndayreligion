@@ -2306,68 +2306,24 @@ main[data-template='index'] [id$='__product_list_fa6P9H'] .product-card .product
   padding: 3% !important;
 }
 
-/* "new" tag -- the WEBRACK button's own silhouette (full top + full outer
-   side, one corner cut diagonally down to a short inner edge) turned
-   upside down: WEBRACK cuts its TOP-outer corner down to its bottom-inner
-   corner, so flipped, this cuts the BOTTOM-inner corner instead, leaving
-   the top fully flat and square. Left-column and right-column cards
-   mirror each other and both anchor their inner edge exactly on the
-   shared grid line -- since the top corner is the one left square/
-   uncut on both, the two tags' top corners land on the exact same point,
-   reading as one shape merging at the grid intersection and then
-   splitting apart into two tapered points below it, not two tags
-   floating independently. Border-only (no background), on the two full
-   straight edges (top, outer side) -- clip-path clips a border same as
-   it clips a fill, so there's no way to draw one following the diagonal
-   itself; left as open ink there rather than faked with a second layer. */
+/* ghost "new" tag -- back to the plain default: no shape, no border, no
+   fill, just quiet ghost text top-right of the image panel, homepage
+   grid only. Several shapes were tried here (bordered box, flag-on-a-
+   stem, hexagon on the grid line, WEBRACK-upside-down merged at the
+   corner) -- back to raw/default rather than keep iterating on a shape
+   that isn't landing. */
 main[data-template='index'] [id$='__product_list_fa6P9H'] .card-gallery::after {
   content: 'new';
   position: absolute;
-  top: 0;
-  transform: translateY(-50%);
-  z-index: 3;
-  /* flex-centered, not just symmetric padding -- guarantees "new" sits
-     dead-centre both ways inside the box regardless of any future
-     padding/size tweak, rather than relying on the numbers happening to
-     match up */
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  top: 6px;
+  right: 8px;
+  z-index: 2;
   font: inherit;
-  font-size: 0.62rem;
-  font-weight: 700;
-  letter-spacing: 0.04em;
-  line-height: 1;
+  font-size: 0.6rem;
+  letter-spacing: 0.02em;
   text-transform: uppercase !important;
-  /* bright, full-strength text -- the frame is a hairline, but the word
-     "new" itself needs to actually read at a glance */
-  color: #f0eee6;
-  background: transparent;
-  /* a touch wider (was 16px sides) -- the shape's own narrow width (its
-     content is only ~4 letters) was leaving "new" cramped right up
-     against the diagonal taper. Even top/bottom now too (was 6px/11px). */
-  padding: 9px 18px;
-  white-space: nowrap;
-  border-top: 1.5px solid rgba(233, 225, 196, 0.4);
+  color: rgba(233, 225, 196, 0.45);
   pointer-events: none;
-}
-
-/* left column: full outer edge on the LEFT; inner edge (facing the
-   shared line, on the right) is square at the top and tapers inward
-   going down */
-main[data-template='index'] [id$='__product_list_fa6P9H'] .resource-list__item:nth-child(odd) .card-gallery::after {
-  right: 0;
-  left: auto;
-  border-left: 1.5px solid rgba(233, 225, 196, 0.4);
-  clip-path: polygon(0 0, 100% 0, calc(100% - 12px) 100%, 0 100%);
-}
-
-/* right column: mirrored -- full outer edge on the RIGHT, inner edge on
-   the left tapers inward going down */
-main[data-template='index'] [id$='__product_list_fa6P9H'] .resource-list__item:nth-child(even) .card-gallery::after {
-  left: 0;
-  border-right: 1.5px solid rgba(233, 225, 196, 0.4);
-  clip-path: polygon(0 0, 100% 0, 100% 100%, 12px 100%);
 }
 
 /* hide the quick-add / choose overlay button -- supreme cards are just tap-through */
