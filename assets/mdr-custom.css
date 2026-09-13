@@ -1843,7 +1843,12 @@ main[data-template='index']
   overflow-x: auto;
   overflow-y: hidden;
   overscroll-behavior-x: contain;
-  scroll-snap-type: x proximity;
+  /* scroll-snap-type used to live here, but it kept correcting scrollLeft
+     back to the nearest item mid-glide -- fighting the momentum/inertia
+     animation on release (drag alone got away with it since each write
+     lands inside a live pointer-event handler; the detached
+     requestAnimationFrame glide doesn't, and snap kept winning that race,
+     which read as the momentum just not working / "hard scroll" */
   -webkit-overflow-scrolling: touch;
   scrollbar-width: none;
   -ms-overflow-style: none;
@@ -1875,7 +1880,6 @@ main[data-template='index']
   opacity: 0.72;
   white-space: nowrap;
   flex: 0 0 auto;
-  scroll-snap-align: start;
   transition: opacity 0.15s ease;
 }
 
