@@ -386,16 +386,46 @@
 
       var list = D.createElement('div');
       list.className = 'mdr-allbar__list';
-      /* endless scroll: once past a full copy's width, silently snap back
+      /* endless scroll: once past one full set's width, silently snap back
          by that same width -- pixel-identical, so it reads as the last
          title pulling the first one back into view rather than a jump.
          Declared here (build()'s own scope) so both the wheel handler and
          the drag handler below can read/adjust it via closure. */
       var loopWidth = 0;
-      function measureLoop() {
-        loopWidth = realCount > 1 ? list.scrollWidth / 2 : 0;
-      }
       var realCount = 0;
+
+      function appendCopy() {
+        for (var j = 0; j < realItems.length; j++) {
+          var b = D.createElement('a');
+          b.href = realItems[j].u;
+          b.textContent = realItems[j].t;
+          b.setAttribute('aria-hidden', 'true');
+          b.tabIndex = -1;
+          list.appendChild(b);
+        }
+      }
+
+      /* With only ONE duplicate (2 copies total), a short list on a wide
+         viewport could reach its native max-scroll (scrollWidth -
+         clientWidth) before ever reaching the wrap threshold (one set's
+         width) -- the browser silently clamps scrollLeft there and it can
+         never climb any further, "freezing" all scrolling (including
+         momentum) well short of the loop point. Keep adding copies until
+         there's comfortably more native scroll room than one set is wide,
+         so the threshold is always reachable regardless of catalog size
+         or viewport width. */
+      function measureLoop() {
+        if (realCount <= 1) { loopWidth = 0; return; }
+        var guard = 0;
+        var copies = list.children.length / realCount;
+        while (list.scrollWidth - list.clientWidth < list.scrollWidth / copies && guard < 8) {
+          appendCopy();
+          copies = list.children.length / realCount;
+          guard++;
+        }
+        loopWidth = list.scrollWidth / copies;
+      }
+
       if (isHome) {
         var items = [{ t: 'All', u: '/collections/all' }].concat(data);
         var realItems = [];
@@ -411,16 +441,9 @@
           realItems.push(items[i]);
         }
         realCount = realItems.length;
-        /* a second, identical copy right after the first -- aria-hidden
-           and unfocusable since it's a visual duplicate, not new content */
-        for (var j = 0; j < realItems.length; j++) {
-          var b = D.createElement('a');
-          b.href = realItems[j].u;
-          b.textContent = realItems[j].t;
-          b.setAttribute('aria-hidden', 'true');
-          b.tabIndex = -1;
-          list.appendChild(b);
-        }
+        /* one duplicate to start -- measureLoop below adds more if this
+           viewport needs them */
+        appendCopy();
         measureLoop();
         window.addEventListener('resize', measureLoop, { passive: true });
         window.addEventListener('load', measureLoop);
