@@ -777,9 +777,13 @@ body {
 }
 
 /* ---- Product form: quantity + ADD TO CART + Buy-with-Shop on one line,
-   same height / same shape, every viewport -- and now one unified bar
-   (shared outer border, no gaps between segments) instead of three
-   separate floating boxes. -------------------------------------------- */
+   same height / same shape, every viewport -- no gap between segments, no
+   outer border wrapping all three -- only the quantity box's own border
+   (its normal look, see .quantity-selector above), which now sits flush
+   against ADD TO CART with nothing between them, reading as one seam
+   rather than a separate floating box. ADD TO CART and Buy-with-Shop
+   carry no border of their own -- their solid fills (cream / navy) are
+   what reads as "attached" next to quantity, not a drawn line. -------- */
 .product-form-buttons,
 .product-form__buttons {
   display: flex !important;
@@ -787,15 +791,6 @@ body {
   flex-wrap: nowrap !important;
   align-items: stretch !important;
   gap: 0 !important;
-  border: 1px solid rgba(233, 225, 196, 0.3) !important;
-}
-
-/* the quantity box already draws its own border (matches the size-picker
-   look); dropped entirely in favour of the shared outer border above --
-   no internal dividers either, so the three segments read as one solid
-   rectangle (colour changes between them, not a seam/line) */
-.quantity-selector {
-  border: 0 !important;
 }
 
 .product-form-buttons > .quantity-selector-wrapper,
@@ -932,14 +927,14 @@ button.link,
   border-bottom: 0 !important;
 }
 
-/* "more payment options" -> a plain ash-gray bar, full width of the
-   Buy-with-Shop column it sits under (was a small mango-yellow pill,
-   clashing with the rest of the now-unified button bar right above it).
-   Actual full width of the WHOLE bar (matching quantity + ADD TO CART +
-   Buy-with-Shop combined) needs a JS position sync -- see
-   mdr-header-enhance.liquid -- since this link lives several levels deep
-   inside Buy-with-Shop's own narrow flex column and CSS alone can't break
-   it out past that ancestor's width. */
+/* "more payment options" -> full width of the whole bar (quantity + ADD
+   TO CART + Buy-with-Shop combined -- a JS position sync in
+   mdr-header-enhance.liquid handles the actual width/position, since this
+   link lives several levels deep inside Buy-with-Shop's own narrow flex
+   column and CSS alone can't break it out past that ancestor's width),
+   styled the same bordered/transparent way as the quantity box right
+   above it instead of a solid fill colour of its own -- one consistent
+   look across the whole buy-box instead of introducing a new material. */
 .shopify-payment-button__more-options,
 [class*='more-options'] {
   display: block !important;
@@ -947,8 +942,10 @@ button.link,
   box-sizing: border-box;
   text-align: center;
   padding: 6px 8px !important;
-  background: #3a362f !important;
-  color: #f0eee6 !important;
+  background: transparent !important;
+  border: 1px solid rgba(233, 225, 196, 0.3) !important;
+  border-top: 0 !important;
+  color: rgba(233, 225, 196, 0.85) !important;
   border-radius: 0 !important;
 }
 
@@ -2123,45 +2120,34 @@ main[data-template='index'] [id$='__product_list_fa6P9H'] .product-card .product
   padding: 3% !important;
 }
 
-/* "new" tag -- a small flag hanging off a stem/branch, top-left of the
-   image panel: a thin vertical line (::before) dropping down from the
-   very corner, with the bordered tag (::after) hanging off its bottom
-   end. Was plain ghost text, top-right, and only ever showed on the
-   homepage grid; now on EVERY product card image, anywhere .card-gallery
-   renders -- collections, product-page recommendations, search, home --
-   not just the homepage. Left, not right: the native Sold Out / Sale
-   badge (settings.badge_position) sits top-right, so the two can never
-   land on top of each other on the same card. .card-gallery is already
-   position:relative site-wide (Horizon's own badge system relies on the
-   same thing), so no extra setup needed for the absolute position to
-   anchor correctly. */
-.card-gallery::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 16px;
-  width: 1px;
-  height: 18px;
-  background: rgba(233, 225, 196, 0.35);
-  z-index: 1;
-  pointer-events: none;
-}
-
+/* "new" tag -- the WEBRACK ribbon's own flag shape (flat edge + one
+   corner cut on a diagonal), turned upside down: flat along the TOP
+   (where it "attaches" to the image's corner) and tapering to a point at
+   the BOTTOM instead of WEBRACK's flat-left/cut-top-right. A stem+box
+   combination was tried here before and read as a stick figure with its
+   arms out, not a hanging tag -- this is one clip-path silhouette, no
+   separate stem element. On EVERY product card image, anywhere
+   .card-gallery renders -- collections, product-page recommendations,
+   search, home -- not just the homepage. Left, not right: the native
+   Sold Out / Sale badge (settings.badge_position) sits top-right, so the
+   two can never land on top of each other on the same card. */
 .card-gallery::after {
   content: 'new';
   position: absolute;
-  top: 16px;
-  left: 16px;
+  top: 0;
+  left: 14px;
   z-index: 2;
   font: inherit;
   font-size: 0.6rem;
   letter-spacing: 0.02em;
   text-transform: uppercase !important;
-  color: rgba(233, 225, 196, 0.72);
-  border: 1px solid rgba(233, 225, 196, 0.3);
-  padding: 1px 6px;
-  line-height: 1.4;
+  color: rgba(233, 225, 196, 0.85);
   background: #000;
+  padding: 3px 9px 6px;
+  /* flat top edge (0 0 -> 100% 0), short bottom edge cut 6px in from the
+     right (100%-6px 100%), diagonal closing it back up to the top-right
+     corner (100% 0) -- WEBRACK's own cut mirrored top-to-bottom */
+  clip-path: polygon(0 0, 100% 0, 100% 55%, calc(100% - 6px) 100%, 0 100%);
   pointer-events: none;
 }
 
