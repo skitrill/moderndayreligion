@@ -358,6 +358,26 @@
       var bar = D.createElement('div');
       bar.className = 'mdr-allbar' + (isHome ? '' : ' mdr-allbar--back');
 
+      /* the outline as a real SVG stroke instead of a second inset
+         clip-path layer -- an SVG stroke is uniform width at any angle
+         by construction, unlike the old two-layer clip-path trick, whose
+         flat +1px inset on the cut corner wasn't actually perpendicular
+         to the diagonal and tapered along its length (the "spear" look).
+         The path stops at the bottom-right corner rather than closing
+         back along the bottom edge -- the wrap's own permanent
+         border-bottom already draws that line (see .mdr-allbar-wrap in
+         mdr-custom.css), so drawing a second one here was the "double
+         line" complaint. Fixed 95x33 viewBox matches the button's own
+         fixed closed-state size 1:1. */
+      var borderSvg = D.createElementNS('http://www.w3.org/2000/svg', 'svg');
+      borderSvg.setAttribute('class', 'mdr-allbar__border');
+      borderSvg.setAttribute('viewBox', '0 0 95 33');
+      borderSvg.setAttribute('preserveAspectRatio', 'none');
+      borderSvg.setAttribute('aria-hidden', 'true');
+      borderSvg.innerHTML =
+        '<path d="M0 33 L0 0 L77 0 L95 33" fill="none" ' +
+        'stroke="rgba(233,225,196,0.3)" stroke-width="1"/>';
+
       /* WEBRACK: a clean double-chevron, not the raw "»" glyph. RETURN
          gets a single chevron instead -- the two read as distinct icons,
          not the same mark flipped, matching the reference. */
@@ -457,6 +477,7 @@
         window.addEventListener('load', measureLoop);
       }
 
+      bar.appendChild(borderSvg);
       bar.appendChild(toggle);
       bar.appendChild(list);
       wrap.appendChild(bar);

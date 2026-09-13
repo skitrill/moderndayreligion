@@ -1698,47 +1698,34 @@ main[data-template='index']
 
 /* WEBRACK and RETURN share one ribbon/flag-tail shape: a plain rectangle
    with the top-right corner cut on a diagonal down to the bottom-right
-   corner. Built as ONE clipped shape (not a straight-line border plus a
-   separately rotated diagonal line) -- a rotated 1px line doesn't
-   anti-alias cleanly and read as a fuzzy, uneven stroke next to the crisp
-   straight edges, which was the "not uniform... overflow" look. clip-path
-   on a filled shape renders as one crisp outline instead, angled edge
-   included. The classic two-layer trick: ::before is the full silhouette
-   in the hairline colour, ::after sits 1px inset in the page's own black,
-   punching the middle out and leaving a uniform ~1px outline that follows
-   the cut corner all the way round. The button's own bottom edge (part of
-   this shape, at the full width) sits flush on the wrap's permanent
-   border-bottom (see .mdr-allbar-wrap, padding-bottom removed) so the two
-   read as one seamless line, with the wrap's line continuing on past the
-   button's own right edge out to the far end on its own. */
+   corner. The fill is one clipped polygon directly on .mdr-allbar itself
+   (dark-brown tape pattern, same as the product cards). The outline is a
+   separate SVG stroke (.mdr-allbar__border, markup built in
+   mdr-header-enhance.liquid) instead of a second inset clip-path layer --
+   that two-layer trick offset the inner cut by a flat +1px versus the
+   outer cut's 18px, which is NOT the same as insetting 1px perpendicular
+   to the diagonal (the two cut lines had different slopes and so weren't
+   parallel), so the "border" between them tapered along the diagonal's
+   length instead of staying a uniform width -- the "spear" look. It also
+   inset on all four sides including the bottom, drawing a second ~1px
+   line right next to the wrap's own permanent border-bottom below --
+   the "double line" on the menu bar. An SVG stroke has neither problem:
+   it's uniform width at any angle, and its path (in the markup) stops at
+   the bottom-right corner instead of closing back along the bottom edge,
+   leaving that line to the wrap alone. */
 .mdr-allbar {
   clip-path: polygon(0 0, calc(100% - 18px) 0, 100% 100%, 0 100%);
-}
-
-.mdr-allbar::before,
-.mdr-allbar::after {
-  content: '';
-  position: absolute;
-  z-index: -1;
-  clip-path: inherit;
-}
-
-.mdr-allbar::before {
-  inset: 0;
-  /* a touch stronger than the interior fill below (0.16) so the outline
-     stays visible against it instead of the two blending into one flat
-     tint with no visible edge */
-  background: rgba(233, 225, 196, 0.3);
-}
-
-.mdr-allbar::after {
-  inset: 1px;
-  /* the ribbon's own interior, closed, carries the same dark-brown tape
-     pattern as the product cards -- "give the ribbon that bg too" --
-     instead of just showing the page's black through a thin outline */
   background-color: #000;
   background-image: var(--mdr-tape);
-  clip-path: polygon(0 0, calc(100% - 19px) 0, 100% 100%, 0 100%);
+}
+
+.mdr-allbar__border {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  display: block;
+  pointer-events: none;
 }
 
 .mdr-allbar.is-open {
@@ -1750,18 +1737,19 @@ main[data-template='index']
      shape left to close diagonally (top and bottom already match), a
      plain rectangle reads correctly here */
   clip-path: none;
-}
-
-.mdr-allbar.is-open::before,
-.mdr-allbar.is-open::after {
-  clip-path: none;
-}
-
-/* once open, the ribbon side goes plain black -- only the list panel next
-   to it keeps the tape pattern (see .mdr-allbar__list) -- so the two
-   sections read as visually distinct again instead of one flat surface */
-.mdr-allbar.is-open::after {
+  /* once open, the ribbon side goes plain black -- only the list panel next
+     to it keeps the tape pattern (see .mdr-allbar__list) -- so the two
+     sections read as visually distinct again instead of one flat surface */
   background-image: none;
+  /* squared off now, so plain straight borders instead of the SVG's
+     diagonal-cut outline -- still skipping the bottom edge, which stays
+     the wrap's job alone */
+  border-top: 1px solid rgba(233, 225, 196, 0.3);
+  border-left: 1px solid rgba(233, 225, 196, 0.3);
+}
+
+.mdr-allbar.is-open .mdr-allbar__border {
+  display: none;
 }
 
 .mdr-allbar__toggle {
