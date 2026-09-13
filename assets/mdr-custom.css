@@ -791,17 +791,11 @@ body {
 }
 
 /* the quantity box already draws its own border (matches the size-picker
-   look); dropped in favour of the shared outer border above, plus one
-   divider on its trailing edge so the seam between it and ADD TO CART
-   still reads, now that there's no gap to imply it */
+   look); dropped entirely in favour of the shared outer border above --
+   no internal dividers either, so the three segments read as one solid
+   rectangle (colour changes between them, not a seam/line) */
 .quantity-selector {
   border: 0 !important;
-  border-right: 1px solid rgba(233, 225, 196, 0.3) !important;
-}
-
-/* same divider, ADD TO CART's trailing edge against Buy-with-Shop */
-.product-form-buttons > span:not(.product-form-text__error) {
-  border-right: 1px solid rgba(233, 225, 196, 0.3) !important;
 }
 
 .product-form-buttons > .quantity-selector-wrapper,
@@ -855,11 +849,18 @@ body {
 .product-form-buttons .shopify-payment-button,
 .product-form-buttons shop-pay-wallet-button,
 .product-form-buttons .shopify-payment-button__button {
-  /* shrunk from 41px -- "reduce" to a slimmer, more compact bar now that
-     the three segments read as one piece instead of three */
-  height: 34px !important;
-  min-height: 34px !important;
-  max-height: 34px !important;
+  /* 41px, not shrunk -- the Shop Pay wallet button is a Shopify-controlled
+     embedded component; forcing its CSS height down to 34px didn't
+     actually shrink its real interactive content (still rendered at its
+     natural ~41px internally, just visually clipped by the shorter box),
+     which both broke tapping it (the real button and "more payment
+     options" -- absolutely positioned right under the SHRUNK 34px --
+     ended up overlapping) and drew a stray line through that text (the
+     button's own overflowing bottom edge). 41px is its actual natural
+     size -- match to it, don't fight it. */
+  height: 41px !important;
+  min-height: 41px !important;
+  max-height: 41px !important;
   border-radius: 0 !important;
   align-self: flex-start !important;
 }
@@ -889,9 +890,11 @@ body {
 .shopify-payment-button::before {
   content: "";
   position: absolute;
-  inset-inline: 0;
-  top: 0;
-  height: 35px;
+  inset: 0;
+  /* bottom:0 (via inset) instead of a hardcoded height -- covers exactly
+     the button's own real rendered height whatever that turns out to be,
+     rather than a guessed px value that silently goes stale (and stops
+     lining up with the actual button) the moment that height changes */
   background: #040061;
   mix-blend-mode: color;
   pointer-events: none;
@@ -901,9 +904,7 @@ body {
 .shopify-payment-button::after {
   content: "";
   position: absolute;
-  inset-inline: 0;
-  top: 0;
-  height: 35px;
+  inset: 0;
   background: #02003a;
   mix-blend-mode: overlay;
   pointer-events: none;
