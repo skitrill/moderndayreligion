@@ -2229,22 +2229,30 @@ main[data-template='index'] [id$='__product_list_fa6P9H'] .product-card .product
   padding: 3% !important;
 }
 
-/* ghost "new" tag, top-right of the image panel -- reverted back to the
-   original plain-text version (no border/fill/shape, homepage grid
-   only). Several reshapes were tried here this session (bordered box,
-   flag-on-a-stem, upside-down ribbon) and none of them landed -- back to
-   default until there's a clearer direction on what it should look like. */
+/* "new" tag -- a hexagonal ribbon/banner tag (flat top and bottom, both
+   left and right edges cut to a point), straddling the card's own top
+   border, centred over the image rather than tucked in a corner. Several
+   other shapes were tried here (bordered box, flag-on-a-stem, upside-down
+   ribbon) before landing on this one, from an actual reference image. */
 main[data-template='index'] [id$='__product_list_fa6P9H'] .card-gallery::after {
   content: 'new';
   position: absolute;
-  top: 6px;
-  right: 8px;
-  z-index: 2;
+  top: 0;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 3;
   font: inherit;
-  font-size: 0.6rem;
-  letter-spacing: 0.02em;
+  font-size: 0.58rem;
+  letter-spacing: 0.04em;
+  line-height: 1;
   text-transform: uppercase !important;
-  color: rgba(233, 225, 196, 0.45);
+  color: #1a1a1a;
+  background: #e9e1c4;
+  padding: 4px 16px;
+  white-space: nowrap;
+  /* flat top/bottom (inset 8px), point on the left and right at
+     vertical-centre -- a two-sided ribbon-tag hexagon */
+  clip-path: polygon(8px 0, calc(100% - 8px) 0, 100% 50%, calc(100% - 8px) 100%, 8px 100%, 0 50%);
   pointer-events: none;
 }
 
