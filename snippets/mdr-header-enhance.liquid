@@ -565,7 +565,27 @@
            native click that bubbles here too, and it must NOT count as
            "outside" or every tap would open-then-immediately-close it */
         if (e.target.classList && e.target.classList.contains('mdr-allbar__touchzone')) return;
-        if (!bar.contains(e.target)) setOpen(false);
+        if (bar.contains(e.target)) return;
+        /* tapping a real link elsewhere on the page while WEBRACK is open
+           (a product card, a footer link) navigates away immediately --
+           the normal animated collapse never gets time to actually play
+           before the page unloads, so it was landing mid-animation right
+           as the page's own view-transition snapshot gets taken, which
+           read as a stutter/lag "bug" during the transition out. Nothing
+           to animate toward if the page is leaving anyway -- close
+           instantly instead of racing the navigation. */
+        var navLink = e.target.closest && e.target.closest('a[href]');
+        if (navLink) {
+          bar.classList.add('mdr-allbar--instant');
+          setOpen(false);
+          requestAnimationFrame(function () {
+            requestAnimationFrame(function () {
+              bar.classList.remove('mdr-allbar--instant');
+            });
+          });
+          return;
+        }
+        setOpen(false);
       });
 
       /* ---------------------------------------------------------------

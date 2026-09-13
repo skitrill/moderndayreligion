@@ -1746,7 +1746,20 @@ main[data-template='index']
      now (below), not here -- this rule also draws the border (SVG) and
      the background fill, and a tap should only brighten the label, not
      the box around it */
-  transition: width 0.34s cubic-bezier(0.16, 1, 0.3, 1);
+  /* 0.26s, tightened from 0.34s -- snappier open/close, still using the
+     same ease-out curve so it settles smoothly rather than just stopping */
+  transition: width 0.26s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* set right before an instant close (tapping a real link elsewhere on the
+   page while open -- see mdr-header-enhance.liquid) and removed two
+   frames later: skips the width/opacity/chevron animations entirely so
+   collapsing doesn't race the page navigation and get caught mid-way
+   through by the browser's own view-transition snapshot. */
+.mdr-allbar--instant,
+.mdr-allbar--instant * {
+  transition: none !important;
+  animation: none !important;
 }
 
 /* WEBRACK and RETURN share one ribbon/flag-tail shape: a plain rectangle
