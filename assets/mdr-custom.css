@@ -2247,11 +2247,16 @@ main[data-template='index'] [id$='__product_list_fa6P9H'] .card-gallery::after {
   transform: translateY(-50%);
   z-index: 3;
   font: inherit;
-  font-size: 0.58rem;
+  font-size: 0.62rem;
+  font-weight: 700;
   letter-spacing: 0.04em;
   line-height: 1;
   text-transform: uppercase !important;
-  color: #e9e1c4;
+  /* bright, full-strength text -- the FRAME is what matches the grid's
+     own subtle 0.14 hairline below, but the word "new" itself needs to
+     actually read at a glance, not fade into the same hairline weight as
+     its own border */
+  color: #f0eee6;
   background: transparent;
   padding: 4px 16px;
   white-space: nowrap;
