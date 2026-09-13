@@ -777,13 +777,15 @@ body {
 }
 
 /* ---- Product form: quantity + ADD TO CART + Buy-with-Shop on one line,
-   same height / same shape, every viewport -- no gap between segments, no
-   outer border wrapping all three -- only the quantity box's own border
-   (its normal look, see .quantity-selector above), which now sits flush
-   against ADD TO CART with nothing between them, reading as one seam
-   rather than a separate floating box. ADD TO CART and Buy-with-Shop
-   carry no border of their own -- their solid fills (cream / navy) are
-   what reads as "attached" next to quantity, not a drawn line. -------- */
+   same height / same shape, every viewport -- no gap between segments,
+   AND a shared outer border wrapping the whole group. Border-only-on-
+   quantity (no outer border) was tried first, but with nothing drawn
+   around ADD TO CART / Buy-with-Shop's own outer edges, the group read as
+   "a bordered box next to two plain color blocks" rather than one
+   button -- the outer border here closes that outline all the way round
+   (it simply overlaps the quantity box's own border on the sides they
+   share), while quantity's own border is what still provides the one
+   internal divider, between it and ADD TO CART. */
 .product-form-buttons,
 .product-form__buttons {
   display: flex !important;
@@ -791,6 +793,7 @@ body {
   flex-wrap: nowrap !important;
   align-items: stretch !important;
   gap: 0 !important;
+  border: 1px solid rgba(233, 225, 196, 0.3) !important;
 }
 
 .product-form-buttons > .quantity-selector-wrapper,
@@ -2120,38 +2123,22 @@ main[data-template='index'] [id$='__product_list_fa6P9H'] .product-card .product
   padding: 3% !important;
 }
 
-/* "new" tag -- the WEBRACK ribbon's own flag shape (flat edge + one
-   corner cut on a diagonal), turned upside down: flat along the TOP
-   (where it "attaches" to the image's corner) and tapering to a point at
-   the BOTTOM instead of WEBRACK's flat-left/cut-top-right. A stem+box
-   combination was tried here before and read as a stick figure with its
-   arms out, not a hanging tag -- this is one clip-path silhouette, no
-   separate stem element. On EVERY product card image, anywhere
-   .card-gallery renders -- collections, product-page recommendations,
-   search, home -- not just the homepage. Left, not right: the native
-   Sold Out / Sale badge (settings.badge_position) sits top-right, so the
-   two can never land on top of each other on the same card. */
-.card-gallery::after {
+/* ghost "new" tag, top-right of the image panel -- reverted back to the
+   original plain-text version (no border/fill/shape, homepage grid
+   only). Several reshapes were tried here this session (bordered box,
+   flag-on-a-stem, upside-down ribbon) and none of them landed -- back to
+   default until there's a clearer direction on what it should look like. */
+main[data-template='index'] [id$='__product_list_fa6P9H'] .card-gallery::after {
   content: 'new';
   position: absolute;
-  top: 0;
-  left: 14px;
+  top: 6px;
+  right: 8px;
   z-index: 2;
   font: inherit;
   font-size: 0.6rem;
   letter-spacing: 0.02em;
   text-transform: uppercase !important;
-  /* solid cream fill + dark text -- same chip pairing as the open
-     WEBRACK chevron (.mdr-allbar__chev) -- a black fill on this dark
-     background made the ribbon SHAPE itself invisible, leaving just
-     floating text with no visible silhouette at all */
-  color: #1a1a1a;
-  background: #e9e1c4;
-  padding: 3px 9px 6px;
-  /* flat top edge (0 0 -> 100% 0), short bottom edge cut 6px in from the
-     right (100%-6px 100%), diagonal closing it back up to the top-right
-     corner (100% 0) -- WEBRACK's own cut mirrored top-to-bottom */
-  clip-path: polygon(0 0, 100% 0, 100% 55%, calc(100% - 6px) 100%, 0 100%);
+  color: rgba(233, 225, 196, 0.45);
   pointer-events: none;
 }
 

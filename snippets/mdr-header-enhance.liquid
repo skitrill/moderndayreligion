@@ -960,6 +960,8 @@
     var D = document;
 
     function sync() {
+      var GAP_ABOVE = 8;
+      var GAP_BELOW = 16;
       var bars = D.querySelectorAll('.product-form-buttons, .product-form__buttons');
       for (var i = 0; i < bars.length; i++) {
         var bar = bars[i];
@@ -970,9 +972,18 @@
         var barRect = bar.getBoundingClientRect();
         var anchorRect = anchor.getBoundingClientRect();
         link.style.position = 'absolute';
-        link.style.top = '100%';
+        link.style.top = 'calc(100% + ' + GAP_ABOVE + 'px)';
         link.style.left = (barRect.left - anchorRect.left) + 'px';
         link.style.width = barRect.width + 'px';
+        /* position:absolute takes the link out of normal document flow,
+           so nothing after it in the page reserves room for it -- the
+           next thing in flow (the footer, once "Recommended" was removed
+           below this) rendered right where the BAR's own flow ends,
+           overlapping/crowding the link hanging below. margin-bottom on
+           the bar itself pushes that flow down by exactly the link's own
+           height plus both gaps, closing that overlap and leaving real
+           breathing room on both sides of the link. */
+        bar.style.marginBottom = (GAP_ABOVE + link.offsetHeight + GAP_BELOW) + 'px';
       }
     }
 
