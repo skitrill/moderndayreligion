@@ -1863,14 +1863,15 @@ main[data-template='index']
   opacity: 1;
   /* the list gets its own dark-brown tape-pattern panel once open (the
      same material as the ribbon's own closed-state fill and the product
-     cards), framed by the same top border (same 2px weight) as the button
-     next to it -- so the two read as one continuous bordered strip, not
-     the button's own border just stopping at its right edge -- while the
-     ribbon itself goes plain black once open (see .mdr-allbar.is-open::
-     after), so the two stay visually distinct */
+     cards) -- while the ribbon itself goes plain black once open (see
+     .mdr-allbar.is-open::after), so the two stay visually distinct. No
+     border of its own -- the list is a CHILD of .mdr-allbar (not a
+     sibling), so .mdr-allbar.is-open's own top/left border above already
+     spans the full row, list included. A second border-top here used to
+     sit right on top of that one, a hair off from it, and read as a
+     double line. */
   background-color: #000;
   background-image: var(--mdr-tape);
-  border-top: 2px solid rgba(233, 225, 196, 0.3);
 }
 
 .mdr-allbar__list a {
@@ -1881,7 +1882,9 @@ main[data-template='index']
   opacity: 0.72;
   white-space: nowrap;
   flex: 0 0 auto;
-  transition: opacity 0.15s ease;
+  padding-inline: 0;
+  transition: opacity 0.15s ease, background-color 0.12s ease, color 0.12s ease,
+    padding-inline 0.12s ease;
   /* without this, mobile browsers flash their own default grey/blue tap
      overlay across the whole tappable box -- border included -- on every
      tap. Only the label opacity above should respond to a tap, not the
@@ -1890,9 +1893,20 @@ main[data-template='index']
   -webkit-tap-highlight-color: transparent;
 }
 
-.mdr-allbar__list a:hover,
+.mdr-allbar__list a:hover {
+  opacity: 1;
+}
+
+/* the selected title -- a solid bg fill, not just a brighter label, same
+   cream-chip treatment as the open chevron (.mdr-allbar__chev) -- so
+   "currently showing" reads as a filled swatch riding along the list
+   instead of one line of text looking slightly less dim than its
+   neighbours */
 .mdr-allbar__list a[aria-current='page'] {
   opacity: 1;
+  background-color: #e9e1c4;
+  color: #1a1a1a;
+  padding-inline: 8px;
 }
 
 /* Invisible drag-catcher covering the WHOLE wrap -- position:absolute takes
