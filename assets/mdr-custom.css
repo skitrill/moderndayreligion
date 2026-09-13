@@ -2319,8 +2319,12 @@ main[data-template='index'] [id$='__product_list_fa6P9H'] .product-card .product
    around all FOUR edges, diagonal included. */
 .mdr-new-tag {
   position: absolute;
+  /* sits flush at the card's own top edge, not straddling it -- .card-
+     gallery has overflow:hidden (it clips the product image to the
+     panel), so the earlier translateY(-50%) straddle was silently
+     clipping the whole top half of this tag, the part with the actual
+     flat top edge, leaving only a thin unreadable sliver visible */
   top: 0;
-  transform: translateY(-50%);
   z-index: 3;
   width: 72px;
   height: 27px;
