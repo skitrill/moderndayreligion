@@ -1106,14 +1106,20 @@ button.link,
   outline: 0;
 }
 
+/* was a near-black fill (#241206) with 28%-opacity text on top -- barely
+   legible against the page's own black, and didn't read as a button at
+   all. Same solid cream-fill/dark-text pairing as ADD TO CART and MORE
+   PAYMENT OPTIONS instead, so JOIN actually looks like a button and
+   matches the rest of the site. */
 .mdr-fnav__submit {
   flex: 0 0 auto;
   height: 100%;
   border: 0;
-  background: #241206;
-  color: rgb(var(--color-foreground-rgb) / 0.28);
+  background: #e9e1c4;
+  color: #1a1a1a;
   font-family: var(--font-accent--family, inherit);
   font-size: 0.52rem;
+  font-weight: 600;
   letter-spacing: 0.06em;
   text-transform: uppercase;
   padding: 0 7px;
@@ -1122,7 +1128,7 @@ button.link,
 }
 
 .mdr-fnav__submit:hover {
-  background: #180b03;
+  background: #f0eee6;
 }
 
 .mdr-fnav__msg {
