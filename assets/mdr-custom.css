@@ -2119,24 +2119,60 @@ main[data-template='index'] [id$='__product_list_fa6P9H'] .resource-list--grid {
    scrolls into view, home page AND after a WEBRACK in-place collection
    switch alike. If that JS never runs for some reason, .mdr-reveal-ready
    without .mdr-revealed would otherwise hide cards forever -- the
-   reduced-motion + no-JS fallback below guards against that. ------------ */
+   reduced-motion + no-JS fallback below guards against that.
+
+   A plain vertical ease read as flat/mechanical -- this adds a touch of
+   horizontal drift (left column drifts in from the left, right column
+   from the right, so the two sides read as converging inward rather than
+   both sliding the same direction) and a back-out curve with a slight
+   overshoot, so each card settles with a small bounce instead of just
+   stopping -- the "fluid and wavy" feel. ---------------------------------- */
 main[data-template='index'] [id$='__product_list_fa6P9H'] .resource-list__item.mdr-reveal-ready {
   opacity: 0;
-  transform: translateY(28px);
+  transform: translateY(34px);
 }
 
 main[data-template='index'] [id$='__product_list_fa6P9H'] .resource-list__item.mdr-revealed {
-  animation: mdr-reveal-up 0.5s ease both;
+  animation-duration: 0.7s;
+  animation-timing-function: cubic-bezier(0.22, 1, 0.36, 1);
+  animation-fill-mode: both;
 }
 
-@keyframes mdr-reveal-up {
+main[data-template='index'] [id$='__product_list_fa6P9H'] .resource-list__item:nth-child(odd).mdr-revealed {
+  animation-name: mdr-reveal-up-left;
+}
+
+main[data-template='index'] [id$='__product_list_fa6P9H'] .resource-list__item:nth-child(even).mdr-revealed {
+  animation-name: mdr-reveal-up-right;
+}
+
+@keyframes mdr-reveal-up-left {
   from {
     opacity: 0;
-    transform: translateY(28px);
+    transform: translate(-16px, 34px);
+  }
+  60% {
+    opacity: 1;
+    transform: translate(3px, -4px);
   }
   to {
     opacity: 1;
-    transform: translateY(0);
+    transform: translate(0, 0);
+  }
+}
+
+@keyframes mdr-reveal-up-right {
+  from {
+    opacity: 0;
+    transform: translate(16px, 34px);
+  }
+  60% {
+    opacity: 1;
+    transform: translate(-3px, -4px);
+  }
+  to {
+    opacity: 1;
+    transform: translate(0, 0);
   }
 }
 
@@ -2299,12 +2335,13 @@ main[data-template='index'] [id$='__product_list_fa6P9H'] .card-gallery::after {
   background: transparent;
   padding: 4px 16px;
   white-space: nowrap;
-  /* same colour/alpha as the grid's own divider lines
-     (.resource-list--grid background, rgba(233,225,196,0.14)) -- was a
-     brighter, unrelated 0.5, which is part of why the whole tag read as
-     an odd, disconnected extra element instead of belonging to the grid */
-  border-top: 1px solid rgba(233, 225, 196, 0.14);
-  border-bottom: 1px solid rgba(233, 225, 196, 0.14);
+  /* matched the grid's own divider lines exactly (0.14) last round, which
+     turned out too faint to read as an intentional shape -- 0.3, the same
+     weight the site's other functional borders use (quantity box,
+     buttons), still reads as a hairline next to the grid but is clearly
+     a deliberate outline instead of a rendering artifact */
+  border-top: 1px solid rgba(233, 225, 196, 0.3);
+  border-bottom: 1px solid rgba(233, 225, 196, 0.3);
   pointer-events: none;
 }
 
@@ -2313,14 +2350,14 @@ main[data-template='index'] [id$='__product_list_fa6P9H'] .card-gallery::after {
 main[data-template='index'] [id$='__product_list_fa6P9H'] .resource-list__item:nth-child(odd) .card-gallery::after {
   right: 0;
   left: auto;
-  border-right: 1px solid rgba(233, 225, 196, 0.14);
+  border-right: 1px solid rgba(233, 225, 196, 0.3);
   clip-path: polygon(8px 0, 100% 0, 100% 100%, 8px 100%, 0 50%);
 }
 
 /* right column: mirrored -- flat edge on the left, point on the right */
 main[data-template='index'] [id$='__product_list_fa6P9H'] .resource-list__item:nth-child(even) .card-gallery::after {
   left: 0;
-  border-left: 1px solid rgba(233, 225, 196, 0.14);
+  border-left: 1px solid rgba(233, 225, 196, 0.3);
   clip-path: polygon(0 0, calc(100% - 8px) 0, 100% 50%, calc(100% - 8px) 100%, 0 100%);
 }
 
