@@ -2229,31 +2229,49 @@ main[data-template='index'] [id$='__product_list_fa6P9H'] .product-card .product
   padding: 3% !important;
 }
 
-/* "new" tag -- a hexagonal ribbon/banner tag (flat top and bottom, both
-   left and right edges cut to a point), straddling the card's own top
-   border, centred over the image rather than tucked in a corner. Several
-   other shapes were tried here (bordered box, flag-on-a-stem, upside-down
-   ribbon) before landing on this one, from an actual reference image. */
+/* "new" tag -- a half-hexagon (cut hex), no fill, attached to the
+   vertical grid line between two cards: its flat edge sits flush on that
+   line, pointing outward into its own card. Left-column and right-column
+   cards mirror each other so the pair reads as one hexagon split by the
+   line, not two tags floating independently. Border-only (no
+   background), on the three straight edges (top, bottom, the flat
+   attached edge) -- clip-path clips a border same as it clips a fill, so
+   there's no way to draw one following the diagonal point itself; left
+   as open ink there rather than faked with a second layer. */
 main[data-template='index'] [id$='__product_list_fa6P9H'] .card-gallery::after {
   content: 'new';
   position: absolute;
   top: 0;
-  left: 50%;
-  transform: translate(-50%, -50%);
+  transform: translateY(-50%);
   z-index: 3;
   font: inherit;
   font-size: 0.58rem;
   letter-spacing: 0.04em;
   line-height: 1;
   text-transform: uppercase !important;
-  color: #1a1a1a;
-  background: #e9e1c4;
+  color: #e9e1c4;
+  background: transparent;
   padding: 4px 16px;
   white-space: nowrap;
-  /* flat top/bottom (inset 8px), point on the left and right at
-     vertical-centre -- a two-sided ribbon-tag hexagon */
-  clip-path: polygon(8px 0, calc(100% - 8px) 0, 100% 50%, calc(100% - 8px) 100%, 8px 100%, 0 50%);
+  border-top: 1px solid rgba(233, 225, 196, 0.5);
+  border-bottom: 1px solid rgba(233, 225, 196, 0.5);
   pointer-events: none;
+}
+
+/* left column: flat edge on the right (against the shared line), point
+   on the left */
+main[data-template='index'] [id$='__product_list_fa6P9H'] .resource-list__item:nth-child(odd) .card-gallery::after {
+  right: 0;
+  left: auto;
+  border-right: 1px solid rgba(233, 225, 196, 0.5);
+  clip-path: polygon(8px 0, 100% 0, 100% 100%, 8px 100%, 0 50%);
+}
+
+/* right column: mirrored -- flat edge on the left, point on the right */
+main[data-template='index'] [id$='__product_list_fa6P9H'] .resource-list__item:nth-child(even) .card-gallery::after {
+  left: 0;
+  border-left: 1px solid rgba(233, 225, 196, 0.5);
+  clip-path: polygon(0 0, calc(100% - 8px) 0, 100% 50%, calc(100% - 8px) 100%, 0 100%);
 }
 
 /* hide the quick-add / choose overlay button -- supreme cards are just tap-through */
