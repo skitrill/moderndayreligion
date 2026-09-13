@@ -1733,8 +1733,8 @@ main[data-template='index']
   /* squared off now, so plain straight borders instead of the SVG's
      diagonal-cut outline -- still skipping the bottom edge, which stays
      the wrap's job alone */
-  border-top: 1px solid rgba(233, 225, 196, 0.3);
-  border-left: 1px solid rgba(233, 225, 196, 0.3);
+  border-top: 2px solid rgba(233, 225, 196, 0.3);
+  border-left: 2px solid rgba(233, 225, 196, 0.3);
 }
 
 .mdr-allbar.is-open .mdr-allbar__border {
