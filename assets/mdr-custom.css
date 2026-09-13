@@ -1732,9 +1732,12 @@ main[data-template='index']
   background-image: none;
   /* squared off now, so plain straight borders instead of the SVG's
      diagonal-cut outline -- still skipping the bottom edge, which stays
-     the wrap's job alone */
-  border-top: 2px solid rgba(233, 225, 196, 0.3);
-  border-left: 2px solid rgba(233, 225, 196, 0.3);
+     the wrap's job alone. Thinner than the closed ribbon's 2px: at full
+     row width (button + the whole title list), 2px read as heavy across
+     that much length -- 1px keeps it a hairline the way the list itself
+     otherwise reads. */
+  border-top: 1px solid rgba(233, 225, 196, 0.3);
+  border-left: 1px solid rgba(233, 225, 196, 0.3);
 }
 
 .mdr-allbar.is-open .mdr-allbar__border {
