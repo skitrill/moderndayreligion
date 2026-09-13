@@ -1628,8 +1628,11 @@ main[data-template='index']
   top: calc(var(--header-height, 60px) - 1px);
   z-index: 15;
   margin: 0;
-  /* flush at the true left edge now, not lined up under the logo */
-  padding: 3px 0 11px 0;
+  /* flush at the true left edge now, not lined up under the logo. No
+     bottom padding either -- the button's own bottom edge now sits flush
+     against this border-bottom (see .mdr-allbar's clip-path shape below),
+     so the two read as one seamless line instead of two lines a gap apart */
+  padding: 3px 0 0 0;
   background: #000;
   /* permanent, full width -- "stretch the bottom... across thru to the
      cart end" -- unlike the button's own top border below, this one
@@ -1665,54 +1668,42 @@ main[data-template='index']
     opacity var(--animation-speed) var(--animation-easing);
 }
 
-/* WEBRACK and RETURN share one box style: left + top border on the bar
-   itself, the wrap's permanent full-width line as the bottom, and the
-   diagonal (below) closing the top-right corner and running on out to
-   the end of that bottom line -- one consistent, structured shape for
-   both buttons, not two different treatments. Closed, the list has no
-   visible width so the top border just hugs the label; open (WEBRACK
-   only), .mdr-allbar's own max-width carries the top border out to frame
-   the full list too, with a plain right border closing it off (below). */
+/* WEBRACK and RETURN share one ribbon/flag-tail shape: a plain rectangle
+   with the top-right corner cut on a diagonal down to the bottom-right
+   corner. Built as ONE clipped shape (not a straight-line border plus a
+   separately rotated diagonal line) -- a rotated 1px line doesn't
+   anti-alias cleanly and read as a fuzzy, uneven stroke next to the crisp
+   straight edges, which was the "not uniform... overflow" look. clip-path
+   on a filled shape renders as one crisp outline instead, angled edge
+   included. The classic two-layer trick: ::before is the full silhouette
+   in the hairline colour, ::after sits 1px inset in the page's own black,
+   punching the middle out and leaving a uniform ~1px outline that follows
+   the cut corner all the way round. The button's own bottom edge (part of
+   this shape, at the full width) sits flush on the wrap's permanent
+   border-bottom (see .mdr-allbar-wrap, padding-bottom removed) so the two
+   read as one seamless line, with the wrap's line continuing on past the
+   button's own right edge out to the far end on its own. */
 .mdr-allbar {
-  border-left: 1px solid rgba(233, 225, 196, 0.16);
-  border-top: 1px solid rgba(233, 225, 196, 0.16);
+  clip-path: polygon(0 0, calc(100% - 18px) 0, 100% 100%, 0 100%);
 }
 
-/* closes the gap between the button's own top border and the wrap's
-   permanent bottom line with a single short, thin diagonal notch -- the
-   same 1px weight as every other line here, not a filled wedge. It's a
-   fixed, short cut right at the button's edge (not a long slope reaching
-   all the way to the far right) -- the wrap's OWN bottom border is
-   already permanent and full-width on its own, so this only needs to
-   drop the vertical gap between the two, exactly the way the reference
-   box shape does: short diagonal near the button, then the existing flat
-   line continues on its own. --mdr-tip-x (button's right edge) is
-   measured in JS since the toggle's width varies with its own content
-   (RETURN vs WEBRACK, WEBRACK's own chevron) and moves with alignLeft.
-   Lives on the WRAP so it can sit right at that edge; hidden once open,
-   when a plain right border closes the box instead. */
-.mdr-allbar-wrap::before {
+.mdr-allbar::before,
+.mdr-allbar::after {
   content: '';
   position: absolute;
-  left: var(--mdr-tip-x, 100px);
-  top: 3px;
-  width: 1px;
-  /* 35.7px straight down (measured) / cos(35deg) -- a proper visible
-     diagonal, not a near-vertical sliver: the previous 12deg angle only
-     drifted ~7px sideways over its whole length and read as barely more
-     than a vertical tick, nothing like the clear cut in the reference */
-  height: 43.6px;
-  background: rgba(233, 225, 196, 0.16);
-  transform-origin: top left;
-  /* negative = counter-clockwise, swinging the bottom end rightward --
-     "\", not "/" */
-  transform: rotate(-35deg);
-  pointer-events: none;
-  z-index: 0;
+  z-index: -1;
+  clip-path: inherit;
 }
 
-.mdr-allbar-wrap:has(.mdr-allbar.is-open)::before {
-  display: none;
+.mdr-allbar::before {
+  inset: 0;
+  background: rgba(233, 225, 196, 0.16);
+}
+
+.mdr-allbar::after {
+  inset: 1px;
+  background: #000;
+  clip-path: polygon(0 0, calc(100% - 19px) 0, 100% 100%, 0 100%);
 }
 
 .mdr-allbar.is-open {
@@ -1720,9 +1711,15 @@ main[data-template='index']
      full width when open, not stop at a capped pill size */
   max-width: 100%;
   opacity: 1;
-  /* the diagonal is hidden once open (nothing left to close diagonally --
-     top and bottom already match), so a plain edge closes the box instead */
-  border-right: 1px solid rgba(233, 225, 196, 0.16);
+  /* square the corner back off instead of keeping the cut -- with no
+     shape left to close diagonally (top and bottom already match), a
+     plain rectangle reads correctly here */
+  clip-path: none;
+}
+
+.mdr-allbar.is-open::before,
+.mdr-allbar.is-open::after {
+  clip-path: none;
 }
 
 .mdr-allbar__toggle {

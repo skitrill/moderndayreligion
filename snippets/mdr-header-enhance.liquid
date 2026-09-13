@@ -439,28 +439,17 @@
          .mdr-allbar-wrap padding-inline-start: 0) instead of lined up
          under the logo, so there's no JS alignment needed here any more */
 
-      /* The closing "\" needs to reach the far end of the wrap's own
-         permanent bottom line (all the way under CART), not just drop
-         straight down from the button -- otherwise the short top border
-         and the full-width bottom border read as two mismatched pieces
-         instead of one structured shape. Measured off the TOGGLE (not
-         the bar), since the toggle's own size never changes between
-         open/closed -- only the list next to it does -- so this holds
-         good in both states without needing to re-run on open/close. */
-      function sizeTip() {
-        /* .mdr-allbar's own right edge (not the toggle's) -- .mdr-allbar
-           is what actually carries the top/left border, and closed it's
-           wider than the toggle alone by the bar's 12px gap to the
-           (zero-width but still gapped) list next to it. Measuring off
-           the toggle left the diagonal starting ~13px short of where the
-           top border actually ended, an open gap between the two. */
-        var bRect = bar.getBoundingClientRect();
-        var wRect = wrap.getBoundingClientRect();
-        wrap.style.setProperty('--mdr-tip-x', (bRect.right - wRect.left) + 'px');
-      }
-      sizeTip();
-      window.addEventListener('resize', sizeTip, { passive: true });
-      window.addEventListener('load', sizeTip);
+      /* The diagonal used to be a separate 1px line rotated with a CSS
+         transform, positioned via a JS-measured custom property. Rotating
+         a hairline like that doesn't anti-alias cleanly -- it reads as a
+         slightly fuzzy, uneven-width stroke next to the crisp horizontal/
+         vertical borders, which is the "not uniform... overflow" look.
+         Replaced entirely: the diagonal is now cut directly into the
+         button's own shape with clip-path (see CSS), the same technique
+         a solid vector tool uses for a ribbon/flag tail -- one clean
+         outline, no separate rotated element, and no JS measurement
+         needed at all since the cut is always relative to the button's
+         own current box. */
 
       /* A body-position:fixed page-lock here was expensive (forces a full
          reflow the instant WEBRACK opens -- the mobile lag/freeze) and
