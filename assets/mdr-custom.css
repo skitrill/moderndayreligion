@@ -2141,8 +2141,12 @@ main[data-template='index'] [id$='__product_list_fa6P9H'] .product-card .product
   font-size: 0.6rem;
   letter-spacing: 0.02em;
   text-transform: uppercase !important;
-  color: rgba(233, 225, 196, 0.85);
-  background: #000;
+  /* solid cream fill + dark text -- same chip pairing as the open
+     WEBRACK chevron (.mdr-allbar__chev) -- a black fill on this dark
+     background made the ribbon SHAPE itself invisible, leaving just
+     floating text with no visible silhouette at all */
+  color: #1a1a1a;
+  background: #e9e1c4;
   padding: 3px 9px 6px;
   /* flat top edge (0 0 -> 100% 0), short bottom edge cut 6px in from the
      right (100%-6px 100%), diagonal closing it back up to the top-right
