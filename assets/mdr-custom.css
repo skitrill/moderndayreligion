@@ -1679,10 +1679,11 @@ main[data-template='index']
   line-height: 1;
   cursor: pointer;
   -webkit-tap-highlight-color: transparent;
-  /* plain text, no chrome -- dim while idle, full once opened */
-  opacity: 0.5;
-  transition: width 0.34s cubic-bezier(0.16, 1, 0.3, 1),
-    opacity var(--animation-speed) var(--animation-easing);
+  /* the dim-while-idle/full-once-open opacity lives on .mdr-allbar__toggle
+     now (below), not here -- this rule also draws the border (SVG) and
+     the background fill, and a tap should only brighten the label, not
+     the box around it */
+  transition: width 0.34s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 /* WEBRACK and RETURN share one ribbon/flag-tail shape: a plain rectangle
@@ -1721,7 +1722,6 @@ main[data-template='index']
   /* overrides the fixed 95px above -- the border needs to actually strike
      full width when open, not stay pinned to the closed pill size */
   width: 100%;
-  opacity: 1;
   /* square the corner back off instead of keeping the cut -- with no
      shape left to close diagonally (top and bottom already match), a
      plain rectangle reads correctly here */
@@ -1768,6 +1768,16 @@ main[data-template='index']
   text-transform: inherit;
   cursor: pointer;
   -webkit-tap-highlight-color: transparent;
+  /* plain text, no chrome -- dim while idle, full once opened. Lives here
+     (the label + chevron) rather than on .mdr-allbar itself, so tapping
+     WEBRACK brightens only the font -- the border and background fill
+     stay exactly as they were, same weight open or closed */
+  opacity: 0.5;
+  transition: opacity var(--animation-speed) var(--animation-easing);
+}
+
+.mdr-allbar.is-open .mdr-allbar__toggle {
+  opacity: 1;
 }
 
 .mdr-allbar__chev {
@@ -1907,6 +1917,13 @@ main[data-template='index']
   background-color: #e9e1c4;
   color: #1a1a1a;
   padding-inline: 8px;
+  /* stretch already fills the list's own content-box height, but that
+     box sits inside .mdr-allbar's 7px 0 padding -- so without this the
+     fill still stopped short of the bar's actual top/bottom edge. A
+     negative margin matching that padding pulls it out to bleed all the
+     way to the edge, so the highlight reads as a full-height swatch
+     across the whole ribbon, not a strip wrapped tight around the text */
+  margin-block: -7px;
 }
 
 /* Invisible drag-catcher covering the WHOLE wrap -- position:absolute takes
