@@ -2342,7 +2342,12 @@ main[data-template='index'] [id$='__product_list_fa6P9H'] .card-gallery::after {
   background: transparent;
   padding: 9px 18px;
   white-space: nowrap;
-  border-top: 1.5px solid rgba(233, 225, 196, 0.4);
+  /* as visible as the grid's own divider lines -- those read as solid
+     hairlines despite a low 0.14 alpha because they're a flat colour
+     fill of an actual pixel gap, not an anti-aliased stroke; a thin CSS
+     border needs a lot more alpha to look equally "there". 1px (not
+     1.5px) too, to avoid the extra sub-pixel blur that came with it. */
+  border-top: 1px solid rgba(233, 225, 196, 0.85);
   pointer-events: none;
 }
 
@@ -2352,7 +2357,7 @@ main[data-template='index'] [id$='__product_list_fa6P9H'] .card-gallery::after {
 main[data-template='index'] [id$='__product_list_fa6P9H'] .resource-list__item:nth-child(odd) .card-gallery::after {
   right: 0;
   left: auto;
-  border-right: 1.5px solid rgba(233, 225, 196, 0.4);
+  border-right: 1px solid rgba(233, 225, 196, 0.85);
   clip-path: polygon(0 0, 100% 0, 100% 100%, 12px 100%);
 }
 
@@ -2360,7 +2365,7 @@ main[data-template='index'] [id$='__product_list_fa6P9H'] .resource-list__item:n
    the outer top-right corner and tapers down toward that line */
 main[data-template='index'] [id$='__product_list_fa6P9H'] .resource-list__item:nth-child(even) .card-gallery::after {
   left: 0;
-  border-left: 1.5px solid rgba(233, 225, 196, 0.4);
+  border-left: 1px solid rgba(233, 225, 196, 0.85);
   clip-path: polygon(0 0, 100% 0, calc(100% - 12px) 100%, 0 100%);
 }
 
