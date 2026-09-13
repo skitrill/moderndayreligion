@@ -20,6 +20,15 @@ html {
   --font-accent--family: 'Space Mono', 'Anonymous Pro', monospace;
 }
 
+/* ...except the logo, reverted back to the site's original font
+   (Anonymous Pro). It sets its own --font-family inline (style attribute,
+   see blocks/_header-logo.liquid) as `var(--font-body--family)`, which
+   otherwise picks up the site-wide swap above like everything else -- the
+   !important here is only to beat that inline declaration. */
+.header-logo {
+  --font-family: 'Anonymous Pro', monospace !important;
+}
+
 /* Desktop keeps the logo at its original size. */
 @media screen and (min-width: 750px) {
   #header-component .header-logo,
