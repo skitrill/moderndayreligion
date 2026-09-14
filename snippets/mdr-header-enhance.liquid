@@ -1254,21 +1254,4 @@
     window.addEventListener('resize', place, { passive: true });
     window.addEventListener('scroll', place, { passive: true });
   })();
-
-  (function () {
-    // TEMPORARY EXPERIMENTAL COLOR TEST: the header paints its row
-    // background from --color-background-top-row/-bottom-row, which the
-    // section sets as an inline style (not !important) on #header-component
-    // -- a stylesheet !important override doesn't reliably beat that, so
-    // force it here instead.
-    function paint() {
-      var header = document.getElementById('header-component');
-      if (!header) return;
-      header.style.setProperty('--color-background-top-row', '#f2f0ea', 'important');
-      header.style.setProperty('--color-background-bottom-row', '#f2f0ea', 'important');
-    }
-    if (document.readyState !== 'loading') paint();
-    document.addEventListener('DOMContentLoaded', paint);
-    window.addEventListener('load', paint);
-  })();
 </script>
