@@ -2465,14 +2465,17 @@ main[data-template='index'] [id$='__product_list_fa6P9H'] .product-card .price--
 
 /* ==========================================================================
    TEMPORARY EXPERIMENTAL COLOR TEST -- off-white background, milk-blue
-   text/borders/grid-lines everywhere, site-wide. This is a blunt,
-   universal override (not a proper re-theme touching each rule) -- meant
-   to be seen live and then either reverted or refined into real rules.
-   Anything colour-based that ISN'T a plain CSS color/background/border
-   (product photos, and a couple of hardcoded SVG stroke="..."/fill="..."
-   attributes like WEBRACK's own border) won't be caught by this and will
-   still show their original colour.
-   ========================================================================== */
+   text/borders/grid-lines everywhere, site-wide. Not a proper re-theme --
+   meant to be seen live and then either reverted or refined into real
+   rules. A blanket `* { background: transparent }` was tried first, but
+   it lost to every specific `#000` rule already in this file (same
+   !important tier, but lower specificity always loses that tie,
+   regardless of source order) -- so this re-declares each of those exact
+   selectors instead, which wins by both matching specificity AND coming
+   later in the file. Anything colour-based that ISN'T a plain CSS
+   color/background/border (product photos, and a couple of hardcoded SVG
+   stroke="..."/fill="..." attributes like WEBRACK's own border) won't be
+   caught by this and will still show their original colour. */
 html,
 body {
   background-color: #f2f0ea !important;
@@ -2484,7 +2487,29 @@ body {
   border-color: #8fb8cf !important;
 }
 
-*:not(html):not(body) {
-  background-color: transparent !important;
+.product-card__content,
+.product-recommendations .resource-list__item,
+.product-recommendations .product-card,
+.product-recommendations .product-card__content,
+.mdr-fnav__drop,
+.mdr-fnav__msg,
+.mdr-allbar-wrap,
+.mdr-allbar,
+.mdr-allbar.is-open .mdr-allbar__list,
+main[data-template='index'] [id$='__product_list_fa6P9H'] .resource-list__item,
+main[data-template='index'] [id$='__product_list_fa6P9H'] .product-card,
+main[data-template='index'] [id$='__product_list_fa6P9H'] .product-card__content,
+main[data-template='index'] [id$='__product_list_fa6P9H'] .card-gallery,
+main[data-template='index'] [id$='__product_list_fa6P9H'] .product-media-container {
+  background-color: #f2f0ea !important;
   background-image: none !important;
+}
+
+/* the grid's own "lines" are a background colour showing through a 1px
+   gap, not an actual border -- re-tinted to milk-blue too so the grid
+   pattern itself changes, not just the borders drawn on top of it */
+.product-recommendations .resource-list,
+.product-recommendations .resource-list--grid,
+main[data-template='index'] [id$='__product_list_fa6P9H'] .resource-list--grid {
+  background: #8fb8cf !important;
 }
