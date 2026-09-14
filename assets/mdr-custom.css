@@ -2513,3 +2513,12 @@ main[data-template='index'] [id$='__product_list_fa6P9H'] .product-media-contain
 main[data-template='index'] [id$='__product_list_fa6P9H'] .resource-list--grid {
   background: #8fb8cf !important;
 }
+
+/* the header row paints itself via a gradient referencing these custom
+   properties (not a plain background-color), so the gradient stops have
+   to be overridden at the variable level to actually change */
+:root {
+  --color-background-top-row: rgba(242, 240, 234, 1) !important;
+  --color-background-bottom-row: rgba(242, 240, 234, 1) !important;
+  --color-background: rgba(242, 240, 234, 1) !important;
+}
