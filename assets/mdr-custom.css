@@ -2462,3 +2462,29 @@ main[data-template='index'] [id$='__product_list_fa6P9H'] .product-card .price--
 .mdr-zoom:active {
   opacity: 0.55;
 }
+
+/* ==========================================================================
+   TEMPORARY EXPERIMENTAL COLOR TEST -- off-white background, milk-blue
+   text/borders/grid-lines everywhere, site-wide. This is a blunt,
+   universal override (not a proper re-theme touching each rule) -- meant
+   to be seen live and then either reverted or refined into real rules.
+   Anything colour-based that ISN'T a plain CSS color/background/border
+   (product photos, and a couple of hardcoded SVG stroke="..."/fill="..."
+   attributes like WEBRACK's own border) won't be caught by this and will
+   still show their original colour.
+   ========================================================================== */
+html,
+body {
+  background-color: #f2f0ea !important;
+  background-image: none !important;
+}
+
+* {
+  color: #8fb8cf !important;
+  border-color: #8fb8cf !important;
+}
+
+*:not(html):not(body) {
+  background-color: transparent !important;
+  background-image: none !important;
+}
