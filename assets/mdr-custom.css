@@ -2511,7 +2511,7 @@ main[data-template='index'] [id$='__product_list_fa6P9H'] .product-media-contain
 .product-recommendations .resource-list,
 .product-recommendations .resource-list--grid,
 main[data-template='index'] [id$='__product_list_fa6P9H'] .resource-list--grid {
-  background: #8fb8cf !important;
+  background: rgba(143, 184, 207, 0.14) !important;
 }
 
 /* the header row paints itself via a gradient referencing these custom
