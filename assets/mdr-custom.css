@@ -612,8 +612,8 @@ main[data-template='index'] .resource-list--grid,
 main[data-template='index'] [id$='__product_list_fa6P9H'] .resource-list--grid {
   display: grid !important;
   grid-template-columns: repeat(2, 1fr) !important;
-  column-gap: 1px !important;
-  row-gap: 1px !important;
+  column-gap: 4px !important;
+  row-gap: 4px !important;
   width: 100% !important;
   max-width: none !important;
   margin-inline: 0 !important;
@@ -713,18 +713,18 @@ body {
    had internal card-to-card hairlines but no outer edge, reading as
    incomplete/missing lines right where the section starts and ends. ---- */
 .product-recommendations {
-  border-top: 1px solid rgba(233, 225, 196, 0.14) !important;
+  border-top: 3px solid #6e1a1a !important;
 }
 
 .product-recommendations .resource-list,
 .product-recommendations .resource-list--grid {
-  column-gap: 2px !important;
-  row-gap: 2px !important;
-  background: rgba(233, 225, 196, 0.14) !important;
+  column-gap: 4px !important;
+  row-gap: 4px !important;
+  background: #6e1a1a !important;
 }
 
 .product-recommendations .resource-list--grid {
-  border-bottom: 1px solid rgba(233, 225, 196, 0.14) !important;
+  border-bottom: 3px solid #6e1a1a !important;
 }
 
 .product-recommendations .resource-list__item {
@@ -2238,15 +2238,15 @@ main[data-template='index']
    pattern, name + price stacked below, ghost "new" tag, hairline seams.
    ========================================================================== */
 
-/* 1px grid gaps read as hairlines: the grid paints a faint line colour and
-   every card fills its cell with solid black on top. */
+/* 4px grid gaps read as thick lines: the grid paints a solid line colour
+   and every card fills its cell with solid black on top. */
 main[data-template='index'] [id$='__product_list_fa6P9H'] .resource-list__item {
   background: #000 !important;
 }
 
 main[data-template='index'] [id$='__product_list_fa6P9H'] .resource-list--grid {
-  background: rgba(233, 225, 196, 0.14) !important;
-  border-bottom: 1px solid rgba(233, 225, 196, 0.14) !important;
+  background: #6e1a1a !important;
+  border-bottom: 3px solid #6e1a1a !important;
 }
 
 /* card = a plain column, a touch of breathing room below the price so it
@@ -2461,4 +2461,34 @@ main[data-template='index'] [id$='__product_list_fa6P9H'] .product-card .price--
 
 .mdr-zoom:active {
   opacity: 0.55;
+}
+
+/* ==========================================================================
+   Thicken + recolor every visible line on the page: dark red (the same
+   muted red used for the sold-out button), 3px. A blanket
+   `* { border-color; border-width }` catches every plain (non-!important)
+   border in the theme's own base CSS, but loses on specificity to the
+   handful of !important border rules already in this file -- those are
+   re-declared here individually, same technique as the color overrides
+   above, since it wins on source order instead.
+   ========================================================================== */
+*, ::before, ::after {
+  border-color: #6e1a1a !important;
+  border-width: 3px !important;
+}
+
+.quantity-selector,
+.quantity-selector .quantity-minus,
+.quantity-selector .quantity-plus,
+.cart-discount__input,
+.product-form-buttons,
+.product-form__buttons,
+.product-form-buttons .product-form-text__error:not(.hidden),
+#Details-menu-drawer-container > .menu-drawer,
+.variant-option--buttons,
+.variant-option--buttons .variant-option__button-label,
+.size-chart__content th,
+.size-chart__content td {
+  border-color: #6e1a1a !important;
+  border-width: 3px !important;
 }
