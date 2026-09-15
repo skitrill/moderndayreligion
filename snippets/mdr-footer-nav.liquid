@@ -19,7 +19,7 @@
         Mailing
       </button>
       <div id="mdr-mailing-drop" class="mdr-fnav__drop" hidden>
-        {%- form 'customer' -%}
+        {%- form 'customer', class: 'mdr-fnav__form' -%}
           {%- if form.posted_successfully? -%}
             <p class="mdr-fnav__msg">You're on the list.</p>
           {%- else -%}

@@ -1154,7 +1154,7 @@ button.link,
   width: max-content;
   height: 22px;
   background: #000;
-  border: 1px solid rgb(var(--color-foreground-rgb) / 0.28);
+  border: 1px solid rgb(var(--color-foreground-rgb) / 0.3);
   pointer-events: auto;
 }
 
@@ -1162,12 +1162,42 @@ button.link,
   display: none !important;
 }
 
+/* after a submit, the only thing left inside is .mdr-fnav__msg -- which is
+   itself position:absolute (so it can render as its own bordered box a
+   little further down), so it no longer contributes to this row's
+   width/height. Left alone, the row still draws its own fixed 22px-tall
+   border around nothing, which collapses to a thin stray vertical line
+   hanging between "MAILING" and the message box below it. Drop this
+   row's own box entirely once it's just holding the message. */
+.mdr-fnav__drop:has(.mdr-fnav__msg) {
+  height: auto;
+  border: 0;
+  background: none;
+}
+
+/* the {% form %} tag always wraps its contents in a real <form> element --
+   that form, not the input/button themselves, is .mdr-fnav__drop's actual
+   flex child. Left as a plain block, the input and button inside it just
+   sit as ordinary inline-block boxes, vertically aligned to their own
+   text baseline instead of stretched -- which left a gap of empty
+   background above the button (its baseline sits lower than the input's,
+   so the box above it doesn't reach the container's top edge). Making
+   the form itself the flex row fixes both children the same way. */
+.mdr-fnav__form {
+  display: flex;
+  align-items: stretch;
+  height: 100%;
+}
+
 .mdr-fnav__email {
   flex: 0 0 auto;
   width: 104px;
   min-width: 0;
   height: 100%;
+  appearance: none;
+  -webkit-appearance: none;
   border: 0;
+  border-radius: 0;
   background: transparent;
   color: var(--color-foreground);
   font-family: var(--font-accent--family, inherit);
@@ -1193,7 +1223,10 @@ button.link,
 .mdr-fnav__submit {
   flex: 0 0 auto;
   height: 100%;
+  appearance: none;
+  -webkit-appearance: none;
   border: 0;
+  border-radius: 0;
   background: #e9e1c4;
   color: #1a1a1a;
   font-family: var(--font-accent--family, inherit);
@@ -1202,6 +1235,7 @@ button.link,
   letter-spacing: 0.06em;
   text-transform: uppercase;
   padding: 0 7px;
+  margin: 0;
   cursor: pointer;
   pointer-events: auto;
 }
@@ -1218,7 +1252,7 @@ button.link,
   margin: 0;
   padding: 5px 7px;
   background: #000;
-  border: 1px solid rgb(var(--color-foreground-rgb) / 0.28);
+  border: 1px solid rgb(var(--color-foreground-rgb) / 0.3);
   font-family: var(--font-accent--family, inherit);
   font-size: 0.52rem;
   letter-spacing: 0.05em;
