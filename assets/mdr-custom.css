@@ -1887,8 +1887,8 @@ main[data-template='index']
    leaving that line to the wrap alone. */
 .mdr-allbar {
   clip-path: polygon(0 0, calc(100% - 18px) 0, 100% 100%, 0 100%);
-  background-color: #000;
-  background-image: var(--mdr-tape);
+  background-color: #fff;
+  background-image: none;
 }
 
 .mdr-allbar__border {
@@ -1924,7 +1924,7 @@ main[data-template='index']
      wrap's own permanent border-bottom (0.16, not the closed ribbon's
      0.3) so top and bottom read as the same weight instead of the top
      looking bolder than the bottom right below it. */
-  border-top: 1px solid rgba(233, 225, 196, 0.16);
+  border-top: 1px solid rgba(0, 0, 0, 0.16);
 }
 
 .mdr-allbar.is-open .mdr-allbar__border {
@@ -1949,7 +1949,7 @@ main[data-template='index']
   padding: 3px 9px;
   border: 0;
   background: none;
-  color: inherit;
+  color: #000;
   font: inherit;
   /* WEBRACK / RETURN, 10% bigger than the 0.74rem it inherited, so it's
      harder to miss / mistap next to the logo */
