@@ -1683,10 +1683,15 @@ cart-drawer *,
    button background, invisible). Outline/unstyled buttons are untouched:
    their text is already the (now black) foreground, correct on transparent. */
 .cart-page .button:not(.button-secondary, .button-unstyled),
+.cart-page .button:not(.button-secondary, .button-unstyled) *,
 .cart-items-component .button:not(.button-secondary, .button-unstyled),
+.cart-items-component .button:not(.button-secondary, .button-unstyled) *,
 .cart-totals .button:not(.button-secondary, .button-unstyled),
+.cart-totals .button:not(.button-secondary, .button-unstyled) *,
 cart-drawer .button:not(.button-secondary, .button-unstyled),
-.cart-drawer .button:not(.button-secondary, .button-unstyled) {
+cart-drawer .button:not(.button-secondary, .button-unstyled) *,
+.cart-drawer .button:not(.button-secondary, .button-unstyled),
+.cart-drawer .button:not(.button-secondary, .button-unstyled) * {
   color: var(--button-color) !important;
 }
 
