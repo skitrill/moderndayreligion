@@ -1841,14 +1841,13 @@ main[data-template='index']
   margin: 0;
   /* flush at the true left edge now, not lined up under the logo. No
      bottom padding either -- the button's own bottom edge now sits flush
-     against this border-bottom (see .mdr-allbar's clip-path shape below),
-     so the two read as one seamless line instead of two lines a gap apart */
+     against the page below it */
   padding: 3px 0 0 0;
-  background: #000;
-  /* permanent, full width -- "stretch the bottom... across thru to the
-     cart end" -- unlike the button's own top border below, this one
-     never depends on WEBRACK being open or closed. */
-  border-bottom: 1px solid rgba(233, 225, 196, 0.16);
+  /* white, matching the page -- no boxed-off bar, no dividing line; the
+     strip just reads as part of the same continuous white page instead of
+     a separate black band under the header. Still opaque (not transparent)
+     since this is sticky -- scrolled content needs to stay hidden behind it. */
+  background: #fff;
 }
 
 .mdr-allbar {
@@ -1868,8 +1867,9 @@ main[data-template='index']
   white-space: nowrap;
   /* taller ribbon for an easy tap and a taller drag track once open (was
      2px originally); reduced back down ~20% from the first pass (9px),
-     which read as more height than actually needed */
-  padding: 7px 0;
+     which read as more height than actually needed. Trimmed a further 10%
+     (7px -> 6.3px) on top of that. */
+  padding: 6.3px 0;
   border: 0;
   background: transparent;
   color: #000;
@@ -1978,7 +1978,7 @@ main[data-template='index']
   position: relative;
   isolation: isolate;
   z-index: 3;
-  padding: 3px 9px;
+  padding: 2.7px 9px;
   border: 0;
   background: none;
   color: #000;
