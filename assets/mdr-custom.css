@@ -472,11 +472,11 @@ product-price *,
 .variant-picker .variant-option[data-testid='variant-option-single'],
 .variant-picker .variant-option[data-testid='variant-option-single'] .variant-option__swatch-value,
 .variant-picker .variant-option__swatch-value {
-  color: rgba(240, 238, 230, 0.6) !important;
+  color: rgba(0, 0, 0, 0.6) !important;
 }
 
 main .product-information__grid {
-  --color-foreground: rgba(240, 238, 230, 0.6);
+  --color-foreground: rgba(0, 0, 0, 0.6);
 }
 
 main .product-information__grid :is(h1, h2, h3, h4, h5, h6, p, li, legend,
@@ -484,7 +484,7 @@ main .product-information__grid :is(h1, h2, h3, h4, h5, h6, p, li, legend,
   .size-chart, .size-chart__trigger, .size-chart__trigger-text):not(.price):not(product-price),
 main .product-information__grid .rte:not(product-price) :is(span, p, li, a, strong, em),
 main .product-information__grid .text-block:not(product-price) :is(span, p, li, a, strong, em) {
-  color: rgba(240, 238, 230, 0.6) !important;
+  color: rgba(0, 0, 0, 0.6) !important;
 }
 
 /* ---- Mobile: product hero image size ------------------------------------- */
@@ -1609,9 +1609,9 @@ select,
    buttons / inputs with their own colours are untouched) */
 main .product-information__grid,
 main .product-information__grid .product-details {
-  --color-foreground: rgba(240, 238, 230, 0.6) !important;
-  --color-foreground-rgb: 240 238 230 !important;
-  --color-foreground-muted: rgb(240 238 230 / 0.5) !important;
+  --color-foreground: rgba(0, 0, 0, 0.6) !important;
+  --color-foreground-rgb: 0 0 0 !important;
+  --color-foreground-muted: rgb(0 0 0 / 0.5) !important;
 }
 
 /* ...prices still blue */
