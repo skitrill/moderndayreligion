@@ -1759,7 +1759,7 @@ cart-drawer [class*='price'] {
 #header-component a[href$='/cart'] {
   display: inline-block !important;
   padding: 4px 10px !important;
-  color: #ffd400 !important;
+  color: #ffffff !important;
   background-color: transparent !important;
   background-image: none !important;
   border: 0 !important;
@@ -1772,13 +1772,13 @@ cart-drawer [class*='price'] {
 
 .header__cart-link *,
 #header-component .header__cart-link * {
-  color: #ffd400 !important;
+  color: #ffffff !important;
 }
 
 .header__cart-link:hover,
 #header-component .header__cart-link:hover {
   background-color: transparent !important;
-  color: #ffd400 !important;
+  color: #ffffff !important;
 }
 
 /* lookbook heading -> follow the red default */
