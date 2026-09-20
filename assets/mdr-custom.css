@@ -160,7 +160,7 @@ footer .utilities {
 .mdr-scrolltop:focus-visible {
   background: none !important;
   background-color: transparent !important;
-  color: var(--color-foreground, #f0eee6) !important;
+  color: var(--color-foreground, #ffffff) !important;
   outline: none !important;
   box-shadow: none !important;
   text-decoration: none !important;
@@ -179,7 +179,7 @@ footer .utilities {
   border: 0;
   background: none;
   cursor: pointer;
-  color: var(--color-foreground, #f0eee6);
+  color: var(--color-foreground, #ffffff);
   font-family: var(--font-accent--family, inherit);
   font-size: 0.6rem;
   line-height: 1;
@@ -468,15 +468,15 @@ product-price *,
 }
 
 /* ---- Product-page copy + colour option: match the "© 2026" footer text
-   (rgba(240, 238, 230, 0.6)); the brown price keeps its own colour -------- */
+   (rgba(255, 255, 255, 0.6)); the brown price keeps its own colour -------- */
 .variant-picker .variant-option[data-testid='variant-option-single'],
 .variant-picker .variant-option[data-testid='variant-option-single'] .variant-option__swatch-value,
 .variant-picker .variant-option__swatch-value {
-  color: rgba(240, 238, 230, 0.6) !important;
+  color: rgba(255, 255, 255, 0.6) !important;
 }
 
 main .product-information__grid {
-  --color-foreground: rgba(240, 238, 230, 0.6);
+  --color-foreground: rgba(255, 255, 255, 0.6);
 }
 
 main .product-information__grid :is(h1, h2, h3, h4, h5, h6, p, li, legend,
@@ -484,7 +484,7 @@ main .product-information__grid :is(h1, h2, h3, h4, h5, h6, p, li, legend,
   .size-chart, .size-chart__trigger, .size-chart__trigger-text):not(.price):not(product-price),
 main .product-information__grid .rte:not(product-price) :is(span, p, li, a, strong, em),
 main .product-information__grid .text-block:not(product-price) :is(span, p, li, a, strong, em) {
-  color: rgba(240, 238, 230, 0.6) !important;
+  color: rgba(255, 255, 255, 0.6) !important;
 }
 
 /* ---- Mobile: product hero image size ------------------------------------- */
@@ -506,7 +506,7 @@ main .product-information__grid .text-block:not(product-price) :is(span, p, li, 
 .cart-items__title,
 .cart-items__title a,
 .cart-items__title * {
-  color: #f0eee6 !important;
+  color: #ffffff !important;
 }
 
 .cart-items__price,
@@ -649,7 +649,7 @@ main[data-template='index'] [id$='__product_list_fa6P9H'] .section-resource-list
   :is(h1, h2, h3, h4, .text-block, [class*='title']),
 main[data-template='index'] [id$='__product_list_fa6P9H'] .section-resource-list__header
   :is(h1, h2, h3, h4, .text-block) * {
-  color: #e9e1c4 !important;
+  color: #ffffff !important;
 }
 
 /* ==========================================================================
@@ -713,18 +713,18 @@ body {
    had internal card-to-card hairlines but no outer edge, reading as
    incomplete/missing lines right where the section starts and ends. ---- */
 .product-recommendations {
-  border-top: 1px solid rgba(233, 225, 196, 0.14) !important;
+  border-top: 1px solid rgba(255, 255, 255, 0.14) !important;
 }
 
 .product-recommendations .resource-list,
 .product-recommendations .resource-list--grid {
   column-gap: 2px !important;
   row-gap: 2px !important;
-  background: rgba(233, 225, 196, 0.14) !important;
+  background: rgba(255, 255, 255, 0.14) !important;
 }
 
 .product-recommendations .resource-list--grid {
-  border-bottom: 1px solid rgba(233, 225, 196, 0.14) !important;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.14) !important;
 }
 
 .product-recommendations .resource-list__item {
@@ -793,7 +793,7 @@ body {
   flex-wrap: nowrap !important;
   align-items: stretch !important;
   gap: 0 !important;
-  border: 1px solid rgba(233, 225, 196, 0.3) !important;
+  border: 1px solid rgba(255, 255, 255, 0.3) !important;
   /* anchor for the quantity/limit error message below -- position:
      relative, not a layout change, so this doesn't disturb the row's own
      sizing */
@@ -824,9 +824,9 @@ body {
   margin-bottom: 8px;
   box-sizing: border-box !important;
   padding: 6px 8px !important;
-  border: 1px solid rgba(233, 225, 196, 0.3) !important;
+  border: 1px solid rgba(255, 255, 255, 0.3) !important;
   background: #000;
-  color: #f0eee6 !important;
+  color: #ffffff !important;
   font-size: 0.62rem !important;
   line-height: 1.3 !important;
 }
@@ -952,7 +952,7 @@ body {
 .product-form-buttons .add-to-cart-button:not(.sticky-add-to-cart__button)[disabled] {
   width: 100% !important;
   background: #6e1a1a !important;
-  color: rgba(240, 238, 230, 0.7) !important;
+  color: rgba(255, 255, 255, 0.7) !important;
   opacity: 1 !important;
   border: 0 !important;
 }
@@ -1434,7 +1434,7 @@ body:has(#Details-menu-drawer-container[open]) {
   width: 11px;
   height: 11px;
   background: center / contain no-repeat
-    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='none' stroke='%23f0eee6' stroke-width='1' stroke-linecap='round'%3E%3Ccircle cx='8' cy='5' r='3'/%3E%3Cpath d='M2.6 14c0-3 2.4-4.6 5.4-4.6S13.4 11 13.4 14'/%3E%3C/svg%3E");
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='none' stroke='%23ffffff' stroke-width='1' stroke-linecap='round'%3E%3Ccircle cx='8' cy='5' r='3'/%3E%3Cpath d='M2.6 14c0-3 2.4-4.6 5.4-4.6S13.4 11 13.4 14'/%3E%3C/svg%3E");
 }
 
 /* ==========================================================================
@@ -1567,10 +1567,10 @@ main[data-template='index'] [id$='__product_list_fa6P9H'] .resource-list__item a
 *,
 ::before,
 ::after {
-  --color-foreground: #e9e1c4 !important;
-  --color-foreground-rgb: 233 225 196 !important;
-  --color-foreground-muted: rgb(233 225 196 / 0.72) !important;
-  --color-foreground-subdued: rgb(233 225 196 / 0.45) !important;
+  --color-foreground: #ffffff !important;
+  --color-foreground-rgb: 255 255 255 !important;
+  --color-foreground-muted: rgb(255 255 255 / 0.72) !important;
+  --color-foreground-subdued: rgb(255 255 255 / 0.45) !important;
 }
 
 /* ==========================================================================
@@ -1595,9 +1595,9 @@ select,
    buttons / inputs with their own colours are untouched) */
 main .product-information__grid,
 main .product-information__grid .product-details {
-  --color-foreground: rgba(240, 238, 230, 0.6) !important;
-  --color-foreground-rgb: 240 238 230 !important;
-  --color-foreground-muted: rgb(240 238 230 / 0.5) !important;
+  --color-foreground: rgba(255, 255, 255, 0.6) !important;
+  --color-foreground-rgb: 255 255 255 !important;
+  --color-foreground-muted: rgb(255 255 255 / 0.5) !important;
 }
 
 /* ...prices still blue */
@@ -1613,7 +1613,7 @@ main .product-information__grid.product-information__grid .size-chart * {
 }
 
 /* ...product title -> full brightness, matching the homepage product-card
-   title colour (#e9e1c4, not f0eee6 -- the card title itself uses e9e1c4,
+   title colour (#ffffff, not f0eee6 -- the card title itself uses e9e1c4,
    see main[data-template='index'] ... .product-card .text-block p below;
    this rule had drifted to the wrong hex) instead of the muted
    description-column tone. Needs to out-specify the earlier
@@ -1624,7 +1624,7 @@ main .product-information__grid.product-information__grid .size-chart * {
    no tracking) while the homepage card title uses "rte" (1.1 line-height,
    0.1875px tracking). Match those too so they read the same size. -------- */
 main .product-information__grid.product-information__grid .product-details h1 {
-  color: #e9e1c4 !important;
+  color: #ffffff !important;
   line-height: 1.1 !important;
   letter-spacing: 0.1875px !important;
 }
@@ -1641,7 +1641,7 @@ main .product-information__grid.product-information__grid .product-details h1 {
 #header-component .header-logo,
 #header-component .header-logo span,
 #header-component [data-testid='header-logo'] {
-  color: #f0eee6 !important;
+  color: #ffffff !important;
 }
 
 
@@ -1660,7 +1660,7 @@ cart-drawer,
 cart-drawer *,
 .cart-drawer,
 .cart-drawer * {
-  color: #f0eee6 !important;
+  color: #ffffff !important;
 }
 
 /* ...but prices stay blue */
@@ -1694,7 +1694,7 @@ cart-drawer [class*='price'] {
 #header-component a[href$='/cart'] {
   display: inline-block !important;
   padding: 4px 10px !important;
-  color: #e9e1c4 !important;
+  color: #ffffff !important;
   background-color: transparent !important;
   background-image: none !important;
   border: 0 !important;
@@ -1707,27 +1707,27 @@ cart-drawer [class*='price'] {
 
 .header__cart-link *,
 #header-component .header__cart-link * {
-  color: #e9e1c4 !important;
+  color: #ffffff !important;
 }
 
 .header__cart-link:hover,
 #header-component .header__cart-link:hover {
   background-color: transparent !important;
-  color: #f0eee6 !important;
+  color: #ffffff !important;
 }
 
 /* lookbook heading -> follow the red default */
 .mdr-lookbook__heading {
-  color: #e9e1c4 !important;
+  color: #ffffff !important;
 }
 
-/* collection / product page headings render in the theme's brighter #f0eee6 --
+/* collection / product page headings render in the theme's brighter #ffffff --
    pull them onto the site off-white so every heading matches */
 main[data-template='collection'] h1,
 main[data-template='collection'] .text-block :is(h1, h2, h3),
 main[data-template='product'] .product-title,
 main[data-template='product'] .product-title * {
-  color: #e9e1c4 !important;
+  color: #ffffff !important;
 }
 
 /* ==========================================================================
@@ -1748,7 +1748,7 @@ main[data-template='product'] .product-title * {
   /* inherit the site's default type -- no custom family / tracking / size */
   font: inherit;
   text-transform: uppercase;
-  color: #e9e1c4;
+  color: #ffffff;
   text-decoration: none;
   border: 0;
   line-height: 1;
@@ -1816,7 +1816,7 @@ main[data-template='index']
   /* permanent, full width -- "stretch the bottom... across thru to the
      cart end" -- unlike the button's own top border below, this one
      never depends on WEBRACK being open or closed. */
-  border-bottom: 1px solid rgba(233, 225, 196, 0.16);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.16);
 }
 
 .mdr-allbar {
@@ -1840,7 +1840,7 @@ main[data-template='index']
   padding: 7px 0;
   border: 0;
   background: transparent;
-  color: #e9e1c4;
+  color: #ffffff;
   font: inherit;
   font-size: 0.74rem;
   text-transform: uppercase;
@@ -1924,7 +1924,7 @@ main[data-template='index']
      wrap's own permanent border-bottom (0.16, not the closed ribbon's
      0.3) so top and bottom read as the same weight instead of the top
      looking bolder than the bottom right below it. */
-  border-top: 1px solid rgba(233, 225, 196, 0.16);
+  border-top: 1px solid rgba(255, 255, 255, 0.16);
 }
 
 .mdr-allbar.is-open .mdr-allbar__border {
@@ -1994,7 +1994,7 @@ main[data-template='index']
      chevron chip, not between the label and the chevron -- so the label
      and its chevron read as one unit before the list starts */
   margin-inline-end: 8px;
-  border-inline-end: 1px solid rgba(233, 225, 196, 0.16);
+  border-inline-end: 1px solid rgba(255, 255, 255, 0.16);
   letter-spacing: 0.04em;
 }
 
@@ -2077,7 +2077,7 @@ main[data-template='index']
 .mdr-allbar__list a {
   display: inline-flex;
   align-items: center;
-  color: #e9e1c4;
+  color: #ffffff;
   text-decoration: none;
   opacity: 0.72;
   white-space: nowrap;
@@ -2279,8 +2279,8 @@ main[data-template='index'] [id$='__product_list_fa6P9H'] .resource-list__item {
 }
 
 main[data-template='index'] [id$='__product_list_fa6P9H'] .resource-list--grid {
-  background: rgba(233, 225, 196, 0.14) !important;
-  border-bottom: 1px solid rgba(233, 225, 196, 0.14) !important;
+  background: rgba(255, 255, 255, 0.14) !important;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.14) !important;
 }
 
 /* card = a plain column, a touch of breathing room below the price so it
@@ -2359,10 +2359,10 @@ main[data-template='index'] [id$='__product_list_fa6P9H'] .card-gallery::after {
   letter-spacing: 0.03em;
   line-height: 1;
   text-transform: uppercase;
-  color: rgba(233, 225, 196, 0.55);
+  color: rgba(255, 255, 255, 0.55);
   background: transparent;
   padding: 2px 7px;
-  border: 1px solid rgba(233, 225, 196, 0.3);
+  border: 1px solid rgba(255, 255, 255, 0.3);
   pointer-events: none;
 }
 
@@ -2398,7 +2398,7 @@ main[data-template='index'] [id$='__product_list_fa6P9H'] .product-card product-
   line-height: 1.15 !important;
   letter-spacing: normal !important;
   text-align: left !important;
-  color: #e9e1c4 !important;
+  color: #ffffff !important;
   text-transform: uppercase !important;
 }
 
@@ -2428,7 +2428,7 @@ main[data-template='index'] [id$='__product_list_fa6P9H'] .product-card .text-bl
 /* "sold out" price copy -> dim grey like supreme */
 main[data-template='index'] [id$='__product_list_fa6P9H'] .product-card product-price:has(.price--sold-out) .price,
 main[data-template='index'] [id$='__product_list_fa6P9H'] .product-card .price--sold-out {
-  color: rgba(233, 225, 196, 0.4) !important;
+  color: rgba(255, 255, 255, 0.4) !important;
 }
 
 /* ==========================================================================
