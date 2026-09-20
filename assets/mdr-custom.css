@@ -4,6 +4,30 @@
    -- no post-load reflow.
    ========================================================================== */
 
+/* ---- Global typeface: FSP DEMO - PGF Qualta (Regular), site-wide --------
+   Fontspring DEMO file -- fine to preview/test with, but it's licensed for
+   that only; swap in the purchased font file before this stays live
+   long-term on the public storefront. Only the Regular weight is loaded
+   (that's the only file provided) -- bold/italic text falls back to the
+   browser's own synthesized bold/oblique of this face, or to the previous
+   monospace stack if the font fails to load. Overrides all four of the
+   theme's own font variables (body/subheading/heading/accent) so every
+   text role on the site uses it uniformly, not just body copy. */
+@font-face {
+  font-family: 'PGF Qualta';
+  src: url('pgf-qualta-regular.otf') format('opentype');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+:root {
+  --font-body--family: 'PGF Qualta', 'Anonymous Pro', monospace !important;
+  --font-subheading--family: 'PGF Qualta', 'Anonymous Pro', monospace !important;
+  --font-heading--family: 'PGF Qualta', 'Anonymous Pro', monospace !important;
+  --font-accent--family: 'PGF Qualta', 'Anonymous Pro', monospace !important;
+}
+
 /* ---- Global: shrink the whole page a touch ---------------------------------- */
 html {
   font-size: 15px;
