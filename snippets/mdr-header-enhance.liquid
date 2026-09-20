@@ -1160,6 +1160,14 @@
       items.forEach(function (el) {
         el.classList.add('mdr-reveal-ready');
         io.observe(el);
+        /* IntersectionObserver's own first callback can land late enough
+           (waiting on image/layout settling) that items already on screen
+           right now get missed and never fire again without a further
+           scroll -- a direct synchronous check as a backstop, same 600px
+           margin as the observer above, so nothing already in view is
+           ever left stuck invisible. */
+        var r = el.getBoundingClientRect();
+        if (r.bottom > -600 && r.top < window.innerHeight + 600) reveal(el);
       });
     }
     window.__mdrRevealInit = initReveal;
