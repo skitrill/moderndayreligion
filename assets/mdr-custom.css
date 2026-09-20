@@ -1934,6 +1934,12 @@ main[data-template='index']
      strip top to end. Top/right/bottom keep the button's own border,
      unchanged -- same declaration, same weight, open or closed. */
   border-left: 0;
+  /* the closed tab's tall overlap (reaching well up into the header) is
+     fine at 95px wide over on the left, but at full row width it would
+     reach up far enough to cover the CART link at the header's top-right
+     -- pull back to a smaller overlap once open, just enough to still
+     read as attached to the header. */
+  margin-top: -14px;
 }
 
 .mdr-allbar__toggle {
