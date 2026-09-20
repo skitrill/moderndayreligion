@@ -1853,7 +1853,11 @@ main[data-template='index']
      extra needed, and this rule's own size is untouched either way */
   position: sticky;
   top: calc(var(--header-height, 60px) - 1px);
-  z-index: 15;
+  /* the real <header> element (a sibling ancestor, not this wrap's own
+     parent) sticks at z-index:18 -- this wrap needs to beat that or the
+     WEBRACK tab's overlap into the header gets painted over/hidden by the
+     header's own background wherever the two overlap. */
+  z-index: 19;
   margin: 0;
   padding: 0;
   /* the homepage's own off-white -- this strip is content territory, not
