@@ -1851,6 +1851,65 @@ main[data-template='index']
   background: #e9e1c4;
 }
 
+/* Extend the product grid's own vertical divider line up through the header
+   and the WEBRACK strip too -- same column positions (2 cols on phone, 4 on
+   desktop), so the whole top of the page reads as one structured grid
+   instead of the grid only starting once the product cards do. A pseudo-
+   element overlay, not a real grid track -- doesn't touch the header's own
+   background system or reflow its content, and pointer-events:none keeps it
+   out of the way of taps. z-index:0 so it sits under the WEBRACK button
+   itself: once WEBRACK opens (width:100%), its own opaque fill covers this
+   line rather than fighting it, and the closed pill (over near the left
+   edge, off in its own off-white) never overlaps these centered lines
+   anyway -- it still reads as blending into the page either way. */
+#header-component,
+.mdr-allbar-wrap {
+  position: relative;
+}
+
+#header-component::after,
+.mdr-allbar-wrap::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  background-image: linear-gradient(
+    to right,
+    transparent calc(50% - 0.5px),
+    rgba(0, 0, 0, 0.14) calc(50% - 0.5px),
+    rgba(0, 0, 0, 0.14) calc(50% + 0.5px),
+    transparent calc(50% + 0.5px)
+  );
+}
+
+@media (min-width: 750px) {
+  #header-component::after,
+  .mdr-allbar-wrap::after {
+    background-image: linear-gradient(
+        to right,
+        transparent calc(25% - 0.5px),
+        rgba(0, 0, 0, 0.14) calc(25% - 0.5px),
+        rgba(0, 0, 0, 0.14) calc(25% + 0.5px),
+        transparent calc(25% + 0.5px)
+      ),
+      linear-gradient(
+        to right,
+        transparent calc(50% - 0.5px),
+        rgba(0, 0, 0, 0.14) calc(50% - 0.5px),
+        rgba(0, 0, 0, 0.14) calc(50% + 0.5px),
+        transparent calc(50% + 0.5px)
+      ),
+      linear-gradient(
+        to right,
+        transparent calc(75% - 0.5px),
+        rgba(0, 0, 0, 0.14) calc(75% - 0.5px),
+        rgba(0, 0, 0, 0.14) calc(75% + 0.5px),
+        transparent calc(75% + 0.5px)
+      );
+  }
+}
+
 .mdr-allbar {
   position: relative;
   z-index: 1;
