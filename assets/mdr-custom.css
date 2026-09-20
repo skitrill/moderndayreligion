@@ -1965,6 +1965,10 @@ main[data-template='index']
   height: 100%;
   display: block;
   pointer-events: none;
+  /* now a child of .mdr-allbar-wrap, not of .mdr-allbar (see
+     mdr-header-enhance.liquid) -- needs its own stacking above the
+     button's z-index: 1 fill to still paint on top of it. */
+  z-index: 2;
 }
 
 .mdr-allbar.is-open {
