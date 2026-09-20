@@ -1753,13 +1753,13 @@ cart-drawer [class*='price'] {
   color: #3a3ec4 !important;
 }
 
-/* header cart -> plain off-white text, no background */
+/* header cart -> yellow text, no background */
 .header__cart-link,
 #header-component .header__cart-link,
 #header-component a[href$='/cart'] {
   display: inline-block !important;
   padding: 4px 10px !important;
-  color: #000000 !important;
+  color: #ffd400 !important;
   background-color: transparent !important;
   background-image: none !important;
   border: 0 !important;
@@ -1772,13 +1772,13 @@ cart-drawer [class*='price'] {
 
 .header__cart-link *,
 #header-component .header__cart-link * {
-  color: #000000 !important;
+  color: #ffd400 !important;
 }
 
 .header__cart-link:hover,
 #header-component .header__cart-link:hover {
   background-color: transparent !important;
-  color: #000000 !important;
+  color: #ffd400 !important;
 }
 
 /* lookbook heading -> follow the red default */
