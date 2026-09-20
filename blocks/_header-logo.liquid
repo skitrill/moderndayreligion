@@ -173,6 +173,12 @@
     object-fit: contain;
     height: 18px;
     width: auto;
+    /* the source artwork is solid red on transparent -- on the red WEBRACK
+       header bar that's red-on-red, barely legible. Recolours the flat
+       red fill to white (brightness(0) turns it solid black keeping the
+       transparency, invert(1) flips that black to white) instead of
+       needing a second logo asset -- same artwork, just legible here. */
+    filter: brightness(0) invert(1);
 
     @media screen and (min-width: 750px) {
       height: 24px;
