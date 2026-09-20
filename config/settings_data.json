@@ -54,7 +54,7 @@
     "badge_corner_radius": 0,
     "badge_sale_background_color": "{{ settings.color_palette.background }}",
     "badge_sale_text_color": "{{ settings.color_palette.foreground }}",
-    "badge_sold_out_background_color": "#2a2822",
+    "badge_sold_out_background_color": "#4a4a4a",
     "badge_sold_out_text_color": "{{ settings.color_palette.foreground }}",
     "badge_text_transform": "uppercase",
     "palette_primary_button_background": "{{ settings.color_palette.foreground }}",
@@ -116,10 +116,10 @@
     },
     "content_for_index": [],
     "color_palette": {
-      "background": "#F6F3E7",
-      "foreground": "#000000",
+      "background": "#000000",
+      "foreground": "#FFFFFF",
       "color1": "#A6A29A",
-      "color2": "#5C564A"
+      "color2": "#8F8879"
     }
   },
   "presets": {
