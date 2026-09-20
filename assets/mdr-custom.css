@@ -939,10 +939,8 @@ body {
    34% max-width -- "Sold out" was landing squeezed into that narrow
    slice with the rest of the bar just empty black space where
    Buy-with-Shop used to be. Let that wrapper claim the full row instead,
-   and turn the button red/off-white so "sold out" reads as a clear state
-   change. Both toned down a notch from full brightness/saturation --
-   a slightly muted red and a dimmed (not pure) off-white read as "off /
-   unavailable" rather than as loud as an active call-to-action. */
+   and turn the button ash/grey so "sold out" reads as a clear, inert
+   state change against the red "Buy with Shop" button above it. */
 .product-form-buttons > span:has(.add-to-cart-button[disabled]),
 .product-form-buttons > span:has(.product-form__submit[disabled]) {
   max-width: 100% !important;
@@ -951,7 +949,7 @@ body {
 
 .product-form-buttons .add-to-cart-button:not(.sticky-add-to-cart__button)[disabled] {
   width: 100% !important;
-  background: #6e1a1a !important;
+  background: #4a4a4a !important;
   color: rgba(255, 255, 255, 0.7) !important;
   opacity: 1 !important;
   border: 0 !important;
@@ -964,15 +962,14 @@ body {
   display: none !important;
 }
 
-/* ---- "Buy with Shop" -- left in Shop Pay's own native colour. Two
-   different recolour attempts lived here (navy, then a cream/khaki
-   mix-blend-mode tint) and neither read well -- retinting a button that
-   renders inside a closed shadow root is inherently a hack (a colour
-   overlay, not real styling), and it also left a visible seam where the
-   overlay didn't quite cover the real content. Payment buttons are
-   commonly left in their platform's own colour anyway (users recognise
-   the real Shop Pay / Apple Pay / PayPal look as legitimate) -- simplest
-   and most reliable is to not fight it. */
+/* ---- "Buy with Shop" -- third recolour attempt (explicitly requested
+   again despite the two earlier failures below). Still a hack: the real
+   button paints inside a closed shadow root/cross-origin iframe, so there
+   is no way to touch its actual fill. This is a red mix-blend-mode overlay
+   sitting on top of the real button -- pointer-events:none so taps still
+   reach the real button underneath -- not a true recolour of the button
+   itself. Expect it to look like a tint over indigo, not flat pure red,
+   and expect the same seam risk noted below at the button's own edges. */
 .shopify-payment-button {
   position: relative;
   /* a backstop, not a recolour -- the page's default zoomed mode (CSS
@@ -982,6 +979,24 @@ body {
      native indigo behind it means any such gap shows more indigo, not a
      stripe of the page's black. */
   background: #5a31f4;
+}
+
+/* Two earlier recolour attempts (navy, then a cream/khaki mix-blend-mode
+   tint) were reverted here -- neither read well, and the overlay left a
+   visible seam where it didn't quite cover the real content. */
+.product-form-buttons shop-pay-wallet-button {
+  position: relative;
+  isolation: isolate;
+}
+
+.product-form-buttons shop-pay-wallet-button::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: #ff0000;
+  mix-blend-mode: color;
+  pointer-events: none;
+  z-index: 2;
 }
 
 /* ==========================================================================
