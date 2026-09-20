@@ -975,45 +975,22 @@ body {
   display: none !important;
 }
 
-/* ---- "Buy with Shop" -- now black, to match ADD TO CART. Still a hack:
-   the real button paints inside a closed shadow root/cross-origin iframe,
-   so there is no way to touch its actual fill. This is a mix-blend-mode
-   overlay sitting on top of the real button -- pointer-events:none so taps
-   still reach the real button underneath -- not a true recolour. Black is
-   an edge case for the "color" blend mode specifically: black has no hue/
-   saturation, so blending with it desaturates the backdrop to greyscale
-   while KEEPING the backdrop's own luminance (that's what keeps the white
-   "Shop" text legible -- it stays bright/white since it was already near
-   the top of the luminance range). The practical result reads as a dark
-   charcoal, not a literal #000 -- forcing true flat black would also flatten
-   the white text into the same black and make the button unreadable, which
-   defeats the point. */
+/* ---- "Buy with Shop" -- left in Shop Pay's own native colour, on purpose.
+   Confirmed (DOM inspection): the real button renders inside a CLOSED
+   shadow root (<shop-pay-wallet-button>, part of Shopify's own
+   <shopify-accelerated-checkout> component). There is no CSS custom
+   property, theme setting, or public API that recolours it -- Shop Pay is
+   a branded payment method (like Apple Pay/Google Pay) that Shopify
+   deliberately does not let merchants restyle, for payment-method brand
+   consistency. Several tint/overlay hacks (navy, cream/khaki, red, black --
+   all via mix-blend-mode on a pointer-events:none layer on top of the real
+   button) were tried here across earlier revisions and all had the same
+   problem: not a true recolour, a visible seam at the button's own edge,
+   and a result that never actually matched the requested colour. Faking it
+   further isn't worth it -- if a real black "Buy with Shop" button matters,
+   it needs Shopify to add that capability; there's no theme-side fix. */
 .shopify-payment-button {
   position: relative;
-  /* matches the overlay below, not the native indigo -- so any hairline
-     seam at the edge (the cross-origin content's real paint not always
-     lining up with the CSS box in zoomed mode) shows dark behind it too,
-     not leftover indigo. */
-  background: #000000;
-}
-
-/* Earlier recolour attempts (navy, then a cream/khaki mix-blend-mode tint,
-   then red) were reverted/changed here -- the untinted ones didn't read
-   well and left a visible seam where the overlay didn't quite cover the
-   real content. */
-.product-form-buttons shop-pay-wallet-button {
-  position: relative;
-  isolation: isolate;
-}
-
-.product-form-buttons shop-pay-wallet-button::after {
-  content: '';
-  position: absolute;
-  inset: 0;
-  background: #000000;
-  mix-blend-mode: color;
-  pointer-events: none;
-  z-index: 2;
 }
 
 /* ==========================================================================
@@ -1839,10 +1816,30 @@ main[data-template='index']
 }
 
 /* ==========================================================================
-   WEBRACK » bar -- a line under the MDR logo, its left edge on the product
-   grid's left edge. Closed = a dim pill; tap and it slides open sideways
-   into the collection list; tap again / away to collapse.
+   WEBRACK » bar -- a homepage tab, not a menu item. Closed = a dim pill
+   poking up out of the homepage content into the header; tap and it slides
+   open sideways into the collection list; tap again / away to collapse.
+
+   Full rework (was: a diagonal-cut "flag" shape drawn with clip-path, its
+   outline built as a separate JS-positioned SVG polyline that only settled
+   into the right place after a layout pass -- looked improvised, and could
+   be visibly wrong until something forced a reflow). Now:
+     - the header gets its own plain, permanent border-bottom
+     - the WEBRACK button is a plain rectangle with a real CSS border on
+       all four sides -- the exact same declaration as the border below,
+       and the exact same colour the product grid's own hairlines use
+       (rgba(0, 0, 0, 0.14)), so every structural line on the page (grid,
+       header, WEBRACK) is pixel-identical in weight, colour, opacity and
+       crispness -- one border system, not several.
+     - the button sits in the off-white homepage colour (not the header's
+       cream), and overlaps upward into the header by a fixed CSS offset
+       (no JS, no measurement, correct on the very first paint) -- reading
+       as a tab cut out of the page, not a header control.
    ========================================================================== */
+#header-component {
+  border-bottom: 1px solid rgba(0, 0, 0, 0.14);
+}
+
 /* a full-width strip pinned just under the site header (present on every
    page). It stays put while the page scrolls -- a persistent function bar
    right below the MDR logo. */
@@ -1858,20 +1855,16 @@ main[data-template='index']
   top: calc(var(--header-height, 60px) - 1px);
   z-index: 15;
   margin: 0;
-  /* flush at the true left edge now, not lined up under the logo. No
-     bottom padding either -- the button's own bottom edge now sits flush
-     against the page below it */
-  padding: 3px 0 0 0;
-  /* matches the header bar above it -- the two read as one continuous
-     header space, with only the WEBRACK button itself (still the page's
-     off-white) standing apart from it. Still opaque (not transparent),
-     since this is sticky and needs to hide scrolled content behind it. */
-  background: #e9e1c4;
+  padding: 0;
+  /* the homepage's own off-white -- this strip is content territory, not
+     an extension of the header, so it matches the page, not the cream
+     header above it. Still opaque (not transparent), since this is sticky
+     and needs to hide scrolled content behind it. */
+  background: #f6f3e7;
 }
 
 .mdr-allbar {
   position: relative;
-  z-index: 1;
   box-sizing: border-box;
   display: inline-flex;
   align-items: center;
@@ -1888,8 +1881,15 @@ main[data-template='index']
      2px originally); reduced back down ~20% from the first pass (9px),
      which read as more height than actually needed */
   padding: 7px 0;
-  border: 0;
-  background: transparent;
+  /* the one border system, shared exactly with the header above and the
+     product grid below -- see the big comment at the top of this block. */
+  border: 1px solid rgba(0, 0, 0, 0.14);
+  /* pulls the tab up out of the wrap's own off-white strip so it overlaps
+     the header, "cutting into" the header's clean bottom border rather
+     than just sitting flush below it -- a fixed offset, not measured, so
+     it's correct on the very first paint with no JS involved. */
+  margin-top: -14px;
+  background: #f6f3e7;
   color: #000;
   font: inherit;
   font-size: 0.74rem;
@@ -1899,9 +1899,9 @@ main[data-template='index']
   cursor: pointer;
   -webkit-tap-highlight-color: transparent;
   /* the dim-while-idle/full-once-open opacity lives on .mdr-allbar__toggle
-     now (below), not here -- this rule also draws the border (SVG) and
-     the background fill, and a tap should only brighten the label, not
-     the box around it */
+     now (below), not here -- this rule also draws the border and the
+     background fill, and a tap should only brighten the label, not the
+     box around it */
   /* 0.26s, tightened from 0.34s -- snappier open/close, still using the
      same ease-out curve so it settles smoothly rather than just stopping */
   transition: width 0.26s cubic-bezier(0.16, 1, 0.3, 1);
@@ -1918,71 +1918,16 @@ main[data-template='index']
   animation: none !important;
 }
 
-/* WEBRACK and RETURN share one ribbon/flag-tail shape: a plain rectangle
-   with the top-right corner cut on a diagonal down to the bottom-right
-   corner. The fill is one clipped polygon directly on .mdr-allbar itself
-   (dark-brown tape pattern, same as the product cards). The outline is a
-   separate SVG stroke (.mdr-allbar__border, markup built in
-   mdr-header-enhance.liquid) instead of a second inset clip-path layer --
-   that two-layer trick offset the inner cut by a flat +1px versus the
-   outer cut's 18px, which is NOT the same as insetting 1px perpendicular
-   to the diagonal (the two cut lines had different slopes and so weren't
-   parallel), so the "border" between them tapered along the diagonal's
-   length instead of staying a uniform width -- the "spear" look. An SVG
-   stroke has neither problem: it's uniform width at any angle. That same
-   stroke now ALSO draws the menu section's own bottom border, as one
-   continuous polyline spanning the whole .mdr-allbar-wrap (built + kept in
-   sync with the wrap's real width in mdr-header-enhance.liquid) -- menu
-   border, button outline, and menu border picking back up past the button
-   are one unbroken line, not two separate elements meeting at a point. */
-.mdr-allbar {
-  clip-path: polygon(0 0, calc(100% - 18px) 0, 100% 100%, 0 100%);
-  background-color: #f6f3e7;
-  background-image: none;
-}
-
-/* Lives on .mdr-allbar-wrap now (a sibling of .mdr-allbar, appended just
-   before it -- see mdr-header-enhance.liquid), spanning the wrap's full
-   width/height, not just the button's own box. z-index below the button
-   (which has z-index:1) so plain DOM/paint order already puts the button
-   on top -- when WEBRACK opens and the button covers the full strip, this
-   line is simply covered along with it, same as its outline portion
-   already was. */
-.mdr-allbar__border {
-  position: absolute;
-  inset: 0;
-  width: 100%;
-  height: 100%;
-  z-index: 0;
-  display: block;
-  pointer-events: none;
-}
-
 .mdr-allbar.is-open {
-  /* overrides the fixed 95px above -- the border needs to actually strike
-     full width when open, not stay pinned to the closed pill size */
+  /* the border needs to actually strike full width when open, not stay
+     pinned to the closed pill size */
   width: 100%;
-  /* square the corner back off instead of keeping the cut -- with no
-     shape left to close diagonally (top and bottom already match), a
-     plain rectangle reads correctly here */
-  clip-path: none;
-  /* once open, the ribbon side goes plain black -- only the list panel next
-     to it keeps the tape pattern (see .mdr-allbar__list) -- so the two
-     sections read as visually distinct again instead of one flat surface */
-  background-image: none;
-  /* squared off now, so plain straight border instead of the SVG's
-     diagonal-cut outline -- still skipping the bottom edge, which stays
-     the wrap's job alone. Thinner than the closed ribbon's 2px: at full
-     row width (button + the whole title list), 2px read as heavy across
-     that much length -- 1px keeps it a hairline the way the list itself
-     otherwise reads. No left edge either once open -- the bar already
-     sits flush at the true left edge (see .mdr-allbar-wrap), so a
-     leading vertical stroke there just cut the row in two instead of
-     reading as one open, unbroken strip top to end. Same alpha as the
-     wrap's own permanent border-bottom (0.16, not the closed ribbon's
-     0.3) so top and bottom read as the same weight instead of the top
-     looking bolder than the bottom right below it. */
-  border-top: 1px solid rgba(0, 0, 0, 0.16);
+  /* no leading vertical stroke once open -- the bar already sits flush at
+     the true left edge (see .mdr-allbar-wrap), so a left border there
+     just cuts the open row in two instead of reading as one unbroken
+     strip top to end. Top/right/bottom keep the button's own border,
+     unchanged -- same declaration, same weight, open or closed. */
+  border-left: 0;
 }
 
 .mdr-allbar__toggle {
