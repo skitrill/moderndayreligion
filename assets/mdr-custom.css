@@ -1894,7 +1894,7 @@ main[data-template='index']
      the tab's top lands roughly a third of the way down the ~67px header
      (leaving room above for the logo row) and its bottom lands a couple
      px past the header's own bottom border, into the homepage. */
-  margin-top: -47px;
+  margin-top: -26px;
   background: #f6f3e7;
   color: #000;
   font: inherit;
