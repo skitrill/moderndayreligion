@@ -729,12 +729,12 @@ main[data-template='index'] [id$='__product_list_fa6P9H'] .section-resource-list
 }
 
 body {
-  background-color: #ffffff !important;
+  background-color: #000000 !important;
   background-image: none !important;
 }
 
 .product-card__content {
-  background-color: #ffffff !important;
+  background-color: #000000 !important;
   background-image: var(--mdr-tape) !important;
   border: 0 !important;
   box-shadow: none !important;
@@ -1954,7 +1954,7 @@ main[data-template='index']
    it's uniform width at any angle. */
 .mdr-allbar {
   clip-path: polygon(0 0, calc(100% - 18px) 0, 100% 100%, 0 100%);
-  background-color: #ffffff;
+  background-color: #000000;
   background-image: none;
 }
 
@@ -2125,7 +2125,7 @@ main[data-template='index']
      spans the full row, list included. A second border-top here used to
      sit right on top of that one, a hair off from it, and read as a
      double line. */
-  background-color: #ffffff;
+  background-color: #000000;
   background-image: none;
 }
 
@@ -2371,7 +2371,7 @@ main[data-template='index'] [id$='__product_list_fa6P9H'] .resource-list__item a
 main[data-template='index'] [id$='__product_list_fa6P9H'] .card-gallery,
 main[data-template='index'] [id$='__product_list_fa6P9H'] .product-media-container {
   position: relative;
-  background-color: #ffffff !important;
+  background-color: #000000 !important;
   background-image: none !important;
   border: 0 !important;
   border-radius: 0 !important;
