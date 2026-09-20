@@ -28,6 +28,19 @@
   --font-accent--family: 'PGF Qualta', 'Anonymous Pro', monospace !important;
 }
 
+/* ...except prices: this demo font replaces the $ glyph with a "DEMO"
+   watermark graphic (a standard Fontspring demo restriction), which broke
+   price legibility everywhere. Prices alone stay on the original font,
+   set directly (not through the --font-*--family variables above) so they
+   don't inherit the new typeface no matter which of those roles a given
+   price element would otherwise pick up. */
+.price,
+.price *,
+product-price,
+product-price * {
+  font-family: 'Anonymous Pro', ui-monospace, monospace !important;
+}
+
 /* ---- Global: shrink the whole page a touch ---------------------------------- */
 html {
   font-size: 15px;
