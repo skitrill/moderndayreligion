@@ -516,15 +516,15 @@ product-price *,
 }
 
 /* ---- Product-page copy + colour option: match the "© 2026" footer text
-   (rgba(255, 255, 255, 0.6)); the brown price keeps its own colour -------- */
+   (rgba(0, 0, 0, 0.6)); the brown price keeps its own colour -------- */
 .variant-picker .variant-option[data-testid='variant-option-single'],
 .variant-picker .variant-option[data-testid='variant-option-single'] .variant-option__swatch-value,
 .variant-picker .variant-option__swatch-value {
-  color: rgba(255, 255, 255, 0.6) !important;
+  color: rgba(0, 0, 0, 0.6) !important;
 }
 
 main .product-information__grid {
-  --color-foreground: rgba(255, 255, 255, 0.6);
+  --color-foreground: rgba(0, 0, 0, 0.6);
 }
 
 main .product-information__grid :is(h1, h2, h3, h4, h5, h6, p, li, legend,
@@ -532,7 +532,7 @@ main .product-information__grid :is(h1, h2, h3, h4, h5, h6, p, li, legend,
   .size-chart, .size-chart__trigger, .size-chart__trigger-text):not(.price):not(product-price),
 main .product-information__grid .rte:not(product-price) :is(span, p, li, a, strong, em),
 main .product-information__grid .text-block:not(product-price) :is(span, p, li, a, strong, em) {
-  color: rgba(255, 255, 255, 0.6) !important;
+  color: rgba(0, 0, 0, 0.6) !important;
 }
 
 /* ---- Mobile: product hero image size ------------------------------------- */
@@ -554,7 +554,7 @@ main .product-information__grid .text-block:not(product-price) :is(span, p, li, 
 .cart-items__title,
 .cart-items__title a,
 .cart-items__title * {
-  color: #ffffff !important;
+  color: #000000 !important;
 }
 
 .cart-items__price,
@@ -710,7 +710,7 @@ main[data-template='index'] [id$='__product_list_fa6P9H'] .section-resource-list
   :is(h1, h2, h3, h4, .text-block, [class*='title']),
 main[data-template='index'] [id$='__product_list_fa6P9H'] .section-resource-list__header
   :is(h1, h2, h3, h4, .text-block) * {
-  color: #ffffff !important;
+  color: #000000 !important;
 }
 
 /* ==========================================================================
@@ -729,12 +729,12 @@ main[data-template='index'] [id$='__product_list_fa6P9H'] .section-resource-list
 }
 
 body {
-  background-color: #000000 !important;
+  background-color: #f6f3e7 !important;
   background-image: none !important;
 }
 
 .product-card__content {
-  background-color: #000000 !important;
+  background-color: #f6f3e7 !important;
   background-image: var(--mdr-tape) !important;
   border: 0 !important;
   box-shadow: none !important;
@@ -774,27 +774,27 @@ body {
    had internal card-to-card hairlines but no outer edge, reading as
    incomplete/missing lines right where the section starts and ends. ---- */
 .product-recommendations {
-  border-top: 1px solid rgba(255, 255, 255, 0.14) !important;
+  border-top: 1px solid rgba(0, 0, 0, 0.14) !important;
 }
 
 .product-recommendations .resource-list,
 .product-recommendations .resource-list--grid {
   column-gap: 2px !important;
   row-gap: 2px !important;
-  background: rgba(255, 255, 255, 0.14) !important;
+  background: rgba(0, 0, 0, 0.14) !important;
 }
 
 .product-recommendations .resource-list--grid {
-  border-bottom: 1px solid rgba(255, 255, 255, 0.14) !important;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.14) !important;
 }
 
 .product-recommendations .resource-list__item {
-  background: #000000 !important;
+  background: #f6f3e7 !important;
 }
 
 .product-recommendations .product-card,
 .product-recommendations .product-card__content {
-  background: #000000 !important;
+  background: #f6f3e7 !important;
 }
 
 /* auto-fit (not a fixed repeat count) so a lone recommendation doesn't
@@ -824,7 +824,7 @@ body {
 
 /* keep the discount input's own outline */
 .cart-discount__input {
-  border: 1px solid var(--color-input-border, #8f8879) !important;
+  border: 1px solid var(--color-input-border, #5c564a) !important;
 }
 
 /* ---- Cart line items: much less air between each row ---------------------
@@ -854,7 +854,7 @@ body {
   flex-wrap: nowrap !important;
   align-items: stretch !important;
   gap: 0 !important;
-  border: 1px solid rgba(255, 255, 255, 0.3) !important;
+  border: 1px solid rgba(0, 0, 0, 0.3) !important;
   /* anchor for the quantity/limit error message below -- position:
      relative, not a layout change, so this doesn't disturb the row's own
      sizing */
@@ -885,9 +885,9 @@ body {
   margin-bottom: 8px;
   box-sizing: border-box !important;
   padding: 6px 8px !important;
-  border: 1px solid rgba(255, 255, 255, 0.3) !important;
-  background: #000000;
-  color: #ffffff !important;
+  border: 1px solid rgba(0, 0, 0, 0.3) !important;
+  background: #f6f3e7;
+  color: #000000 !important;
   font-size: 0.62rem !important;
   line-height: 1.3 !important;
 }
@@ -1210,7 +1210,7 @@ button.link,
   align-items: stretch;
   width: max-content;
   height: 22px;
-  background: #000000;
+  background: #f6f3e7;
   border: 1px solid rgb(var(--color-foreground-rgb) / 0.3);
   pointer-events: auto;
 }
@@ -1308,7 +1308,7 @@ button.link,
   width: 190px;
   margin: 0;
   padding: 5px 7px;
-  background: #000000;
+  background: #f6f3e7;
   border: 1px solid rgb(var(--color-foreground-rgb) / 0.3);
   font-family: var(--font-accent--family, inherit);
   font-size: 0.52rem;
@@ -1624,10 +1624,10 @@ main[data-template='index'] [id$='__product_list_fa6P9H'] .resource-list__item a
 *,
 ::before,
 ::after {
-  --color-foreground: #ffffff !important;
-  --color-foreground-rgb: 255 255 255 !important;
-  --color-foreground-muted: rgb(255 255 255 / 0.72) !important;
-  --color-foreground-subdued: rgb(255 255 255 / 0.45) !important;
+  --color-foreground: #000000 !important;
+  --color-foreground-rgb: 0 0 0 !important;
+  --color-foreground-muted: rgb(0 0 0 / 0.72) !important;
+  --color-foreground-subdued: rgb(0 0 0 / 0.45) !important;
 }
 
 /* ==========================================================================
@@ -1652,8 +1652,8 @@ select,
    buttons / inputs with their own colours are untouched) */
 main .product-information__grid,
 main .product-information__grid .product-details {
-  --color-foreground: rgba(255, 255, 255, 0.6) !important;
-  --color-foreground-rgb: 255 255 255 !important;
+  --color-foreground: rgba(0, 0, 0, 0.6) !important;
+  --color-foreground-rgb: 0 0 0 !important;
   --color-foreground-muted: rgb(0 0 0 / 0.5) !important;
 }
 
@@ -1681,7 +1681,7 @@ main .product-information__grid.product-information__grid .size-chart * {
    no tracking) while the homepage card title uses "rte" (1.1 line-height,
    0.1875px tracking). Match those too so they read the same size. -------- */
 main .product-information__grid.product-information__grid .product-details h1 {
-  color: #ffffff !important;
+  color: #000000 !important;
   line-height: 1.1 !important;
   letter-spacing: 0.1875px !important;
 }
@@ -1698,7 +1698,7 @@ main .product-information__grid.product-information__grid .product-details h1 {
 #header-component .header-logo,
 #header-component .header-logo span,
 #header-component [data-testid='header-logo'] {
-  color: #ffffff !important;
+  color: #000000 !important;
 }
 
 
@@ -1717,7 +1717,7 @@ cart-drawer,
 cart-drawer *,
 .cart-drawer,
 .cart-drawer * {
-  color: #ffffff !important;
+  color: #000000 !important;
 }
 
 /* ...but solid (primary) buttons keep their own white-on-black button text --
@@ -1794,7 +1794,7 @@ cart-drawer [class*='price'] {
 
 /* lookbook heading -> follow the red default */
 .mdr-lookbook__heading {
-  color: #ffffff !important;
+  color: #000000 !important;
 }
 
 /* collection / product page headings render in the theme's brighter #000000 --
@@ -1803,7 +1803,7 @@ main[data-template='collection'] h1,
 main[data-template='collection'] .text-block :is(h1, h2, h3),
 main[data-template='product'] .product-title,
 main[data-template='product'] .product-title * {
-  color: #ffffff !important;
+  color: #000000 !important;
 }
 
 /* ==========================================================================
@@ -1824,7 +1824,7 @@ main[data-template='product'] .product-title * {
   /* inherit the site's default type -- no custom family / tracking / size */
   font: inherit;
   text-transform: uppercase;
-  color: #ffffff;
+  color: #000000;
   text-decoration: none;
   border: 0;
   line-height: 1;
@@ -1889,9 +1889,9 @@ main[data-template='index']
   padding: 3px 0 0 0;
   /* matches the header bar above it -- the two read as one continuous
      header space, with only the WEBRACK button itself (still the page's
-     black) standing apart from it. Still opaque (not transparent),
+     off-white) standing apart from it. Still opaque (not transparent),
      since this is sticky and needs to hide scrolled content behind it. */
-  background: #ed1c24;
+  background: #e9e1c4;
 }
 
 .mdr-allbar {
@@ -1915,7 +1915,7 @@ main[data-template='index']
   padding: 7px 0;
   border: 0;
   background: transparent;
-  color: #fff;
+  color: #000;
   font: inherit;
   font-size: 0.74rem;
   text-transform: uppercase;
@@ -1954,7 +1954,7 @@ main[data-template='index']
    it's uniform width at any angle. */
 .mdr-allbar {
   clip-path: polygon(0 0, calc(100% - 18px) 0, 100% 100%, 0 100%);
-  background-color: #000000;
+  background-color: #f6f3e7;
   background-image: none;
 }
 
@@ -1985,7 +1985,7 @@ main[data-template='index']
      already sits flush at the true left edge (see .mdr-allbar-wrap), so a
      leading vertical stroke there just cut the row in two instead of
      reading as one open, unbroken strip top to end. */
-  border-top: 1px solid rgba(255, 255, 255, 0.14);
+  border-top: 1px solid rgba(0, 0, 0, 0.14);
 }
 
 .mdr-allbar__toggle {
@@ -2125,14 +2125,14 @@ main[data-template='index']
      spans the full row, list included. A second border-top here used to
      sit right on top of that one, a hair off from it, and read as a
      double line. */
-  background-color: #000000;
+  background-color: #f6f3e7;
   background-image: none;
 }
 
 .mdr-allbar__list a {
   display: inline-flex;
   align-items: center;
-  color: #fff;
+  color: #000;
   text-decoration: none;
   opacity: 0.72;
   white-space: nowrap;
@@ -2330,19 +2330,19 @@ main[data-template='index']
 /* 1px grid gaps read as hairlines: the grid paints a faint line colour and
    every card fills its cell with solid black on top. */
 main[data-template='index'] [id$='__product_list_fa6P9H'] .resource-list__item {
-  background: #000000 !important;
+  background: #f6f3e7 !important;
 }
 
 main[data-template='index'] [id$='__product_list_fa6P9H'] .resource-list--grid {
-  background: rgba(255, 255, 255, 0.14) !important;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.14) !important;
+  background: rgba(0, 0, 0, 0.14) !important;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.14) !important;
 }
 
 /* card = a plain column, a touch of breathing room below the price so it
    doesn't sit flush on the row's hairline */
 main[data-template='index'] [id$='__product_list_fa6P9H'] .product-card,
 main[data-template='index'] [id$='__product_list_fa6P9H'] .product-card__content {
-  background: #000000 !important;
+  background: #f6f3e7 !important;
   background-image: none !important;
   box-shadow: none !important;
   padding: 0 !important;
@@ -2371,7 +2371,7 @@ main[data-template='index'] [id$='__product_list_fa6P9H'] .resource-list__item a
 main[data-template='index'] [id$='__product_list_fa6P9H'] .card-gallery,
 main[data-template='index'] [id$='__product_list_fa6P9H'] .product-media-container {
   position: relative;
-  background-color: #000000 !important;
+  background-color: #f6f3e7 !important;
   background-image: none !important;
   border: 0 !important;
   border-radius: 0 !important;
@@ -2414,10 +2414,10 @@ main[data-template='index'] [id$='__product_list_fa6P9H'] .card-gallery::after {
   letter-spacing: 0.03em;
   line-height: 1;
   text-transform: uppercase;
-  color: rgba(255, 255, 255, 0.55);
+  color: rgba(0, 0, 0, 0.55);
   background: transparent;
   padding: 2px 7px;
-  border: 1px solid rgba(255, 255, 255, 0.3);
+  border: 1px solid rgba(0, 0, 0, 0.3);
   pointer-events: none;
 }
 
@@ -2453,7 +2453,7 @@ main[data-template='index'] [id$='__product_list_fa6P9H'] .product-card product-
   line-height: 1.15 !important;
   letter-spacing: normal !important;
   text-align: left !important;
-  color: #ffffff !important;
+  color: #000000 !important;
   text-transform: uppercase !important;
 }
 
@@ -2483,7 +2483,7 @@ main[data-template='index'] [id$='__product_list_fa6P9H'] .product-card .text-bl
 /* "sold out" price copy -> dim grey like supreme */
 main[data-template='index'] [id$='__product_list_fa6P9H'] .product-card product-price:has(.price--sold-out) .price,
 main[data-template='index'] [id$='__product_list_fa6P9H'] .product-card .price--sold-out {
-  color: rgba(255, 255, 255, 0.4) !important;
+  color: rgba(0, 0, 0, 0.4) !important;
 }
 
 /* ==========================================================================
