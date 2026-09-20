@@ -1887,11 +1887,12 @@ main[data-template='index']
      bottom padding either -- the button's own bottom edge now sits flush
      against the page below it */
   padding: 3px 0 0 0;
-  /* matches the header bar above it -- the two read as one continuous
-     header space, with only the WEBRACK button itself (still the page's
-     off-white) standing apart from it. Still opaque (not transparent),
+  /* black, deliberately NOT matching the cream header above it -- the
+     WEBRACK button itself keeps its own off-white fill (unchanged, see
+     .mdr-allbar below) so it now reads as a distinct cutout against this
+     bar rather than blending into it. Still opaque (not transparent),
      since this is sticky and needs to hide scrolled content behind it. */
-  background: #e9e1c4;
+  background: #000000;
 }
 
 .mdr-allbar {
