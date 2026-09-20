@@ -1851,70 +1851,6 @@ main[data-template='index']
   background: #e9e1c4;
 }
 
-/* Extend the product grid's own vertical divider line up through the header
-   and the WEBRACK strip too -- same column positions (2 cols on phone, 4 on
-   desktop), so the whole top of the page reads as one structured grid
-   instead of the grid only starting once the product cards do.
-   HOMEPAGE ONLY (body:has(main[data-template='index'])): header and WEBRACK
-   are shared, sitewide elements, but this line has nothing to connect to on
-   any other page (product, cart, collection...) -- there it just dangled
-   below the WEBRACK/RETURN bar pointing at nothing, reading as a stray,
-   broken line rather than a deliberate grid. A pseudo-element overlay, not
-   a real grid track -- doesn't touch the header's own background system or
-   reflow its content, and pointer-events:none keeps it out of the way of
-   taps. z-index:0 so it sits under the WEBRACK button itself: once WEBRACK
-   opens (width:100%), its own opaque fill covers this line rather than
-   fighting it, and the closed pill (over near the left edge, off in its own
-   off-white) never overlaps these centered lines anyway -- it still reads
-   as blending into the page either way. */
-body:has(main[data-template='index']) #header-component,
-body:has(main[data-template='index']) .mdr-allbar-wrap {
-  position: relative;
-}
-
-body:has(main[data-template='index']) #header-component::after,
-body:has(main[data-template='index']) .mdr-allbar-wrap::after {
-  content: '';
-  position: absolute;
-  inset: 0;
-  z-index: 0;
-  pointer-events: none;
-  background-image: linear-gradient(
-    to right,
-    transparent calc(50% - 0.5px),
-    rgba(0, 0, 0, 0.14) calc(50% - 0.5px),
-    rgba(0, 0, 0, 0.14) calc(50% + 0.5px),
-    transparent calc(50% + 0.5px)
-  );
-}
-
-@media (min-width: 750px) {
-  body:has(main[data-template='index']) #header-component::after,
-  body:has(main[data-template='index']) .mdr-allbar-wrap::after {
-    background-image: linear-gradient(
-        to right,
-        transparent calc(25% - 0.5px),
-        rgba(0, 0, 0, 0.14) calc(25% - 0.5px),
-        rgba(0, 0, 0, 0.14) calc(25% + 0.5px),
-        transparent calc(25% + 0.5px)
-      ),
-      linear-gradient(
-        to right,
-        transparent calc(50% - 0.5px),
-        rgba(0, 0, 0, 0.14) calc(50% - 0.5px),
-        rgba(0, 0, 0, 0.14) calc(50% + 0.5px),
-        transparent calc(50% + 0.5px)
-      ),
-      linear-gradient(
-        to right,
-        transparent calc(75% - 0.5px),
-        rgba(0, 0, 0, 0.14) calc(75% - 0.5px),
-        rgba(0, 0, 0, 0.14) calc(75% + 0.5px),
-        transparent calc(75% + 0.5px)
-      );
-  }
-}
-
 .mdr-allbar {
   position: relative;
   z-index: 1;
@@ -1985,6 +1921,11 @@ body:has(main[data-template='index']) .mdr-allbar-wrap::after {
   clip-path: polygon(0 0, calc(100% - 18px) 0, 100% 100%, 0 100%);
   background-color: #f6f3e7;
   background-image: none;
+  /* same colour/thickness as the product grid's own hairlines -- but only
+     as wide as the button itself (the polygon's bottom edge runs flat,
+     corner to corner, so this naturally stops exactly where the button
+     does, not stretching across the rest of the header). */
+  border-bottom: 1px solid rgba(0, 0, 0, 0.14);
 }
 
 .mdr-allbar__border {
