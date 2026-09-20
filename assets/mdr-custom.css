@@ -1816,30 +1816,10 @@ main[data-template='index']
 }
 
 /* ==========================================================================
-   WEBRACK » bar -- a homepage tab, not a menu item. Closed = a dim pill
-   poking up out of the homepage content into the header; tap and it slides
-   open sideways into the collection list; tap again / away to collapse.
-
-   Full rework (was: a diagonal-cut "flag" shape drawn with clip-path, its
-   outline built as a separate JS-positioned SVG polyline that only settled
-   into the right place after a layout pass -- looked improvised, and could
-   be visibly wrong until something forced a reflow). Now:
-     - the header gets its own plain, permanent border-bottom
-     - the WEBRACK button is a plain rectangle with a real CSS border on
-       all four sides -- the exact same declaration as the border below,
-       and the exact same colour the product grid's own hairlines use
-       (rgba(0, 0, 0, 0.14)), so every structural line on the page (grid,
-       header, WEBRACK) is pixel-identical in weight, colour, opacity and
-       crispness -- one border system, not several.
-     - the button sits in the off-white homepage colour (not the header's
-       cream), and overlaps upward into the header by a fixed CSS offset
-       (no JS, no measurement, correct on the very first paint) -- reading
-       as a tab cut out of the page, not a header control.
+   WEBRACK » bar -- a line under the MDR logo, its left edge on the product
+   grid's left edge. Closed = a dim pill; tap and it slides open sideways
+   into the collection list; tap again / away to collapse.
    ========================================================================== */
-#header-component {
-  border-bottom: 1px solid rgba(0, 0, 0, 0.14);
-}
-
 /* a full-width strip pinned just under the site header (present on every
    page). It stays put while the page scrolls -- a persistent function bar
    right below the MDR logo. */
@@ -1853,22 +1833,22 @@ main[data-template='index']
      extra needed, and this rule's own size is untouched either way */
   position: sticky;
   top: calc(var(--header-height, 60px) - 1px);
-  /* the real <header> element (a sibling ancestor, not this wrap's own
-     parent) sticks at z-index:18 -- this wrap needs to beat that or the
-     WEBRACK tab's overlap into the header gets painted over/hidden by the
-     header's own background wherever the two overlap. */
-  z-index: 19;
+  z-index: 15;
   margin: 0;
-  padding: 0;
-  /* the homepage's own off-white -- this strip is content territory, not
-     an extension of the header, so it matches the page, not the cream
-     header above it. Still opaque (not transparent), since this is sticky
-     and needs to hide scrolled content behind it. */
-  background: #f6f3e7;
+  /* flush at the true left edge now, not lined up under the logo. No
+     bottom padding either -- the button's own bottom edge now sits flush
+     against the page below it */
+  padding: 3px 0 0 0;
+  /* matches the header bar above it -- the two read as one continuous
+     header space, with only the WEBRACK button itself (still the page's
+     off-white) standing apart from it. Still opaque (not transparent),
+     since this is sticky and needs to hide scrolled content behind it. */
+  background: #e9e1c4;
 }
 
 .mdr-allbar {
   position: relative;
+  z-index: 1;
   box-sizing: border-box;
   display: inline-flex;
   align-items: center;
@@ -1881,21 +1861,12 @@ main[data-template='index']
   width: 95px;
   overflow: hidden;
   white-space: nowrap;
-  /* tall enough that the tab reads as a real cutout reaching well up into
-     the header (not a small pill barely poking above the boundary) */
-  padding: 13px 0;
-  /* the one border system, shared exactly with the header above and the
-     product grid below -- see the big comment at the top of this block. */
-  border: 1px solid rgba(0, 0, 0, 0.14);
-  /* pulls the tab up out of the wrap's own off-white strip so it overlaps
-     the header, "cutting into" the header's clean bottom border rather
-     than just sitting flush below it -- a fixed offset, not measured, so
-     it's correct on the very first paint with no JS involved. Sized so
-     the tab's top lands roughly a third of the way down the ~67px header
-     (leaving room above for the logo row) and its bottom lands a couple
-     px past the header's own bottom border, into the homepage. */
-  margin-top: -26px;
-  background: #f6f3e7;
+  /* taller ribbon for an easy tap and a taller drag track once open (was
+     2px originally); reduced back down ~20% from the first pass (9px),
+     which read as more height than actually needed */
+  padding: 7px 0;
+  border: 0;
+  background: transparent;
   color: #000;
   font: inherit;
   font-size: 0.74rem;
@@ -1905,9 +1876,9 @@ main[data-template='index']
   cursor: pointer;
   -webkit-tap-highlight-color: transparent;
   /* the dim-while-idle/full-once-open opacity lives on .mdr-allbar__toggle
-     now (below), not here -- this rule also draws the border and the
-     background fill, and a tap should only brighten the label, not the
-     box around it */
+     now (below), not here -- this rule also draws the border (SVG) and
+     the background fill, and a tap should only brighten the label, not
+     the box around it */
   /* 0.26s, tightened from 0.34s -- snappier open/close, still using the
      same ease-out curve so it settles smoothly rather than just stopping */
   transition: width 0.26s cubic-bezier(0.16, 1, 0.3, 1);
@@ -1924,22 +1895,49 @@ main[data-template='index']
   animation: none !important;
 }
 
-.mdr-allbar.is-open {
-  /* the border needs to actually strike full width when open, not stay
-     pinned to the closed pill size */
+/* WEBRACK and RETURN share one ribbon/flag-tail shape: a plain rectangle
+   with the top-right corner cut on a diagonal down to the bottom-right
+   corner. The fill is one clipped polygon directly on .mdr-allbar itself.
+   The outline is a separate SVG stroke (.mdr-allbar__border, markup built
+   in mdr-header-enhance.liquid) instead of a second inset clip-path layer
+   -- a plain CSS border can't draw along a clip-path's cut edge (there's
+   no box edge there for it to follow), and a two-layer clip-path trick
+   tapers unevenly along the diagonal. An SVG stroke has neither problem:
+   it's uniform width at any angle. */
+.mdr-allbar {
+  clip-path: polygon(0 0, calc(100% - 18px) 0, 100% 100%, 0 100%);
+  background-color: #f6f3e7;
+  background-image: none;
+}
+
+.mdr-allbar__border {
+  position: absolute;
+  inset: 0;
   width: 100%;
-  /* no leading vertical stroke once open -- the bar already sits flush at
-     the true left edge (see .mdr-allbar-wrap), so a left border there
-     just cuts the open row in two instead of reading as one unbroken
-     strip top to end. Top/right/bottom keep the button's own border,
-     unchanged -- same declaration, same weight, open or closed. */
-  border-left: 0;
-  /* the closed tab's tall overlap (reaching well up into the header) is
-     fine at 95px wide over on the left, but at full row width it would
-     reach up far enough to cover the CART link at the header's top-right
-     -- pull back to a smaller overlap once open, just enough to still
-     read as attached to the header. */
-  margin-top: -14px;
+  height: 100%;
+  display: block;
+  pointer-events: none;
+}
+
+.mdr-allbar.is-open {
+  /* overrides the fixed 95px above -- the border needs to actually strike
+     full width when open, not stay pinned to the closed pill size */
+  width: 100%;
+  /* square the corner back off instead of keeping the cut -- with no
+     shape left to close diagonally (top and bottom already match), a
+     plain rectangle reads correctly here */
+  clip-path: none;
+  /* once open, the ribbon side goes plain black -- only the list panel next
+     to it keeps the tape pattern (see .mdr-allbar__list) -- so the two
+     sections read as visually distinct again instead of one flat surface */
+  background-image: none;
+  /* squared off now, so plain straight border instead of the SVG's
+     diagonal-cut outline -- still skipping the bottom edge, which stays
+     the wrap's job alone. No left edge either once open -- the bar
+     already sits flush at the true left edge (see .mdr-allbar-wrap), so a
+     leading vertical stroke there just cut the row in two instead of
+     reading as one open, unbroken strip top to end. */
+  border-top: 1px solid rgba(0, 0, 0, 0.14);
 }
 
 .mdr-allbar__toggle {
