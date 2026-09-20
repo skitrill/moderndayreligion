@@ -28,17 +28,18 @@
   --font-accent--family: 'PGF Qualta', 'Anonymous Pro', monospace !important;
 }
 
-/* ...except prices: this demo font replaces the $ glyph with a "DEMO"
-   watermark graphic (a standard Fontspring demo restriction), which broke
-   price legibility everywhere. Prices alone stay on the original font,
-   set directly (not through the --font-*--family variables above) so they
+/* ...except anywhere the demo font's glyph-watermarking breaks the actual
+   text -- prices ($ replaced by a "DEMO" watermark graphic) and the
+   [- page] zoom control (its [ ] bracket glyphs, further down this file)
+   are the ones found so far. Those go to Futura instead of PGF Qualta, set
+   directly (not through the --font-*--family variables above) so they
    don't inherit the new typeface no matter which of those roles a given
-   price element would otherwise pick up. */
+   element would otherwise pick up. */
 .price,
 .price *,
 product-price,
 product-price * {
-  font-family: 'Anonymous Pro', ui-monospace, monospace !important;
+  font-family: 'Futura', 'Futura PT', 'Century Gothic', sans-serif !important;
 }
 
 /* ---- Global: shrink the whole page a touch ---------------------------------- */
@@ -217,7 +218,9 @@ footer .utilities {
   background: none;
   cursor: pointer;
   color: var(--color-foreground, #000000);
-  font-family: var(--font-accent--family, inherit);
+  /* same "[" "]" bracket glyphs as the [- page] zoom control -- DEMO
+     watermarked by the demo font, so Futura instead. */
+  font-family: 'Futura', 'Futura PT', 'Century Gothic', sans-serif;
   font-size: 0.6rem;
   line-height: 1;
   letter-spacing: 0;
@@ -2488,7 +2491,10 @@ main[data-template='index'] [id$='__product_list_fa6P9H'] .product-card .price--
   border: 0;
   background: transparent;
   color: var(--color-foreground);
-  font-family: var(--font-accent--family, 'Anonymous Pro', ui-monospace, monospace);
+  /* the [ ] bracket glyphs get "DEMO" watermarked by the demo font (same
+     issue as prices, see the top of this file) -- Futura instead of
+     inheriting --font-accent--family here. */
+  font-family: 'Futura', 'Futura PT', 'Century Gothic', sans-serif;
   font-size: 0.62rem;
   line-height: 1;
   cursor: pointer;
