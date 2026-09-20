@@ -972,13 +972,12 @@ body {
    and expect the same seam risk noted below at the button's own edges. */
 .shopify-payment-button {
   position: relative;
-  /* a backstop, not a recolour -- the page's default zoomed mode (CSS
-     zoom:1.1) doesn't always rasterize this cross-origin button in
-     perfect lockstep with the CSS border drawn right around it, leaving
-     an occasional hairline gap at the seam. Matching the button's own
-     native indigo behind it means any such gap shows more indigo, not a
-     stripe of the page's black. */
-  background: #5a31f4;
+  /* red, not the native indigo backstop -- now that the button itself is
+     getting a red overlay (below), any hairline seam at the edge (the
+     cross-origin content's real paint not always lining up with the CSS
+     box in zoomed mode) should show red behind it too, not leftover
+     indigo. */
+  background: #ff0000;
 }
 
 /* Two earlier recolour attempts (navy, then a cream/khaki mix-blend-mode
