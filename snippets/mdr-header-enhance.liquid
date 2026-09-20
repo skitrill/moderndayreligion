@@ -387,6 +387,21 @@
       borderPoly.setAttribute('shape-rendering', 'crispEdges');
       borderSvg.appendChild(borderPoly);
 
+      /* The wrap sticks just under the header via `top: calc(var(--header-height)
+         - 1px)` (mdr-custom.css), but that theme var is measured once by
+         layout/theme.liquid before first paint and isn't guaranteed to be
+         re-measured for every later change to the header's own height (a
+         slow-loading logo image included) -- when it goes stale the sticky
+         wrap freezes too high once scrolled, overlapping the still-taller
+         header instead of sitting flush under it. Overriding `top` inline
+         from a real, live measurement of the header itself -- re-run on the
+         same triggers as the border above, plus a ResizeObserver on the
+         header (which the border's own observer, scoped to wrap, won't
+         catch) -- keeps it correct regardless of what the shared var says. */
+      function syncStickyTop() {
+        wrap.style.top = (header.offsetHeight - 1) + 'px';
+      }
+
       function positionAllbarBorder() {
         var wr = wrap.getBoundingClientRect();
         var br = bar.getBoundingClientRect();
@@ -535,16 +550,24 @@
          interaction required. */
       if (window.requestAnimationFrame) {
         requestAnimationFrame(positionAllbarBorder);
+        requestAnimationFrame(syncStickyTop);
       } else {
         positionAllbarBorder();
+        syncStickyTop();
       }
       if (window.ResizeObserver) {
         new ResizeObserver(positionAllbarBorder).observe(wrap);
+        new ResizeObserver(syncStickyTop).observe(header);
       } else {
         window.addEventListener('resize', positionAllbarBorder, { passive: true });
+        window.addEventListener('resize', syncStickyTop, { passive: true });
       }
       window.addEventListener('load', positionAllbarBorder);
-      if (D.fonts && D.fonts.ready) D.fonts.ready.then(positionAllbarBorder);
+      window.addEventListener('load', syncStickyTop);
+      if (D.fonts && D.fonts.ready) {
+        D.fonts.ready.then(positionAllbarBorder);
+        D.fonts.ready.then(syncStickyTop);
+      }
 
       /* line its label up under the logo, at every breakpoint (the header
          centres its own content on desktop, so a fixed gutter won't do) */
