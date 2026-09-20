@@ -1825,27 +1825,6 @@ main[data-template='index']
    grid's left edge. Closed = a dim pill; tap and it slides open sideways
    into the collection list; tap again / away to collapse.
    ========================================================================== */
-/* Underline on the menu bar itself (the logo/cart row), not on the WEBRACK
-   button below it -- same colour/thickness as the product grid's hairlines,
-   but only as wide as WEBRACK's own button (95px, the same fixed width
-   shared with RETURN), left-aligned so it ends exactly where that button
-   does instead of running the header's full width. A pseudo-element, not a
-   real border, so it doesn't disturb the header's own background/content;
-   pointer-events:none keeps it out of the way of taps on the logo. */
-#header-component {
-  position: relative;
-}
-
-#header-component::after {
-  content: '';
-  position: absolute;
-  left: 0;
-  bottom: 0;
-  width: 95px;
-  border-bottom: 1px solid rgba(0, 0, 0, 0.14);
-  pointer-events: none;
-}
-
 /* a full-width strip pinned just under the site header (present on every
    page). It stays put while the page scrolls -- a persistent function bar
    right below the MDR logo. */
@@ -1870,6 +1849,24 @@ main[data-template='index']
      off-white) standing apart from it. Still opaque (not transparent),
      since this is sticky and needs to hide scrolled content behind it. */
   background: #e9e1c4;
+}
+
+/* Underline right where the cream header/WEBRACK block ends and the
+   lighter off-white page begins -- same colour/thickness as the product
+   grid's own hairlines, only as wide as WEBRACK's own button (95px, the
+   same fixed width shared with RETURN) so it ends exactly where that
+   button does, left-aligned, instead of running the strip's full width.
+   A pseudo-element, not a real border, so it doesn't disturb the wrap's
+   own background/content; pointer-events:none keeps it out of the way of
+   taps. */
+.mdr-allbar-wrap::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  width: 95px;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.14);
+  pointer-events: none;
 }
 
 .mdr-allbar {
