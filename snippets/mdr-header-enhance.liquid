@@ -358,35 +358,55 @@
       var bar = D.createElement('div');
       bar.className = 'mdr-allbar' + (isHome ? '' : ' mdr-allbar--back');
 
-      /* the outline as a real SVG stroke instead of a second inset
-         clip-path layer -- an SVG stroke is uniform width at any angle
-         by construction, unlike the old two-layer clip-path trick, whose
-         flat +1px inset on the cut corner wasn't actually perpendicular
-         to the diagonal and tapered along its length (the "spear" look).
-         The path stops at the bottom-right corner rather than closing
-         back along the bottom edge -- the wrap's own permanent
-         border-bottom already draws that line (see .mdr-allbar-wrap in
-         mdr-custom.css), so drawing a second one here was the "double
-         line" complaint. Fixed 95x33 viewBox matches the button's own
-         fixed closed-state size 1:1. */
+      /* One single line for the whole strip: the menu section's bottom
+         border, the WEBRACK button's own outline (left/top/diagonal-cut),
+         and the rest of the bottom border on the far side of the button --
+         all ONE continuous polyline, not separate elements for "the button
+         border" and "the menu border" meeting at a shared point. Sized to
+         the wrap's real (responsive) width via positionAllbarBorder() below,
+         re-run on resize, instead of a fixed viewBox -- the button's own
+         portion of the path stays a fixed 95px shape, but the line then has
+         to keep extending to whatever the actual right edge is on this
+         viewport. Lives on .mdr-allbar-wrap (appended below, before bar),
+         not inside .mdr-allbar, so it isn't clipped to the button's own
+         box and so it naturally sits BEHIND the button (plain DOM order,
+         lower in paint order than bar) -- when WEBRACK opens and the
+         button covers the full strip, this line is simply covered too,
+         same as the button's own outline already was. */
       var borderSvg = D.createElementNS('http://www.w3.org/2000/svg', 'svg');
       borderSvg.setAttribute('class', 'mdr-allbar__border');
-      borderSvg.setAttribute('viewBox', '0 0 95 33');
       borderSvg.setAttribute('preserveAspectRatio', 'none');
       borderSvg.setAttribute('aria-hidden', 'true');
-      /* One continuous polyline, not three separate <line> elements --
-         three independently-stroked segments (even sharing endpoints)
-         butt-cap at each corner, which can leave a visible notch/seam
-         right at the joins instead of reading as one unbroken outline.
-         A single stroked polyline with a round join draws the corners
-         as part of the same continuous stroke -- seamless, no seam. */
       var borderPoly = D.createElementNS('http://www.w3.org/2000/svg', 'polyline');
-      borderPoly.setAttribute('points', '0,33 0,0 77,0 95,33');
       borderPoly.setAttribute('fill', 'none');
       borderPoly.setAttribute('stroke', 'rgba(0,0,0,0.14)');
       borderPoly.setAttribute('stroke-width', '1');
       borderPoly.setAttribute('stroke-linejoin', 'round');
       borderSvg.appendChild(borderPoly);
+
+      function positionAllbarBorder() {
+        var wr = wrap.getBoundingClientRect();
+        var br = bar.getBoundingClientRect();
+        if (!wr.width || !br.width) return;
+        var W = wr.width, H = wr.height;
+        var x0 = br.left - wr.left;
+        var y0 = br.top - wr.top;
+        var x1 = x0 + br.width;
+        var y1 = y0 + br.height;
+        /* same 18px diagonal run as the button's own clip-path
+           (calc(100% - 18px)) -- capped so a very narrow button never
+           inverts the cut. */
+        var cut = Math.min(18, br.width);
+        borderSvg.setAttribute('viewBox', '0 0 ' + W + ' ' + H);
+        borderPoly.setAttribute(
+          'points',
+          x0 + ',' + y1 + ' ' +
+          x0 + ',' + y0 + ' ' +
+          (x1 - cut) + ',' + y0 + ' ' +
+          x1 + ',' + y1 + ' ' +
+          W + ',' + y1
+        );
+      }
 
       /* WEBRACK: a clean double-chevron, not the raw "»" glyph. RETURN
          gets a single chevron instead -- the two read as distinct icons,
@@ -494,13 +514,24 @@
         window.addEventListener('load', measureLoop);
       }
 
-      bar.appendChild(borderSvg);
       bar.appendChild(toggle);
       bar.appendChild(list);
+      wrap.appendChild(borderSvg);
       wrap.appendChild(bar);
 
       /* sit it directly below the header, on every page */
       header.parentNode.insertBefore(wrap, header.nextSibling);
+
+      /* real pixel measurements, so this needs a layout pass first --
+         requestAnimationFrame (not just a synchronous call) gets one for
+         free right after insertion. Re-run on resize so the line's "extend
+         to the far edge" endpoint keeps tracking the viewport. */
+      if (window.requestAnimationFrame) {
+        requestAnimationFrame(positionAllbarBorder);
+      } else {
+        positionAllbarBorder();
+      }
+      window.addEventListener('resize', positionAllbarBorder, { passive: true });
 
       /* line its label up under the logo, at every breakpoint (the header
          centres its own content on desktop, so a fixed gutter won't do) */

@@ -1864,25 +1864,6 @@ main[data-template='index']
   background: #e9e1c4;
 }
 
-/* Underline right where the cream header/WEBRACK block ends and the
-   lighter off-white page begins -- same colour/thickness as the product
-   grid's own hairlines, for a structured look. Starts at 95px (WEBRACK's
-   own fixed button width, shared with RETURN) and runs to the end, so it
-   covers the rest of the menu section's bottom edge WITHOUT running under
-   the button itself -- the button stays a plain blend into the page, no
-   line under it. A pseudo-element, not a real border, so it doesn't
-   disturb the wrap's own background/content; pointer-events:none keeps it
-   out of the way of taps. */
-.mdr-allbar-wrap::after {
-  content: '';
-  position: absolute;
-  left: 95px;
-  right: 0;
-  bottom: 0;
-  border-bottom: 1px solid rgba(0, 0, 0, 0.14);
-  pointer-events: none;
-}
-
 .mdr-allbar {
   position: relative;
   z-index: 1;
@@ -1942,24 +1923,32 @@ main[data-template='index']
    outer cut's 18px, which is NOT the same as insetting 1px perpendicular
    to the diagonal (the two cut lines had different slopes and so weren't
    parallel), so the "border" between them tapered along the diagonal's
-   length instead of staying a uniform width -- the "spear" look. It also
-   inset on all four sides including the bottom, drawing a second ~1px
-   line right next to the wrap's own permanent border-bottom below --
-   the "double line" on the menu bar. An SVG stroke has neither problem:
-   it's uniform width at any angle, and its path (in the markup) stops at
-   the bottom-right corner instead of closing back along the bottom edge,
-   leaving that line to the wrap alone. */
+   length instead of staying a uniform width -- the "spear" look. An SVG
+   stroke has neither problem: it's uniform width at any angle. That same
+   stroke now ALSO draws the menu section's own bottom border, as one
+   continuous polyline spanning the whole .mdr-allbar-wrap (built + kept in
+   sync with the wrap's real width in mdr-header-enhance.liquid) -- menu
+   border, button outline, and menu border picking back up past the button
+   are one unbroken line, not two separate elements meeting at a point. */
 .mdr-allbar {
   clip-path: polygon(0 0, calc(100% - 18px) 0, 100% 100%, 0 100%);
   background-color: #f6f3e7;
   background-image: none;
 }
 
+/* Lives on .mdr-allbar-wrap now (a sibling of .mdr-allbar, appended just
+   before it -- see mdr-header-enhance.liquid), spanning the wrap's full
+   width/height, not just the button's own box. z-index below the button
+   (which has z-index:1) so plain DOM/paint order already puts the button
+   on top -- when WEBRACK opens and the button covers the full strip, this
+   line is simply covered along with it, same as its outline portion
+   already was. */
 .mdr-allbar__border {
   position: absolute;
   inset: 0;
   width: 100%;
   height: 100%;
+  z-index: 0;
   display: block;
   pointer-events: none;
 }
@@ -1989,10 +1978,6 @@ main[data-template='index']
      0.3) so top and bottom read as the same weight instead of the top
      looking bolder than the bottom right below it. */
   border-top: 1px solid rgba(0, 0, 0, 0.16);
-}
-
-.mdr-allbar.is-open .mdr-allbar__border {
-  display: none;
 }
 
 .mdr-allbar__toggle {
