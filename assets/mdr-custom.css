@@ -1844,10 +1844,11 @@ main[data-template='index']
      bottom padding either -- the button's own bottom edge now sits flush
      against the page below it */
   padding: 3px 0 0 0;
-  /* white, matching the page -- WEBRACK blends into the site instead of
-     sitting in its own boxed-off bar. Still opaque (not transparent),
+  /* matches the header bar above it -- the two read as one continuous
+     header space, with only the WEBRACK button itself (still the page's
+     off-white) standing apart from it. Still opaque (not transparent),
      since this is sticky and needs to hide scrolled content behind it. */
-  background: #f6f3e7;
+  background: #e9e1c4;
 }
 
 .mdr-allbar {
