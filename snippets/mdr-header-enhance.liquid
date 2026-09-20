@@ -382,6 +382,14 @@
       borderPoly.setAttribute('stroke', 'rgba(0,0,0,0.14)');
       borderPoly.setAttribute('stroke-width', '1');
       borderPoly.setAttribute('stroke-linejoin', 'round');
+      /* the grid's own vertical hairlines are a solid CSS background-color
+         fill showing through a 1px gap -- a hard, un-anti-aliased edge.
+         An SVG stroke anti-aliases by default, feathering that same 1px
+         across a soft ~2px band of partial opacity, which reads visibly
+         lighter/thinner side-by-side with the grid even at an identical
+         nominal width. crispEdges removes that feathering so the two
+         match in actual visual weight, not just declared width. */
+      borderPoly.setAttribute('shape-rendering', 'crispEdges');
       borderSvg.appendChild(borderPoly);
 
       function positionAllbarBorder() {
@@ -522,16 +530,28 @@
       /* sit it directly below the header, on every page */
       header.parentNode.insertBefore(wrap, header.nextSibling);
 
-      /* real pixel measurements, so this needs a layout pass first --
-         requestAnimationFrame (not just a synchronous call) gets one for
-         free right after insertion. Re-run on resize so the line's "extend
-         to the far edge" endpoint keeps tracking the viewport. */
+      /* Real pixel measurements, so a single requestAnimationFrame right
+         after insertion isn't enough on its own -- the very first layout
+         pass can still land before web fonts swap in (changing the
+         button's own line-height/height) or before other on-load reflows
+         settle, leaving the line built against stale geometry until
+         something else (e.g. the user scrolling, which can trigger a
+         reflow/repaint) happens to force a recalculation. A ResizeObserver
+         on the wrap itself reacts to ANY actual size change -- fonts,
+         zoom toggle, viewport resize, content change -- so the line is
+         correct from the first real paint, no interaction required. */
       if (window.requestAnimationFrame) {
         requestAnimationFrame(positionAllbarBorder);
       } else {
         positionAllbarBorder();
       }
-      window.addEventListener('resize', positionAllbarBorder, { passive: true });
+      if (window.ResizeObserver) {
+        new ResizeObserver(positionAllbarBorder).observe(wrap);
+      } else {
+        window.addEventListener('resize', positionAllbarBorder, { passive: true });
+      }
+      window.addEventListener('load', positionAllbarBorder);
+      if (D.fonts && D.fonts.ready) D.fonts.ready.then(positionAllbarBorder);
 
       /* line its label up under the logo, at every breakpoint (the header
          centres its own content on desktop, so a fixed gutter won't do) */

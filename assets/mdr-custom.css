@@ -975,27 +975,32 @@ body {
   display: none !important;
 }
 
-/* ---- "Buy with Shop" -- third recolour attempt (explicitly requested
-   again despite the two earlier failures below). Still a hack: the real
-   button paints inside a closed shadow root/cross-origin iframe, so there
-   is no way to touch its actual fill. This is a red mix-blend-mode overlay
-   sitting on top of the real button -- pointer-events:none so taps still
-   reach the real button underneath -- not a true recolour of the button
-   itself. Expect it to look like a tint over indigo, not flat pure red,
-   and expect the same seam risk noted below at the button's own edges. */
+/* ---- "Buy with Shop" -- now black, to match ADD TO CART. Still a hack:
+   the real button paints inside a closed shadow root/cross-origin iframe,
+   so there is no way to touch its actual fill. This is a mix-blend-mode
+   overlay sitting on top of the real button -- pointer-events:none so taps
+   still reach the real button underneath -- not a true recolour. Black is
+   an edge case for the "color" blend mode specifically: black has no hue/
+   saturation, so blending with it desaturates the backdrop to greyscale
+   while KEEPING the backdrop's own luminance (that's what keeps the white
+   "Shop" text legible -- it stays bright/white since it was already near
+   the top of the luminance range). The practical result reads as a dark
+   charcoal, not a literal #000 -- forcing true flat black would also flatten
+   the white text into the same black and make the button unreadable, which
+   defeats the point. */
 .shopify-payment-button {
   position: relative;
-  /* red, not the native indigo backstop -- now that the button itself is
-     getting a red overlay (below), any hairline seam at the edge (the
-     cross-origin content's real paint not always lining up with the CSS
-     box in zoomed mode) should show red behind it too, not leftover
-     indigo. */
-  background: #ff0000;
+  /* matches the overlay below, not the native indigo -- so any hairline
+     seam at the edge (the cross-origin content's real paint not always
+     lining up with the CSS box in zoomed mode) shows dark behind it too,
+     not leftover indigo. */
+  background: #000000;
 }
 
-/* Two earlier recolour attempts (navy, then a cream/khaki mix-blend-mode
-   tint) were reverted here -- neither read well, and the overlay left a
-   visible seam where it didn't quite cover the real content. */
+/* Earlier recolour attempts (navy, then a cream/khaki mix-blend-mode tint,
+   then red) were reverted/changed here -- the untinted ones didn't read
+   well and left a visible seam where the overlay didn't quite cover the
+   real content. */
 .product-form-buttons shop-pay-wallet-button {
   position: relative;
   isolation: isolate;
@@ -1005,7 +1010,7 @@ body {
   content: '';
   position: absolute;
   inset: 0;
-  background: #ff0000;
+  background: #000000;
   mix-blend-mode: color;
   pointer-events: none;
   z-index: 2;
