@@ -116,8 +116,8 @@
     },
     "content_for_index": [],
     "color_palette": {
-      "background": "#FFFFFF",
-      "foreground": "#000000",
+      "background": "#000000",
+      "foreground": "#F0EEE6",
       "color1": "#A6A29A",
       "color2": "#5C564A"
     }
