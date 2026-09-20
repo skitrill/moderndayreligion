@@ -29,16 +29,24 @@
 }
 
 /* ...except anywhere the demo font's glyph-watermarking breaks the actual
-   text -- prices ($ replaced by a "DEMO" watermark graphic) and the
-   [- page] zoom control (its [ ] bracket glyphs, further down this file)
-   are the ones found so far. Those go to Futura instead of PGF Qualta, set
-   directly (not through the --font-*--family variables above) so they
-   don't inherit the new typeface no matter which of those roles a given
-   element would otherwise pick up. */
+   text. Confirmed so far: $ (prices), the digit 4 (breaks any two/three-
+   digit number containing one -- sizes, measurements, quantities...), and
+   ( ) parentheses (the size chart's "44 (XS)" style labels). The [- page]
+   zoom control and [top] scroll button (their own [ ] bracket glyphs) are
+   handled further down this file. All of these go to Futura instead of
+   PGF Qualta, set directly (not through the --font-*--family variables
+   above) so they don't inherit the new typeface no matter which role a
+   given element would otherwise pick up. */
 .price,
 .price *,
 product-price,
-product-price * {
+product-price *,
+.size-chart__content,
+.size-chart__content *,
+.quantity-selector,
+.quantity-selector *,
+.cart-totals,
+.cart-totals * {
   font-family: 'Futura', 'Futura PT', 'Century Gothic', sans-serif !important;
 }
 
