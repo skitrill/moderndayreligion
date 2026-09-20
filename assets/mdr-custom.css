@@ -1866,18 +1866,19 @@ main[data-template='index']
 
 /* Underline right where the cream header/WEBRACK block ends and the
    lighter off-white page begins -- same colour/thickness as the product
-   grid's own hairlines, only as wide as WEBRACK's own button (95px, the
-   same fixed width shared with RETURN) so it ends exactly where that
-   button does, left-aligned, instead of running the strip's full width.
-   A pseudo-element, not a real border, so it doesn't disturb the wrap's
-   own background/content; pointer-events:none keeps it out of the way of
-   taps. */
+   grid's own hairlines, for a structured look. Starts at 95px (WEBRACK's
+   own fixed button width, shared with RETURN) and runs to the end, so it
+   covers the rest of the menu section's bottom edge WITHOUT running under
+   the button itself -- the button stays a plain blend into the page, no
+   line under it. A pseudo-element, not a real border, so it doesn't
+   disturb the wrap's own background/content; pointer-events:none keeps it
+   out of the way of taps. */
 .mdr-allbar-wrap::after {
   content: '';
   position: absolute;
-  left: 0;
+  left: 95px;
+  right: 0;
   bottom: 0;
-  width: 95px;
   border-bottom: 1px solid rgba(0, 0, 0, 0.14);
   pointer-events: none;
 }
