@@ -374,23 +374,19 @@
       borderSvg.setAttribute('viewBox', '0 0 95 33');
       borderSvg.setAttribute('preserveAspectRatio', 'none');
       borderSvg.setAttribute('aria-hidden', 'true');
-      /* the straight left/top edges are separate crispEdges lines, not
-         part of the same anti-aliased path as the diagonal -- a thin,
-         low-alpha stroke antialiases across a soft ~2px band on a
-         high-density mobile screen (worse once the page's own 1.1x zoom
-         -- see the mdr-zoom toggle further down -- lands the line on a
-         non-integer device pixel), which read as barely-there. Snapping
-         those two straight runs to the pixel grid instead makes them a
-         crisp, fully-opaque hairline at any density. The diagonal stays
-         on normal (smooth) rendering -- crisp edges on an angled line
-         looks jagged/stair-stepped instead of clean. */
-      borderSvg.innerHTML =
-        '<line x1="0" y1="33" x2="0" y2="0" stroke="rgba(0,0,0,0.14)" ' +
-        'stroke-width="2" shape-rendering="crispEdges"/>' +
-        '<line x1="0" y1="0" x2="77" y2="0" stroke="rgba(0,0,0,0.14)" ' +
-        'stroke-width="2" shape-rendering="crispEdges"/>' +
-        '<line x1="77" y1="0" x2="95" y2="33" stroke="rgba(0,0,0,0.14)" ' +
-        'stroke-width="2"/>';
+      /* One continuous polyline, not three separate <line> elements --
+         three independently-stroked segments (even sharing endpoints)
+         butt-cap at each corner, which can leave a visible notch/seam
+         right at the joins instead of reading as one unbroken outline.
+         A single stroked polyline with a round join draws the corners
+         as part of the same continuous stroke -- seamless, no seam. */
+      var borderPoly = D.createElementNS('http://www.w3.org/2000/svg', 'polyline');
+      borderPoly.setAttribute('points', '0,33 0,0 77,0 95,33');
+      borderPoly.setAttribute('fill', 'none');
+      borderPoly.setAttribute('stroke', 'rgba(0,0,0,0.14)');
+      borderPoly.setAttribute('stroke-width', '2');
+      borderPoly.setAttribute('stroke-linejoin', 'round');
+      borderSvg.appendChild(borderPoly);
 
       /* WEBRACK: a clean double-chevron, not the raw "»" glyph. RETURN
          gets a single chevron instead -- the two read as distinct icons,
