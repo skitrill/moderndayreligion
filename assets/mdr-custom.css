@@ -1854,21 +1854,26 @@ main[data-template='index']
 /* Extend the product grid's own vertical divider line up through the header
    and the WEBRACK strip too -- same column positions (2 cols on phone, 4 on
    desktop), so the whole top of the page reads as one structured grid
-   instead of the grid only starting once the product cards do. A pseudo-
-   element overlay, not a real grid track -- doesn't touch the header's own
-   background system or reflow its content, and pointer-events:none keeps it
-   out of the way of taps. z-index:0 so it sits under the WEBRACK button
-   itself: once WEBRACK opens (width:100%), its own opaque fill covers this
-   line rather than fighting it, and the closed pill (over near the left
-   edge, off in its own off-white) never overlaps these centered lines
-   anyway -- it still reads as blending into the page either way. */
-#header-component,
-.mdr-allbar-wrap {
+   instead of the grid only starting once the product cards do.
+   HOMEPAGE ONLY (body:has(main[data-template='index'])): header and WEBRACK
+   are shared, sitewide elements, but this line has nothing to connect to on
+   any other page (product, cart, collection...) -- there it just dangled
+   below the WEBRACK/RETURN bar pointing at nothing, reading as a stray,
+   broken line rather than a deliberate grid. A pseudo-element overlay, not
+   a real grid track -- doesn't touch the header's own background system or
+   reflow its content, and pointer-events:none keeps it out of the way of
+   taps. z-index:0 so it sits under the WEBRACK button itself: once WEBRACK
+   opens (width:100%), its own opaque fill covers this line rather than
+   fighting it, and the closed pill (over near the left edge, off in its own
+   off-white) never overlaps these centered lines anyway -- it still reads
+   as blending into the page either way. */
+body:has(main[data-template='index']) #header-component,
+body:has(main[data-template='index']) .mdr-allbar-wrap {
   position: relative;
 }
 
-#header-component::after,
-.mdr-allbar-wrap::after {
+body:has(main[data-template='index']) #header-component::after,
+body:has(main[data-template='index']) .mdr-allbar-wrap::after {
   content: '';
   position: absolute;
   inset: 0;
@@ -1884,8 +1889,8 @@ main[data-template='index']
 }
 
 @media (min-width: 750px) {
-  #header-component::after,
-  .mdr-allbar-wrap::after {
+  body:has(main[data-template='index']) #header-component::after,
+  body:has(main[data-template='index']) .mdr-allbar-wrap::after {
     background-image: linear-gradient(
         to right,
         transparent calc(25% - 0.5px),
