@@ -1404,6 +1404,21 @@ button.link,
   background: var(--mdr-glass-tint) !important;
   backdrop-filter: var(--mdr-glass-blur);
   -webkit-backdrop-filter: var(--mdr-glass-blur);
+  /* extends the glass up past the header's own top edge, into the
+     safe-area (the notch/status-bar strip the viewport already renders
+     under -- viewport-fit=cover, see meta-tags.liquid) instead of
+     stopping at a hard line below it. .header__underlay is `inset: 0`
+     (sections/header.liquid), so this only moves/grows the BACKGROUND
+     layer -- the header's real content (logo, cart) stays exactly where
+     it already sits; height adds back what top takes away so the bottom
+     edge doesn't shift. On devices with no safe area (or on desktop,
+     where header-height keeps this off-screen anyway) the inset is 0px
+     and this is a no-op. */
+  top: calc(-1 * var(--safe-area-inset-top, env(safe-area-inset-top, 0px)));
+  height: calc(
+    var(--closed-underlay-height, 100%) +
+      var(--safe-area-inset-top, env(safe-area-inset-top, 0px))
+  );
 }
 
 #Details-menu-drawer-container {
