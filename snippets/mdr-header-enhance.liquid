@@ -388,6 +388,20 @@
       borderSvg.appendChild(borderPoly);
 
       function positionAllbarBorder() {
+        /* Open, .mdr-allbar.is-open already draws its own plain
+           `border-top` (CSS) -- clip-path: none there too, so there's no
+           diagonal left for this SVG to trace. Leaving it visible on top
+           of that CSS border was drawing a second, slightly offset line
+           along the same edge (plus a stray vertical stroke down the
+           viewport's own right edge, from this polyline's last point).
+           Hide it for that state and let the one CSS border alone speak
+           for it; only the closed button's diagonal cut actually needs
+           the SVG. */
+        if (bar.classList.contains('is-open')) {
+          borderSvg.style.display = 'none';
+          return;
+        }
+        borderSvg.style.display = '';
         var wr = wrap.getBoundingClientRect();
         var br = bar.getBoundingClientRect();
         if (!wr.width || !br.width) return;
@@ -594,6 +608,11 @@
       function setOpen(on) {
         bar.classList.toggle('is-open', on);
         toggle.setAttribute('aria-expanded', on ? 'true' : 'false');
+        /* immediate, not just left to the wrap/bar ResizeObservers below --
+           those only fire once the width transition actually moves, so the
+           SVG would still show its stale (pre-toggle) shape for the first
+           frame or two of every open/close. */
+        positionAllbarBorder();
         if (typeof positionTouchzone === 'function') requestAnimationFrame(positionTouchzone);
       }
       window.__mdrAllbarOpen = function () { setOpen(true); };
