@@ -1255,12 +1255,19 @@
 
   /* =====================================================================
      Mobile page sizing -- [+ page] / [- page]. Sits at the bottom of
-     the page, on the "Refund policy" line (not floating -- only visible
-     once you scroll to the footer). The 20%-enlarged size is now the
-     page's DEFAULT (loads already zoomed, every fresh session); the
-     control shows "[- page]" in that default state -- tap it to switch
-     back down to normal size, tap again to switch back up.
-     ===================================================================== */
+     the page, on the copyright line (not floating -- only visible once
+     you scroll to the footer). The 20%-enlarged size is now the page's
+     DEFAULT (loads already zoomed, every fresh session); the control
+     shows "[- page]" in that default state -- tap it to switch back down
+     to normal size, tap again to switch back up.
+
+     Anchored to copyright, not a policy link: the footer nav + policy
+     links now share one wrapping flex row (mdr-footer-nav renders inside
+     footer-utilities.liquid's own .utilities), so which line "Refund
+     policy" actually lands on shifts with viewport width and item count.
+     Copyright is always the single, centred, full-width LAST line (see
+     .footer-utilities__group-copyright's flex-basis: 100% in
+     mdr-custom.css) -- a stable line to sit beside instead. */
   (function () {
     if (window.__mdrZoom) return;
     window.__mdrZoom = true;
@@ -1286,16 +1293,12 @@
       '<span class="mdr-zoom__pg" aria-hidden="true"><i></i><i></i><i></i><i></i></span>' +
       '<span class="mdr-bracket">]</span>';
 
-    function refundLine() {
-      var links = D.querySelectorAll('footer a, .footer-utilities a, .footer a');
-      for (var i = 0; i < links.length; i++) {
-        if (/refund\s*policy/i.test(links[i].textContent)) return links[i];
-      }
-      return null;
+    function copyrightLine() {
+      return D.querySelector('.footer-utilities__group-copyright');
     }
 
     function place() {
-      var line = refundLine();
+      var line = copyrightLine();
       var host = btn.parentElement;
       if (!line || !host) return;
       var hr = host.getBoundingClientRect();
@@ -1317,7 +1320,7 @@
     btn.addEventListener('click', function () { apply(!stored()); });
 
     function mount() {
-      var line = refundLine();
+      var line = copyrightLine();
       var host =
         (line && (line.closest('.utilities') || line.closest('.section--page-width'))) ||
         D.querySelector('footer');
