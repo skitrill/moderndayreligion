@@ -2585,7 +2585,11 @@ main[data-template='index'] [id$='__product_list_fa6P9H'] .product-card .price--
   z-index: 40;
   display: none;
   color: var(--color-foreground);
-  font-family: 'Futura', 'Futura PT', 'Century Gothic', sans-serif;
+  /* PGF Qualta, not the Futura fallback the [zoom]/[top] bracket controls
+     need -- "The Modern Times" has no $, digits, or ( )/[ ] glyphs, so it
+     never hits the demo font's watermarking and can use the site's actual
+     typeface like everything else. */
+  font-family: var(--font-accent--family);
   font-size: 0.6rem;
   line-height: 1;
   letter-spacing: 0.04em;
