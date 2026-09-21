@@ -18,6 +18,7 @@
     style="{% render 'spacing-style', settings: section.settings %} --border-width: {{ section.settings.divider_thickness }}px;{% if section.settings.divider_color != blank %} --divider-color: {{ section.settings.divider_color }};{% endif %} --gap: {{ section.settings.gap }}px;"
     data-testid="footer-utilities"
   >
+    {% render 'mdr-footer-nav' %}
     {% content_for 'blocks' %}
   </div>
 </div>

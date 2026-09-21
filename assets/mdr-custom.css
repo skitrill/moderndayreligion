@@ -117,48 +117,18 @@ html {
   margin-inline: auto;
 }
 
-/* ---- Footer: Home / Catalog / Contact --------------------------------------
-   Vertical stack pinned to the bottom-left corner, on the same horizontal band
-   as the centered policy links. Pointer-events are handled so both groups stay
-   clickable despite the overlap. */
+/* ---- Footer: nav (WEBRACK / LOOKBOOK / MAILING / THE MODERN TIMES) and
+   policy links (PRIVACY POLICY / TERMS OF SERVICE / REFUND POLICY) as ONE
+   real row, not two stacked columns forced into alignment with an
+   absolute-position overlay. mdr-footer-nav now renders straight inside
+   footer-utilities.liquid's own .utilities container (see that file and
+   footer.liquid), so this is a single flex row by construction -- .mdr-fnav
+   and its <ul> contribute no box of their own (display: contents), so
+   their <li>s sit as direct flex items alongside the policy <li>s.
+   Copyright still lands on its own final line, last, nothing under it --
+   flex-basis: 100% forces the wrap before it, at the end of DOM order. */
 footer {
-  display: flex;
-  flex-direction: column;
   position: relative;
-}
-
-footer > .shopify-section:has(.footer-content) {
-  order: 2;
-  position: absolute !important;
-  left: 0 !important;
-  right: 0 !important;
-  top: 50% !important;
-  bottom: auto !important;
-  transform: translateY(-50%) !important;
-  z-index: 5;
-  pointer-events: none;
-}
-
-footer > .shopify-section:has(.footer-content) .section,
-footer > .shopify-section:has(.footer-content) .footer-content {
-  pointer-events: none;
-  justify-items: start !important;
-  padding-block: 0 !important;
-  background: transparent !important;
-  /* let the MAILING drop-down escape the footer box */
-  contain: none !important;
-  content-visibility: visible !important;
-  overflow: visible !important;
-}
-
-/* the menu section carries its own opaque bg -- drop it so it doesn't paint
-   over the copyright / policy links it now sits on top of */
-footer > .shopify-section:has(.footer-content) .section-background {
-  display: none !important;
-}
-
-footer > .shopify-section:has(.footer-content) a {
-  pointer-events: auto;
 }
 
 .footer-content .list-unstyled {
@@ -174,7 +144,28 @@ footer > .shopify-section:has(.footer-content) a {
 
 footer .utilities {
   padding-block: 4px 4px !important;
-  gap: 10px !important;
+  flex-direction: row !important;
+  flex-wrap: wrap !important;
+  justify-content: center !important;
+  align-items: center !important;
+  column-gap: 20px !important;
+  row-gap: 8px !important;
+}
+
+.mdr-fnav,
+.mdr-fnav ul {
+  display: contents;
+}
+
+.policy-list-inline {
+  flex-direction: row !important;
+  flex-wrap: wrap !important;
+  gap: 20px !important;
+}
+
+.footer-utilities__group-copyright {
+  flex-basis: 100%;
+  text-align: center;
 }
 
 /* ---- Footer typography: one voice across nav (WEBRACK/LOOKBOOK/MAILING),
@@ -1186,23 +1177,14 @@ button.link,
   display: none !important;
 }
 
-.mdr-fnav {
-  pointer-events: none;
-}
-
 .mdr-fnav ul {
   list-style: none;
   margin: 0;
   padding: 0;
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  gap: var(--gap-xs);
 }
 
 .mdr-fnav a,
 .mdr-fnav .mdr-fnav__toggle {
-  pointer-events: auto;
   display: inline-block;
   margin: 0;
   padding: 0;
@@ -1712,8 +1694,8 @@ main .product-information__grid.product-information__grid .size-chart * {
    0.1875px tracking). Match those too so they read the same size. -------- */
 main .product-information__grid.product-information__grid .product-details h1 {
   color: #000000 !important;
-  font-size: 0.72rem !important;
-  line-height: 1.15 !important;
+  font-size: 0.6rem !important;
+  line-height: 1.1 !important;
   letter-spacing: 0.01em !important;
 }
 
@@ -2498,8 +2480,8 @@ main[data-template='index'] [id$='__product_list_fa6P9H'] .product-card .text-bl
 main[data-template='index'] [id$='__product_list_fa6P9H'] .product-card .text-block p,
 main[data-template='index'] [id$='__product_list_fa6P9H'] .product-card product-price .price {
   font: inherit !important;
-  font-size: 0.72rem !important;
-  line-height: 1.15 !important;
+  font-size: 0.6rem !important;
+  line-height: 1.1 !important;
   /* matches the PDP title exactly (main .product-information__grid... h1
      above) -- one product-title/price typography spec, not two */
   letter-spacing: 0.01em !important;
@@ -2519,17 +2501,15 @@ main[data-template='index'] [id$='__product_list_fa6P9H'] .product-card .text-bl
   margin: 0 !important;
   padding: 0 !important;
   /* every card's text area needs to be the SAME height regardless of the
-     product name's actual length ("MODERNA TEE" vs "PIR® DOCTRINE TEE"),
-     or short-titled cards leave dead space while long ones push the whole
-     row taller -- capping the title at 2 lines (ellipsis past that) and
-     reserving that same 2-line height even for a 1-line title is what
-     makes the grid a genuinely aligned system instead of one that happens
-     to line up when titles are similar lengths. */
+     product name's actual length ("MODERNA TEE" vs "PIR® DOCTRINE TEE") --
+     one line, ellipsis past that, is what keeps price sitting right under
+     the title with no dead gap AND keeps every card the same height,
+     instead of reserving a second line most titles never use. */
   display: -webkit-box !important;
   -webkit-box-orient: vertical !important;
-  -webkit-line-clamp: 2 !important;
+  -webkit-line-clamp: 1 !important;
   overflow: hidden !important;
-  min-height: calc(0.72rem * 1.15 * 2) !important;
+  min-height: calc(0.6rem * 1.1) !important;
 }
 
 /* mobile 2-up: the right-hand column right-aligns its name + price */
@@ -2579,34 +2559,9 @@ main[data-template='index'] [id$='__product_list_fa6P9H'] .product-card .price--
   }
 }
 
-/* ---- "The Modern Times" link -- stacked directly above [zoom], same
-   corner, same right edge (JS sets position/top/right, mdr-header-enhance.liquid) */
-.mdr-times-link {
-  z-index: 40;
-  display: none;
-  color: var(--color-foreground);
-  /* PGF Qualta, not the Futura fallback the [zoom]/[top] bracket controls
-     need -- "The Modern Times" has no $, digits, or ( )/[ ] glyphs, so it
-     never hits the demo font's watermarking and can use the site's actual
-     typeface like everything else. */
-  font-family: var(--font-accent--family);
-  font-size: 0.6rem;
-  line-height: 1;
-  letter-spacing: 0.04em;
-  text-decoration: none;
-  white-space: nowrap;
-  -webkit-tap-highlight-color: transparent;
-}
-
-.mdr-times-link:active {
-  opacity: 0.55;
-}
-
-@media screen and (max-width: 749px) {
-  .mdr-times-link {
-    display: inline-block;
-  }
-}
+/* "The Modern Times" is now a plain <li><a> inside .mdr-fnav's own <ul>
+   (see mdr-footer-nav.liquid) -- it inherits .mdr-fnav a's typography
+   directly, same as WEBRACK/LOOKBOOK/MAILING, no separate rule needed. */
 
 .mdr-zoom .mdr-bracket {
   font-size: 0.82rem;
