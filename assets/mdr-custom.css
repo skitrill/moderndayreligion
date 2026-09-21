@@ -1371,6 +1371,20 @@ button.link,
   opacity: 0 !important;
 }
 
+/* ---- Top menu bar (logo + cart row): dark liquid glass, not flat black --
+   .header__underlay-closed is the real paint layer behind the row's own
+   content (see sections/header.liquid, [data-header-rows='single']
+   .header__underlay-closed { background: var(--color-background-top-row) }
+   -- overriding it here instead of the theme setting keeps the blur/
+   translucency, which a plain background-color setting can't express).
+   The logo is already forced white (see blocks/_header-logo.liquid), so
+   it stays bright against this. */
+[data-header-rows='single'] .header__underlay-closed {
+  background: rgba(0, 0, 0, 0.55) !important;
+  backdrop-filter: blur(20px) saturate(160%);
+  -webkit-backdrop-filter: blur(20px) saturate(160%);
+}
+
 #Details-menu-drawer-container {
   position: relative;
 }
@@ -1900,12 +1914,14 @@ main[data-template='index']
      bottom padding either -- the button's own bottom edge now sits flush
      against the page below it */
   padding: 3px 0 0 0;
-  /* black, deliberately NOT matching the cream header above it -- the
-     WEBRACK button itself keeps its own off-white fill (unchanged, see
-     .mdr-allbar below) so it now reads as a distinct cutout against this
-     bar rather than blending into it. Still opaque (not transparent),
-     since this is sticky and needs to hide scrolled content behind it. */
-  background: #000000;
+  /* dark liquid glass, matching the header bar above it -- the WEBRACK
+     button itself stays solid page-off-white (see .mdr-allbar below) so
+     it reads as a cutout blending into the page, the one exception to
+     this glass treatment. The blur still fully obscures whatever scrolls
+     under this sticky strip (translucency alone wouldn't). */
+  background: rgba(0, 0, 0, 0.55);
+  backdrop-filter: blur(20px) saturate(160%);
+  -webkit-backdrop-filter: blur(20px) saturate(160%);
 }
 
 .mdr-allbar {
