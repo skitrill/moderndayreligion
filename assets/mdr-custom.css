@@ -195,6 +195,24 @@ footer .utilities {
   gap: 10px !important;
 }
 
+/* ---- Footer typography: one voice across nav (WEBRACK/LOOKBOOK/MAILING),
+   policy links, and copyright -- same size/tracking/weight/line-height/
+   color intensity as .mdr-fnav a (the reference). Policy links otherwise
+   render at full --color-foreground (not muted) and copyright at its own
+   larger 0.75rem block setting (fixed at the source too, see
+   footer-group.json) -- both drifted from the nav's own look before this. */
+footer .utilities,
+.footer-utilities__group-copyright,
+.footer-utilities__text,
+.policy-list-inline,
+.policy-list-inline a {
+  font-size: 0.625rem !important;
+  line-height: 1 !important;
+  letter-spacing: 0.04em !important;
+  font-weight: 400 !important;
+  color: var(--color-foreground-muted) !important;
+}
+
 /* ---- Product page: details column fills to the cart edge, tight gap ------- */
 .product-information__grid.product-information--media-left {
   justify-content: stretch !important;
@@ -249,7 +267,7 @@ footer .utilities {
   font-family: 'Futura', 'Futura PT', 'Century Gothic', sans-serif;
   font-size: 0.6rem;
   line-height: 1;
-  letter-spacing: 0;
+  letter-spacing: 0.04em;
   opacity: 0;
   transform: translateY(6px);
   pointer-events: none;
@@ -1102,8 +1120,14 @@ button.link,
   padding: 9px 8px !important;
   background: #e9e1c4 !important;
   color: #1a1a1a !important;
-  font-weight: 600;
-  letter-spacing: 0.02em;
+  /* not 600 -- only the Regular weight is actually loaded (see the
+     @font-face at the top of this file), so a heavier weight here was
+     the browser's own synthesized/faux bold: a different, inconsistent
+     "boldness" next to every other button and label on the site, which
+     all render in the font's one true weight. Letter-spacing matches
+     the rest of the site's small uppercase labels (buttons, nav, footer). */
+  font-weight: 400;
+  letter-spacing: 0.04em;
   border: 0 !important;
   border-radius: 0 !important;
   transition: opacity var(--animation-speed-fast, 0.14s) var(--animation-easing, ease);
@@ -1279,7 +1303,10 @@ button.link,
   background: transparent;
   color: var(--color-foreground);
   font-family: var(--font-accent--family, inherit);
-  font-size: 0.56rem;
+  /* matches every other small label on the site (nav, footer, buttons) --
+     was noticeably smaller (0.52-0.56rem) than the 0.6rem/0.625rem tier
+     everything else here uses */
+  font-size: 0.6rem;
   letter-spacing: 0.04em;
   padding: 0 6px;
   pointer-events: auto;
@@ -1308,9 +1335,9 @@ button.link,
   background: #e9e1c4;
   color: #1a1a1a;
   font-family: var(--font-accent--family, inherit);
-  font-size: 0.52rem;
-  font-weight: 600;
-  letter-spacing: 0.06em;
+  font-size: 0.6rem;
+  font-weight: 400;
+  letter-spacing: 0.04em;
   text-transform: uppercase;
   padding: 0 7px;
   margin: 0;
@@ -1332,8 +1359,8 @@ button.link,
   background: #f6f3e7;
   border: 1px solid rgb(var(--color-foreground-rgb) / 0.3);
   font-family: var(--font-accent--family, inherit);
-  font-size: 0.52rem;
-  letter-spacing: 0.05em;
+  font-size: 0.6rem;
+  letter-spacing: 0.04em;
   text-transform: uppercase;
   color: var(--color-foreground-muted);
   pointer-events: auto;
@@ -1438,7 +1465,7 @@ button.link,
   border: 0 !important;
   font-family: var(--font-accent--family, inherit) !important;
   font-size: 0.6rem !important;
-  letter-spacing: 0.07em !important;
+  letter-spacing: 0.04em !important;
   text-transform: uppercase !important;
   color: var(--color-foreground-muted) !important;
 }
@@ -1497,7 +1524,7 @@ body:has(#Details-menu-drawer-container[open]) {
   gap: 6px !important;
   font-family: var(--font-accent--family, inherit) !important;
   font-style: normal !important;
-  letter-spacing: 0.16em !important;
+  letter-spacing: 0.04em !important;
   text-transform: uppercase !important;
   color: var(--color-foreground-muted) !important;
 }
@@ -1703,8 +1730,9 @@ main .product-information__grid.product-information__grid .size-chart * {
    0.1875px tracking). Match those too so they read the same size. -------- */
 main .product-information__grid.product-information__grid .product-details h1 {
   color: #000000 !important;
-  line-height: 1.1 !important;
-  letter-spacing: 0.1875px !important;
+  font-size: 0.72rem !important;
+  line-height: 1.15 !important;
+  letter-spacing: 0.01em !important;
 }
 
 /* ==========================================================================
@@ -1797,8 +1825,8 @@ cart-drawer [class*='price'] {
   border: 0 !important;
   border-radius: 0 !important;
   text-transform: uppercase !important;
-  line-height: 1.1 !important;
-  letter-spacing: 0.06em !important;
+  line-height: 1 !important;
+  letter-spacing: 0.04em !important;
   text-shadow: none !important;
 }
 
@@ -1928,18 +1956,21 @@ main[data-template='index']
      just happens to land near the content's own size -- "the same and
      stable" regardless of which label's actual text metrics render
      slightly wider or narrower */
-  width: 95px;
+  width: 88px;
   overflow: hidden;
   white-space: nowrap;
   /* taller ribbon for an easy tap and a taller drag track once open (was
      2px originally); reduced back down ~20% from the first pass (9px),
-     which read as more height than actually needed */
-  padding: 7px 0;
+     which read as more height than actually needed. Trimmed again here
+     (7px -> 6px) alongside the smaller type below -- a small, refined tab
+     instead of a full nav element, not a redesign of the cutout itself
+     (clip-path/18px diagonal untouched). */
+  padding: 6px 0;
   border: 0;
   background: transparent;
   color: #000;
   font: inherit;
-  font-size: 0.74rem;
+  font-size: 0.66rem;
   text-transform: uppercase;
   letter-spacing: 0.04em;
   line-height: 1;
@@ -2029,14 +2060,14 @@ main[data-template='index']
   position: relative;
   isolation: isolate;
   z-index: 3;
-  padding: 3px 9px;
+  padding: 2px 8px;
   border: 0;
   background: none;
   color: inherit;
   font: inherit;
-  /* WEBRACK / RETURN, 10% bigger than the 0.74rem it inherited, so it's
-     harder to miss / mistap next to the logo */
-  font-size: 0.814rem;
+  /* WEBRACK / RETURN, same ~10% bump over .mdr-allbar's own (now smaller)
+     0.66rem, so it's still harder to miss / mistap next to the logo */
+  font-size: 0.72rem;
   letter-spacing: inherit;
   text-transform: inherit;
   cursor: pointer;
@@ -2376,7 +2407,13 @@ main[data-template='index'] [id$='__product_list_fa6P9H'] .product-card__content
 }
 
 main[data-template='index'] [id$='__product_list_fa6P9H'] .product-card__content {
-  padding-bottom: 10px !important;
+  /* compact, not cramped -- was 10px */
+  padding-bottom: 7px !important;
+  /* the image area + text area need to stack as two independently-sized
+     blocks (fixed aspect-ratio image, fixed-height text) for every card to
+     land on the exact same total height -- see the text-block rule below. */
+  display: flex !important;
+  flex-direction: column !important;
 }
 
 /* the full-card overlay link stops at the content -- not below the price */
@@ -2407,8 +2444,12 @@ main[data-template='index'] [id$='__product_list_fa6P9H'] .product-media-contain
 main[data-template='index'] [id$='__product_list_fa6P9H'] .product-media-container {
   max-width: 100% !important;
   margin-inline: 0 !important;
-  /* 15% shorter than the old 4:5 panel */
-  aspect-ratio: 4 / 4.25;
+  /* more compact still -- was 4/4.25, and before that 4/5. A fixed ratio
+     (not just a max-height) is what actually guarantees every card's
+     image area is identically sized regardless of the source photo's own
+     proportions -- object-fit: contain below fits each image within it. */
+  aspect-ratio: 4 / 3.6;
+  flex: 0 0 auto;
 }
 
 /* bigger product cutouts -- much less padding than before */
@@ -2436,8 +2477,8 @@ main[data-template='index'] [id$='__product_list_fa6P9H'] .card-gallery::after {
   right: 8px;
   z-index: 2;
   font: inherit;
-  font-size: 0.58rem;
-  letter-spacing: 0.03em;
+  font-size: 0.6rem;
+  letter-spacing: 0.04em;
   line-height: 1;
   text-transform: uppercase;
   color: rgba(0, 0, 0, 0.55);
@@ -2468,7 +2509,7 @@ main[data-template='index'] [id$='__product_list_fa6P9H'] .product-card product-
 }
 
 main[data-template='index'] [id$='__product_list_fa6P9H'] .product-card .text-block {
-  margin: 8px 0 0 !important;
+  margin: 6px 0 0 !important;
   padding: 0 !important;
 }
 
@@ -2477,7 +2518,9 @@ main[data-template='index'] [id$='__product_list_fa6P9H'] .product-card product-
   font: inherit !important;
   font-size: 0.72rem !important;
   line-height: 1.15 !important;
-  letter-spacing: normal !important;
+  /* matches the PDP title exactly (main .product-information__grid... h1
+     above) -- one product-title/price typography spec, not two */
+  letter-spacing: 0.01em !important;
   text-align: left !important;
   color: #000000 !important;
   text-transform: uppercase !important;
@@ -2493,6 +2536,18 @@ main[data-template='index'] [id$='__product_list_fa6P9H'] .product-card product-
 main[data-template='index'] [id$='__product_list_fa6P9H'] .product-card .text-block p {
   margin: 0 !important;
   padding: 0 !important;
+  /* every card's text area needs to be the SAME height regardless of the
+     product name's actual length ("MODERNA TEE" vs "PIR® DOCTRINE TEE"),
+     or short-titled cards leave dead space while long ones push the whole
+     row taller -- capping the title at 2 lines (ellipsis past that) and
+     reserving that same 2-line height even for a 1-line title is what
+     makes the grid a genuinely aligned system instead of one that happens
+     to line up when titles are similar lengths. */
+  display: -webkit-box !important;
+  -webkit-box-orient: vertical !important;
+  -webkit-line-clamp: 2 !important;
+  overflow: hidden !important;
+  min-height: calc(0.72rem * 1.15 * 2) !important;
 }
 
 /* mobile 2-up: the right-hand column right-aligns its name + price */
@@ -2529,7 +2584,8 @@ main[data-template='index'] [id$='__product_list_fa6P9H'] .product-card .price--
      issue as prices, see the top of this file) -- Futura instead of
      inheriting --font-accent--family here. */
   font-family: 'Futura', 'Futura PT', 'Century Gothic', sans-serif;
-  font-size: 0.62rem;
+  font-size: 0.6rem;
+  letter-spacing: 0.04em;
   line-height: 1;
   cursor: pointer;
   -webkit-tap-highlight-color: transparent;

@@ -55,7 +55,7 @@
           "settings": {
             "show_powered_by": false,
             "text_color": "",
-            "font_size": "0.75rem",
+            "font_size": "0.625rem",
             "case": "none"
           },
           "blocks": {}
@@ -91,9 +91,9 @@
         }
       },
       "block_order": [
-        "footer_copyright_jweRK8",
         "footer_policy_list_VCdnpa",
-        "social_links_Ew63Kq"
+        "social_links_Ew63Kq",
+        "footer_copyright_jweRK8"
       ],
       "name": "t:names.utilities",
       "settings": {
