@@ -1286,6 +1286,14 @@
       '<span class="mdr-zoom__pg" aria-hidden="true"><i></i><i></i><i></i><i></i></span>' +
       '<span class="mdr-bracket">]</span>';
 
+    /* "The Modern Times" -- stacked directly above the [zoom] control, same
+       corner, same right edge -- per an explicit "on top of it", not
+       instead of it (the zoom toggle is a real working feature, kept). */
+    var timesLink = D.createElement('a');
+    timesLink.className = 'mdr-times-link';
+    timesLink.href = '{{ pages["the-modern-times"].url | default: "/pages/the-modern-times" }}';
+    timesLink.textContent = 'The Modern Times';
+
     function refundLine() {
       var links = D.querySelectorAll('footer a, .footer-utilities a, .footer a');
       for (var i = 0; i < links.length; i++) {
@@ -1300,8 +1308,12 @@
       if (!line || !host) return;
       var hr = host.getBoundingClientRect();
       var lr = line.getBoundingClientRect();
-      btn.style.top =
-        Math.round(lr.top - hr.top + lr.height / 2 - btn.offsetHeight / 2) + 'px';
+      var top = Math.round(lr.top - hr.top + lr.height / 2 - btn.offsetHeight / 2);
+      btn.style.top = top + 'px';
+      if (timesLink.parentElement === host) {
+        /* directly above btn, same 8px gap the rest of this corner uses */
+        timesLink.style.top = (top - timesLink.offsetHeight - 8) + 'px';
+      }
     }
 
     function apply(on) {
@@ -1327,6 +1339,11 @@
         btn.style.position = 'absolute';
         btn.style.right = '8px';
         host.appendChild(btn);
+      }
+      if (timesLink.parentElement !== host) {
+        timesLink.style.position = 'absolute';
+        timesLink.style.right = '8px';
+        host.appendChild(timesLink);
       }
       apply(stored());
       place();

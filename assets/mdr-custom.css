@@ -2523,6 +2523,31 @@ main[data-template='index'] [id$='__product_list_fa6P9H'] .product-card .price--
   }
 }
 
+/* ---- "The Modern Times" link -- stacked directly above [zoom], same
+   corner, same right edge (JS sets position/top/right, mdr-header-enhance.liquid) */
+.mdr-times-link {
+  z-index: 40;
+  display: none;
+  color: var(--color-foreground);
+  font-family: 'Futura', 'Futura PT', 'Century Gothic', sans-serif;
+  font-size: 0.6rem;
+  line-height: 1;
+  letter-spacing: 0.04em;
+  text-decoration: none;
+  white-space: nowrap;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.mdr-times-link:active {
+  opacity: 0.55;
+}
+
+@media screen and (max-width: 749px) {
+  .mdr-times-link {
+    display: inline-block;
+  }
+}
+
 .mdr-zoom .mdr-bracket {
   font-size: 0.82rem;
   opacity: 0.85;
