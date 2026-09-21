@@ -43,8 +43,8 @@
         "section_width": "page-width",
         "gap": 20,
         "background_color": "{{ settings.color_palette.background }}",
-        "padding-block-start": 30,
-        "padding-block-end": 30
+        "padding-block-start": 0,
+        "padding-block-end": 0
       }
     },
     "footer_utilities_jLGE8U": {
@@ -102,8 +102,8 @@
         "background_color": "{{ settings.color_palette.background }}",
         "divider_thickness": 0,
         "divider_color": "{{ settings.color_palette.color2 }}",
-        "padding-block-start": 20,
-        "padding-block-end": 48
+        "padding-block-start": 8,
+        "padding-block-end": 24
       }
     }
   },

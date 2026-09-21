@@ -1903,9 +1903,13 @@ main[data-template='index']
   /* black, deliberately NOT matching the cream header above it -- the
      WEBRACK button itself keeps its own off-white fill (unchanged, see
      .mdr-allbar below) so it now reads as a distinct cutout against this
-     bar rather than blending into it. Still opaque (not transparent),
-     since this is sticky and needs to hide scrolled content behind it. */
-  background: #000000;
+     bar rather than blending into it. Liquid-glass: translucent + blurred
+     instead of flat, so it still fully obscures whatever scrolls under
+     this sticky strip (via the blur, not opacity) while reading as frosted
+     glass rather than a solid panel. */
+  background: rgba(0, 0, 0, 0.55);
+  backdrop-filter: blur(20px) saturate(160%);
+  -webkit-backdrop-filter: blur(20px) saturate(160%);
 }
 
 .mdr-allbar {
@@ -1971,8 +1975,20 @@ main[data-template='index']
    it's uniform width at any angle. */
 .mdr-allbar {
   clip-path: polygon(0 0, calc(100% - 18px) 0, 100% 100%, 0 100%);
-  background-color: #f6f3e7;
+  /* liquid-glass: translucent off-white + blur instead of the flat
+     opaque fill -- backdrop-filter is clipped by the same polygon as the
+     background, so the diagonal cut stays crisp. The inset box-shadows
+     fake glass's top-edge highlight / bottom-edge shade (a plain
+     border can't follow the clip-path's diagonal, same reason the
+     outline itself is an SVG stroke, not a CSS border -- see the
+     .mdr-allbar__border comment below). */
+  background-color: rgba(246, 243, 231, 0.55);
   background-image: none;
+  backdrop-filter: blur(14px) saturate(160%);
+  -webkit-backdrop-filter: blur(14px) saturate(160%);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.5),
+    inset 0 -1px 0 rgba(0, 0, 0, 0.06);
 }
 
 .mdr-allbar__border {
