@@ -360,9 +360,12 @@ product-price *,
   align-self: center !important;
   display: flex !important;
   align-items: stretch !important;
-  background: transparent !important;
-  color: rgb(var(--color-foreground-rgb) / 0.85) !important;
-  border: 1px solid rgb(var(--color-foreground-rgb) / 0.3) !important;
+  /* uniform black across the whole buy-buttons row (quantity -> ADD TO
+     CART), matching ADD TO CART's own solid black fill -- so text/icons
+     need to flip to white here too, not the page's usual black-on-light. */
+  background: #000000 !important;
+  color: rgba(255, 255, 255, 0.85) !important;
+  border: 1px solid rgba(255, 255, 255, 0.3) !important;
   overflow: hidden !important;
 }
 
@@ -382,11 +385,11 @@ product-price *,
 }
 
 .quantity-selector .quantity-minus {
-  border-right: 1px solid rgb(var(--color-foreground-rgb) / 0.16) !important;
+  border-right: 1px solid rgba(255, 255, 255, 0.2) !important;
 }
 
 .quantity-selector .quantity-plus {
-  border-left: 1px solid rgb(var(--color-foreground-rgb) / 0.16) !important;
+  border-left: 1px solid rgba(255, 255, 255, 0.2) !important;
 }
 
 .quantity-selector input[type='number'] {
@@ -394,7 +397,7 @@ product-price *,
   min-width: 0 !important;
   height: 100% !important;
   background: transparent !important;
-  color: rgb(var(--color-foreground-rgb) / 0.95) !important;
+  color: rgba(255, 255, 255, 0.95) !important;
   text-align: center !important;
   /* very small -- matches the PDP product title (0.625rem) */
   font-size: 0.625rem !important;
@@ -423,7 +426,7 @@ product-price *,
 }
 
 .quantity-selector :is(.quantity-minus, .quantity-plus):active {
-  background: rgb(var(--color-foreground-rgb) / 0.12) !important;
+  background: rgba(255, 255, 255, 0.14) !important;
 }
 
 .quantity-selector :is(.quantity-minus, .quantity-plus):active::after {
