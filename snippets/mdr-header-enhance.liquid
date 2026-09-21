@@ -760,12 +760,6 @@
                 }
               }
               grid.appendChild(frag);
-              /* new cards just swapped in -- give them the same staggered
-                 reveal treatment as the initial page load (see the
-                 IntersectionObserver IIFE below); without this they'd
-                 stay stuck at opacity:0, .mdr-reveal-ready with nothing
-                 observing them */
-              if (typeof window.__mdrRevealInit === 'function') window.__mdrRevealInit();
 
               currentUrl = url;
               if (!fromPopstate) {
@@ -1190,68 +1184,10 @@
     }
   })();
 
-  /* =====================================================================
-     Homepage grid load-in: a staggered slide-up + fade per card, inspired
-     by punkandyo.com's reveal (one after another, not the whole grid
-     appearing at once). An IntersectionObserver adds .mdr-revealed (see
-     mdr-custom.css for the actual keyframe) as each card scrolls into
-     view, with a short per-card animation-delay so a batch entering
-     together still cascades instead of popping in as one block. Exposed
-     as window.__mdrRevealInit so the WEBRACK in-place collection switch
-     (switchCollection, above) can call it again for freshly-swapped-in
-     cards -- without that second call those cards would stay stuck at
-     opacity:0 forever (.mdr-reveal-ready with nothing left to observe
-     them in).
-     ===================================================================== */
-  (function () {
-    if (window.__mdrReveal) return;
-    window.__mdrReveal = true;
-    var D = document;
-    var REDUCE = window.matchMedia &&
-      window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-    var revealedCount = 0;
-    var io = null;
-
-    function reveal(el) {
-      if (io) io.unobserve(el);
-      var delay = Math.min(revealedCount * 0.08, 0.5);
-      revealedCount++;
-      el.style.animationDelay = delay + 's';
-      el.classList.add('mdr-revealed');
-    }
-
-    function initReveal() {
-      if (REDUCE || !window.IntersectionObserver) return;
-      var sec = D.querySelector('[id$="__product_list_fa6P9H"]');
-      if (!sec) return;
-      var items = sec.querySelectorAll('.resource-list__item:not(.mdr-reveal-ready)');
-      if (!items.length) return;
-      if (!io) {
-        io = new IntersectionObserver(function (entries) {
-          entries.forEach(function (entry) {
-            if (entry.isIntersecting) reveal(entry.target);
-          });
-        }, { threshold: 0.1, rootMargin: '600px 0px 600px 0px' });
-      }
-      items.forEach(function (el) {
-        el.classList.add('mdr-reveal-ready');
-        io.observe(el);
-        /* IntersectionObserver's own first callback can land late enough
-           (waiting on image/layout settling) that items already on screen
-           right now get missed and never fire again without a further
-           scroll -- a direct synchronous check as a backstop, same 600px
-           margin as the observer above, so nothing already in view is
-           ever left stuck invisible. */
-        var r = el.getBoundingClientRect();
-        if (r.bottom > -600 && r.top < window.innerHeight + 600) reveal(el);
-      });
-    }
-    window.__mdrRevealInit = initReveal;
-
-    if (D.readyState !== 'loading') initReveal();
-    D.addEventListener('DOMContentLoaded', initReveal);
-    window.addEventListener('load', initReveal);
-  })();
+  /* Homepage grid load-in is a single, plain CSS animation now (one slide-
+     up for the whole grid, not a per-card staggered cascade) -- see
+     mdr-custom.css. No JS needed: a CSS animation on the grid element
+     just plays on its own first paint. */
 
   /* =====================================================================
      Mobile page sizing -- [+ page] / [- page]. Sits at the bottom of

@@ -2274,77 +2274,28 @@ main[data-template='index'] [id$='__product_list_fa6P9H'] .resource-list--grid {
   padding: 0 !important;
 }
 
-/* ---- Homepage grid load-in: a staggered slide-up + fade, one card after
-   another, instead of the whole grid just appearing at once (inspired by
-   punkandyo.com's reveal). Hidden by default so the animation has
-   somewhere to animate FROM; mdr-header-enhance.liquid's IntersectionObserver
-   adds .mdr-revealed (with a per-card animation-delay) as each card
-   scrolls into view, home page AND after a WEBRACK in-place collection
-   switch alike. If that JS never runs for some reason, .mdr-reveal-ready
-   without .mdr-revealed would otherwise hide cards forever -- the
-   reduced-motion + no-JS fallback below guards against that.
-
-   A plain vertical ease read as flat/mechanical -- this adds a touch of
-   horizontal drift (left column drifts in from the left, right column
-   from the right, so the two sides read as converging inward rather than
-   both sliding the same direction) and a back-out curve with a slight
-   overshoot, so each card settles with a small bounce instead of just
-   stopping -- the "fluid and wavy" feel. ---------------------------------- */
-main[data-template='index'] [id$='__product_list_fa6P9H'] .resource-list__item.mdr-reveal-ready {
-  opacity: 0;
-  transform: translateY(34px);
+/* ---- Homepage grid load-in: the whole grid slides up + fades in as ONE
+   block, once, snappily -- not the old per-card staggered cascade (each
+   card its own delayed animation, bouncing in one after another). A
+   plain CSS animation on the grid itself needs no JS at all: it just
+   plays on first paint. */
+main[data-template='index'] [id$='__product_list_fa6P9H'] .resource-list--grid {
+  animation: mdr-page-slide-up 0.32s cubic-bezier(0.16, 1, 0.3, 1) both;
 }
 
-main[data-template='index'] [id$='__product_list_fa6P9H'] .resource-list__item.mdr-revealed {
-  animation-duration: 0.7s;
-  animation-timing-function: cubic-bezier(0.22, 1, 0.36, 1);
-  animation-fill-mode: both;
-}
-
-main[data-template='index'] [id$='__product_list_fa6P9H'] .resource-list__item:nth-child(odd).mdr-revealed {
-  animation-name: mdr-reveal-up-left;
-}
-
-main[data-template='index'] [id$='__product_list_fa6P9H'] .resource-list__item:nth-child(even).mdr-revealed {
-  animation-name: mdr-reveal-up-right;
-}
-
-@keyframes mdr-reveal-up-left {
+@keyframes mdr-page-slide-up {
   from {
     opacity: 0;
-    transform: translate(-16px, 34px);
-  }
-  60% {
-    opacity: 1;
-    transform: translate(3px, -4px);
+    transform: translateY(22px);
   }
   to {
     opacity: 1;
-    transform: translate(0, 0);
-  }
-}
-
-@keyframes mdr-reveal-up-right {
-  from {
-    opacity: 0;
-    transform: translate(16px, 34px);
-  }
-  60% {
-    opacity: 1;
-    transform: translate(-3px, -4px);
-  }
-  to {
-    opacity: 1;
-    transform: translate(0, 0);
+    transform: translateY(0);
   }
 }
 
 @media (prefers-reduced-motion: reduce) {
-  main[data-template='index'] [id$='__product_list_fa6P9H'] .resource-list__item.mdr-reveal-ready {
-    opacity: 1;
-    transform: none;
-  }
-  main[data-template='index'] [id$='__product_list_fa6P9H'] .resource-list__item.mdr-revealed {
+  main[data-template='index'] [id$='__product_list_fa6P9H'] .resource-list--grid {
     animation: none;
   }
 }
