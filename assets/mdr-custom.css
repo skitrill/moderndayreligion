@@ -1371,18 +1371,39 @@ button.link,
   opacity: 0 !important;
 }
 
-/* ---- Top menu bar (logo + cart row): dark liquid glass, not flat black --
-   .header__underlay-closed is the real paint layer behind the row's own
-   content (see sections/header.liquid, [data-header-rows='single']
+/* ---- Liquid glass: one shared recipe for the top menu bar AND the
+   WEBRACK strip below it, off a single set of variables -- so the two
+   can never drift apart into "two different sections" again the way
+   they visually did with matching-but-separately-declared values (each
+   backdrop-filter only blurs the actual content directly behind ITS OWN
+   box, so with only a 0.55 tint the two bars swung toward whatever
+   colour happened to be scrolling under each one at a given moment --
+   header often reading lighter, WEBRACK reading darker against a mostly-
+   black grid. A higher, shared tint opacity dampens that swing so both
+   read as the same dark glass regardless of what's scrolling under them.
+   Blur is a hair lighter on mobile -- it read heavier there than intended. */
+:root {
+  --mdr-glass-tint: rgba(0, 0, 0, 0.7);
+  --mdr-glass-blur: blur(20px) saturate(160%);
+}
+
+@media screen and (max-width: 749px) {
+  :root {
+    --mdr-glass-blur: blur(14px) saturate(160%);
+  }
+}
+
+/* .header__underlay-closed is the real paint layer behind the top row's
+   own content (see sections/header.liquid, [data-header-rows='single']
    .header__underlay-closed { background: var(--color-background-top-row) }
    -- overriding it here instead of the theme setting keeps the blur/
    translucency, which a plain background-color setting can't express).
    The logo is already forced white (see blocks/_header-logo.liquid), so
    it stays bright against this. */
 [data-header-rows='single'] .header__underlay-closed {
-  background: rgba(0, 0, 0, 0.55) !important;
-  backdrop-filter: blur(20px) saturate(160%);
-  -webkit-backdrop-filter: blur(20px) saturate(160%);
+  background: var(--mdr-glass-tint) !important;
+  backdrop-filter: var(--mdr-glass-blur);
+  -webkit-backdrop-filter: var(--mdr-glass-blur);
 }
 
 #Details-menu-drawer-container {
@@ -1914,14 +1935,15 @@ main[data-template='index']
      bottom padding either -- the button's own bottom edge now sits flush
      against the page below it */
   padding: 3px 0 0 0;
-  /* dark liquid glass, matching the header bar above it -- the WEBRACK
-     button itself stays solid page-off-white (see .mdr-allbar below) so
-     it reads as a cutout blending into the page, the one exception to
-     this glass treatment. The blur still fully obscures whatever scrolls
-     under this sticky strip (translucency alone wouldn't). */
-  background: rgba(0, 0, 0, 0.55);
-  backdrop-filter: blur(20px) saturate(160%);
-  -webkit-backdrop-filter: blur(20px) saturate(160%);
+  /* same --mdr-glass-tint/--mdr-glass-blur as the header bar above it (see
+     that rule's own comment) -- one shared recipe, so the two read as one
+     continuous glass surface instead of two separately-tuned ones. The
+     WEBRACK button itself stays solid page-off-white (see .mdr-allbar
+     below) so it reads as a cutout blending into the page, the one
+     exception to this glass treatment. */
+  background: var(--mdr-glass-tint);
+  backdrop-filter: var(--mdr-glass-blur);
+  -webkit-backdrop-filter: var(--mdr-glass-blur);
 }
 
 .mdr-allbar {
