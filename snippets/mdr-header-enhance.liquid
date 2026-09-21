@@ -549,7 +549,14 @@
         positionAllbarBorder();
       }
       if (window.ResizeObserver) {
+        /* wrap alone isn't enough: its own width never changes (always
+           100%), only the BAR's does -- 95px closed, full width open, per
+           its own CSS transition. Without watching bar too, the line kept
+           whatever shape it had at the last wrap-triggered recompute (the
+           small closed-button outline) frozen through every open/close,
+           instead of following the bar out to full width and back. */
         new ResizeObserver(positionAllbarBorder).observe(wrap);
+        new ResizeObserver(positionAllbarBorder).observe(bar);
       } else {
         window.addEventListener('resize', positionAllbarBorder, { passive: true });
       }
