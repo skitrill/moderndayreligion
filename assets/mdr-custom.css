@@ -72,6 +72,24 @@ html {
     font-size: 16px;
     white-space: nowrap;
   }
+
+  /* True centre of the whole header, not just its own grid-column -- the
+     theme hardcodes `.header-logo { grid-column: 1 / 4; justify-content:
+     flex-start }` on mobile regardless of the logo_position setting (that
+     setting only wires up above the 750px breakpoint), and that span
+     excludes the cart/actions side, so a plain justify-content: center
+     here would centre it against the left 3/5 of the row, not the real
+     midpoint. Taking it out of grid flow and centring against the
+     header's own full width instead -- header-component is already the
+     nearest positioned ancestor (sticky). */
+  #header-component .header-logo {
+    grid-column: 1 / -1 !important;
+    justify-content: center !important;
+    position: absolute !important;
+    left: 50% !important;
+    top: 50% !important;
+    transform: translate(-50%, -50%) !important;
+  }
 }
 
 /* ---- Product cards: same treatment everywhere ----------------------------------
