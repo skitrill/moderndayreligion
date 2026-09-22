@@ -1413,24 +1413,38 @@ html.mdr-scrolled {
    -- overriding it here instead of the theme setting keeps the blur/
    translucency, which a plain background-color setting can't express).
    The logo is already forced white (see blocks/_header-logo.liquid), so
-   it stays bright against this.
-
-   This used to also stretch up into the safe-area strip above it (a
-   negative top + matching extra height) to "extend under the notch" --
-   reverted. backdrop-filter can only blur/tint the WEBPAGE's own
-   rendering; the actual iOS status bar is native OS chrome the page
-   can never paint into, so that strip was really just adding a second,
-   independently blurred rgba rectangle inside the page's own safe-area
-   padding -- reading as a visible seam/rectangle against the status bar
-   above it and the header below it, not a seamless extension. The status
-   bar itself now matches via <meta name="theme-color"> (meta-tags.liquid)
-   instead -- the real mechanism for that, and the only one that can
-   actually reach outside the page's own content. */
+   it stays bright against this. */
 [data-header-rows='single'] .header__underlay-closed {
   background: var(--mdr-glass-tint) !important;
   backdrop-filter: var(--mdr-glass-blur);
   -webkit-backdrop-filter: var(--mdr-glass-blur);
   transition: background-color 0.18s ease;
+}
+
+/* ---- Safe-area (notch/status-bar strip) fill -------------------------
+   <meta name="theme-color"> alone (meta-tags.liquid) turned out not to be
+   enough on a real iPhone: confirmed via screenshot, Safari was still
+   reading that strip as light (dark status-bar icons on a pale
+   background) even with theme-color set to black -- Safari's status-bar
+   colouring leans on what's actually PAINTED under the safe area, not
+   just the meta hint. A previous attempt painted that strip by stretching
+   .header__underlay-closed itself up into it, but that layer also
+   carries the scroll-triggered blur/tint -- so the strip would have
+   picked up the same translucency and gone visibly grey instead of flat
+   black. This is a separate, always-solid, always-fixed layer instead:
+   pinned to the true viewport top (not the header, which now scrolls
+   away -- see enable_sticky_header: never), so it keeps covering the
+   safe area regardless of scroll position or the header's own state. */
+body::before {
+  content: '';
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: env(safe-area-inset-top, 0px);
+  background: #000000;
+  z-index: 2147483001;
+  pointer-events: none;
 }
 
 #Details-menu-drawer-container {
