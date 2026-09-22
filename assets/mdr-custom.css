@@ -1450,6 +1450,13 @@ body:has(main[data-template='index']) .page-wrapper {
 }
 
 .mdr-fnav--landing .mdr-fnav__email {
+  /* base.css's input:not([type=checkbox],[type=radio]) rule (higher
+     specificity than .mdr-fnav__email's own "background: transparent"
+     alone) fills every text input with --color-input-background by
+     default -- invisible against the footer's own similar-toned cream
+     background, but a pale box against this page's black. !important
+     to actually beat it, not just match it. */
+  background-color: transparent !important;
   color: rgba(255, 255, 255, 0.9);
 }
 
