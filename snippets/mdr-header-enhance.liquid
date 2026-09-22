@@ -380,7 +380,14 @@
       if (!header || !header.parentNode) return;
 
       var data = collections();
-      var isHome = location.pathname === '/' || location.pathname === '';
+      /* "Home" here means the product grid page, not "/" -- "/" is now the
+         no-header landing screen (sections/mdr-landing.liquid), so it never
+         reaches this code at all. The grid is wherever
+         [id$='__product_list_fa6P9H'] actually renders (templates/
+         collection.json, the "All" collection) -- checking for that
+         directly is also more robust than a hardcoded path if that ever
+         moves again. */
+      var isHome = !!D.querySelector("[id$='__product_list_fa6P9H']");
 
       var wrap = D.createElement('div');
       wrap.className = 'mdr-allbar-wrap';

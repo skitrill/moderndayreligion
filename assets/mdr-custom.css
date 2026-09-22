@@ -1352,20 +1352,41 @@ button.link,
 }
 
 /* ==========================================================================
-   Homepage landing: centered logo + the WEBRACK/LOOKBOOK/MAILING/THE MODERN
-   TIMES nav stacked underneath it, same look as the locked/password page.
-   sections/mdr-landing.liquid; reuses mdr-footer-nav (variant: 'landing').
-   No header/WEBRACK-pill row on this page -- the big centered logo and the
-   stacked WEBRACK link already cover that job, so the top bar would just be
-   a redundant, smaller duplicate of what's already on screen. #header-group
-   is a sibling of <main>, not an ancestor, so :has() on their shared parent
-   (<body>) is what reaches it from a main[data-template] selector. */
-body:has(main[data-template='index']) #header-group {
+   Homepage landing: centered logo + the WEBRACK/LOOKBOOK/THE MODERN TIMES/
+   MAILING nav stacked underneath it -- a single static screen, no header,
+   no footer, no scroll, black background. sections/mdr-landing.liquid;
+   reuses mdr-footer-nav (variant: 'landing'). #header-group and <footer>
+   are both siblings of <main>, not ancestors, so :has() on their shared
+   parent (<body>) is what reaches them from a main[data-template]
+   selector. */
+body:has(main[data-template='index']) #header-group,
+body:has(main[data-template='index']) footer {
   display: none !important;
+}
+
+/* Locks the whole page to one static screen -- no rubber-band, no scroll,
+   regardless of viewport height -- instead of just relying on there being
+   "not quite enough content to scroll", which breaks the instant a short
+   viewport (small phone, landscape) makes the stack taller than 100vh. */
+html:has(main[data-template='index']),
+body:has(main[data-template='index']) {
+  height: 100%;
+  overflow: hidden;
+  background-color: #000000 !important;
+}
+
+/* .page-wrapper (base.css), not html/body, is the ACTUAL scroll container
+   at desktop widths (990px+) -- html/body overflow:hidden alone doesn't
+   stop it from scrolling on its own there. */
+body:has(main[data-template='index']) .page-wrapper {
+  height: 100vh !important;
+  overflow: hidden !important;
 }
 
 .mdr-landing-section {
   display: flex;
+  height: 100vh;
+  overflow: hidden;
 }
 
 .mdr-landing {
@@ -1375,18 +1396,20 @@ body:has(main[data-template='index']) #header-group {
   justify-content: center;
   gap: 16px;
   width: 100%;
-  min-height: 100vh;
+  height: 100%;
   padding-block: 24px;
   text-align: center;
+  box-sizing: border-box;
 }
 
 .mdr-landing__logo img {
   display: block;
   width: min(60vw, 420px);
   height: auto;
-  /* left in its natural navy -- unlike the header's own logo, this sits on
-     the page's cream body background (same as the locked/password page),
-     not the header's black fill, so it needs no white invert filter. */
+  /* on the black landing background now (was the cream body background
+     before), same navy-on-transparent -> white treatment as the header's
+     own logo (blocks/_header-logo.liquid .mdr-logo-image). */
+  filter: brightness(0) invert(1);
 }
 
 /* .mdr-fnav's own base rule (further up this file) makes the nav and its
@@ -1394,10 +1417,9 @@ body:has(main[data-template='index']) #header-group {
    links -- here they need to actually be their own stacked column instead,
    so the landing variant opts back into a real box. Same selector
    specificity as that base rule, so declaration order (this comes after)
-   is what wins -- no !important needed. Font size/tracking/weight/case are
-   NOT overridden here -- .mdr-fnav a's own base rule (further up this file)
-   already matches the footer nav exactly (0.625rem, 0.04em, uppercase), so
-   leaving it alone is what keeps this menu and the footer's uniform. */
+   is what wins -- no !important needed. Size/tracking/weight/case still
+   come from .mdr-fnav a's own base rule (0.625rem, 0.04em, uppercase) --
+   only colour is overridden below, for the black background. */
 .mdr-fnav--landing,
 .mdr-fnav--landing ul {
   display: flex;
@@ -1409,6 +1431,11 @@ body:has(main[data-template='index']) #header-group {
   gap: 4px;
 }
 
+.mdr-fnav--landing a,
+.mdr-fnav--landing .mdr-fnav__toggle {
+  color: rgba(255, 255, 255, 0.75) !important;
+}
+
 .mdr-fnav--landing .mdr-fnav__mailing {
   display: flex;
   flex-direction: column;
@@ -1418,11 +1445,24 @@ body:has(main[data-template='index']) #header-group {
 .mdr-fnav--landing .mdr-fnav__drop {
   position: static;
   margin-top: 10px;
+  background: #121212;
+  border-color: rgba(255, 255, 255, 0.25);
+}
+
+.mdr-fnav--landing .mdr-fnav__email {
+  color: rgba(255, 255, 255, 0.9);
+}
+
+.mdr-fnav--landing .mdr-fnav__email::placeholder {
+  color: rgba(255, 255, 255, 0.45);
 }
 
 .mdr-fnav--landing .mdr-fnav__msg {
   position: static;
   margin-top: 10px;
+  background: #121212;
+  border-color: rgba(255, 255, 255, 0.25);
+  color: rgba(255, 255, 255, 0.75);
 }
 
 /* ==========================================================================

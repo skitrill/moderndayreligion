@@ -19,6 +19,7 @@
   <ul>
     <li><a href="{{ routes.all_products_collection_url }}">Webrack</a></li>
     <li><a href="/pages/lookbook">Lookbook</a></li>
+    <li><a href="{{ pages['the-modern-times'].url | default: '/pages/the-modern-times' }}">The Modern Times</a></li>
     <li class="mdr-fnav__mailing">
       <button
         type="button"
@@ -51,7 +52,6 @@
         <p class="mdr-fnav__msg mdr-fnav__msg--err">{{ form.errors | default_errors }}</p>
       {%- endif -%}
     </li>
-    <li><a href="{{ pages['the-modern-times'].url | default: '/pages/the-modern-times' }}">The Modern Times</a></li>
   </ul>
 </nav>
 
