@@ -20,7 +20,7 @@
         "image_ratio": "square",
         "center_vertically": true,
         "hover_effect": "zoom",
-        "background_color": "#000000"
+        "background_color": "#f6f3e7"
       }
     },
     "main": {
@@ -28,7 +28,7 @@
       "settings": {
         "content_direction": "column",
         "gap": 0,
-        "background_color": "#000000",
+        "background_color": "#f6f3e7",
         "padding-block-start": 0,
         "padding-block-end": 0
       }

@@ -1,9 +1,11 @@
 {%- doc -%}
   MDR custom nav (replaces the stock main-menu links in the footer, and also
   rendered standalone on the homepage landing section, sections/mdr-landing.liquid):
-  WEBRACK -> the product grid (templates/page.shop.json -- "/" is now the
-  landing page, not the grid), LOOKBOOK -> /pages/lookbook, MAILING -> a
-  slim drop-down box with a newsletter sign-up, THE MODERN TIMES -> its page.
+  WEBRACK -> the product grid, now at the "All" collection (templates/
+  collection.json -- "/" is the landing page, not the grid, and this avoids
+  needing a manually-created admin Page the way the other three links
+  below do), LOOKBOOK -> /pages/lookbook, MAILING -> a slim drop-down box
+  with a newsletter sign-up, THE MODERN TIMES -> its page.
   The stock .footer-content .menu is hidden in mdr-custom.css.
 
   @param {string} [variant] - optional modifier, added as `mdr-fnav--{{ variant }}`
@@ -15,7 +17,7 @@
 
 <nav class="mdr-fnav{% if variant %} mdr-fnav--{{ variant }}{% endif %}" aria-label="Footer">
   <ul>
-    <li><a href="{{ pages['shop'].url | default: '/pages/shop' }}">Webrack</a></li>
+    <li><a href="{{ routes.all_products_collection_url }}">Webrack</a></li>
     <li><a href="/pages/lookbook">Lookbook</a></li>
     <li class="mdr-fnav__mailing">
       <button

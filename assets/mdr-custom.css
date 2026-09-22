@@ -676,7 +676,7 @@ main .section--page-width {
 
 /* ---- Homepage featured + product recommendations: match the collection --
    same flat tiles, tight seam. The collection page keeps its own native grid. */
-main[data-template='page.shop'] .resource-list--grid,
+main[data-template='collection'] .resource-list--grid,
 .product-recommendations .resource-list--grid,
 .product-recommendations .resource-list {
   column-gap: 2px !important;
@@ -686,7 +686,7 @@ main[data-template='page.shop'] .resource-list--grid,
 /* ---- Featured grid: supreme.com style -- spans the content width, hairline
    seams between cards. Always 2 cols on phone, 4 on pc -- fixed, no
    dense/zoom toggle. ------------------------------------------------------- */
-main[data-template='page.shop'] [id$='__product_list_fa6P9H'] .resource-list--grid {
+main[data-template='collection'] [id$='__product_list_fa6P9H'] .resource-list--grid {
   display: grid !important;
   grid-template-columns: repeat(2, 1fr) !important;
   column-gap: 1px !important;
@@ -697,13 +697,13 @@ main[data-template='page.shop'] [id$='__product_list_fa6P9H'] .resource-list--gr
 }
 
 @media (min-width: 750px) {
-  main[data-template='page.shop'] [id$='__product_list_fa6P9H'] .resource-list--grid {
+  main[data-template='collection'] [id$='__product_list_fa6P9H'] .resource-list--grid {
     grid-template-columns: repeat(4, 1fr) !important;
   }
 }
 
 /* the grid starts right under the WEBRACK line -- no big top gap */
-main[data-template='page.shop'] [id$='__product_list_fa6P9H'] {
+main[data-template='collection'] [id$='__product_list_fa6P9H'] {
   padding-block: 0 clamp(14px, 3vw, 28px) !important;
 }
 
@@ -713,31 +713,31 @@ main[data-template='page.shop'] [id$='__product_list_fa6P9H'] {
    padding-block override above (different element), and together they
    were still leaving the grid's own vertical line start ~18px below the
    WEBRACK strip's border, not flush against it. */
-main[data-template='page.shop'] [id$='__product_list_fa6P9H'] .section {
+main[data-template='collection'] [id$='__product_list_fa6P9H'] .section {
   --padding-block-start: 0px !important;
   --gap: 0px !important;
   padding-block-start: 0 !important;
   gap: 0 !important;
 }
 
-main[data-template='page.shop'] [id$='__product_list_fa6P9H'] .section-resource-list__header,
-main[data-template='page.shop'] [id$='__product_list_fa6P9H'] .section-resource-list__header .group-block,
-main[data-template='page.shop'] [id$='__product_list_fa6P9H'] .section-resource-list__header .group-block-content,
-main[data-template='page.shop'] [id$='__product_list_fa6P9H'] .section-resource-list__header .text-block {
+main[data-template='collection'] [id$='__product_list_fa6P9H'] .section-resource-list__header,
+main[data-template='collection'] [id$='__product_list_fa6P9H'] .section-resource-list__header .group-block,
+main[data-template='collection'] [id$='__product_list_fa6P9H'] .section-resource-list__header .group-block-content,
+main[data-template='collection'] [id$='__product_list_fa6P9H'] .section-resource-list__header .text-block {
   justify-content: center !important;
   align-items: center !important;
   text-align: center !important;
   width: 100% !important;
 }
 
-main[data-template='page.shop'] [id$='__product_list_fa6P9H'] .section-resource-list__header h3 {
+main[data-template='collection'] [id$='__product_list_fa6P9H'] .section-resource-list__header h3 {
   margin-bottom: clamp(10px, 2.4vw, 20px) !important;
 }
 
 /* "All" section title -> red */
-main[data-template='page.shop'] [id$='__product_list_fa6P9H'] .section-resource-list__header
+main[data-template='collection'] [id$='__product_list_fa6P9H'] .section-resource-list__header
   :is(h1, h2, h3, h4, .text-block, [class*='title']),
-main[data-template='page.shop'] [id$='__product_list_fa6P9H'] .section-resource-list__header
+main[data-template='collection'] [id$='__product_list_fa6P9H'] .section-resource-list__header
   :is(h1, h2, h3, h4, .text-block) * {
   color: #000000 !important;
 }
@@ -1373,10 +1373,10 @@ body:has(main[data-template='index']) #header-group {
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: clamp(28px, 6vw, 48px);
+  gap: 16px;
   width: 100%;
   min-height: 100vh;
-  padding-block: 60px;
+  padding-block: 24px;
   text-align: center;
 }
 
@@ -1406,7 +1406,7 @@ body:has(main[data-template='index']) #header-group {
 }
 
 .mdr-fnav--landing ul {
-  gap: 20px;
+  gap: 4px;
 }
 
 .mdr-fnav--landing .mdr-fnav__mailing {
@@ -1785,12 +1785,12 @@ a:not([class*='button']):not(.header-logo):focus-visible {
 }
 
 /* ...but the homepage product cards never take that white highlight */
-main[data-template='page.shop'] [id$='__product_list_fa6P9H'] .product-card a:hover,
-main[data-template='page.shop'] [id$='__product_list_fa6P9H'] .product-card a:active,
-main[data-template='page.shop'] [id$='__product_list_fa6P9H'] .product-card a:focus-visible,
-main[data-template='page.shop'] [id$='__product_list_fa6P9H'] .resource-list__item a:hover,
-main[data-template='page.shop'] [id$='__product_list_fa6P9H'] .resource-list__item a:active,
-main[data-template='page.shop'] [id$='__product_list_fa6P9H'] .resource-list__item a:focus-visible {
+main[data-template='collection'] [id$='__product_list_fa6P9H'] .product-card a:hover,
+main[data-template='collection'] [id$='__product_list_fa6P9H'] .product-card a:active,
+main[data-template='collection'] [id$='__product_list_fa6P9H'] .product-card a:focus-visible,
+main[data-template='collection'] [id$='__product_list_fa6P9H'] .resource-list__item a:hover,
+main[data-template='collection'] [id$='__product_list_fa6P9H'] .resource-list__item a:active,
+main[data-template='collection'] [id$='__product_list_fa6P9H'] .resource-list__item a:focus-visible {
   background: none !important;
   background-color: transparent !important;
   color: inherit !important;
@@ -1850,7 +1850,7 @@ main .product-information__grid.product-information__grid .size-chart * {
 
 /* ...product title -> full brightness, matching the homepage product-card
    title colour (#000000, not f0eee6 -- the card title itself uses e9e1c4,
-   see main[data-template='page.shop'] ... .product-card .text-block p below;
+   see main[data-template='collection'] ... .product-card .text-block p below;
    this rule had drifted to the wrong hex) instead of the muted
    description-column tone. Needs to out-specify the earlier
    :is(h1,...):not(.price):not(product-price) rule (0,2,3), hence the
@@ -2021,8 +2021,8 @@ main[data-template='product'] .product-title * {
 }
 
 /* the ALL section + its navbar: never show a border line */
-main[data-template='page.shop'] [id$='__product_list_fa6P9H'],
-main[data-template='page.shop'] [id$='__product_list_fa6P9H'] *,
+main[data-template='collection'] [id$='__product_list_fa6P9H'],
+main[data-template='collection'] [id$='__product_list_fa6P9H'] *,
 .mdr-home-nav,
 .mdr-home-nav * {
   border: 0 !important;
@@ -2030,14 +2030,14 @@ main[data-template='page.shop'] [id$='__product_list_fa6P9H'] *,
 }
 
 /* the ALL section: never show a border line */
-main[data-template='page.shop'] [id$='__product_list_fa6P9H'],
-main[data-template='page.shop'] [id$='__product_list_fa6P9H'] * {
+main[data-template='collection'] [id$='__product_list_fa6P9H'],
+main[data-template='collection'] [id$='__product_list_fa6P9H'] * {
   border: 0 !important;
   outline: 0 !important;
 }
 
 /* the stock "ALL" section title is gone -- WEBRACK moved up into the header */
-main[data-template='page.shop']
+main[data-template='collection']
   [id$='__product_list_fa6P9H']
   .section-resource-list__header {
   display: none !important;
@@ -2386,7 +2386,7 @@ main[data-template='page.shop']
 }
 
 /* supreme-style: the grid just flows down the page, no inner scroll window */
-main[data-template='page.shop'] [id$='__product_list_fa6P9H'] .resource-list--grid {
+main[data-template='collection'] [id$='__product_list_fa6P9H'] .resource-list--grid {
   max-height: none !important;
   overflow: visible !important;
   border: 0 !important;
@@ -2398,7 +2398,7 @@ main[data-template='page.shop'] [id$='__product_list_fa6P9H'] .resource-list--gr
    card its own delayed animation, bouncing in one after another). A
    plain CSS animation on the grid itself needs no JS at all: it just
    plays on first paint. */
-main[data-template='page.shop'] [id$='__product_list_fa6P9H'] .resource-list--grid {
+main[data-template='collection'] [id$='__product_list_fa6P9H'] .resource-list--grid {
   animation: mdr-page-slide-up 0.32s cubic-bezier(0.16, 1, 0.3, 1) both;
 }
 
@@ -2414,12 +2414,12 @@ main[data-template='page.shop'] [id$='__product_list_fa6P9H'] .resource-list--gr
 }
 
 @media (prefers-reduced-motion: reduce) {
-  main[data-template='page.shop'] [id$='__product_list_fa6P9H'] .resource-list--grid {
+  main[data-template='collection'] [id$='__product_list_fa6P9H'] .resource-list--grid {
     animation: none;
   }
 }
 
-main[data-template='page.shop'] [id$='__product_list_fa6P9H'] .mdr-scrollfade {
+main[data-template='collection'] [id$='__product_list_fa6P9H'] .mdr-scrollfade {
   position: relative;
   width: 100%;
   overflow-x: hidden;
@@ -2429,11 +2429,11 @@ main[data-template='page.shop'] [id$='__product_list_fa6P9H'] .mdr-scrollfade {
    from the right -- all without leaving the page. Quick/"zappy" -- was
    0.22s out / 0.34s in, sped up to read as a fast flick instead of a
    smooth glide (matching JS timings in mdr-header-enhance.liquid). */
-main[data-template='page.shop'] [id$='__product_list_fa6P9H'] .mdr-scrollfade .resource-list--grid {
+main[data-template='collection'] [id$='__product_list_fa6P9H'] .mdr-scrollfade .resource-list--grid {
   transition: transform 0.11s cubic-bezier(0.4, 0, 1, 1), opacity 0.11s ease;
 }
 
-main[data-template='page.shop']
+main[data-template='collection']
   [id$='__product_list_fa6P9H']
   .mdr-scrollfade.mdr-swiping-out
   .resource-list--grid {
@@ -2441,7 +2441,7 @@ main[data-template='page.shop']
   opacity: 0;
 }
 
-main[data-template='page.shop']
+main[data-template='collection']
   [id$='__product_list_fa6P9H']
   .mdr-scrollfade.mdr-swiping-in
   .resource-list--grid {
@@ -2460,7 +2460,7 @@ main[data-template='page.shop']
 }
 
 @media (prefers-reduced-motion: reduce) {
-  main[data-template='page.shop'] [id$='__product_list_fa6P9H'] .mdr-scrollfade .resource-list--grid {
+  main[data-template='collection'] [id$='__product_list_fa6P9H'] .mdr-scrollfade .resource-list--grid {
     transition: none;
     animation: none;
   }
@@ -2473,19 +2473,19 @@ main[data-template='page.shop']
 
 /* 1px grid gaps read as hairlines: the grid paints a faint line colour and
    every card fills its cell with solid black on top. */
-main[data-template='page.shop'] [id$='__product_list_fa6P9H'] .resource-list__item {
+main[data-template='collection'] [id$='__product_list_fa6P9H'] .resource-list__item {
   background: #f6f3e7 !important;
 }
 
-main[data-template='page.shop'] [id$='__product_list_fa6P9H'] .resource-list--grid {
+main[data-template='collection'] [id$='__product_list_fa6P9H'] .resource-list--grid {
   background: rgba(0, 0, 0, 0.14) !important;
   border-bottom: 1px solid rgba(0, 0, 0, 0.14) !important;
 }
 
 /* card = a plain column, a touch of breathing room below the price so it
    doesn't sit flush on the row's hairline */
-main[data-template='page.shop'] [id$='__product_list_fa6P9H'] .product-card,
-main[data-template='page.shop'] [id$='__product_list_fa6P9H'] .product-card__content {
+main[data-template='collection'] [id$='__product_list_fa6P9H'] .product-card,
+main[data-template='collection'] [id$='__product_list_fa6P9H'] .product-card__content {
   background: #f6f3e7 !important;
   background-image: none !important;
   box-shadow: none !important;
@@ -2493,7 +2493,7 @@ main[data-template='page.shop'] [id$='__product_list_fa6P9H'] .product-card__con
   gap: 0 !important;
 }
 
-main[data-template='page.shop'] [id$='__product_list_fa6P9H'] .product-card__content {
+main[data-template='collection'] [id$='__product_list_fa6P9H'] .product-card__content {
   /* compact, not cramped -- was 10px */
   padding-bottom: 7px !important;
   /* the image area + text area need to stack as two independently-sized
@@ -2504,22 +2504,22 @@ main[data-template='page.shop'] [id$='__product_list_fa6P9H'] .product-card__con
 }
 
 /* the full-card overlay link stops at the content -- not below the price */
-main[data-template='page.shop'] [id$='__product_list_fa6P9H'] .product-card__link {
+main[data-template='collection'] [id$='__product_list_fa6P9H'] .product-card__link {
   height: 100% !important;
 }
 
 /* no tap flash anywhere on a product card */
-main[data-template='page.shop'] [id$='__product_list_fa6P9H'] .product-card,
-main[data-template='page.shop'] [id$='__product_list_fa6P9H'] .product-card a,
-main[data-template='page.shop'] [id$='__product_list_fa6P9H'] .resource-list__item,
-main[data-template='page.shop'] [id$='__product_list_fa6P9H'] .resource-list__item a {
+main[data-template='collection'] [id$='__product_list_fa6P9H'] .product-card,
+main[data-template='collection'] [id$='__product_list_fa6P9H'] .product-card a,
+main[data-template='collection'] [id$='__product_list_fa6P9H'] .resource-list__item,
+main[data-template='collection'] [id$='__product_list_fa6P9H'] .resource-list__item a {
   -webkit-tap-highlight-color: transparent !important;
 }
 
 /* plain black image panel -- was black + a faint diagonal hazard-tape
    pattern, dropped for a flat, cleaner look */
-main[data-template='page.shop'] [id$='__product_list_fa6P9H'] .card-gallery,
-main[data-template='page.shop'] [id$='__product_list_fa6P9H'] .product-media-container {
+main[data-template='collection'] [id$='__product_list_fa6P9H'] .card-gallery,
+main[data-template='collection'] [id$='__product_list_fa6P9H'] .product-media-container {
   position: relative;
   background-color: #f6f3e7 !important;
   background-image: none !important;
@@ -2528,7 +2528,7 @@ main[data-template='page.shop'] [id$='__product_list_fa6P9H'] .product-media-con
   overflow: hidden;
 }
 
-main[data-template='page.shop'] [id$='__product_list_fa6P9H'] .product-media-container {
+main[data-template='collection'] [id$='__product_list_fa6P9H'] .product-media-container {
   max-width: 100% !important;
   margin-inline: 0 !important;
   /* more compact still -- was 4/4.25, and before that 4/5. A fixed ratio
@@ -2540,8 +2540,8 @@ main[data-template='page.shop'] [id$='__product_list_fa6P9H'] .product-media-con
 }
 
 /* bigger product cutouts -- much less padding than before */
-main[data-template='page.shop'] [id$='__product_list_fa6P9H'] .product-card .product-media__image,
-main[data-template='page.shop'] [id$='__product_list_fa6P9H'] .product-card .product-media img {
+main[data-template='collection'] [id$='__product_list_fa6P9H'] .product-card .product-media__image,
+main[data-template='collection'] [id$='__product_list_fa6P9H'] .product-card .product-media img {
   /* the warm glow behind the cutout is gone -- flat now, no filter */
   filter: none !important;
   mix-blend-mode: normal;
@@ -2557,7 +2557,7 @@ main[data-template='page.shop'] [id$='__product_list_fa6P9H'] .product-card .pro
    text, tucked in the corner, identical on every card, no attempt to
    merge with the grid. Kept the site's own all-caps convention (Supreme's
    reads lowercase) rather than switch just this one label. */
-main[data-template='page.shop'] [id$='__product_list_fa6P9H'] .card-gallery::after {
+main[data-template='collection'] [id$='__product_list_fa6P9H'] .card-gallery::after {
   content: 'new';
   position: absolute;
   top: 8px;
@@ -2576,32 +2576,32 @@ main[data-template='page.shop'] [id$='__product_list_fa6P9H'] .card-gallery::aft
 }
 
 /* hide the quick-add / choose overlay button -- supreme cards are just tap-through */
-main[data-template='page.shop'] [id$='__product_list_fa6P9H'] quick-add-component,
-main[data-template='page.shop'] [id$='__product_list_fa6P9H'] .quick-add {
+main[data-template='collection'] [id$='__product_list_fa6P9H'] quick-add-component,
+main[data-template='collection'] [id$='__product_list_fa6P9H'] .quick-add {
   display: none !important;
 }
 
 /* re-show the product name + price under the image (hidden site-wide above) */
-main[data-template='page.shop'] [id$='__product_list_fa6P9H'] .product-card a.contents.user-select-text {
+main[data-template='collection'] [id$='__product_list_fa6P9H'] .product-card a.contents.user-select-text {
   display: contents !important;
 }
-main[data-template='page.shop'] [id$='__product_list_fa6P9H'] .product-card a.contents.user-select-text .text-block,
-main[data-template='page.shop'] [id$='__product_list_fa6P9H'] .product-card a.contents.user-select-text .text-block p,
-main[data-template='page.shop'] [id$='__product_list_fa6P9H'] .product-card product-price,
-main[data-template='page.shop'] [id$='__product_list_fa6P9H'] .product-card product-price > div {
+main[data-template='collection'] [id$='__product_list_fa6P9H'] .product-card a.contents.user-select-text .text-block,
+main[data-template='collection'] [id$='__product_list_fa6P9H'] .product-card a.contents.user-select-text .text-block p,
+main[data-template='collection'] [id$='__product_list_fa6P9H'] .product-card product-price,
+main[data-template='collection'] [id$='__product_list_fa6P9H'] .product-card product-price > div {
   display: block !important;
 }
-main[data-template='page.shop'] [id$='__product_list_fa6P9H'] .product-card product-price .price {
+main[data-template='collection'] [id$='__product_list_fa6P9H'] .product-card product-price .price {
   display: inline !important;
 }
 
-main[data-template='page.shop'] [id$='__product_list_fa6P9H'] .product-card .text-block {
+main[data-template='collection'] [id$='__product_list_fa6P9H'] .product-card .text-block {
   margin: 6px 0 0 !important;
   padding: 0 !important;
 }
 
-main[data-template='page.shop'] [id$='__product_list_fa6P9H'] .product-card .text-block p,
-main[data-template='page.shop'] [id$='__product_list_fa6P9H'] .product-card product-price .price {
+main[data-template='collection'] [id$='__product_list_fa6P9H'] .product-card .text-block p,
+main[data-template='collection'] [id$='__product_list_fa6P9H'] .product-card product-price .price {
   font: inherit !important;
   font-size: 0.6rem !important;
   line-height: 1.1 !important;
@@ -2613,14 +2613,14 @@ main[data-template='page.shop'] [id$='__product_list_fa6P9H'] .product-card prod
   text-transform: uppercase !important;
 }
 
-main[data-template='page.shop'] [id$='__product_list_fa6P9H'] .product-card product-price,
-main[data-template='page.shop'] [id$='__product_list_fa6P9H'] .product-card product-price.spacing-style,
-main[data-template='page.shop'] [id$='__product_list_fa6P9H'] .product-card product-price > div {
+main[data-template='collection'] [id$='__product_list_fa6P9H'] .product-card product-price,
+main[data-template='collection'] [id$='__product_list_fa6P9H'] .product-card product-price.spacing-style,
+main[data-template='collection'] [id$='__product_list_fa6P9H'] .product-card product-price > div {
   margin: 0 !important;
   padding: 0 !important;
 }
 
-main[data-template='page.shop'] [id$='__product_list_fa6P9H'] .product-card .text-block p {
+main[data-template='collection'] [id$='__product_list_fa6P9H'] .product-card .text-block p {
   margin: 0 !important;
   padding: 0 !important;
   /* every card's text area needs to be the SAME height regardless of the
@@ -2637,18 +2637,18 @@ main[data-template='page.shop'] [id$='__product_list_fa6P9H'] .product-card .tex
 
 /* mobile 2-up: the right-hand column right-aligns its name + price */
 @media screen and (max-width: 749px) {
-  main[data-template='page.shop'] [id$='__product_list_fa6P9H'] .resource-list__item:nth-child(2n) .text-block,
-  main[data-template='page.shop'] [id$='__product_list_fa6P9H'] .resource-list__item:nth-child(2n) .text-block p,
-  main[data-template='page.shop'] [id$='__product_list_fa6P9H'] .resource-list__item:nth-child(2n) product-price,
-  main[data-template='page.shop'] [id$='__product_list_fa6P9H'] .resource-list__item:nth-child(2n) product-price > div,
-  main[data-template='page.shop'] [id$='__product_list_fa6P9H'] .resource-list__item:nth-child(2n) product-price .price {
+  main[data-template='collection'] [id$='__product_list_fa6P9H'] .resource-list__item:nth-child(2n) .text-block,
+  main[data-template='collection'] [id$='__product_list_fa6P9H'] .resource-list__item:nth-child(2n) .text-block p,
+  main[data-template='collection'] [id$='__product_list_fa6P9H'] .resource-list__item:nth-child(2n) product-price,
+  main[data-template='collection'] [id$='__product_list_fa6P9H'] .resource-list__item:nth-child(2n) product-price > div,
+  main[data-template='collection'] [id$='__product_list_fa6P9H'] .resource-list__item:nth-child(2n) product-price .price {
     text-align: right !important;
   }
 }
 
 /* "sold out" price copy -> dim grey like supreme */
-main[data-template='page.shop'] [id$='__product_list_fa6P9H'] .product-card product-price:has(.price--sold-out) .price,
-main[data-template='page.shop'] [id$='__product_list_fa6P9H'] .product-card .price--sold-out {
+main[data-template='collection'] [id$='__product_list_fa6P9H'] .product-card product-price:has(.price--sold-out) .price,
+main[data-template='collection'] [id$='__product_list_fa6P9H'] .product-card .price--sold-out {
   color: rgba(0, 0, 0, 0.4) !important;
 }
 
