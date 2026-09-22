@@ -388,7 +388,6 @@
          directly is also more robust than a hardcoded path if that ever
          moves again. */
       var isHome = !!D.querySelector("[id$='__product_list_fa6P9H']");
-      console.log('[mdr-debug]', 'readyState=' + D.readyState, 'isHome=' + isHome, 'path=' + location.pathname);
 
       var wrap = D.createElement('div');
       wrap.className = 'mdr-allbar-wrap';
@@ -1038,7 +1037,19 @@
       var watchRoot = (D.querySelector('header.shopify-section-group-header-group') ||
         D.querySelector('header'));
       watchRoot = (watchRoot && watchRoot.parentNode) || D.body;
-      new MutationObserver(build).observe(watchRoot, { childList: true, subtree: true });
+      /* Not `build` directly -- a mutation inside watchRoot (the header's
+         own settling, right after this script tag runs) can fire while the
+         parser is still mid-document, well before <main> and its grid
+         section exist yet. build()'s own "already built" guard then locks
+         in whatever isHome that premature run computed (false, since the
+         grid didn't exist yet) forever -- this was making every page
+         permanently show RETURN, home page included. Gating on readyState
+         here, same as the other two trigger sites below, keeps every first
+         real build() call until the document (and therefore the grid, if
+         this page has one) is actually fully parsed. */
+      new MutationObserver(function () {
+        if (D.readyState !== 'loading') build();
+      }).observe(watchRoot, { childList: true, subtree: true });
     }
   })();
 
