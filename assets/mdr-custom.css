@@ -64,6 +64,12 @@ html {
      background removed too, so it's a pane rendering quirk, not
      something this rule causes.) */
   background-color: #000000;
+  /* Tells Safari to treat the whole page as a dark surface -- this (not
+     theme-color alone) is what actually governs the rubber-band overscroll
+     fill at the very top/bottom of the page and keeps the browser's own
+     chrome reading dark, on top of and independent of the black
+     background-color above. */
+  color-scheme: dark;
 }
 
 /* Desktop keeps the logo at its original size. */
