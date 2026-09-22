@@ -1383,7 +1383,12 @@ button.link,
    read as the same dark glass regardless of what's scrolling under them.
    Blur is a hair lighter on mobile -- it read heavier there than intended. */
 :root {
-  --mdr-glass-tint: rgba(0, 0, 0, 0.7);
+  /* 0.7 measured out to rgb(74,73,69) once blended with the cream page --
+     a visibly warm dark GRAY, not black, especially at rest on first
+     load before anything darker has scrolled in behind it (backdrop-
+     filter can only blur what's actually there). 0.88 blends to
+     rgb(30,29,28) -- reads as black immediately, no scroll required. */
+  --mdr-glass-tint: rgba(0, 0, 0, 0.88);
   --mdr-glass-blur: blur(20px) saturate(160%);
 }
 
@@ -1399,26 +1404,23 @@ button.link,
    -- overriding it here instead of the theme setting keeps the blur/
    translucency, which a plain background-color setting can't express).
    The logo is already forced white (see blocks/_header-logo.liquid), so
-   it stays bright against this. */
+   it stays bright against this.
+
+   This used to also stretch up into the safe-area strip above it (a
+   negative top + matching extra height) to "extend under the notch" --
+   reverted. backdrop-filter can only blur/tint the WEBPAGE's own
+   rendering; the actual iOS status bar is native OS chrome the page
+   can never paint into, so that strip was really just adding a second,
+   independently blurred rgba rectangle inside the page's own safe-area
+   padding -- reading as a visible seam/rectangle against the status bar
+   above it and the header below it, not a seamless extension. The status
+   bar itself now matches via <meta name="theme-color"> (meta-tags.liquid)
+   instead -- the real mechanism for that, and the only one that can
+   actually reach outside the page's own content. */
 [data-header-rows='single'] .header__underlay-closed {
   background: var(--mdr-glass-tint) !important;
   backdrop-filter: var(--mdr-glass-blur);
   -webkit-backdrop-filter: var(--mdr-glass-blur);
-  /* extends the glass up past the header's own top edge, into the
-     safe-area (the notch/status-bar strip the viewport already renders
-     under -- viewport-fit=cover, see meta-tags.liquid) instead of
-     stopping at a hard line below it. .header__underlay is `inset: 0`
-     (sections/header.liquid), so this only moves/grows the BACKGROUND
-     layer -- the header's real content (logo, cart) stays exactly where
-     it already sits; height adds back what top takes away so the bottom
-     edge doesn't shift. On devices with no safe area (or on desktop,
-     where header-height keeps this off-screen anyway) the inset is 0px
-     and this is a no-op. */
-  top: calc(-1 * var(--safe-area-inset-top, env(safe-area-inset-top, 0px)));
-  height: calc(
-    var(--closed-underlay-height, 100%) +
-      var(--safe-area-inset-top, env(safe-area-inset-top, 0px))
-  );
 }
 
 #Details-menu-drawer-container {
