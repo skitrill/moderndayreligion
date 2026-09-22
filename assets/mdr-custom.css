@@ -146,6 +146,15 @@ html {
    flex-basis: 100% forces the wrap before it, at the end of DOM order. */
 footer {
   position: relative;
+  /* backstop for the two footer sections' own background: each renders its
+     black fill via a .section-background div with z-index:-2 (Shopify's
+     own section-background mechanism, sections/footer-group.json), which
+     stacking-context quirks can push behind an ancestor's cream paint on
+     some templates (confirmed happening on the product page specifically
+     -- footer text was readable but sitting on cream, not black, there).
+     A solid background-color directly on <footer> itself doesn't depend
+     on that layering at all, so it can't go wrong the same way. */
+  background-color: #000000;
 }
 
 .footer-content .list-unstyled {
