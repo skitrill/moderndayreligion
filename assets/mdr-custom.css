@@ -1355,7 +1355,15 @@ button.link,
    Homepage landing: centered logo + the WEBRACK/LOOKBOOK/MAILING/THE MODERN
    TIMES nav stacked underneath it, same look as the locked/password page.
    sections/mdr-landing.liquid; reuses mdr-footer-nav (variant: 'landing').
-   ========================================================================== */
+   No header/WEBRACK-pill row on this page -- the big centered logo and the
+   stacked WEBRACK link already cover that job, so the top bar would just be
+   a redundant, smaller duplicate of what's already on screen. #header-group
+   is a sibling of <main>, not an ancestor, so :has() on their shared parent
+   (<body>) is what reaches it from a main[data-template] selector. */
+body:has(main[data-template='index']) #header-group {
+  display: none !important;
+}
+
 .mdr-landing-section {
   display: flex;
 }
@@ -1367,7 +1375,7 @@ button.link,
   justify-content: center;
   gap: clamp(28px, 6vw, 48px);
   width: 100%;
-  min-height: calc(100vh - var(--header-height, 0px));
+  min-height: 100vh;
   padding-block: 60px;
   text-align: center;
 }
@@ -1386,7 +1394,10 @@ button.link,
    links -- here they need to actually be their own stacked column instead,
    so the landing variant opts back into a real box. Same selector
    specificity as that base rule, so declaration order (this comes after)
-   is what wins -- no !important needed. */
+   is what wins -- no !important needed. Font size/tracking/weight/case are
+   NOT overridden here -- .mdr-fnav a's own base rule (further up this file)
+   already matches the footer nav exactly (0.625rem, 0.04em, uppercase), so
+   leaving it alone is what keeps this menu and the footer's uniform. */
 .mdr-fnav--landing,
 .mdr-fnav--landing ul {
   display: flex;
@@ -1396,12 +1407,6 @@ button.link,
 
 .mdr-fnav--landing ul {
   gap: 20px;
-}
-
-.mdr-fnav--landing a,
-.mdr-fnav--landing .mdr-fnav__toggle {
-  font-size: 0.8rem;
-  letter-spacing: 0.1em;
 }
 
 .mdr-fnav--landing .mdr-fnav__mailing {
