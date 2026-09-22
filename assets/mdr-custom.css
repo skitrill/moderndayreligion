@@ -774,18 +774,23 @@ body {
   background-image: none !important;
 }
 
-/* .page-wrapper (base.css) has its own min-height: 100dvh, but its children
-   (header, main, footer) don't grow to fill it -- on a short page (an empty
-   cart, a short page template) they just stack at the top, leaving genuine
-   blank space inside page-wrapper's own box, below the footer, down to the
-   viewport's bottom edge. That space isn't part of main OR footer, so
-   neither of their own backgrounds cover it -- it was falling through to
-   body's cream. This sits behind everything (main's own background, cream
-   or otherwise, still fully covers its own box on a normal, filled page),
-   so it only ever becomes visible in that specific empty-space case, where
-   it should read as a continuation of the black footer, not the page. */
-.page-wrapper {
-  background-color: #000000;
+/* .page-wrapper (base.css) is a flex column with its own min-height: 100dvh,
+   but its children (header, main, footer) don't grow to fill it -- on a
+   short page (an empty cart, a short page template) they just stack at the
+   top, leaving genuine blank space below the footer, down to the
+   viewport's bottom edge, that's really just page-wrapper's own unstyled
+   box (not part of main OR footer) showing body's cream through.
+   (A page-wrapper background-color was tried here first, as a backstop
+   behind everything -- but "behind everything" isn't true for every page:
+   the empty-cart message itself has no opaque background of its own
+   either, it was only ever readable against body's cream, so that turned
+   its own black-on-nothing text invisible against the new black too.)
+   margin-top: auto on the LAST flex item pulls all of a flex column's
+   leftover space into its own margin instead, pushing footer down to sit
+   flush at page-wrapper's true bottom edge -- so on a short page there is
+   no separate empty gap left over at all, and nothing to still be cream. */
+footer {
+  margin-top: auto;
 }
 
 .product-card__content {
