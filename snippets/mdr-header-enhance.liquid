@@ -197,6 +197,36 @@
   })();
 
   /* =====================================================================
+     Header / WEBRACK glass state: flat black (no tint, no blur) by
+     default -- matching <meta name="theme-color"> exactly so it blends
+     into the iPhone status bar with zero seam -- and only switches to
+     the translucent blurred glass look once the page has actually
+     scrolled. Toggles one class (.mdr-scrolled on <html>); the CSS swap
+     itself lives in mdr-custom.css as --mdr-glass-tint/--mdr-glass-blur,
+     so header and WEBRACK change together, not two separate switches.
+     ===================================================================== */
+  (function () {
+    if (window.__mdrScrollGlass) return;
+    window.__mdrScrollGlass = true;
+    var D = document;
+    var html = D.documentElement;
+    var on = null;
+
+    function sync() {
+      var y = window.scrollY || window.pageYOffset || D.documentElement.scrollTop || 0;
+      var should = y > 0;
+      if (should !== on) {
+        html.classList.toggle('mdr-scrolled', should);
+        on = should;
+      }
+    }
+
+    sync();
+    window.addEventListener('scroll', sync, { passive: true });
+    window.addEventListener('load', sync);
+  })();
+
+  /* =====================================================================
      Homepage grid: a fixed 2-col (mobile) / 4-col (desktop) layout, always
      -- the old dense/zoom-toggle-by-tapping-the-logo feature is gone. This
      just keeps the "pad the grid with inert clones so it looks full"

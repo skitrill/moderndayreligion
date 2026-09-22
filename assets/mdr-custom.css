@@ -1383,17 +1383,26 @@ button.link,
    read as the same dark glass regardless of what's scrolling under them.
    Blur is a hair lighter on mobile -- it read heavier there than intended. */
 :root {
-  /* 0.7 measured out to rgb(74,73,69) once blended with the cream page --
-     a visibly warm dark GRAY, not black, especially at rest on first
-     load before anything darker has scrolled in behind it (backdrop-
-     filter can only blur what's actually there). 0.88 blends to
-     rgb(30,29,28) -- reads as black immediately, no scroll required. */
+  /* Flat, opaque, exactly <meta name="theme-color"> (meta-tags.liquid) --
+     the default/at-rest state. Any translucency here (even the 0.88 this
+     used to be, rgb(30,29,28) once blended with the page) is still a
+     DIFFERENT pixel value than the status bar's own flat black, so it
+     never actually disappears into it -- only a flat, unblurred, exact
+     colour match can. Swaps to the translucent blurred glass look once
+     .mdr-scrolled lands on <html> (see mdr-header-enhance.liquid) --
+     at that point something's actually scrolling underneath for the
+     blur to show, which is the point of the effect in the first place. */
+  --mdr-glass-tint: #000000;
+  --mdr-glass-blur: none;
+}
+
+html.mdr-scrolled {
   --mdr-glass-tint: rgba(0, 0, 0, 0.88);
   --mdr-glass-blur: blur(20px) saturate(160%);
 }
 
 @media screen and (max-width: 749px) {
-  :root {
+  html.mdr-scrolled {
     --mdr-glass-blur: blur(14px) saturate(160%);
   }
 }
@@ -1421,6 +1430,7 @@ button.link,
   background: var(--mdr-glass-tint) !important;
   backdrop-filter: var(--mdr-glass-blur);
   -webkit-backdrop-filter: var(--mdr-glass-blur);
+  transition: background-color 0.18s ease;
 }
 
 #Details-menu-drawer-container {
@@ -1954,13 +1964,15 @@ main[data-template='index']
   padding: 3px 0 0 0;
   /* same --mdr-glass-tint/--mdr-glass-blur as the header bar above it (see
      that rule's own comment) -- one shared recipe, so the two read as one
-     continuous glass surface instead of two separately-tuned ones. The
-     WEBRACK button itself stays solid page-off-white (see .mdr-allbar
-     below) so it reads as a cutout blending into the page, the one
-     exception to this glass treatment. */
+     continuous glass surface instead of two separately-tuned ones, flat
+     black by default and switching to blurred glass together once
+     .mdr-scrolled lands. The WEBRACK button itself stays solid
+     page-off-white (see .mdr-allbar below) so it reads as a cutout
+     blending into the page, the one exception to this glass treatment. */
   background: var(--mdr-glass-tint);
   backdrop-filter: var(--mdr-glass-blur);
   -webkit-backdrop-filter: var(--mdr-glass-blur);
+  transition: background-color 0.18s ease;
 }
 
 .mdr-allbar {
