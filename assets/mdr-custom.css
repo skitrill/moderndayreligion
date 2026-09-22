@@ -53,13 +53,6 @@ product-price *,
 /* ---- Global: shrink the whole page a touch ---------------------------------- */
 html {
   font-size: 15px;
-  /* The root element's own background -- not body's -- is what Safari
-     extends into the safe-area/notch strip and the rubber-band overscroll
-     region above the very top of the page. body keeps its own cream
-     background for the actual page (see body { background-color } further
-     down); this is what "catches" the safe area black regardless of any
-     fixed-position layer's own sizing or z-index. */
-  background-color: #000000;
 }
 
 /* Desktop keeps the logo at its original size. */
