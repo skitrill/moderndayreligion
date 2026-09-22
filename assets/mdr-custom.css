@@ -1941,11 +1941,11 @@ main[data-template='index']
   align-items: center;
   width: 100%;
   box-sizing: border-box;
-  /* sticky already gives absolutely-positioned children (the drag-catcher
-     below) a containing block, same as position:relative would -- nothing
-     extra needed, and this rule's own size is untouched either way */
-  position: sticky;
-  top: calc(var(--header-height, 60px) - 1px);
+  /* was position:sticky, pinned under the header -- now plain relative
+     (still needed as a containing block for the drag-catcher touchzone
+     below, same as sticky provided) so the whole bar scrolls away with
+     the rest of the page instead of freezing at the top. */
+  position: relative;
   z-index: 15;
   margin: 0;
   /* flush at the true left edge now, not lined up under the logo. No
