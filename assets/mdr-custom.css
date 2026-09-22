@@ -778,19 +778,40 @@ body {
    but its children (header, main, footer) don't grow to fill it -- on a
    short page (an empty cart, a short page template) they just stack at the
    top, leaving genuine blank space below the footer, down to the
-   viewport's bottom edge, that's really just page-wrapper's own unstyled
-   box (not part of main OR footer) showing body's cream through.
-   (A page-wrapper background-color was tried here first, as a backstop
-   behind everything -- but "behind everything" isn't true for every page:
-   the empty-cart message itself has no opaque background of its own
-   either, it was only ever readable against body's cream, so that turned
-   its own black-on-nothing text invisible against the new black too.)
-   margin-top: auto on the LAST flex item pulls all of a flex column's
-   leftover space into its own margin instead, pushing footer down to sit
-   flush at page-wrapper's true bottom edge -- so on a short page there is
-   no separate empty gap left over at all, and nothing to still be cream. */
+   viewport's bottom edge. That space belongs to page-wrapper's own box,
+   not to main or footer, so neither of their own backgrounds cover it --
+   it was falling through to body's cream.
+
+   margin-top: auto on the LAST flex item (footer) pulls all of a flex
+   column's leftover space into its own margin instead, pushing footer down
+   to sit flush at page-wrapper's true bottom edge, wherever main's actual
+   content happens to end -- so that leftover space becomes one clean gap
+   ABOVE the footer instead of a separate one below it, with page-wrapper's
+   own background showing through it either way.
+
+   That's also why page-wrapper's background can safely be black here even
+   though an earlier version of this exact rule broke the empty-cart
+   message's own legibility: this gap is real margin, genuinely empty (no
+   content sits in it), whereas main's actual content -- the "your cart is
+   empty" text included -- gets its own explicit cream background below
+   (main:not([data-template='index'])), so it's no longer riding on
+   whatever ancestor colour happens to show through and can't go invisible
+   the same way again. */
 footer {
   margin-top: auto;
+}
+
+.page-wrapper {
+  background-color: #000000;
+}
+
+/* Every template except the homepage landing screen (which is deliberately
+   black end-to-end, see the data-template='index' rules further up this
+   file) gets its own explicit cream backing on <main> itself, decoupled
+   from page-wrapper's background -- so real content is never at the mercy
+   of whatever colour a wrapping element happens to have. */
+main:not([data-template='index']) {
+  background-color: #f6f3e7 !important;
 }
 
 .product-card__content {
