@@ -388,6 +388,7 @@
          directly is also more robust than a hardcoded path if that ever
          moves again. */
       var isHome = !!D.querySelector("[id$='__product_list_fa6P9H']");
+      console.log('[mdr-debug]', 'readyState=' + D.readyState, 'isHome=' + isHome, 'path=' + location.pathname);
 
       var wrap = D.createElement('div');
       wrap.className = 'mdr-allbar-wrap';
