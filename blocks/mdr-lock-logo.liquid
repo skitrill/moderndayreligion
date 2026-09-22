@@ -1,0 +1,35 @@
+{%- doc -%}
+  Lock screen logo -- same asset/treatment as the homepage landing screen
+  (sections/mdr-landing.liquid), not the native "logo" theme block (which
+  reads settings.logo, an uploaded image the store may not actually have
+  set to this mark). Used from templates/password.json.
+{%- enddoc -%}
+
+<div class="mdr-lock-logo">
+  <img
+    src="{{ 'mdr-logo.svg' | asset_url }}"
+    alt="{{ 'accessibility.home_logo_alt' | t: store_name: shop.name }}"
+    width="1711"
+    height="155.56"
+    loading="eager"
+  >
+</div>
+
+{% stylesheet %}
+  .mdr-lock-logo img {
+    display: block;
+    width: min(60vw, 420px);
+    height: auto;
+    /* navy-on-transparent source art -> white, matching the header logo
+       (blocks/_header-logo.liquid) and the homepage landing logo, both
+       against a black fill. */
+    filter: brightness(0) invert(1);
+  }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "MDR Logo (lock screen)",
+  "tag": null
+}
+{% endschema %}
