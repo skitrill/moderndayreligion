@@ -774,6 +774,20 @@ body {
   background-image: none !important;
 }
 
+/* .page-wrapper (base.css) has its own min-height: 100dvh, but its children
+   (header, main, footer) don't grow to fill it -- on a short page (an empty
+   cart, a short page template) they just stack at the top, leaving genuine
+   blank space inside page-wrapper's own box, below the footer, down to the
+   viewport's bottom edge. That space isn't part of main OR footer, so
+   neither of their own backgrounds cover it -- it was falling through to
+   body's cream. This sits behind everything (main's own background, cream
+   or otherwise, still fully covers its own box on a normal, filled page),
+   so it only ever becomes visible in that specific empty-space case, where
+   it should read as a continuation of the black footer, not the page. */
+.page-wrapper {
+  background-color: #000000;
+}
+
 .product-card__content {
   background-color: #f6f3e7 !important;
   background-image: var(--mdr-tape) !important;
