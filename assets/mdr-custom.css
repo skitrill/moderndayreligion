@@ -702,9 +702,12 @@ main[data-template='collection'] [id$='__product_list_fa6P9H'] .resource-list--g
   }
 }
 
-/* the grid starts right under the WEBRACK line -- no big top gap */
+/* the grid starts right under the WEBRACK line (no big top gap) and now
+   ends flush against the footer too (no big bottom gap) -- the footer's
+   own background is black (sections/footer-group.json), so any leftover
+   padding here was just showing as a cream sliver in between. */
 main[data-template='collection'] [id$='__product_list_fa6P9H'] {
-  padding-block: 0 clamp(14px, 3vw, 28px) !important;
+  padding-block: 0 !important;
 }
 
 /* ...but the section's own inner wrapper carries its own top padding
