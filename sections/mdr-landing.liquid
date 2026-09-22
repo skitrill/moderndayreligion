@@ -1,0 +1,27 @@
+{%- doc -%}
+  Homepage landing: centered logo (same treatment as the password page) with
+  the site's WEBRACK / LOOKBOOK / MAILING / THE MODERN TIMES nav stacked
+  underneath. WEBRACK now points at the product grid (moved to
+  templates/page.shop.json) instead of "/", since "/" is this landing page.
+{%- enddoc -%}
+
+<div class="mdr-landing">
+  <div class="mdr-landing__logo">
+    <img
+      src="{{ 'mdr-logo.svg' | asset_url }}"
+      alt="{{ 'accessibility.home_logo_alt' | t: store_name: shop.name }}"
+      width="1711"
+      height="155.56"
+      loading="eager"
+    >
+  </div>
+  {% render 'mdr-footer-nav', variant: 'landing' %}
+</div>
+
+{% schema %}
+{
+  "name": "MDR Landing",
+  "tag": "section",
+  "class": "mdr-landing-section"
+}
+{% endschema %}

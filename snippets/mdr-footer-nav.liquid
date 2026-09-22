@@ -1,24 +1,32 @@
 {%- doc -%}
-  MDR custom footer nav (replaces the stock main-menu links in the footer):
-  SHOP -> home, LOOKBOOK -> /pages/lookbook, MAILING -> a slim drop-down box
-  with a newsletter sign-up. Rendered from sections/footer.liquid inside
-  .footer-content; the stock .footer-content .menu is hidden in mdr-custom.css.
+  MDR custom nav (replaces the stock main-menu links in the footer, and also
+  rendered standalone on the homepage landing section, sections/mdr-landing.liquid):
+  WEBRACK -> the product grid (templates/page.shop.json -- "/" is now the
+  landing page, not the grid), LOOKBOOK -> /pages/lookbook, MAILING -> a
+  slim drop-down box with a newsletter sign-up, THE MODERN TIMES -> its page.
+  The stock .footer-content .menu is hidden in mdr-custom.css.
+
+  @param {string} [variant] - optional modifier, added as `mdr-fnav--{{ variant }}`
+    on the <nav> so a caller (e.g. the landing section) can lay it out
+    differently from the footer's default row.
 {%- enddoc -%}
 
-<nav class="mdr-fnav" aria-label="Footer">
+{% assign mailing_drop_id = 'mdr-mailing-drop-' | append: section.id %}
+
+<nav class="mdr-fnav{% if variant %} mdr-fnav--{{ variant }}{% endif %}" aria-label="Footer">
   <ul>
-    <li><a href="{{ routes.root_url }}">Webrack</a></li>
+    <li><a href="{{ pages['shop'].url | default: '/pages/shop' }}">Webrack</a></li>
     <li><a href="/pages/lookbook">Lookbook</a></li>
     <li class="mdr-fnav__mailing">
       <button
         type="button"
         class="mdr-fnav__toggle"
         aria-expanded="false"
-        aria-controls="mdr-mailing-drop"
+        aria-controls="{{ mailing_drop_id }}"
       >
         Mailing
       </button>
-      <div id="mdr-mailing-drop" class="mdr-fnav__drop" hidden>
+      <div id="{{ mailing_drop_id }}" class="mdr-fnav__drop" hidden>
         {%- form 'customer', class: 'mdr-fnav__form' -%}
           {%- if form.posted_successfully? -%}
             <p class="mdr-fnav__msg">You're on the list.</p>
@@ -47,27 +55,34 @@
 
 <script>
   (function () {
-    var t = document.querySelector('.mdr-fnav__toggle');
-    if (!t || t.__mdrWired) return;
-    t.__mdrWired = true;
-    var d = document.getElementById('mdr-mailing-drop');
+    /* This snippet can render more than once on a page now (footer nav +
+       the homepage landing nav) -- each .mdr-fnav__mailing wires up its own
+       toggle/dropdown pair via DOM traversal, not a global ID lookup, so
+       two instances on the same page don't fight over each other. */
+    document.querySelectorAll('.mdr-fnav__mailing').forEach(function (wrap) {
+      if (wrap.__mdrWired) return;
+      wrap.__mdrWired = true;
+      var t = wrap.querySelector('.mdr-fnav__toggle');
+      var d = wrap.querySelector('.mdr-fnav__drop');
+      if (!t || !d) return;
 
-    function set(open) {
-      t.setAttribute('aria-expanded', String(open));
-      if (d) d.hidden = !open;
-    }
+      function set(open) {
+        t.setAttribute('aria-expanded', String(open));
+        d.hidden = !open;
+      }
 
-    t.addEventListener('click', function () {
-      set(t.getAttribute('aria-expanded') !== 'true');
+      t.addEventListener('click', function () {
+        set(t.getAttribute('aria-expanded') !== 'true');
+      });
+
+      document.addEventListener('click', function (e) {
+        if (!wrap.contains(e.target)) set(false);
+      });
+
+      /* re-open after a submit round-trip */
+      if (location.search.indexOf('customer_posted') > -1 || wrap.querySelector('.mdr-fnav__msg')) {
+        set(true);
+      }
     });
-
-    document.addEventListener('click', function (e) {
-      if (!e.target.closest('.mdr-fnav__mailing')) set(false);
-    });
-
-    /* re-open after a submit round-trip */
-    if (location.search.indexOf('customer_posted') > -1 || document.querySelector('.mdr-fnav__msg')) {
-      set(true);
-    }
   })();
 </script>
