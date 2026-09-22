@@ -1856,6 +1856,23 @@ main[data-template='collection'] [id$='__product_list_fa6P9H'] .resource-list__i
   --color-foreground-subdued: rgb(0 0 0 / 0.45) !important;
 }
 
+/* ---- Footer: now on the same black fill as the header, so its text needs
+   the header's own white-on-black treatment instead of the site's default
+   black-on-cream. footer * (not just footer) is needed because the rule
+   above re-declares these variables directly on every element via the *
+   selector -- setting them only on <footer> wouldn't reach its children,
+   since a directly-set custom property always wins over one inherited
+   from an ancestor. ---------------------------------------------------- */
+footer,
+footer *,
+footer ::before,
+footer ::after {
+  --color-foreground: #ffffff !important;
+  --color-foreground-rgb: 255 255 255 !important;
+  --color-foreground-muted: rgb(255 255 255 / 0.72) !important;
+  --color-foreground-subdued: rgb(255 255 255 / 0.45) !important;
+}
+
 /* ==========================================================================
    Whole site in caps.
    ========================================================================== */
