@@ -1644,6 +1644,25 @@ body::before {
   pointer-events: none;
 }
 
+/* Same fix, bottom edge: the home-indicator strip on notch-style iPhones.
+   The footer's own background is solid black (sections/footer-group.json
+   + the footer { background-color: #000000 } backstop further up this
+   file), but that's still only what's painted UNDER the page content --
+   same story as the top strip above, Safari reads the safe area itself
+   from what's actually painted there, not from page content that merely
+   happens to reach nearby. */
+body::after {
+  content: '';
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: env(safe-area-inset-bottom, 0px);
+  background: #000000;
+  z-index: 2147483001;
+  pointer-events: none;
+}
+
 #Details-menu-drawer-container {
   position: relative;
 }
