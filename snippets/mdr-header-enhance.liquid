@@ -1249,6 +1249,37 @@
       btn.style.top = top + 'px';
     }
 
+    /* The WEBRACK grid's own full-bleed edge-to-edge fix (mdr-custom.css,
+       .mdr-scrollfade) uses vw units, which don't correctly cancel out
+       body's own CSS zoom here -- vw resolves against the TRUE viewport,
+       but the zoomed .mdr-scrollfade's percentage-based ancestors resolve
+       in the zoomed element's own (different) coordinate space, so a
+       calc() mixing the two lands wrong (confirmed: visibly clipped/
+       shifted at the default zoomed-on state). getBoundingClientRect,
+       unlike vw, DOES report true rendered/visual coordinates reliably
+       even inside a zoomed subtree -- so this measures the real gap and
+       corrects it directly as an inline style, dividing by the zoom
+       factor first (same reasoning as the more-payment-options / error
+       message fixes elsewhere in this file: an authored inline-style
+       value inside a zoomed element gets re-zoomed AGAIN by the browser
+       on render, so pre-dividing by the zoom factor is what lands it
+       back on the intended true-pixel target). */
+    function fixScrollfadeBleed() {
+      var el = D.querySelector("[id$='__product_list_fa6P9H'] .mdr-scrollfade");
+      if (!el) return;
+      var zoomFactor = parseFloat(D.body.style.zoom) || 1;
+      el.style.marginLeft = '';
+      el.style.marginRight = '';
+      el.style.width = '';
+      var rect = el.getBoundingClientRect();
+      var leftGap = rect.left;
+      var rightGap = D.documentElement.clientWidth - rect.right;
+      if (leftGap <= 0 && rightGap <= 0) return;
+      el.style.width = ((rect.width + leftGap + rightGap) / zoomFactor) + 'px';
+      el.style.marginLeft = (-leftGap / zoomFactor) + 'px';
+      el.style.marginRight = (-rightGap / zoomFactor) + 'px';
+    }
+
     function apply(on) {
       try { D.body.style.zoom = on ? Z : ''; } catch (e) {}
       btn.classList.toggle('is-zoomed', on);
@@ -1257,6 +1288,7 @@
       btn.setAttribute('aria-pressed', on ? 'true' : 'false');
       try { sessionStorage.setItem('mdrZoom', on ? '1' : '0'); } catch (e) {}
       requestAnimationFrame(place);
+      requestAnimationFrame(fixScrollfadeBleed);
     }
 
     btn.addEventListener('click', function () { apply(!stored()); });
@@ -1282,5 +1314,6 @@
     window.addEventListener('load', mount);
     window.addEventListener('resize', place, { passive: true });
     window.addEventListener('scroll', place, { passive: true });
+    window.addEventListener('resize', fixScrollfadeBleed, { passive: true });
   })();
 </script>
