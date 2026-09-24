@@ -292,11 +292,14 @@
   }
 
   /* User link only -- a bordered box, like a button, matching the
-     WEBRACK/logo's own bordered look. Cart stays plain text above it. */
+     WEBRACK/logo's own bordered look. Cart stays plain text above it.
+     Padding/border are set in mdr-custom.css instead of here: an older,
+     id-scoped ".header__cart-link" reset there (higher specificity) forces
+     border:0 and its own padding on every cart-link, User included, so
+     the override has to live there too, right after that rule, to
+     actually win. */
   .header__user-link {
     margin-top: 4px;
-    padding: 2px 6px;
-    border: 1px solid var(--color-foreground);
   }
 
   #header-component[data-menu-style='drawer'] .header__drawer {
