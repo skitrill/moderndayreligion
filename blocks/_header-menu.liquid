@@ -270,16 +270,24 @@
     --header-drawer-min-height: 60px;
     display: flex;
     min-height: var(--header-drawer-min-height);
-    /* Cart / User stacked directly on each other, not the old side-by-side
-       chevron-dropdown + Cart row -- the dropdown (header-drawer,
-       previously rendered here) is gone entirely now, so User is just a
-       second plain link under Cart, no toggle. flex-start (not center)
-       lines Cart's own top edge up with the logo's top edge instead of
-       both just sharing the same vertical center. */
+    /* Cart / User stacked directly on each other as one unified column,
+       not the old side-by-side chevron-dropdown + Cart row -- the
+       dropdown (header-drawer, previously rendered here) is gone entirely
+       now, so User is just a second plain link under Cart, no toggle.
+       justify-content: flex-start lines Cart's own top edge up with the
+       logo's top edge instead of both just sharing the vertical center.
+       align-items: flex-start (not flex-end) left-aligns Cart and User to
+       the SAME x position -- right-aligning a column staggers each
+       line's LEFT edge by however much shorter/longer its own text is,
+       which reads as two independently-placed labels rather than one
+       column; left-aligning keeps that edge identical regardless of
+       word length (combined with matching padding-inline on both, see
+       mdr-custom.css, so their TEXT -- not just their boxes -- shares
+       that edge too). */
     flex-direction: column;
-    align-items: flex-end;
+    align-items: flex-start;
     justify-content: flex-start;
-    gap: 0;
+    gap: 4px;
   }
 
   .header__cart-link {
@@ -292,15 +300,12 @@
   }
 
   /* User link only -- a bordered box, like a button, matching the
-     WEBRACK/logo's own bordered look. Cart stays plain text above it.
-     Padding/border are set in mdr-custom.css instead of here: an older,
-     id-scoped ".header__cart-link" reset there (higher specificity) forces
-     border:0 and its own padding on every cart-link, User included, so
-     the override has to live there too, right after that rule, to
-     actually win. */
-  .header__user-link {
-    margin-top: 4px;
-  }
+     WEBRACK/logo's own bordered look. Cart stays plain text above it,
+     spaced by .header__drawer's own gap (above), not a margin here.
+     Border is set in mdr-custom.css instead of here: an older, id-scoped
+     ".header__cart-link" reset there (higher specificity) forces border:0
+     on every cart-link, User included, so the override has to live there
+     too, right after that rule, to actually win. */
 
   #header-component[data-menu-style='drawer'] .header__drawer {
     display: flex;

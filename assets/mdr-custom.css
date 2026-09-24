@@ -55,15 +55,19 @@ html {
   font-size: 15px;
   /* The root element's own background -- not body's -- is what Safari
      extends into the safe-area/notch strip and the rubber-band overscroll
-     region above the very top of the page. body keeps its own cream
-     background for the actual page (see body { background-color }
-     further down); this "catches" the safe area black regardless of any
-     fixed-position layer's own sizing or z-index. (Checked for a stray
-     margin this could expose -- there is one in this dev preview at
-     certain viewport sizes, but it's there identically with this
-     background removed too, so it's a pane rendering quirk, not
-     something this rule causes.) */
-  background-color: #000000;
+     region above the very top of the page. body keeps its own dark red
+     background for the same reason (see body { background-color } further
+     down -- real page content gets its own explicit cream backing on
+     <main> instead, see main:not([data-template='index']) further down,
+     so body itself is free to be red everywhere); this "catches" the
+     safe area regardless of any fixed-position layer's own sizing or
+     z-index -- important on iOS 26's redesigned Safari specifically,
+     where the floating "Liquid Glass" chrome samples/blends with actual
+     page background at the edges more aggressively than older Safari
+     versions did, so an exactly-sized env(safe-area-inset-*) patch alone
+     (still kept below, body::before/::after) isn't sufficient on its own
+     -- the base canvas itself needs to already be the right colour. */
+  background-color: #8B0000;
   /* Tells Safari to treat the whole page as a dark surface -- this (not
      theme-color alone) is what actually governs the rubber-band overscroll
      fill at the very top/bottom of the page and keeps the browser's own
@@ -794,7 +798,14 @@ main[data-template='collection'] [id$='__product_list_fa6P9H'] .section-resource
 }
 
 body {
-  background-color: #f6f3e7 !important;
+  /* Dark red now, not cream -- matches html above. Real page content
+     still reads as cream because <main> itself carries an explicit cream
+     background (main:not([data-template='index']) further down), so this
+     is now only ever visible in genuine gaps: the safe-area strips, the
+     rubber-band overscroll, and any short-page trailing space -- exactly
+     where it should read as a continuation of the red header/footer, not
+     as the page's own cream. */
+  background-color: #8B0000 !important;
   background-image: none !important;
 }
 
@@ -826,7 +837,7 @@ footer {
 }
 
 .page-wrapper {
-  background-color: #000000;
+  background-color: #8B0000;
 }
 
 /* Every template except the homepage landing screen (which is deliberately
@@ -1977,12 +1988,18 @@ cart-drawer [class*='price'] {
   color: #3a3ec4 !important;
 }
 
-/* header cart -> yellow text, no background */
+/* header cart -> white text, no background. Same horizontal padding as
+   User (below) -- with the column now left-aligned (.header__drawer,
+   blocks/_header-menu.liquid), matching padding-inline is what makes
+   Cart's and User's TEXT start from the exact same x position, not just
+   their (differently-sized) boxes -- a shared left edge is what actually
+   reads as "one unified column" instead of two independently-placed
+   labels. */
 .header__cart-link,
 #header-component .header__cart-link,
 #header-component a[href$='/cart'] {
   display: inline-block !important;
-  padding: 4px 10px !important;
+  padding: 4px 8px !important;
   color: #ffffff !important;
   background-color: transparent !important;
   background-image: none !important;
@@ -2007,10 +2024,11 @@ cart-drawer [class*='price'] {
 
 /* User specifically gets its border back -- the block above (id-scoped,
    so higher specificity than the plain .header__user-link rule in
-   blocks/_header-menu.liquid) forces border:0 and its own padding on
-   EVERY .header__cart-link, User included. */
+   blocks/_header-menu.liquid) forces border:0 on EVERY .header__cart-link,
+   User included. Padding stays the SAME 4px 8px as Cart (not redeclared
+   here) so the border wraps snugly around text that's already sitting at
+   the identical inset Cart's own text uses. */
 #header-component .header__user-link {
-  padding: 2px 6px !important;
   border: 1px solid #ffffff !important;
 }
 
