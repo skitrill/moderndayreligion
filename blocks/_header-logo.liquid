@@ -123,6 +123,12 @@
 
     @media screen and (max-width: 749px) {
       padding: 0;
+      /* room for the enlarged mobile logo -- this container was already
+         auto-growing to match the logo's own height (a plain flex row
+         with no fixed height of its own), so raising this doesn't change
+         behavior, it just guarantees the headroom explicitly instead of
+         relying on that auto-fit. */
+      min-height: 76px;
     }
 
     @media screen and (min-width: 750px) {
@@ -171,11 +177,12 @@
   .mdr-logo-image {
     display: block;
     object-fit: contain;
-    /* another 20% on top of the already-enlarged 48px (which was itself
-       +20% over the original 40px) -- confirmed via computed style that
-       48px WAS actually applying correctly on mobile, this is a genuine
-       further increase, not a fix for an earlier size not landing. */
-    height: 57.6px !important;
+    /* mobile logo, stepped up again -- the container (.header-logo,
+       further up this file) was never actually clipping it (confirmed via
+       computed style/rects: it's a plain flex row with no fixed height,
+       already auto-growing to match), but its min-height is raised too
+       now so there's no ambiguity about room for this. */
+    height: 72px !important;
     width: auto;
     /* the source artwork is navy on transparent -- on the header's own
        black fill that's dark-on-dark, barely legible. Recolours the flat
