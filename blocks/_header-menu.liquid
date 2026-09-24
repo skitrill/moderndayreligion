@@ -28,7 +28,7 @@
       </a>
       <a
         href="{{ routes.account_url }}"
-        class="header__cart-link"
+        class="header__cart-link header__user-link"
       >
         {%- if customer -%}
           {{- customer.first_name -}}
@@ -270,14 +270,16 @@
     --header-drawer-min-height: 60px;
     display: flex;
     min-height: var(--header-drawer-min-height);
-    /* Cart / User stacked, not the old side-by-side chevron-dropdown +
-       Cart row -- the dropdown (header-drawer, previously rendered here)
-       is gone entirely now, so User is just a second plain link under
-       Cart, no toggle. */
+    /* Cart / User stacked directly on each other, not the old side-by-side
+       chevron-dropdown + Cart row -- the dropdown (header-drawer,
+       previously rendered here) is gone entirely now, so User is just a
+       second plain link under Cart, no toggle. flex-start (not center)
+       lines Cart's own top edge up with the logo's top edge instead of
+       both just sharing the same vertical center. */
     flex-direction: column;
     align-items: flex-end;
-    justify-content: center;
-    gap: 2px;
+    justify-content: flex-start;
+    gap: 0;
   }
 
   .header__cart-link {
@@ -287,6 +289,14 @@
     color: var(--color-foreground);
     text-decoration: none;
     white-space: nowrap;
+  }
+
+  /* User link only -- a bordered box, like a button, matching the
+     WEBRACK/logo's own bordered look. Cart stays plain text above it. */
+  .header__user-link {
+    margin-top: 4px;
+    padding: 2px 6px;
+    border: 1px solid var(--color-foreground);
   }
 
   #header-component[data-menu-style='drawer'] .header__drawer {

@@ -195,11 +195,13 @@ footer .utilities {
 }
 
 /* ---- Footer typography: one voice across nav (WEBRACK/LOOKBOOK/MAILING),
-   policy links, and copyright -- same size/tracking/weight/line-height/
-   color intensity as .mdr-fnav a (the reference). Policy links otherwise
-   render at full --color-foreground (not muted) and copyright at its own
-   larger 0.75rem block setting (fixed at the source too, see
-   footer-group.json) -- both drifted from the nav's own look before this. */
+   policy links, and copyright -- same size/tracking/weight/line-height as
+   .mdr-fnav a (the reference). Policy links otherwise render at full
+   --color-foreground (not muted) and copyright at its own larger 0.75rem
+   block setting (fixed at the source too, see footer-group.json) -- both
+   drifted from the nav's own look before this. Colour intensity is split
+   below: everything except copyright matches Cart's full-opacity white,
+   copyright alone stays at the dimmer muted value. */
 footer .utilities,
 .footer-utilities__group-copyright,
 .footer-utilities__text,
@@ -209,6 +211,26 @@ footer .utilities,
   line-height: 1 !important;
   letter-spacing: 0.04em !important;
   font-weight: 400 !important;
+}
+
+/* Full intensity, matching Cart's own color (var(--color-foreground),
+   full-opacity white on the header's dark red) -- not the footer's default
+   muted var, which copyright alone keeps (see below). */
+footer .utilities,
+.footer-utilities__text,
+.policy-list-inline,
+.policy-list-inline a,
+.mdr-fnav a,
+.mdr-fnav .mdr-fnav__toggle {
+  color: var(--color-foreground) !important;
+}
+
+/* footer .utilities (the row, above) cascades white to every child by
+   inheritance, including copyright -- this needs to at least MATCH its
+   specificity (0,1,1) to win instead of just losing to source order, not
+   merely repeat the plain .footer-utilities__group-copyright (0,1,0)
+   selector from the shared typography rule above. */
+footer .footer-utilities__group-copyright {
   color: var(--color-foreground-muted) !important;
 }
 
@@ -553,16 +575,18 @@ product-price *,
   order: 5 !important;
 }
 
-/* ---- Product-page copy + colour option: match the "© 2026" footer text
-   (rgba(0, 0, 0, 0.6)); the brown price keeps its own colour -------- */
+/* ---- Product-page copy + colour option: full intensity, matching the
+   WEBRACK grid's product titles/prices -- was deliberately muted
+   (rgba(0, 0, 0, 0.6)) to match the footer copyright; the brown price
+   keeps its own colour -------- */
 .variant-picker .variant-option[data-testid='variant-option-single'],
 .variant-picker .variant-option[data-testid='variant-option-single'] .variant-option__swatch-value,
 .variant-picker .variant-option__swatch-value {
-  color: rgba(0, 0, 0, 0.6) !important;
+  color: #000000 !important;
 }
 
 main .product-information__grid {
-  --color-foreground: rgba(0, 0, 0, 0.6);
+  --color-foreground: #000000;
 }
 
 main .product-information__grid :is(h1, h2, h3, h4, h5, h6, p, li, legend,
@@ -570,7 +594,7 @@ main .product-information__grid :is(h1, h2, h3, h4, h5, h6, p, li, legend,
   .size-chart, .size-chart__trigger, .size-chart__trigger-text):not(.price):not(product-price),
 main .product-information__grid .rte:not(product-price) :is(span, p, li, a, strong, em),
 main .product-information__grid .text-block:not(product-price) :is(span, p, li, a, strong, em) {
-  color: rgba(0, 0, 0, 0.6) !important;
+  color: #000000 !important;
 }
 
 /* ---- Mobile: product hero image size ------------------------------------- */
@@ -855,18 +879,18 @@ main:not([data-template='index']) {
    had internal card-to-card hairlines but no outer edge, reading as
    incomplete/missing lines right where the section starts and ends. ---- */
 .product-recommendations {
-  border-top: 1px solid rgba(0, 0, 0, 0.14) !important;
+  border-top: 1px solid rgba(139, 0, 0, 0.14) !important;
 }
 
 .product-recommendations .resource-list,
 .product-recommendations .resource-list--grid {
   column-gap: 2px !important;
   row-gap: 2px !important;
-  background: rgba(0, 0, 0, 0.14) !important;
+  background: rgba(139, 0, 0, 0.14) !important;
 }
 
 .product-recommendations .resource-list--grid {
-  border-bottom: 1px solid rgba(0, 0, 0, 0.14) !important;
+  border-bottom: 1px solid rgba(139, 0, 0, 0.14) !important;
 }
 
 .product-recommendations .resource-list__item {
@@ -935,7 +959,7 @@ main:not([data-template='index']) {
   flex-wrap: nowrap !important;
   align-items: stretch !important;
   gap: 0 !important;
-  border: 1px solid rgba(0, 0, 0, 0.3) !important;
+  border: 1px solid rgba(139, 0, 0, 0.3) !important;
   /* anchor for the quantity/limit error message below -- position:
      relative, not a layout change, so this doesn't disturb the row's own
      sizing */
@@ -966,7 +990,7 @@ main:not([data-template='index']) {
   margin-bottom: 8px;
   box-sizing: border-box !important;
   padding: 6px 8px !important;
-  border: 1px solid rgba(0, 0, 0, 0.3) !important;
+  border: 1px solid rgba(139, 0, 0, 0.3) !important;
   background: #f6f3e7;
   color: #000000 !important;
   font-size: 0.62rem !important;
@@ -1289,7 +1313,7 @@ button.link,
   width: max-content;
   height: 22px;
   background: #f6f3e7;
-  border: 1px solid rgb(var(--color-foreground-rgb) / 0.3);
+  border: 1px solid rgba(139, 0, 0, 0.3);
   pointer-events: auto;
 }
 
@@ -1390,7 +1414,7 @@ button.link,
   margin: 0;
   padding: 5px 7px;
   background: #f6f3e7;
-  border: 1px solid rgb(var(--color-foreground-rgb) / 0.3);
+  border: 1px solid rgba(139, 0, 0, 0.3);
   font-family: var(--font-accent--family, inherit);
   font-size: 0.6rem;
   letter-spacing: 0.04em;
@@ -1666,7 +1690,7 @@ body::after {
 /* one long box around the whole size row */
 .variant-option--buttons {
   position: relative !important;
-  border: 1px solid rgb(var(--color-foreground-rgb) / 0.3) !important;
+  border: 1px solid rgba(139, 0, 0, 0.3) !important;
   padding: 0 !important;
   margin-top: 16px !important;
   display: flex !important;
@@ -1690,7 +1714,7 @@ body::after {
 .variant-option--buttons .variant-option__button-label {
   flex: 1 1 0 !important;
   border: 0 !important;
-  border-left: 1px solid rgb(var(--color-foreground-rgb) / 0.16) !important;
+  border-left: 1px solid rgba(139, 0, 0, 0.16) !important;
   padding: 4px 4px !important;
   min-height: 24px !important;
   align-items: center !important;
@@ -1791,8 +1815,12 @@ main[data-template='collection'] [id$='__product_list_fa6P9H'] .resource-list__i
 ::after {
   --color-foreground: #000000 !important;
   --color-foreground-rgb: 0 0 0 !important;
-  --color-foreground-muted: rgb(0 0 0 / 0.72) !important;
-  --color-foreground-subdued: rgb(0 0 0 / 0.45) !important;
+  /* full intensity, matching the WEBRACK grid's product titles/prices --
+     was a muted 0.72/0.45 opacity site-wide. Elements with their own
+     explicit lighter styling (sold-out price, disabled buttons, badges)
+     don't read these vars at all, so they're untouched. */
+  --color-foreground-muted: #000000 !important;
+  --color-foreground-subdued: #000000 !important;
 }
 
 /* ---- Footer: now on the same black fill as the header, so its text needs
@@ -1830,13 +1858,15 @@ select,
   text-transform: none !important;
 }
 
-/* product description column -> muted, NOT red (via the foreground var, so
-   buttons / inputs with their own colours are untouched) */
+/* product description column -> full intensity now, matching the WEBRACK
+   grid's product titles/prices (was deliberately muted, NOT red, via the
+   foreground var, so buttons / inputs with their own colours are
+   untouched) */
 main .product-information__grid,
 main .product-information__grid .product-details {
-  --color-foreground: rgba(0, 0, 0, 0.6) !important;
+  --color-foreground: #000000 !important;
   --color-foreground-rgb: 0 0 0 !important;
-  --color-foreground-muted: rgb(0 0 0 / 0.5) !important;
+  --color-foreground-muted: #000000 !important;
 }
 
 /* ...prices still blue */
@@ -2181,7 +2211,7 @@ main[data-template='collection']
      already sits flush at the true left edge (see .mdr-allbar-wrap), so a
      leading vertical stroke there just cut the row in two instead of
      reading as one open, unbroken strip top to end. */
-  border-top: 1px solid rgba(0, 0, 0, 0.14);
+  border-top: 1px solid rgba(139, 0, 0, 0.14);
 }
 
 .mdr-allbar__toggle {
@@ -2247,7 +2277,7 @@ main[data-template='collection']
      chevron chip, not between the label and the chevron -- so the label
      and its chevron read as one unit before the list starts */
   margin-inline-end: 8px;
-  border-inline-end: 1px solid rgba(0, 0, 0, 0.16);
+  border-inline-end: 1px solid rgba(139, 0, 0, 0.16);
   letter-spacing: 0.04em;
 }
 
@@ -2481,8 +2511,8 @@ main[data-template='collection'] [id$='__product_list_fa6P9H'] .resource-list__i
 }
 
 main[data-template='collection'] [id$='__product_list_fa6P9H'] .resource-list--grid {
-  background: rgba(0, 0, 0, 0.14) !important;
-  border-bottom: 1px solid rgba(0, 0, 0, 0.14) !important;
+  background: rgba(139, 0, 0, 0.14) !important;
+  border-bottom: 1px solid rgba(139, 0, 0, 0.14) !important;
 }
 
 /* card = a plain column, a touch of breathing room below the price so it
@@ -2574,7 +2604,7 @@ main[data-template='collection'] [id$='__product_list_fa6P9H'] .card-gallery::af
   color: rgba(0, 0, 0, 0.55);
   background: transparent;
   padding: 2px 7px;
-  border: 1px solid rgba(0, 0, 0, 0.3);
+  border: 1px solid rgba(139, 0, 0, 0.3);
   pointer-events: none;
 }
 
