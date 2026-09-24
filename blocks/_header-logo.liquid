@@ -171,8 +171,11 @@
   .mdr-logo-image {
     display: block;
     object-fit: contain;
-    /* 20% larger than the original 40px */
-    height: 48px;
+    /* another 20% on top of the already-enlarged 48px (which was itself
+       +20% over the original 40px) -- confirmed via computed style that
+       48px WAS actually applying correctly on mobile, this is a genuine
+       further increase, not a fix for an earlier size not landing. */
+    height: 57.6px !important;
     width: auto;
     /* the source artwork is navy on transparent -- on the header's own
        black fill that's dark-on-dark, barely legible. Recolours the flat
