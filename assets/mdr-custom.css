@@ -1456,7 +1456,8 @@ body:has(main[data-template='index']) .page-wrapper {
 
 .mdr-landing__logo img {
   display: block;
-  width: min(60vw, 420px);
+  /* 15% larger than the original min(60vw, 420px) */
+  width: min(69vw, 483px);
   height: auto;
   /* on the black landing background now (was the cream body background
      before), same navy-on-transparent -> white treatment as the header's
