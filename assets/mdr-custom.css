@@ -2508,14 +2508,18 @@ main[data-template='collection'] [id$='__product_list_fa6P9H'] .resource-list--g
 main[data-template='collection'] [id$='__product_list_fa6P9H'] .mdr-scrollfade {
   position: relative;
   overflow-x: hidden;
-  /* full-bleed to the true viewport edges (not just 100% of this
-     section's own already-inset content column) -- this is the actual
-     clipping box for the WEBRACK swipe-transition animation, so making
-     the grid inside it full-bleed instead (and leaving this at its old
-     inset width) just meant the grid got clipped back down to this
-     box's own narrower bounds. */
-  width: 100vw;
-  margin-inline: calc(50% - 50vw);
+  /* Safe, non-bleeding baseline ONLY -- this used to be a vw-based
+     full-bleed rule directly here, but body's own CSS zoom (the [+/-
+     page] control, mdr-header-enhance.liquid, on by default) re-scales
+     ANY authored length rendered inside it, vw-resolved values included,
+     so "100vw" was actually rendering ~1.1x too wide and clipping real
+     content off both edges instead of reaching them. The real full-bleed
+     fix lives in JS now (fixScrollfadeBleed, mdr-header-enhance.liquid),
+     which measures the TRUE rendered gap via getBoundingClientRect
+     (reliable even under zoom, unlike vw) and corrects it directly. This
+     rule is just the fallback if that JS hasn't run yet. */
+  width: 100%;
+  margin-inline: 0;
 }
 
 /* WEBRACK title tap: swipe the grid out left, swap it, swipe the new one in
