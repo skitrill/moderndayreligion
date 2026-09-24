@@ -1477,7 +1477,13 @@ body:has(main[data-template='index']) .page-wrapper {
 .mdr-fnav--landing ul {
   display: flex;
   flex-direction: column;
-  align-items: center;
+  /* flex-start, not center: each line's TEXT is left-aligned against the
+     others now, but the block itself (auto-width, shrunk to its widest
+     line) still sits centered on the page -- that's .mdr-landing's own
+     align-items: center (further up this file) acting on this whole
+     block as a single flex item, unrelated to how ITS OWN children
+     align internally. */
+  align-items: flex-start;
 }
 
 .mdr-fnav--landing ul {
@@ -1492,7 +1498,7 @@ body:has(main[data-template='index']) .page-wrapper {
 .mdr-fnav--landing .mdr-fnav__mailing {
   display: flex;
   flex-direction: column;
-  align-items: center;
+  align-items: flex-start;
 }
 
 .mdr-fnav--landing .mdr-fnav__drop {
