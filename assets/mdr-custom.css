@@ -1467,11 +1467,12 @@ button.link,
 /* ==========================================================================
    Homepage landing: centered logo + the WEBRACK/LOOKBOOK/THE MODERN TIMES/
    MAILING nav stacked underneath it -- a single static screen, no header,
-   no footer, no scroll, black background. sections/mdr-landing.liquid;
-   reuses mdr-footer-nav (variant: 'landing'). #header-group and <footer>
-   are both siblings of <main>, not ancestors, so :has() on their shared
-   parent (<body>) is what reaches them from a main[data-template]
-   selector. */
+   no footer, no scroll, dark red background (matching the header/footer
+   red elsewhere on the site -- was black, its own separate look, before).
+   sections/mdr-landing.liquid; reuses mdr-footer-nav (variant: 'landing').
+   #header-group and <footer> are both siblings of <main>, not ancestors,
+   so :has() on their shared parent (<body>) is what reaches them from a
+   main[data-template] selector. */
 body:has(main[data-template='index']) #header-group,
 body:has(main[data-template='index']) footer {
   display: none !important;
@@ -1480,12 +1481,17 @@ body:has(main[data-template='index']) footer {
 /* Locks the whole page to one static screen -- no rubber-band, no scroll,
    regardless of viewport height -- instead of just relying on there being
    "not quite enough content to scroll", which breaks the instant a short
-   viewport (small phone, landscape) makes the stack taller than 100vh. */
+   viewport (small phone, landscape) makes the stack taller than 100vh.
+   Red, not black, so it matches the body::before/::after safe-area
+   patches further down this file (already red, shared site-wide) --
+   those didn't visually blend against this page specifically before,
+   since this was the one remaining black surface on an otherwise all-red
+   site. */
 html:has(main[data-template='index']),
 body:has(main[data-template='index']) {
   height: 100%;
   overflow: hidden;
-  background-color: #000000 !important;
+  background-color: #8B0000 !important;
 }
 
 /* .page-wrapper (base.css), not html/body, is the ACTUAL scroll container
