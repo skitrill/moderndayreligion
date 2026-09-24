@@ -728,9 +728,15 @@ main[data-template='collection'] [id$='__product_list_fa6P9H'] .resource-list--g
   grid-template-columns: repeat(2, 1fr) !important;
   column-gap: 1px !important;
   row-gap: 1px !important;
-  width: 100% !important;
-  max-width: none !important;
-  margin-inline: 0 !important;
+  /* true full-bleed, not just 100% of this section's own already-inset
+     content column (grid-column: 2 of the page's [margin|content|margin]
+     grid, base.css) -- 100vw + the classic negative-margin recentring
+     trick is what actually reaches the physical viewport edges, so the
+     hairline grid lines (the background showing through the 1px gaps)
+     run edge-to-edge instead of stopping at the page's own side gutters. */
+  width: 100vw !important;
+  max-width: 100vw !important;
+  margin-inline: calc(50% - 50vw) !important;
 }
 
 @media (min-width: 750px) {
@@ -921,7 +927,7 @@ main:not([data-template='index']) {
   grid-template-columns: repeat(auto-fit, minmax(110px, 1fr)) !important;
 }
 
-/* ---- Cart page: no divider lines ---------------------------------------- */
+/* ---- Cart page: no divider lines, except between line items (below) ------ */
 .cart-actions,
 .cart-page hr,
 .cart-summary hr,
@@ -951,6 +957,25 @@ main:not([data-template='index']) {
 .cart-items__table-row {
   padding-bottom: 10px !important;
   margin-bottom: 6px !important;
+  position: relative;
+}
+
+/* Divider between line items -- same hairline colour/opacity as the
+   product grid's own lines (rgba(139, 0, 0, 0.14)), full viewport width
+   like the grid's lines too, not just this row's own (page-margin-inset)
+   width -- the classic 100vw + negative-margin full-bleed trick, since
+   .cart-items__table-row { border: 0 !important } above (and this row's
+   own box not actually spanning the viewport) both rule out a plain
+   border-bottom on the row itself. */
+.cart-items__table-row:not(:last-child)::after {
+  content: '';
+  position: absolute;
+  left: 50%;
+  bottom: 0;
+  width: 100vw;
+  margin-left: -50vw;
+  border-bottom: 1px solid rgba(139, 0, 0, 0.14);
+  pointer-events: none;
 }
 
 /* ---- Product form: quantity + ADD TO CART + Buy-with-Shop on one line,
