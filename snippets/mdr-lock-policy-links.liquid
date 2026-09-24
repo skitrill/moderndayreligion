@@ -1,0 +1,46 @@
+{%- doc -%}
+  Lock screen policy links -- Privacy Policy, Terms of Service, Refund
+  Policy, Shipping Policy, pulled from shop.policies (Shopify's own
+  Settings > Policies), not hardcoded. shop.policies only ever contains
+  the policies the store has actually published, so anything not set up
+  in admin is simply absent here rather than a broken link.
+{%- enddoc -%}
+
+{% if shop.policies.size > 0 %}
+  <ul class="mdr-lock-policies">
+    {%- for policy in shop.policies -%}
+      {%- if policy != blank -%}
+        <li>
+          <a href="{{ policy.url }}">{{ policy.title | escape }}</a>
+        </li>
+      {%- endif -%}
+    {%- endfor -%}
+  </ul>
+{% endif %}
+
+{% stylesheet %}
+  .mdr-lock-policies {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: center;
+    gap: 4px 16px;
+  }
+
+  .mdr-lock-policies a {
+    font-family: var(--font-accent--family, inherit);
+    font-size: 0.6rem;
+    line-height: 1;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    text-decoration: none;
+    color: rgba(255, 255, 255, 0.6);
+  }
+
+  .mdr-lock-policies a:hover {
+    color: rgba(255, 255, 255, 0.9);
+  }
+{% endstylesheet %}
