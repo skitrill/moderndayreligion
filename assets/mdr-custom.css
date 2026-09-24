@@ -2694,29 +2694,24 @@ main[data-template='collection'] [id$='__product_list_fa6P9H'] .product-card pro
 
 main[data-template='collection'] [id$='__product_list_fa6P9H'] .product-card .text-block {
   margin: 6px 0 0 !important;
-  padding: 0 !important;
+  /* breathing room from the card's own edges -- was 0, which put the
+     text flush against the same edge the (edge-to-edge) image uses,
+     reading as if it ran the full width of the page. */
+  padding: 0 8px !important;
 }
 
 main[data-template='collection'] [id$='__product_list_fa6P9H'] .product-card .text-block p,
 main[data-template='collection'] [id$='__product_list_fa6P9H'] .product-card product-price .price {
-  /* Futura, not PGF Qualta (font:inherit, the site's own display font) --
-     PGF Qualta only has one loaded weight (see the top of this file) and
-     it's a heavy/blocky display face even AT regular weight, so there's
-     no "light" version of it to fall back to. Matching Supreme's light,
-     regular-weight grid type meant switching family, not just weight --
-     the same reasoning (and the same fallback stack) already used
-     site-wide for prices/numbers, just now applied to the title too so
-     the two read as one consistent voice instead of two different
-     typefaces stacked on each other. */
-  font-family: 'Futura', 'Futura PT', 'Century Gothic', sans-serif !important;
+  /* back to PGF Qualta (the site's own display font, inherited) -- Futura
+     was tried here for a lighter weight, but that's not the right font. */
+  font-family: 'PGF Qualta', 'Anonymous Pro', monospace !important;
   font-weight: 400 !important;
   font-size: 0.56rem !important;
   line-height: 1.25 !important;
-  /* natural/slightly open, not tight -- was 0.01em */
   letter-spacing: 0.02em !important;
   text-align: left !important;
-  /* soft charcoal, not flat #000 -- matches Supreme's own softer grid text */
-  color: rgba(0, 0, 0, 0.78) !important;
+  /* ash/grey, not near-black */
+  color: rgba(0, 0, 0, 0.5) !important;
   text-transform: uppercase !important;
 }
 
@@ -2724,7 +2719,7 @@ main[data-template='collection'] [id$='__product_list_fa6P9H'] .product-card pro
 main[data-template='collection'] [id$='__product_list_fa6P9H'] .product-card product-price.spacing-style,
 main[data-template='collection'] [id$='__product_list_fa6P9H'] .product-card product-price > div {
   margin: 0 !important;
-  padding: 0 !important;
+  padding: 0 8px !important;
 }
 
 main[data-template='collection'] [id$='__product_list_fa6P9H'] .product-card .text-block p {
@@ -2736,12 +2731,17 @@ main[data-template='collection'] [id$='__product_list_fa6P9H'] .product-card .te
      reference wraps long names onto a second line instead of truncating
      early, so the clamp went to 2, and min-height below now reserves
      exactly a 2-line-tall box so short one-line names still keep every
-     card the same height, price sitting flush under it regardless). */
+     card the same height, price sitting flush under it regardless --
+     min-height reserving the FULL 2 lines left too much empty air below
+     a short, one-line name before the price started, though, so this
+     only reserves ~1 line's worth now: most names are one line, so most
+     cards get a tight gap, and the rare two-line name just makes that
+     one card a little taller than its neighbours instead. */
   display: -webkit-box !important;
   -webkit-box-orient: vertical !important;
   -webkit-line-clamp: 2 !important;
   overflow: hidden !important;
-  min-height: calc(0.56rem * 1.25 * 2) !important;
+  min-height: calc(0.56rem * 1.25) !important;
 }
 
 /* mobile 2-up: the right-hand column right-aligns its name + price */
