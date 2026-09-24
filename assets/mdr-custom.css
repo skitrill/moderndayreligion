@@ -2699,14 +2699,24 @@ main[data-template='collection'] [id$='__product_list_fa6P9H'] .product-card .te
 
 main[data-template='collection'] [id$='__product_list_fa6P9H'] .product-card .text-block p,
 main[data-template='collection'] [id$='__product_list_fa6P9H'] .product-card product-price .price {
-  font: inherit !important;
-  font-size: 0.6rem !important;
-  line-height: 1.1 !important;
-  /* matches the PDP title exactly (main .product-information__grid... h1
-     above) -- one product-title/price typography spec, not two */
-  letter-spacing: 0.01em !important;
+  /* Futura, not PGF Qualta (font:inherit, the site's own display font) --
+     PGF Qualta only has one loaded weight (see the top of this file) and
+     it's a heavy/blocky display face even AT regular weight, so there's
+     no "light" version of it to fall back to. Matching Supreme's light,
+     regular-weight grid type meant switching family, not just weight --
+     the same reasoning (and the same fallback stack) already used
+     site-wide for prices/numbers, just now applied to the title too so
+     the two read as one consistent voice instead of two different
+     typefaces stacked on each other. */
+  font-family: 'Futura', 'Futura PT', 'Century Gothic', sans-serif !important;
+  font-weight: 400 !important;
+  font-size: 0.56rem !important;
+  line-height: 1.25 !important;
+  /* natural/slightly open, not tight -- was 0.01em */
+  letter-spacing: 0.02em !important;
   text-align: left !important;
-  color: #000000 !important;
+  /* soft charcoal, not flat #000 -- matches Supreme's own softer grid text */
+  color: rgba(0, 0, 0, 0.78) !important;
   text-transform: uppercase !important;
 }
 
@@ -2721,15 +2731,17 @@ main[data-template='collection'] [id$='__product_list_fa6P9H'] .product-card .te
   margin: 0 !important;
   padding: 0 !important;
   /* every card's text area needs to be the SAME height regardless of the
-     product name's actual length ("MODERNA TEE" vs "PIR® DOCTRINE TEE") --
-     one line, ellipsis past that, is what keeps price sitting right under
-     the title with no dead gap AND keeps every card the same height,
-     instead of reserving a second line most titles never use. */
+     product name's actual length ("MODERNA TEE" vs "PIR® DOCTRINE TEE")
+     -- two lines, ellipsis past that (was one line: the Supreme
+     reference wraps long names onto a second line instead of truncating
+     early, so the clamp went to 2, and min-height below now reserves
+     exactly a 2-line-tall box so short one-line names still keep every
+     card the same height, price sitting flush under it regardless). */
   display: -webkit-box !important;
   -webkit-box-orient: vertical !important;
-  -webkit-line-clamp: 1 !important;
+  -webkit-line-clamp: 2 !important;
   overflow: hidden !important;
-  min-height: calc(0.6rem * 1.1) !important;
+  min-height: calc(0.56rem * 1.25 * 2) !important;
 }
 
 /* mobile 2-up: the right-hand column right-aligns its name + price */
@@ -2743,10 +2755,16 @@ main[data-template='collection'] [id$='__product_list_fa6P9H'] .product-card .te
   }
 }
 
-/* "sold out" price copy -> dim grey like supreme */
+/* "sold out" -> lowercase, medium grey, same weight/size as the product
+   name above it (both inherit Futura/400/0.56rem from the shared title +
+   price rule) -- just colour and case differ here. Lowercase specifically
+   overrides the shared rule's uppercase (the rest of the site stays caps
+   by design, but this one label is an explicit, deliberate exception to
+   match Supreme's own "sold out" reading lowercase). */
 main[data-template='collection'] [id$='__product_list_fa6P9H'] .product-card product-price:has(.price--sold-out) .price,
 main[data-template='collection'] [id$='__product_list_fa6P9H'] .product-card .price--sold-out {
-  color: rgba(0, 0, 0, 0.4) !important;
+  color: rgba(0, 0, 0, 0.42) !important;
+  text-transform: lowercase !important;
 }
 
 /* ==========================================================================
