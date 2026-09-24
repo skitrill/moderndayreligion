@@ -171,7 +171,8 @@
   .mdr-logo-image {
     display: block;
     object-fit: contain;
-    height: 40px;
+    /* 20% larger than the original 40px */
+    height: 48px;
     width: auto;
     /* the source artwork is navy on transparent -- on the header's own
        black fill that's dark-on-dark, barely legible. Recolours the flat
@@ -181,7 +182,8 @@
     filter: brightness(0) invert(1);
 
     @media screen and (min-width: 750px) {
-      height: 32px;
+      /* 20% larger than the original 32px */
+      height: 38.4px;
     }
   }
 
