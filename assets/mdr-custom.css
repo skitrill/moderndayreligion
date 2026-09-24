@@ -154,7 +154,7 @@ footer {
      -- footer text was readable but sitting on cream, not black, there).
      A solid background-color directly on <footer> itself doesn't depend
      on that layering at all, so it can't go wrong the same way. */
-  background-color: #000000;
+  background-color: #8B0000;
 }
 
 .footer-content .list-unstyled {
@@ -1589,12 +1589,12 @@ body:has(main[data-template='index']) .page-wrapper {
      .mdr-scrolled lands on <html> (see mdr-header-enhance.liquid) --
      at that point something's actually scrolling underneath for the
      blur to show, which is the point of the effect in the first place. */
-  --mdr-glass-tint: #000000;
+  --mdr-glass-tint: #8B0000;
   --mdr-glass-blur: none;
 }
 
 html.mdr-scrolled {
-  --mdr-glass-tint: rgba(0, 0, 0, 0.88);
+  --mdr-glass-tint: rgba(139, 0, 0, 0.88);
   --mdr-glass-blur: blur(20px) saturate(160%);
 }
 
@@ -1639,14 +1639,14 @@ body::before {
   left: 0;
   right: 0;
   height: env(safe-area-inset-top, 0px);
-  background: #000000;
+  background: #8B0000;
   z-index: 2147483001;
   pointer-events: none;
 }
 
 /* Same fix, bottom edge: the home-indicator strip on notch-style iPhones.
-   The footer's own background is solid black (sections/footer-group.json
-   + the footer { background-color: #000000 } backstop further up this
+   The footer's own background is solid dark red (sections/footer-group.json
+   + the footer { background-color: #8B0000 } backstop further up this
    file), but that's still only what's painted UNDER the page content --
    same story as the top strip above, Safari reads the safe area itself
    from what's actually painted there, not from page content that merely
@@ -1658,7 +1658,7 @@ body::after {
   left: 0;
   right: 0;
   height: env(safe-area-inset-bottom, 0px);
-  background: #000000;
+  background: #8B0000;
   z-index: 2147483001;
   pointer-events: none;
 }
