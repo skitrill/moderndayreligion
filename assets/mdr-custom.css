@@ -2291,7 +2291,10 @@ main[data-template='collection']
   padding: 2px 8px;
   border: 0;
   background: none;
-  color: inherit;
+  /* dark red -- the opacity below (0.5 idle / 1 open) already gives this
+     a "faded" look while closed without needing a separate faded colour
+     value. */
+  color: #8B0000;
   font: inherit;
   /* WEBRACK / RETURN, same ~10% bump over .mdr-allbar's own (now smaller)
      0.66rem, so it's still harder to miss / mistap next to the logo */
@@ -2417,7 +2420,7 @@ main[data-template='collection']
 .mdr-allbar__list a {
   display: inline-flex;
   align-items: center;
-  color: #000;
+  color: #8B0000;
   text-decoration: none;
   opacity: 0.72;
   white-space: nowrap;
