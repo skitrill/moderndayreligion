@@ -2054,16 +2054,6 @@ cart-drawer [class*='price'] {
   color: #ffffff !important;
 }
 
-/* User specifically gets its border back -- the block above (id-scoped,
-   so higher specificity than the plain .header__user-link rule in
-   blocks/_header-menu.liquid) forces border:0 on EVERY .header__cart-link,
-   User included. Padding stays the SAME 4px 8px as Cart (not redeclared
-   here) so the border wraps snugly around text that's already sitting at
-   the identical inset Cart's own text uses. */
-#header-component .header__user-link {
-  border: 1px solid #ffffff !important;
-}
-
 /* lookbook heading -> follow the red default */
 .mdr-lookbook__heading {
   color: #000000 !important;

@@ -295,20 +295,17 @@
 
   .header__cart-link {
     font-family: var(--font-accent--family);
-    font-size: var(--font-size--xs);
+    /* 10% smaller than the original var(--font-size--xs) */
+    font-size: calc(var(--font-size--xs) * 0.9);
     letter-spacing: 0.04em;
     color: var(--color-foreground);
     text-decoration: none;
     white-space: nowrap;
   }
 
-  /* User link only -- a bordered box, like a button, matching the
-     WEBRACK/logo's own bordered look. Cart stays plain text above it,
-     spaced by .header__drawer's own gap (above), not a margin here.
-     Border is set in mdr-custom.css instead of here: an older, id-scoped
-     ".header__cart-link" reset there (higher specificity) forces border:0
-     on every cart-link, User included, so the override has to live there
-     too, right after that rule, to actually win. */
+  /* User -- plain text now, same as Cart (the bordered-button look tried
+     here earlier was removed), spaced by .header__drawer's own gap
+     (above), not a margin here. */
 
   #header-component[data-menu-style='drawer'] .header__drawer {
     display: flex;
