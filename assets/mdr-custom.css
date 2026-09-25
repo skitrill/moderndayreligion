@@ -464,6 +464,29 @@ main[data-template='cart'] ~ footer {
   margin-block: 20px !important;
 }
 
+/* ---- Cart rows: compact the per-item vertical rhythm ---------------------
+   .cart-items__remove (the delete icon) reserves the base theme's default
+   44x44px tap target -- much taller than the quantity pill sitting right
+   next to it (~17px), and since they're flex row siblings that 44px was
+   setting the whole quantity area's height, reading as a big blank gap
+   before the next row's divider even though almost none of it is visibly
+   ink. Shrinking it (still comfortably tappable) plus trimming the row's
+   own padding/margin and the gap above the quantity control tightens each
+   line without losing the divider between items. */
+.cart-items__remove {
+  width: 26px !important;
+  height: 26px !important;
+}
+
+.cart-items__quantity {
+  margin-block-start: 4px !important;
+}
+
+.cart-items__table-row {
+  padding-bottom: 6px !important;
+  margin-bottom: 4px !important;
+}
+
 /* ---- Quantity selector: bordered segmented box, matches the SIZE box's
    hairline-divided look instead of a plain white slab -------------------- */
 .quantity-selector {
