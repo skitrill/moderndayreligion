@@ -731,7 +731,15 @@ main .product-information__grid rte-formatter :is(p, li) {
    needed, it just fills its now-correctly-sized parent normally). */
 .product-information__grid .product-information__media {
   min-width: 0 !important;
-  max-width: 70% !important;
+  /* explicit width, not max-width -- this wrapper's own "auto"/intrinsic
+     content size (what max-width alone would fall back to once min-width
+     no longer forces 100%) turned out to collapse to ~26px: its visible
+     photo is rendered by an absolutely-positioned slide/zoom layer
+     inside it, which doesn't contribute to a normal in-flow content size
+     at all, so shrink-to-fit sizing had nothing real to measure. An
+     explicit width resolves against the containing block directly,
+     independent of that. */
+  width: 70% !important;
   margin-inline: auto !important;
 }
 
