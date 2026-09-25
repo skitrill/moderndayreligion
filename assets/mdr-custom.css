@@ -63,6 +63,12 @@ product-price *,
      reflected here automatically, top and bottom independently. */
   --mdr-edge-top: #8B0000;
   --mdr-edge-bottom: #8B0000;
+  /* The one standard body-text grey site-wide -- same value the product
+     grid's own card titles/prices already use (further down this file).
+     Everything that's plain copy (not an intentional accent -- MDR red,
+     the blue price/total colour, the orange Size Chart trigger) reads
+     this instead of a page-by-page black. */
+  --mdr-text-gray: rgba(0, 0, 0, 0.5);
   /* The single colour actually painted on html/body -- the real canvas
      Safari's rubber-band overscroll reveals at BOTH edges is one flat
      background-color, not two independently-coloured ends, so top/bottom
@@ -204,8 +210,8 @@ footer .utilities {
   flex-wrap: wrap !important;
   justify-content: center !important;
   align-items: center !important;
-  column-gap: 20px !important;
-  row-gap: 8px !important;
+  column-gap: 18px !important;
+  row-gap: 5px !important;
 }
 
 .mdr-fnav,
@@ -237,7 +243,7 @@ footer .utilities,
 .footer-utilities__text,
 .policy-list-inline,
 .policy-list-inline a {
-  font-size: 0.625rem !important;
+  font-size: 0.58rem !important;
   line-height: 1 !important;
   letter-spacing: 0.04em !important;
   font-weight: 400 !important;
@@ -438,6 +444,26 @@ product-price *,
   }
 }
 
+/* ---- Cart page: stop a short cart getting its footer shoved to the true
+   bottom of the viewport. footer { margin-top: auto } (further down this
+   file) glues the footer to page-wrapper's own full min-height:100dvh --
+   correct for a genuinely empty page, but a cart with only 1-2 items is
+   ALSO shorter than one mobile viewport, so it triggered the exact same
+   push: a huge, jarring red void between the checkout button and the
+   footer instead of the two sitting near each other. Let the footer
+   follow the cart's own content directly on this template specifically;
+   any leftover viewport height just becomes ordinary scroll space below
+   the footer instead of a gap above it. A small fixed margin keeps real
+   breathing room between the checkout button and the footer, short of
+   the two colliding. */
+main[data-template='cart'] ~ footer {
+  margin-top: 32px !important;
+}
+
+.cart__ctas {
+  margin-block: 20px !important;
+}
+
 /* ---- Quantity selector: bordered segmented box, matches the SIZE box's
    hairline-divided look instead of a plain white slab -------------------- */
 .quantity-selector {
@@ -605,18 +631,17 @@ product-price *,
   order: 5 !important;
 }
 
-/* ---- Product-page copy + colour option: full intensity, matching the
-   WEBRACK grid's product titles/prices -- was deliberately muted
-   (rgba(0, 0, 0, 0.6)) to match the footer copyright; the brown price
-   keeps its own colour -------- */
+/* ---- Product-page copy: standardized to --mdr-text-gray (top of file),
+   the same grey the WEBRACK grid's own card titles/prices use -- this
+   used to be forced full black (#000000, a prior explicit ask to match
+   the cart's intensity); now flipped back the other way, matching the
+   grid instead, per a later request to standardize on ONE grey body-text
+   colour site-wide. The blue price/total colour and the swatch controls
+   below keep their own colour -- only plain copy reads this. -------- */
 .variant-picker .variant-option[data-testid='variant-option-single'],
 .variant-picker .variant-option[data-testid='variant-option-single'] .variant-option__swatch-value,
 .variant-picker .variant-option__swatch-value {
   color: #000000 !important;
-}
-
-main .product-information__grid {
-  --color-foreground: #000000;
 }
 
 main .product-information__grid :is(h1, h2, h3, h4, h5, h6, p, li, legend,
@@ -624,7 +649,7 @@ main .product-information__grid :is(h1, h2, h3, h4, h5, h6, p, li, legend,
   .size-chart, .size-chart__trigger, .size-chart__trigger-text):not(.price):not(product-price),
 main .product-information__grid .rte:not(product-price) :is(span, p, li, a, strong, em),
 main .product-information__grid .text-block:not(product-price) :is(span, p, li, a, strong, em) {
-  color: #000000 !important;
+  color: var(--mdr-text-gray) !important;
 }
 
 /* ---- Mobile: product hero image size ------------------------------------- */
@@ -637,16 +662,23 @@ main .product-information__grid .text-block:not(product-price) :is(span, p, li, 
   }
 }
 
-/* ---- Cart line items: smaller type; highlight only on the title ------------ */
+/* ---- Cart line items: smaller, standardized-grey type ---------------------- */
 .cart-items__title {
-  font-size: 0.75rem !important;
+  font-size: 0.58rem !important;
 }
 
-/* cart product titles -> off-white (prices stay blue, see below) */
+/* title + variant/property copy -> the one standard grey (--mdr-text-gray,
+   top of file) -- unit price/line total keep their own blue, see below. */
 .cart-items__title,
 .cart-items__title a,
-.cart-items__title * {
-  color: #000000 !important;
+.cart-items__title *,
+.cart-items__variant,
+.cart-items__variant dt,
+.cart-items__variant dd,
+.cart-items__property,
+.cart-items__property dt,
+.cart-items__property dd {
+  color: var(--mdr-text-gray) !important;
 }
 
 .cart-items__price,
@@ -655,7 +687,7 @@ main .product-information__grid .text-block:not(product-price) :is(span, p, li, 
 .cart-items__unit-price-wrapper *,
 .cart-items__variants,
 .cart-items__variants dd {
-  font-size: 0.625rem !important;
+  font-size: 0.6rem !important;
 }
 
 /* image link stays clickable but gets no highlight / hover treatment */
@@ -666,6 +698,17 @@ main .product-information__grid .text-block:not(product-price) :is(span, p, li, 
   background-color: transparent !important;
   color: inherit !important;
   -webkit-tap-highlight-color: transparent !important;
+}
+
+/* Show the WHOLE garment, never cropped -- base theme default is
+   object-fit: cover inside an aspect-ratio: 0.8 (portrait) box, which
+   crops a laid-flat tee's sleeves/hem to fill that box. contain scales
+   the full image down to fit instead (letterboxed on the shirt's own
+   transparent/cream product-shot background, so it doesn't read as
+   empty space); the container itself keeps its existing size, so every
+   row's thumbnail stays the same dimensions and alignment. */
+.cart-items__media-image {
+  object-fit: contain !important;
 }
 
 /* ==========================================================================
@@ -1884,19 +1927,22 @@ main[data-template='collection'] [id$='__product_list_fa6P9H'] .resource-list__i
 }
 
 /* ==========================================================================
-   Default font colour -> a softer red site-wide (not neon).
+   Default font colour -> the one standard grey site-wide (--mdr-text-gray).
    ========================================================================== */
 *,
 ::before,
 ::after {
-  --color-foreground: #000000 !important;
+  --color-foreground: var(--mdr-text-gray) !important;
   --color-foreground-rgb: 0 0 0 !important;
-  /* full intensity, matching the WEBRACK grid's product titles/prices --
-     was a muted 0.72/0.45 opacity site-wide. Elements with their own
-     explicit lighter styling (sold-out price, disabled buttons, badges)
-     don't read these vars at all, so they're untouched. */
-  --color-foreground-muted: #000000 !important;
-  --color-foreground-subdued: #000000 !important;
+  /* the WEBRACK grid's own product titles/prices grey, as the ONE standard
+     body-text colour site-wide -- this was full black before (a prior
+     explicit ask), and muted 0.72/0.45 opacity before that. Elements with
+     their own explicit styling (prices, buttons, header/footer white,
+     sold-out price, disabled buttons, badges, WEBRACK red) don't read
+     these vars at all, or have their own more specific override further
+     down this file, so they're untouched by this default. */
+  --color-foreground-muted: var(--mdr-text-gray) !important;
+  --color-foreground-subdued: var(--mdr-text-gray) !important;
 }
 
 /* ---- Footer: now on the same black fill as the header, so its text needs
@@ -1934,15 +1980,14 @@ select,
   text-transform: none !important;
 }
 
-/* product description column -> full intensity now, matching the WEBRACK
-   grid's product titles/prices (was deliberately muted, NOT red, via the
-   foreground var, so buttons / inputs with their own colours are
-   untouched) */
+/* product description column -> the one standard grey (--mdr-text-gray),
+   matching the WEBRACK grid's own product titles/prices, via the
+   foreground var so buttons / inputs with their own colours are
+   untouched */
 main .product-information__grid,
 main .product-information__grid .product-details {
-  --color-foreground: #000000 !important;
-  --color-foreground-rgb: 0 0 0 !important;
-  --color-foreground-muted: #000000 !important;
+  --color-foreground: var(--mdr-text-gray) !important;
+  --color-foreground-muted: var(--mdr-text-gray) !important;
 }
 
 /* ...prices still blue */
@@ -1957,19 +2002,13 @@ main .product-information__grid.product-information__grid .size-chart * {
   color: #fdb92e !important;
 }
 
-/* ...product title -> full brightness, matching the homepage product-card
-   title colour (#000000, not f0eee6 -- the card title itself uses e9e1c4,
-   see main[data-template='collection'] ... .product-card .text-block p below;
-   this rule had drifted to the wrong hex) instead of the muted
-   description-column tone. Needs to out-specify the earlier
-   :is(h1,...):not(.price):not(product-price) rule (0,2,3), hence the
-   extra .product-details qualifier here (0,3,2). The raw font-size
-   already matched (both 9.375px) -- the visible mismatch was
-   line-height/letter-spacing: the PDP title uses the "h5" preset (tight,
-   no tracking) while the homepage card title uses "rte" (1.1 line-height,
-   0.1875px tracking). Match those too so they read the same size. -------- */
+/* ...product title -> matches the homepage product-card title's own grey
+   (--mdr-text-gray) and its line-height/letter-spacing: the PDP title
+   uses the "h5" preset (tight, no tracking) while the homepage card
+   title uses "rte" (1.1 line-height, 0.1875px tracking) -- matched here
+   so the two read as the same size/rhythm despite the different preset. */
 main .product-information__grid.product-information__grid .product-details h1 {
-  color: #000000 !important;
+  color: var(--mdr-text-gray) !important;
   font-size: 0.6rem !important;
   line-height: 1.1 !important;
   letter-spacing: 0.01em !important;
@@ -1991,7 +2030,10 @@ main .product-information__grid.product-information__grid .product-details h1 {
 }
 
 
-/* cart text -> off-white (was mango yellow) */
+/* cart text -> the one standard grey (--mdr-text-gray, top of file) --
+   this blanket rule is what actually wins for most cart copy (title,
+   variants, totals labels, discount/note labels, tax note...), later in
+   the cascade than the narrower per-element rules further up this file. */
 .cart-page,
 .cart-page *,
 .cart-items-component,
@@ -2006,6 +2048,14 @@ cart-drawer,
 cart-drawer *,
 .cart-drawer,
 .cart-drawer * {
+  color: var(--mdr-text-gray) !important;
+}
+
+/* ...except the "CART" page heading itself -- stays full black, the one
+   exception to the page-wide grey above (the count bubble keeps its own
+   blue regardless, see .cart-bubble further down, more specific still). */
+.cart-page__title .cart-title h1,
+.cart-page__title .cart-title h1 * {
   color: #000000 !important;
 }
 
@@ -2092,13 +2142,18 @@ cart-drawer [class*='price'] {
   color: #000000 !important;
 }
 
-/* collection / product page headings render in the theme's brighter #000000 --
-   pull them onto the site off-white so every heading matches */
+/* collection page headings -> full black, unchanged (out of scope for the
+   product/cart grey standardization below) */
 main[data-template='collection'] h1,
-main[data-template='collection'] .text-block :is(h1, h2, h3),
+main[data-template='collection'] .text-block :is(h1, h2, h3) {
+  color: #000000 !important;
+}
+
+/* product title -> the one standard grey (--mdr-text-gray), matching the
+   grid's own card titles -- was pulled to full black here. */
 main[data-template='product'] .product-title,
 main[data-template='product'] .product-title * {
-  color: #000000 !important;
+  color: var(--mdr-text-gray) !important;
 }
 
 /* ==========================================================================
