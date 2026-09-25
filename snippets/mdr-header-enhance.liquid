@@ -1316,4 +1316,60 @@
     window.addEventListener('scroll', place, { passive: true });
     window.addEventListener('resize', fixScrollfadeBleed, { passive: true });
   })();
+
+  /* =====================================================================
+     Dynamic overscroll/edge colour -- html/body/theme-color pick up
+     whatever's ACTUALLY rendered at the top (header, normally) and
+     bottom (footer, normally) of the current page, instead of a single
+     hardcoded red baked into mdr-custom.css. That CSS file still carries
+     #8B0000 as the --mdr-edge-top/--mdr-edge-bottom DEFAULT (every page
+     here happens to resolve to that anyway, header+footer both being
+     red), so there's no flash of a wrong colour before this runs --
+     this only ever overwrites that default with the real detected value,
+     never leaves the canvas uncoloured while waiting for JS. A page
+     whose top or bottom section were ever a different colour (or has no
+     header/footer at all, like the homepage/lockscreen) gets read
+     correctly either way: getComputedStyle on <body> itself already
+     resolves to whatever mdr-custom.css's own :has() rules force for
+     that page, so this naturally falls back to the right thing without
+     needing to special-case any specific template here.
+     ===================================================================== */
+  (function () {
+    if (window.__mdrEdgeColor) return;
+    window.__mdrEdgeColor = true;
+    var D = document;
+
+    function realBackground(el) {
+      while (el && el !== D.documentElement) {
+        var c = getComputedStyle(el).backgroundColor;
+        if (c && c !== 'transparent' && c !== 'rgba(0, 0, 0, 0)') return c;
+        el = el.parentElement;
+      }
+      return null;
+    }
+
+    function edgeColors() {
+      var header = D.querySelector('#header-group');
+      var footer = D.querySelector('footer');
+      var bodyBg = realBackground(D.body) || '#8B0000';
+      var top = (header && realBackground(header)) || bodyBg;
+      var bottom = (footer && realBackground(footer)) || bodyBg;
+      return { top: top, bottom: bottom };
+    }
+
+    function apply() {
+      var c = edgeColors();
+      var root = D.documentElement.style;
+      root.setProperty('--mdr-edge-top', c.top);
+      root.setProperty('--mdr-edge-bottom', c.bottom);
+      var meta = D.querySelector('meta[name="theme-color"]');
+      if (meta) meta.setAttribute('content', c.bottom);
+    }
+
+    if (D.readyState !== 'loading') apply();
+    D.addEventListener('DOMContentLoaded', apply);
+    window.addEventListener('load', apply);
+    window.addEventListener('resize', apply, { passive: true });
+    window.addEventListener('orientationchange', apply);
+  })();
 </script>

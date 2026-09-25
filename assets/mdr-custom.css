@@ -51,28 +51,45 @@ product-price *,
 }
 
 /* ---- Global: shrink the whole page a touch ---------------------------------- */
+:root {
+  /* Dynamic overscroll/edge colour -- mdr-header-enhance.liquid measures
+     the ACTUAL rendered background of whatever sits at the top (header,
+     or the section there on header-less pages) and bottom (footer, same
+     fallback) of the current page on load/resize, and overwrites these
+     two on <html> via JS. #8B0000 here is only the pre-JS fallback (every
+     page on this site currently resolves to that anyway, header+footer
+     both being red), not a hardcoded final answer -- a page whose top or
+     bottom section were ever a different colour would get detected and
+     reflected here automatically, top and bottom independently. */
+  --mdr-edge-top: #8B0000;
+  --mdr-edge-bottom: #8B0000;
+}
+
 html {
   font-size: 15px;
   /* The root element's own background -- not body's -- is what Safari
      extends into the safe-area/notch strip and the rubber-band overscroll
-     region above the very top of the page. body keeps its own dark red
+     region above the very top of the page. body keeps its own matching
      background for the same reason (see body { background-color } further
      down -- real page content gets its own explicit cream backing on
      <main> instead, see main:not([data-template='index']) further down,
-     so body itself is free to be red everywhere); this "catches" the
-     safe area regardless of any fixed-position layer's own sizing or
-     z-index -- important on iOS 26's redesigned Safari specifically,
-     where the floating "Liquid Glass" chrome samples/blends with actual
-     page background at the edges more aggressively than older Safari
-     versions did, so an exactly-sized env(safe-area-inset-*) patch alone
-     (still kept below, body::before/::after) isn't sufficient on its own
-     -- the base canvas itself needs to already be the right colour. */
-  background-color: #8B0000;
+     so body itself is free to take the detected edge colour everywhere);
+     this "catches" the safe area regardless of any fixed-position layer's
+     own sizing or z-index -- important on iOS 26's redesigned Safari
+     specifically, where the floating "Liquid Glass" chrome samples/blends
+     with actual page background at the edges more aggressively than older
+     Safari versions did, so an exactly-sized env(safe-area-inset-*) patch
+     alone (still kept below, body::before/::after) isn't sufficient on
+     its own -- the base canvas itself needs to already be the right
+     colour. Bottom, not top: scrolling down past the end is the far more
+     common overscroll gesture than pulling down at the very top, and (on
+     this site, today) the two happen to match anyway. */
+  background-color: var(--mdr-edge-bottom);
   /* Tells Safari to treat the whole page as a dark surface -- this (not
      theme-color alone) is what actually governs the rubber-band overscroll
      fill at the very top/bottom of the page and keeps the browser's own
-     chrome reading dark, on top of and independent of the black
-     background-color above. */
+     chrome reading dark, on top of and independent of the background-color
+     above. */
   color-scheme: dark;
 }
 
@@ -805,14 +822,16 @@ main[data-template='collection'] [id$='__product_list_fa6P9H'] .section-resource
 }
 
 body {
-  /* Dark red now, not cream -- matches html above. Real page content
-     still reads as cream because <main> itself carries an explicit cream
+  /* Detected edge colour now (--mdr-edge-bottom, :root above), not a
+     flat hardcoded red -- matches html above. Real page content still
+     reads as cream because <main> itself carries an explicit cream
      background (main:not([data-template='index']) further down), so this
      is now only ever visible in genuine gaps: the safe-area strips, the
      rubber-band overscroll, and any short-page trailing space -- exactly
-     where it should read as a continuation of the red header/footer, not
-     as the page's own cream. */
-  background-color: #8B0000 !important;
+     where it should read as a continuation of whatever's actually at the
+     bottom of THIS page (the red footer, today), not the page's own
+     cream. */
+  background-color: var(--mdr-edge-bottom) !important;
   background-image: none !important;
 }
 
@@ -844,7 +863,7 @@ footer {
 }
 
 .page-wrapper {
-  background-color: #8B0000;
+  background-color: var(--mdr-edge-bottom);
 }
 
 /* Every template except the homepage landing screen (which is deliberately
@@ -1702,7 +1721,10 @@ body::before {
   left: 0;
   right: 0;
   height: env(safe-area-inset-top, 0px);
-  background: #8B0000;
+  /* detected top-edge colour (--mdr-edge-top, :root above), not a flat
+     hardcoded red -- whatever's actually rendered at the top of THIS
+     page (the header, normally). */
+  background: var(--mdr-edge-top);
   z-index: 2147483001;
   pointer-events: none;
 }
@@ -1721,7 +1743,10 @@ body::after {
   left: 0;
   right: 0;
   height: env(safe-area-inset-bottom, 0px);
-  background: #8B0000;
+  /* detected bottom-edge colour (--mdr-edge-bottom, :root above), not a
+     flat hardcoded red -- whatever's actually rendered at the bottom of
+     THIS page (the footer, normally). */
+  background: var(--mdr-edge-bottom);
   z-index: 2147483001;
   pointer-events: none;
 }
