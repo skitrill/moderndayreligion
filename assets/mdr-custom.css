@@ -692,6 +692,17 @@ main .product-information__grid .text-block:not(product-price) :is(span, p, li, 
   color: var(--mdr-text-gray) !important;
 }
 
+/* Product description + bullets -> the same 0.56rem the WEBRACK grid's
+   own card titles use (main[data-template='collection'] ... .text-block p
+   further down this file) -- was 0.625rem (the theme's own default body
+   copy size). The product title (its own more specific .product-details
+   h1 rule further down) and the Size Chart trigger (its own orange-text
+   rule) both stay their own size -- this only reaches the actual
+   paragraph/bullet copy. */
+main .product-information__grid rte-formatter :is(p, li) {
+  font-size: 0.56rem !important;
+}
+
 /* ---- Mobile: product hero image size ------------------------------------- */
 @media screen and (max-width: 749px) {
   .product-information__grid .product-information__media,
