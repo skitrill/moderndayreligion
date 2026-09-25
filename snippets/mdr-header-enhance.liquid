@@ -1196,74 +1196,21 @@
      just plays on its own first paint. */
 
   /* =====================================================================
-     Mobile page sizing -- [+ page] / [- page]. Sits at the bottom of
-     the page, on the copyright line (not floating -- only visible once
-     you scroll to the footer). The 20%-enlarged size is now the page's
-     DEFAULT (loads already zoomed, every fresh session); the control
-     shows "[- page]" in that default state -- tap it to switch back down
-     to normal size, tap again to switch back up.
-
-     Anchored to copyright, not a policy link: the footer nav + policy
-     links now share one wrapping flex row (mdr-footer-nav renders inside
-     footer-utilities.liquid's own .utilities), so which line "Refund
-     policy" actually lands on shifts with viewport width and item count.
-     Copyright is always the single, centred, full-width LAST line (see
-     .footer-utilities__group-copyright's flex-basis: 100% in
-     mdr-custom.css) -- a stable line to sit beside instead. */
+     WEBRACK grid full-bleed edge-to-edge fix -- .mdr-scrollfade
+     (mdr-custom.css) needs overflow-x: hidden for the swipe animation,
+     which clips a plain vw-based full-bleed trick under some viewport/
+     zoom combinations. getBoundingClientRect reports true rendered
+     coordinates regardless, so this measures the real gap on either side
+     and corrects it directly as an inline style. Previously also had to
+     divide by the page's own CSS-zoom factor (a [+/- page] size toggle
+     that used to live on this page, since removed) -- zoomFactor is now
+     always 1, kept only so this still behaves correctly if body ever
+     carries a legitimate CSS zoom again for some other reason. */
   (function () {
-    if (window.__mdrZoom) return;
-    window.__mdrZoom = true;
+    if (window.__mdrScrollfadeBleed) return;
+    window.__mdrScrollfadeBleed = true;
     var D = document;
-    var Z = 1.1;
 
-    function stored() {
-      try {
-        var v = sessionStorage.getItem('mdrZoom');
-        /* no explicit choice yet this session -> default to zoomed */
-        if (v === null) return true;
-        return v === '1';
-      } catch (e) { return true; }
-    }
-
-    var btn = D.createElement('button');
-    btn.className = 'mdr-zoom';
-    btn.type = 'button';
-    btn.setAttribute('aria-label', 'Switch page size');
-    btn.innerHTML =
-      '<span class="mdr-bracket">[</span>' +
-      '<span class="mdr-zoom__sign">-</span>' +
-      '<span class="mdr-zoom__pg" aria-hidden="true"><i></i><i></i><i></i><i></i></span>' +
-      '<span class="mdr-bracket">]</span>';
-
-    function copyrightLine() {
-      return D.querySelector('.footer-utilities__group-copyright');
-    }
-
-    function place() {
-      var line = copyrightLine();
-      var host = btn.parentElement;
-      if (!line || !host) return;
-      var hr = host.getBoundingClientRect();
-      var lr = line.getBoundingClientRect();
-      var top = Math.round(lr.top - hr.top + lr.height / 2 - btn.offsetHeight / 2);
-      btn.style.top = top + 'px';
-    }
-
-    /* The WEBRACK grid's own full-bleed edge-to-edge fix (mdr-custom.css,
-       .mdr-scrollfade) uses vw units, which don't correctly cancel out
-       body's own CSS zoom here -- vw resolves against the TRUE viewport,
-       but the zoomed .mdr-scrollfade's percentage-based ancestors resolve
-       in the zoomed element's own (different) coordinate space, so a
-       calc() mixing the two lands wrong (confirmed: visibly clipped/
-       shifted at the default zoomed-on state). getBoundingClientRect,
-       unlike vw, DOES report true rendered/visual coordinates reliably
-       even inside a zoomed subtree -- so this measures the real gap and
-       corrects it directly as an inline style, dividing by the zoom
-       factor first (same reasoning as the more-payment-options / error
-       message fixes elsewhere in this file: an authored inline-style
-       value inside a zoomed element gets re-zoomed AGAIN by the browser
-       on render, so pre-dividing by the zoom factor is what lands it
-       back on the intended true-pixel target). */
     function fixScrollfadeBleed() {
       var el = D.querySelector("[id$='__product_list_fa6P9H'] .mdr-scrollfade");
       if (!el) return;
@@ -1280,40 +1227,9 @@
       el.style.marginRight = (-rightGap / zoomFactor) + 'px';
     }
 
-    function apply(on) {
-      try { D.body.style.zoom = on ? Z : ''; } catch (e) {}
-      btn.classList.toggle('is-zoomed', on);
-      var s = btn.querySelector('.mdr-zoom__sign');
-      if (s) s.textContent = on ? '−' : '+';
-      btn.setAttribute('aria-pressed', on ? 'true' : 'false');
-      try { sessionStorage.setItem('mdrZoom', on ? '1' : '0'); } catch (e) {}
-      requestAnimationFrame(place);
-      requestAnimationFrame(fixScrollfadeBleed);
-    }
-
-    btn.addEventListener('click', function () { apply(!stored()); });
-
-    function mount() {
-      var line = copyrightLine();
-      var host =
-        (line && (line.closest('.utilities') || line.closest('.section--page-width'))) ||
-        D.querySelector('footer');
-      if (!host) return;
-      if (btn.parentElement !== host) {
-        host.style.position = 'relative';
-        btn.style.position = 'absolute';
-        btn.style.right = '8px';
-        host.appendChild(btn);
-      }
-      apply(stored());
-      place();
-    }
-
-    if (D.readyState !== 'loading') mount();
-    D.addEventListener('DOMContentLoaded', mount);
-    window.addEventListener('load', mount);
-    window.addEventListener('resize', place, { passive: true });
-    window.addEventListener('scroll', place, { passive: true });
+    if (D.readyState !== 'loading') fixScrollfadeBleed();
+    D.addEventListener('DOMContentLoaded', fixScrollfadeBleed);
+    window.addEventListener('load', fixScrollfadeBleed);
     window.addEventListener('resize', fixScrollfadeBleed, { passive: true });
   })();
 
