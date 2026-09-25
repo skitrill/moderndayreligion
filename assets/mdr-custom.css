@@ -206,12 +206,22 @@ footer {
 
 footer .utilities {
   padding-block: 4px 4px !important;
+  padding-inline: 16px !important;
   flex-direction: row !important;
   flex-wrap: wrap !important;
   justify-content: center !important;
   align-items: center !important;
   column-gap: 18px !important;
   row-gap: 5px !important;
+  /* explicit centered content column, not just an incidental result of
+     flex justify-content on an already-full-width row -- keeps the nav +
+     policy links from ever reading as a wide, sparse spread on a very
+     wide screen, and the inline padding guarantees a side gutter (so
+     REFUND POLICY / WEBRACK never sit flush against the viewport edge)
+     even on the very narrowest phones. */
+  max-width: 640px !important;
+  margin-inline: auto !important;
+  text-align: center !important;
 }
 
 .mdr-fnav,
