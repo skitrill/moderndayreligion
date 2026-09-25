@@ -1604,10 +1604,16 @@ body:has(main[data-template='index']) {
 
 /* .page-wrapper (base.css), not html/body, is the ACTUAL scroll container
    at desktop widths (990px+) -- html/body overflow:hidden alone doesn't
-   stop it from scrolling on its own there. */
+   stop it from scrolling on its own there. background-color: explicit
+   here now too -- .page-wrapper's own generic rule (further up this
+   file) reads --mdr-edge-color, which used to coincidentally match
+   --mdr-primary (both #8B0000) so this never needed its own colour; now
+   that the overscroll canvas is a separate neutral colour, the homepage's
+   permanently-red-now-blue landing screen needs to say so explicitly. */
 body:has(main[data-template='index']) .page-wrapper {
   height: 100vh !important;
   overflow: hidden !important;
+  background-color: var(--mdr-primary) !important;
 }
 
 .mdr-landing-section {
