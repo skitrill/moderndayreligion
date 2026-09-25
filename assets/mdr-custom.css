@@ -658,15 +658,6 @@ main[data-template='cart'] ~ footer {
   margin-inline: auto !important;
   text-align: center !important;
   --text-align: center !important;
-  /* a plain square frame around the whole description block, giving it a
-     defined boundary so the centering actually reads instead of relying
-     on ragged-edge text alone -- same hairline colour/thickness as the
-     product grid's own divider lines (1px, rgba(var(--mdr-primary-rgb),
-     0.14)), sharp corners (no border-radius), not a new colour/weight of
-     its own. */
-  border: 1px solid rgba(var(--mdr-primary-rgb), 0.14) !important;
-  box-sizing: border-box !important;
-  padding: 16px !important;
 }
 
 /* The bullet list specifically: text-align: center alone still leaves
@@ -1009,6 +1000,16 @@ main:not([data-template='index']) {
 .resource-list__item .product-media__image,
 .resource-list__item .product-media img {
   filter: drop-shadow(0 0 11px rgba(122, 84, 52, 0.1)) !important;
+}
+
+/* Square frame around the product photo -- same hairline colour/thickness
+   as the product grid's own divider lines (1px, rgba(var(--mdr-primary-
+   rgb), 0.14)), sharp corners (no border-radius). Padding keeps the
+   border off the image's own edge rather than touching it directly. */
+.product-information__media {
+  border: 1px solid rgba(var(--mdr-primary-rgb), 0.14) !important;
+  box-sizing: border-box !important;
+  padding: 12px !important;
 }
 
 /* No glow on the product-page hero -- the 20% halo was tracing a faint box
