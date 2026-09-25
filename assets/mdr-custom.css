@@ -719,7 +719,20 @@ main .product-information__grid rte-formatter :is(p, li) {
   .product-information__grid .product-information__media,
   .product-information__grid [class*='media-gallery'],
   .product-information__grid .product-media-container {
-    max-width: 91% !important;
+    /* was 91% -- reduced */
+    max-width: 70% !important;
+    margin-inline: auto !important;
+  }
+}
+
+/* ---- Desktop: same reduction, its own rule (not just the mobile one
+   above with the max-width query dropped) so it wins over the two-column
+   grid's own 300px image-column sizing at this specificity. ------------- */
+@media screen and (min-width: 750px) {
+  .product-information__grid .product-information__media,
+  .product-information__grid [class*='media-gallery'],
+  .product-information__grid .product-media-container {
+    max-width: 70% !important;
     margin-inline: auto !important;
   }
 }
@@ -1005,20 +1018,16 @@ main:not([data-template='index']) {
 /* Square frame around the product photo -- same hairline colour/thickness
    as the product grid's own divider lines (1px, rgba(var(--mdr-primary-
    rgb), 0.14)), sharp corners (no border-radius). Padding keeps the
-   border off the image's own edge rather than touching it directly. */
+   border off the image's own edge rather than touching it directly.
+   Sizing itself (max-width/margin) is NOT set here -- .product-information__
+   grid .product-information__media (mobile) and its desktop counterpart
+   (both further down this file) are more specific (two classes) and would
+   win over a single-class rule here regardless of !important/source order,
+   so the actual width lives in those two rules, not this one. */
 .product-information__media {
   border: 1px solid rgba(var(--mdr-primary-rgb), 0.14) !important;
   box-sizing: border-box !important;
   padding: 12px !important;
-  /* the existing mobile sizing rule (max-width:91%, further down this
-     file) wasn't actually being respected here -- repeated directly so
-     the frame hugs the photo's own visual width instead of running the
-     full edge-to-edge column (where a 1px border at the very viewport
-     edge reads as invisible, disconnected from the image). Applied
-     unscoped (no media query), so it's the one size at every viewport
-     width, not just mobile -- reduced from 91% to 70%. */
-  max-width: 70% !important;
-  margin-inline: auto !important;
 }
 
 /* No glow on the product-page hero -- the 20% halo was tracing a faint box
