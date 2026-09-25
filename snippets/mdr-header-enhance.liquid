@@ -1233,15 +1233,109 @@
     window.addEventListener('resize', fixScrollfadeBleed, { passive: true });
   })();
 
-  /* The dynamic overscroll/edge-colour detection that used to live here
-     (reading the header/footer's own background and pushing it live into
-     --mdr-edge-top/--mdr-edge-bottom/--mdr-edge-color as you scrolled) has
-     been removed -- it made the rubber-band glow and safe-area strips
-     read as a DIFFERENT colour/size depending on the page (cream at the
-     top of the grid, red everywhere else), which is what read as
-     inconsistent. Those three custom properties are now fixed, static
-     values set once in mdr-custom.css (:root) -- the safe-area strips a
-     constant red, the actual overscroll canvas a neutral, colourless
-     "liquid glass" white -- the same on every page, nothing left to
-     detect or switch on scroll. */
+  /* =====================================================================
+     Dynamic overscroll/edge colour -- html/body/theme-color pick up
+     whatever's ACTUALLY rendered at the top (header, normally) and
+     bottom (footer, normally) of the current page, instead of a single
+     hardcoded red baked into mdr-custom.css. That CSS file still carries
+     #8B0000 as the --mdr-edge-top/--mdr-edge-bottom/--mdr-edge-color
+     DEFAULT (every page here happens to resolve to that anyway,
+     header+footer both being red), so there's no flash of a wrong colour
+     before this runs -- this only ever overwrites that default with the
+     real detected value, never leaves the canvas uncoloured while
+     waiting for JS. A page whose top or bottom section were ever a
+     different colour (or has no header/footer at all, like the
+     homepage/lockscreen) gets read correctly either way: getComputedStyle
+     on <body> itself already resolves to whatever mdr-custom.css's own
+     :has() rules force for that page, so this naturally falls back to
+     the right thing without needing to special-case any specific
+     template here.
+
+     --mdr-edge-top/--mdr-edge-bottom feed the two safe-area strips
+     (body::before/::after, mdr-custom.css) -- those are genuinely two
+     separate fixed patches, one pinned top, one pinned bottom, so they
+     can legitimately differ. The actual rubber-band overscroll canvas
+     (html/body's own background-color) is NOT that -- it's one single
+     flat fill that Safari reveals at WHICHEVER edge you overscroll past,
+     so it can't be pre-split into a top value and a bottom value the
+     same way. --mdr-edge-color is that one value, kept in sync with
+     scroll position: whichever edge you're currently at (or closest to)
+     is the colour it holds, so by the time you actually rubber-band it's
+     already correct, same as how Instagram's in-app browser does it. */
+  (function () {
+    if (window.__mdrEdgeColor) return;
+    window.__mdrEdgeColor = true;
+    var D = document;
+
+    /* An element's OWN painted background only -- deliberately does not
+       walk up to parents. #header-group is genuinely transparent (no fill
+       of its own at all, by design); walking up from it used to land on
+       body/.page-wrapper's background-color, which is itself driven BY
+       this same detection (see html/.page-wrapper/body rules,
+       mdr-custom.css) -- a circular "real" answer that was always red,
+       so cream never got a chance to be detected at all. <main> carries
+       its own explicit, non-circular background (main:not([data-template=
+       'index']) in mdr-custom.css, cream on every real content page) --
+       that's the correct fallback for a transparent header/footer, not
+       body. */
+    function ownBackground(el) {
+      if (!el) return null;
+      var c = getComputedStyle(el).backgroundColor;
+      return c && c !== 'transparent' && c !== 'rgba(0, 0, 0, 0)' ? c : null;
+    }
+
+    function edgeColors() {
+      var header = D.querySelector('#header-group');
+      var footer = D.querySelector('footer');
+      var main = D.querySelector('main');
+      var contentBg = ownBackground(main) || '#8B0000';
+      var top = ownBackground(header) || contentBg;
+      var bottom = ownBackground(footer) || contentBg;
+      return { top: top, bottom: bottom };
+    }
+
+    // Which of the two edge colours the single overscroll canvas fill
+    // should currently hold, based on scroll position -- null in the
+    // middle of a long page means "leave it as whatever it already is,"
+    // since overscroll can only actually happen once you're AT an edge.
+    function currentEdge(c) {
+      var scrollY = window.scrollY || D.documentElement.scrollTop || 0;
+      var viewportH = window.innerHeight;
+      var fullH = Math.max(D.documentElement.scrollHeight, D.body.scrollHeight);
+      if (scrollY + viewportH >= fullH - 2) return c.bottom;
+      if (scrollY <= 2) return c.top;
+      return null;
+    }
+
+    var root = D.documentElement.style;
+    var meta = D.querySelector('meta[name="theme-color"]');
+
+    function apply() {
+      var c = edgeColors();
+      root.setProperty('--mdr-edge-top', c.top);
+      root.setProperty('--mdr-edge-bottom', c.bottom);
+      var edge = currentEdge(c);
+      if (edge) {
+        root.setProperty('--mdr-edge-color', edge);
+        if (meta) meta.setAttribute('content', edge);
+      }
+    }
+
+    var ticking = false;
+    function onScroll() {
+      if (ticking) return;
+      ticking = true;
+      requestAnimationFrame(function () {
+        apply();
+        ticking = false;
+      });
+    }
+
+    if (D.readyState !== 'loading') apply();
+    D.addEventListener('DOMContentLoaded', apply);
+    window.addEventListener('load', apply);
+    window.addEventListener('resize', apply, { passive: true });
+    window.addEventListener('orientationchange', apply);
+    window.addEventListener('scroll', onScroll, { passive: true });
+  })();
 </script>
