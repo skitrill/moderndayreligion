@@ -714,27 +714,31 @@ main .product-information__grid rte-formatter :is(p, li) {
   font-size: 0.56rem !important;
 }
 
-/* ---- Mobile: product hero image size ------------------------------------- */
-@media screen and (max-width: 749px) {
-  .product-information__grid .product-information__media,
-  .product-information__grid [class*='media-gallery'],
-  .product-information__grid .product-media-container {
-    /* was 91% -- reduced */
-    max-width: 70% !important;
-    margin-inline: auto !important;
-  }
+/* ---- Product hero image size, all viewport widths -- was 91% (mobile
+   only), reduced to 70%. .product-information__media (the framed outer
+   wrapper) deliberately does NOT take a percentage max-width itself: it
+   sits in a CSS grid track whose own size is indefinite until its
+   content is measured, and a percentage max-width on an element whose
+   containing block is itself indefinite silently fails to resolve (the
+   spec's answer in that case is "treat as none") -- confirmed live: even
+   a forced inline max-width !important didn't shrink it. Its children
+   (.product-media-container, the actual media-gallery items) DON'T have
+   that problem -- their own containing block (.product-information__media)
+   is a normal block box by the time THEY'RE sized, so percentage
+   max-width resolves fine there. So: shrink the children with a
+   percentage as before, and let the wrapper itself just shrink-wrap
+   their resulting size (width: fit-content) rather than trying to size
+   it independently. */
+.product-information__grid .product-media-container,
+.product-information__grid [class*='media-gallery'] {
+  max-width: 70% !important;
+  margin-inline: auto !important;
 }
 
-/* ---- Desktop: same reduction, its own rule (not just the mobile one
-   above with the max-width query dropped) so it wins over the two-column
-   grid's own 300px image-column sizing at this specificity. ------------- */
-@media screen and (min-width: 750px) {
-  .product-information__grid .product-information__media,
-  .product-information__grid [class*='media-gallery'],
-  .product-information__grid .product-media-container {
-    max-width: 70% !important;
-    margin-inline: auto !important;
-  }
+.product-information__grid .product-information__media {
+  width: fit-content !important;
+  max-width: 100% !important;
+  margin-inline: auto !important;
 }
 
 /* ---- Cart line items: smaller, standardized-grey type ---------------------- */
