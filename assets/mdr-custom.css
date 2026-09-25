@@ -1014,8 +1014,10 @@ main:not([data-template='index']) {
      file) wasn't actually being respected here -- repeated directly so
      the frame hugs the photo's own visual width instead of running the
      full edge-to-edge column (where a 1px border at the very viewport
-     edge reads as invisible, disconnected from the image). */
-  max-width: 91% !important;
+     edge reads as invisible, disconnected from the image). Applied
+     unscoped (no media query), so it's the one size at every viewport
+     width, not just mobile -- reduced from 91% to 70%. */
+  max-width: 70% !important;
   margin-inline: auto !important;
 }
 
