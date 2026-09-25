@@ -658,6 +658,15 @@ main[data-template='cart'] ~ footer {
   margin-inline: auto !important;
   text-align: center !important;
   --text-align: center !important;
+  /* a plain square frame around the whole description block, giving it a
+     defined boundary so the centering actually reads instead of relying
+     on ragged-edge text alone -- same hairline colour/thickness as the
+     product grid's own divider lines (1px, rgba(var(--mdr-primary-rgb),
+     0.14)), sharp corners (no border-radius), not a new colour/weight of
+     its own. */
+  border: 1px solid rgba(var(--mdr-primary-rgb), 0.14) !important;
+  box-sizing: border-box !important;
+  padding: 16px !important;
 }
 
 /* The bullet list specifically: text-align: center alone still leaves
