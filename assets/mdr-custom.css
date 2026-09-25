@@ -63,6 +63,15 @@ product-price *,
      reflected here automatically, top and bottom independently. */
   --mdr-edge-top: #8B0000;
   --mdr-edge-bottom: #8B0000;
+  /* The single colour actually painted on html/body -- the real canvas
+     Safari's rubber-band overscroll reveals at BOTH edges is one flat
+     background-color, not two independently-coloured ends, so top/bottom
+     can't be split there the way they can on the tiny safe-area strips
+     below. mdr-header-enhance.liquid's scroll listener keeps this in sync
+     with whichever edge (top or bottom) you're actually near, switching it
+     as you approach either end -- defaults to the bottom colour since nothing
+     has scrolled yet on load. */
+  --mdr-edge-color: #8B0000;
 }
 
 html {
@@ -81,10 +90,10 @@ html {
      Safari versions did, so an exactly-sized env(safe-area-inset-*) patch
      alone (still kept below, body::before/::after) isn't sufficient on
      its own -- the base canvas itself needs to already be the right
-     colour. Bottom, not top: scrolling down past the end is the far more
-     common overscroll gesture than pulling down at the very top, and (on
-     this site, today) the two happen to match anyway. */
-  background-color: var(--mdr-edge-bottom);
+     colour. --mdr-edge-color (not -top/-bottom): this is the ONE value
+     Safari's rubber-band reveals at whichever edge you're overscrolling,
+     kept live by the scroll listener rather than fixed at page-load. */
+  background-color: var(--mdr-edge-color);
   /* Tells Safari to treat the whole page as a dark surface -- this (not
      theme-color alone) is what actually governs the rubber-band overscroll
      fill at the very top/bottom of the page and keeps the browser's own
@@ -822,16 +831,15 @@ main[data-template='collection'] [id$='__product_list_fa6P9H'] .section-resource
 }
 
 body {
-  /* Detected edge colour now (--mdr-edge-bottom, :root above), not a
-     flat hardcoded red -- matches html above. Real page content still
-     reads as cream because <main> itself carries an explicit cream
-     background (main:not([data-template='index']) further down), so this
-     is now only ever visible in genuine gaps: the safe-area strips, the
-     rubber-band overscroll, and any short-page trailing space -- exactly
-     where it should read as a continuation of whatever's actually at the
-     bottom of THIS page (the red footer, today), not the page's own
-     cream. */
-  background-color: var(--mdr-edge-bottom) !important;
+  /* --mdr-edge-color (see html above), not a flat hardcoded red -- matches
+     html above and stays in sync with it. Real page content still reads
+     as cream because <main> itself carries an explicit cream background
+     (main:not([data-template='index']) further down), so this is now only
+     ever visible in genuine gaps: the safe-area strips, the rubber-band
+     overscroll, and any short-page trailing space -- exactly where it
+     should read as a continuation of whichever edge you're actually near,
+     not the page's own cream. */
+  background-color: var(--mdr-edge-color) !important;
   background-image: none !important;
 }
 
@@ -863,7 +871,7 @@ footer {
 }
 
 .page-wrapper {
-  background-color: var(--mdr-edge-bottom);
+  background-color: var(--mdr-edge-color);
 }
 
 /* Every template except the homepage landing screen (which is deliberately
