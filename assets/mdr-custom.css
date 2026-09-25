@@ -715,29 +715,24 @@ main .product-information__grid rte-formatter :is(p, li) {
 }
 
 /* ---- Product hero image size, all viewport widths -- was 91% (mobile
-   only), reduced to 70%. .product-information__media (the framed outer
-   wrapper) deliberately does NOT take a percentage max-width itself: it
-   sits in a CSS grid track whose own size is indefinite until its
-   content is measured, and a percentage max-width on an element whose
-   containing block is itself indefinite silently fails to resolve (the
-   spec's answer in that case is "treat as none") -- confirmed live: even
-   a forced inline max-width !important didn't shrink it. Its children
-   (.product-media-container, the actual media-gallery items) DON'T have
-   that problem -- their own containing block (.product-information__media)
-   is a normal block box by the time THEY'RE sized, so percentage
-   max-width resolves fine there. So: shrink the children with a
-   percentage as before, and let the wrapper itself just shrink-wrap
-   their resulting size (width: fit-content) rather than trying to size
-   it independently. */
-.product-information__grid .product-media-container,
-.product-information__grid [class*='media-gallery'] {
-  max-width: 70% !important;
+   only), reduced to 70%. The real reason max-width alone kept failing
+   here (confirmed live, even with a forced inline !important): the base
+   theme's own stylesheet (product-information-content.liquid) sets
+   .product-information__media { width: 0; min-width: 100%; } --
+   min-width ALWAYS wins over max-width when they conflict, by CSS
+   definition, regardless of specificity/!important/source order, so
+   nothing could shrink it below 100% until that min-width itself was
+   neutralised. */
+.product-information__grid .product-information__media {
+  min-width: 0 !important;
+  width: fit-content !important;
+  max-width: 100% !important;
   margin-inline: auto !important;
 }
 
-.product-information__grid .product-information__media {
-  width: fit-content !important;
-  max-width: 100% !important;
+.product-information__grid .product-media-container,
+.product-information__grid [class*='media-gallery'] {
+  max-width: 70% !important;
   margin-inline: auto !important;
 }
 
