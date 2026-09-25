@@ -1033,8 +1033,10 @@ main:not([data-template='index']) {
 .product-information__media {
   border: 1px solid rgba(var(--mdr-primary-rgb), 0.14) !important;
   box-sizing: border-box !important;
-  /* top padding specifically reduced -- was 12px on all four sides */
-  padding: 4px 12px 12px !important;
+  padding: 12px !important;
+  /* small breathing room between the header/RETURN-WEBRACK bar and the
+     frame's own top edge -- was flush (0 gap) against it. */
+  margin-top: 14px !important;
 }
 
 /* No glow on the product-page hero -- the 20% halo was tracing a faint box
