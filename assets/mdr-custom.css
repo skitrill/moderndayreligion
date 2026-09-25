@@ -52,32 +52,39 @@ product-price *,
 
 /* ---- Global: shrink the whole page a touch ---------------------------------- */
 :root {
-  /* Dynamic overscroll/edge colour -- mdr-header-enhance.liquid measures
-     the ACTUAL rendered background of whatever sits at the top (header,
-     or the section there on header-less pages) and bottom (footer, same
-     fallback) of the current page on load/resize, and overwrites these
-     two on <html> via JS. #8B0000 here is only the pre-JS fallback (every
-     page on this site currently resolves to that anyway, header+footer
-     both being red), not a hardcoded final answer -- a page whose top or
-     bottom section were ever a different colour would get detected and
-     reflected here automatically, top and bottom independently. */
-  --mdr-edge-top: #8B0000;
-  --mdr-edge-bottom: #8B0000;
+  /* ---- Color experiment: the site's one primary UI colour, everywhere it's
+     actually brand/UI paint (header/footer fill, grid + divider lines,
+     borders, WEBRACK/RETURN accents, buttons) -- NOT product photography,
+     NOT the unrelated blue price colour, NOT the semantic --color-error
+     token (theme-styles-variables.liquid) that happens to share the old
+     hex by coincidence. Swap this one value (plus -rgb, used for every
+     faded/translucent variant via rgba(var(--mdr-primary-rgb), alpha)) to
+     flip the whole site's primary colour without hunting through the
+     file -- was dark red, now a deep blue experiment. */
+  --mdr-primary: #040061;
+  --mdr-primary-rgb: 4, 0, 97;
+  /* ---- Overscroll/safe-area: deliberately NOT tied to --mdr-primary, and
+     deliberately NOT page-detected/adaptive any more (a previous pass had
+     JS read the header/footer's own background and push it live into
+     these as you scrolled -- removed: it made the rubber-band glow and
+     safe-area strips read as a different colour depending on the page,
+     which is the opposite of "consistent"). One flat, neutral, colourless
+     value, fixed, identical at the top and bottom, on every page. This is
+     as close to Safari's own native rubber-band canvas as CSS safely
+     allows -- there's nothing actually behind the root canvas for a real
+     backdrop-filter blur to blur, so a true frosted/translucent look isn't
+     achievable there; the safe-area strips below (body::before/::after)
+     DO sit over real scrolled content, so those get an actual
+     backdrop-filter blur on top of this same neutral tint. */
+  --mdr-edge-top: #f4f4f2;
+  --mdr-edge-bottom: #f4f4f2;
+  --mdr-edge-color: #f4f4f2;
   /* The one standard body-text grey site-wide -- same value the product
      grid's own card titles/prices already use (further down this file).
-     Everything that's plain copy (not an intentional accent -- MDR red,
-     the blue price/total colour, the orange Size Chart trigger) reads
-     this instead of a page-by-page black. */
+     Everything that's plain copy (not an intentional accent -- MDR
+     primary, the blue price/total colour, the orange Size Chart trigger)
+     reads this instead of a page-by-page black. */
   --mdr-text-gray: rgba(0, 0, 0, 0.5);
-  /* The single colour actually painted on html/body -- the real canvas
-     Safari's rubber-band overscroll reveals at BOTH edges is one flat
-     background-color, not two independently-coloured ends, so top/bottom
-     can't be split there the way they can on the tiny safe-area strips
-     below. mdr-header-enhance.liquid's scroll listener keeps this in sync
-     with whichever edge (top or bottom) you're actually near, switching it
-     as you approach either end -- defaults to the bottom colour since nothing
-     has scrolled yet on load. */
-  --mdr-edge-color: #8B0000;
 }
 
 html {
@@ -96,9 +103,9 @@ html {
      Safari versions did, so an exactly-sized env(safe-area-inset-*) patch
      alone (still kept below, body::before/::after) isn't sufficient on
      its own -- the base canvas itself needs to already be the right
-     colour. --mdr-edge-color (not -top/-bottom): this is the ONE value
-     Safari's rubber-band reveals at whichever edge you're overscrolling,
-     kept live by the scroll listener rather than fixed at page-load. */
+     colour. --mdr-edge-color: one flat, colourless, neutral value --
+     the whole point is that this is NOT detected or switched per page/
+     scroll position any more (:root above). */
   background-color: var(--mdr-edge-color);
   /* Tells Safari to treat the whole page as a dark surface -- this (not
      theme-color alone) is what actually governs the rubber-band overscroll
@@ -190,7 +197,7 @@ footer {
      -- footer text was readable but sitting on cream, not black, there).
      A solid background-color directly on <footer> itself doesn't depend
      on that layering at all, so it can't go wrong the same way. */
-  background-color: #8B0000;
+  background-color: var(--mdr-primary);
 }
 
 .footer-content .list-unstyled {
@@ -907,15 +914,12 @@ main[data-template='collection'] [id$='__product_list_fa6P9H'] .section-resource
 }
 
 body {
-  /* Detected edge colour now (--mdr-edge-bottom, :root above), not a
-     flat hardcoded red -- matches html above. Real page content still
-     reads as cream because <main> itself carries an explicit cream
-     background (main:not([data-template='index']) further down), so this
-     is now only ever visible in genuine gaps: the safe-area strips, the
-     rubber-band overscroll, and any short-page trailing space -- exactly
-     where it should read as a continuation of whatever's actually at the
-     bottom of THIS page (the red footer, today), not the page's own
-     cream. */
+  /* --mdr-edge-color (:root above), a flat colourless neutral -- matches
+     html above. Real page content still reads as cream because <main>
+     itself carries an explicit cream background (main:not([data-template=
+     'index']) further down), so this is only ever visible in genuine
+     gaps: the safe-area strips, the rubber-band overscroll, and any
+     short-page trailing space. */
   background-color: var(--mdr-edge-color) !important;
   background-image: none !important;
 }
@@ -1001,18 +1005,18 @@ main:not([data-template='index']) {
    had internal card-to-card hairlines but no outer edge, reading as
    incomplete/missing lines right where the section starts and ends. ---- */
 .product-recommendations {
-  border-top: 1px solid rgba(139, 0, 0, 0.14) !important;
+  border-top: 1px solid rgba(var(--mdr-primary-rgb), 0.14) !important;
 }
 
 .product-recommendations .resource-list,
 .product-recommendations .resource-list--grid {
   column-gap: 2px !important;
   row-gap: 2px !important;
-  background: rgba(139, 0, 0, 0.14) !important;
+  background: rgba(var(--mdr-primary-rgb), 0.14) !important;
 }
 
 .product-recommendations .resource-list--grid {
-  border-bottom: 1px solid rgba(139, 0, 0, 0.14) !important;
+  border-bottom: 1px solid rgba(var(--mdr-primary-rgb), 0.14) !important;
 }
 
 .product-recommendations .resource-list__item {
@@ -1066,7 +1070,7 @@ main:not([data-template='index']) {
 }
 
 /* Divider between line items -- same hairline colour/opacity as the
-   product grid's own lines (rgba(139, 0, 0, 0.14)), full viewport width
+   product grid's own lines (rgba(var(--mdr-primary-rgb), 0.14)), full viewport width
    like the grid's lines too, not just this row's own (page-margin-inset)
    width -- the classic 100vw + negative-margin full-bleed trick, since
    .cart-items__table-row { border: 0 !important } above (and this row's
@@ -1079,7 +1083,7 @@ main:not([data-template='index']) {
   bottom: 0;
   width: 100vw;
   margin-left: -50vw;
-  border-bottom: 1px solid rgba(139, 0, 0, 0.14);
+  border-bottom: 1px solid rgba(var(--mdr-primary-rgb), 0.14);
   pointer-events: none;
 }
 
@@ -1100,7 +1104,7 @@ main:not([data-template='index']) {
   flex-wrap: nowrap !important;
   align-items: stretch !important;
   gap: 0 !important;
-  border: 1px solid rgba(139, 0, 0, 0.3) !important;
+  border: 1px solid rgba(var(--mdr-primary-rgb), 0.3) !important;
   /* anchor for the quantity/limit error message below -- position:
      relative, not a layout change, so this doesn't disturb the row's own
      sizing */
@@ -1131,7 +1135,7 @@ main:not([data-template='index']) {
   margin-bottom: 8px;
   box-sizing: border-box !important;
   padding: 6px 8px !important;
-  border: 1px solid rgba(139, 0, 0, 0.3) !important;
+  border: 1px solid rgba(var(--mdr-primary-rgb), 0.3) !important;
   background: #f6f3e7;
   color: #000000 !important;
   font-size: 0.62rem !important;
@@ -1454,7 +1458,7 @@ button.link,
   width: max-content;
   height: 22px;
   background: #f6f3e7;
-  border: 1px solid rgba(139, 0, 0, 0.3);
+  border: 1px solid rgba(var(--mdr-primary-rgb), 0.3);
   pointer-events: auto;
 }
 
@@ -1555,7 +1559,7 @@ button.link,
   margin: 0;
   padding: 5px 7px;
   background: #f6f3e7;
-  border: 1px solid rgba(139, 0, 0, 0.3);
+  border: 1px solid rgba(var(--mdr-primary-rgb), 0.3);
   font-family: var(--font-accent--family, inherit);
   font-size: 0.6rem;
   letter-spacing: 0.04em;
@@ -1595,7 +1599,7 @@ html:has(main[data-template='index']),
 body:has(main[data-template='index']) {
   height: 100%;
   overflow: hidden;
-  background-color: #8B0000 !important;
+  background-color: var(--mdr-primary) !important;
 }
 
 /* .page-wrapper (base.css), not html/body, is the ACTUAL scroll container
@@ -1756,12 +1760,12 @@ body:has(main[data-template='index']) .page-wrapper {
      .mdr-scrolled lands on <html> (see mdr-header-enhance.liquid) --
      at that point something's actually scrolling underneath for the
      blur to show, which is the point of the effect in the first place. */
-  --mdr-glass-tint: #8B0000;
+  --mdr-glass-tint: var(--mdr-primary);
   --mdr-glass-blur: none;
 }
 
 html.mdr-scrolled {
-  --mdr-glass-tint: rgba(139, 0, 0, 0.88);
+  --mdr-glass-tint: rgba(var(--mdr-primary-rgb), 0.88);
   --mdr-glass-blur: blur(20px) saturate(160%);
 }
 
@@ -1806,21 +1810,27 @@ body::before {
   left: 0;
   right: 0;
   height: env(safe-area-inset-top, 0px);
-  /* detected top-edge colour (--mdr-edge-top, :root above), not a flat
-     hardcoded red -- whatever's actually rendered at the top of THIS
-     page (the header, normally). */
+  /* --mdr-edge-top (:root above) -- flat, colourless neutral, fixed, the
+     same on every page. A translucent/blurred fill was tried here once
+     already (see the header's own .mdr-glass-tint further down for the
+     full story) and rejected: ANY translucency here is still a different
+     pixel value than whatever's actually behind it, so it never truly
+     "disappears" the way a flat, exact colour match does -- doubly true
+     now that this is deliberately colourless rather than colour-matched
+     to anything. Safari's own native "Liquid Glass" chrome already
+     supplies the translucent/blurred look at the OS level; this strip's
+     only job is to stay neutral so it doesn't fight that with a red or
+     cream tint of its own. */
   background: var(--mdr-edge-top);
   z-index: 2147483001;
   pointer-events: none;
 }
 
 /* Same fix, bottom edge: the home-indicator strip on notch-style iPhones.
-   The footer's own background is solid dark red (sections/footer-group.json
-   + the footer { background-color: #8B0000 } backstop further up this
-   file), but that's still only what's painted UNDER the page content --
-   same story as the top strip above, Safari reads the safe area itself
+   Same story as the top strip above -- Safari reads the safe area itself
    from what's actually painted there, not from page content that merely
-   happens to reach nearby. */
+   happens to reach nearby, so this stays its own fixed, colourless layer
+   too rather than trying to match the footer's own colour underneath. */
 body::after {
   content: '';
   position: fixed;
@@ -1828,9 +1838,8 @@ body::after {
   left: 0;
   right: 0;
   height: env(safe-area-inset-bottom, 0px);
-  /* detected bottom-edge colour (--mdr-edge-bottom, :root above), not a
-     flat hardcoded red -- whatever's actually rendered at the bottom of
-     THIS page (the footer, normally). */
+  /* --mdr-edge-bottom (:root above) -- flat, colourless neutral, fixed,
+     the same on every page. */
   background: var(--mdr-edge-bottom);
   z-index: 2147483001;
   pointer-events: none;
@@ -1843,7 +1852,7 @@ body::after {
 /* one long box around the whole size row */
 .variant-option--buttons {
   position: relative !important;
-  border: 1px solid rgba(139, 0, 0, 0.3) !important;
+  border: 1px solid rgba(var(--mdr-primary-rgb), 0.3) !important;
   padding: 0 !important;
   margin-top: 16px !important;
   display: flex !important;
@@ -1867,7 +1876,7 @@ body::after {
 .variant-option--buttons .variant-option__button-label {
   flex: 1 1 0 !important;
   border: 0 !important;
-  border-left: 1px solid rgba(139, 0, 0, 0.16) !important;
+  border-left: 1px solid rgba(var(--mdr-primary-rgb), 0.16) !important;
   padding: 4px 4px !important;
   min-height: 24px !important;
   align-items: center !important;
@@ -2382,7 +2391,7 @@ main[data-template='collection']
      already sits flush at the true left edge (see .mdr-allbar-wrap), so a
      leading vertical stroke there just cut the row in two instead of
      reading as one open, unbroken strip top to end. */
-  border-top: 1px solid rgba(139, 0, 0, 0.14);
+  border-top: 1px solid rgba(var(--mdr-primary-rgb), 0.14);
 }
 
 .mdr-allbar__toggle {
@@ -2406,7 +2415,7 @@ main[data-template='collection']
   /* dark red -- the opacity below (0.5 idle / 1 open) already gives this
      a "faded" look while closed without needing a separate faded colour
      value. */
-  color: #8B0000;
+  color: var(--mdr-primary);
   font: inherit;
   /* WEBRACK / RETURN, same ~10% bump over .mdr-allbar's own (now smaller)
      0.66rem, so it's still harder to miss / mistap next to the logo */
@@ -2451,7 +2460,7 @@ main[data-template='collection']
      chevron chip, not between the label and the chevron -- so the label
      and its chevron read as one unit before the list starts */
   margin-inline-end: 8px;
-  border-inline-end: 1px solid rgba(139, 0, 0, 0.16);
+  border-inline-end: 1px solid rgba(var(--mdr-primary-rgb), 0.16);
   letter-spacing: 0.04em;
 }
 
@@ -2532,7 +2541,7 @@ main[data-template='collection']
 .mdr-allbar__list a {
   display: inline-flex;
   align-items: center;
-  color: #8B0000;
+  color: var(--mdr-primary);
   text-decoration: none;
   opacity: 0.72;
   white-space: nowrap;
@@ -2696,8 +2705,8 @@ main[data-template='collection'] [id$='__product_list_fa6P9H'] .resource-list__i
 }
 
 main[data-template='collection'] [id$='__product_list_fa6P9H'] .resource-list--grid {
-  background: rgba(139, 0, 0, 0.14) !important;
-  border-bottom: 1px solid rgba(139, 0, 0, 0.14) !important;
+  background: rgba(var(--mdr-primary-rgb), 0.14) !important;
+  border-bottom: 1px solid rgba(var(--mdr-primary-rgb), 0.14) !important;
 }
 
 /* card = a plain column, a touch of breathing room below the price so it
@@ -2789,7 +2798,7 @@ main[data-template='collection'] [id$='__product_list_fa6P9H'] .card-gallery::af
   color: rgba(0, 0, 0, 0.55);
   background: transparent;
   padding: 2px 7px;
-  border: 1px solid rgba(139, 0, 0, 0.3);
+  border: 1px solid rgba(var(--mdr-primary-rgb), 0.3);
   pointer-events: none;
 }
 
