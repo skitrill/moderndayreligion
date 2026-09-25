@@ -1010,6 +1010,13 @@ main:not([data-template='index']) {
   border: 1px solid rgba(var(--mdr-primary-rgb), 0.14) !important;
   box-sizing: border-box !important;
   padding: 12px !important;
+  /* the existing mobile sizing rule (max-width:91%, further down this
+     file) wasn't actually being respected here -- repeated directly so
+     the frame hugs the photo's own visual width instead of running the
+     full edge-to-edge column (where a 1px border at the very viewport
+     edge reads as invisible, disconnected from the image). */
+  max-width: 91% !important;
+  margin-inline: auto !important;
 }
 
 /* No glow on the product-page hero -- the 20% halo was tracing a faint box
