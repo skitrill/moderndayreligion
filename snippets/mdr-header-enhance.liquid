@@ -1267,21 +1267,30 @@
     window.__mdrEdgeColor = true;
     var D = document;
 
-    function realBackground(el) {
-      while (el && el !== D.documentElement) {
-        var c = getComputedStyle(el).backgroundColor;
-        if (c && c !== 'transparent' && c !== 'rgba(0, 0, 0, 0)') return c;
-        el = el.parentElement;
-      }
-      return null;
+    /* An element's OWN painted background only -- deliberately does not
+       walk up to parents. #header-group is genuinely transparent (no fill
+       of its own at all, by design); walking up from it used to land on
+       body/.page-wrapper's background-color, which is itself driven BY
+       this same detection (see html/.page-wrapper/body rules,
+       mdr-custom.css) -- a circular "real" answer that was always red,
+       so cream never got a chance to be detected at all. <main> carries
+       its own explicit, non-circular background (main:not([data-template=
+       'index']) in mdr-custom.css, cream on every real content page) --
+       that's the correct fallback for a transparent header/footer, not
+       body. */
+    function ownBackground(el) {
+      if (!el) return null;
+      var c = getComputedStyle(el).backgroundColor;
+      return c && c !== 'transparent' && c !== 'rgba(0, 0, 0, 0)' ? c : null;
     }
 
     function edgeColors() {
       var header = D.querySelector('#header-group');
       var footer = D.querySelector('footer');
-      var bodyBg = realBackground(D.body) || '#8B0000';
-      var top = (header && realBackground(header)) || bodyBg;
-      var bottom = (footer && realBackground(footer)) || bodyBg;
+      var main = D.querySelector('main');
+      var contentBg = ownBackground(main) || '#8B0000';
+      var top = ownBackground(header) || contentBg;
+      var bottom = ownBackground(footer) || contentBg;
       return { top: top, bottom: bottom };
     }
 
