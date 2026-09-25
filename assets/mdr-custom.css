@@ -722,16 +722,15 @@ main .product-information__grid rte-formatter :is(p, li) {
    min-width ALWAYS wins over max-width when they conflict, by CSS
    definition, regardless of specificity/!important/source order, so
    nothing could shrink it below 100% until that min-width itself was
-   neutralised. */
+   neutralised (width: fit-content on this wrapper PLUS a percentage
+   max-width on its child was tried next -- collapsed to almost nothing,
+   a circular sizing dependency: the wrapper shrinks to the child's size,
+   the child's percentage is measured against the wrapper's size. A plain
+   percentage max-width directly on the wrapper, now that min-width isn't
+   fighting it, is the actually-correct fix -- no separate child rule
+   needed, it just fills its now-correctly-sized parent normally). */
 .product-information__grid .product-information__media {
   min-width: 0 !important;
-  width: fit-content !important;
-  max-width: 100% !important;
-  margin-inline: auto !important;
-}
-
-.product-information__grid .product-media-container,
-.product-information__grid [class*='media-gallery'] {
   max-width: 70% !important;
   margin-inline: auto !important;
 }
