@@ -205,13 +205,17 @@ html {
 /* Desktop: smaller wordmark, and the header collapses to one row instead
    of two -- WEBRACK/RETURN (.mdr-allbar-wrap, a full-width strip normally
    stacked BELOW the header on its own row) is pulled up to sit inline
-   with the logo instead. Was 21px, reading as an oversized banner
-   spanning most of the header's width. */
+   with the logo instead. The logo is an <img> (blocks/_header-logo.liquid,
+   mdr-logo.svg), not text -- font-size on it does nothing; its real size
+   comes from .mdr-logo-image's own height (38.4px on desktop already,
+   but beaten by that same rule's base 57.6px !important, since a plain
+   value inside its own nested @media can't out-rank !important from the
+   unconditional rule above it -- so it was rendering at the mobile size
+   on every breakpoint). #header-component adds the specificity needed to
+   reliably win over that !important regardless of stylesheet load order. */
 @media screen and (min-width: 750px) {
-  #header-component .header-logo,
-  #header-component .header-logo span,
-  #header-component [data-testid='header-logo'] {
-    font-size: 13px;
+  #header-component .mdr-logo-image {
+    height: 20px !important;
   }
 
   /* .mdr-allbar-wrap (WEBRACK/RETURN) and .header are both direct
