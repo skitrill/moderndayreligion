@@ -330,6 +330,16 @@ html {
   main[data-template='product'] .product-information.section--page-width > * {
     grid-column: 1 / -1 !important;
   }
+
+  /* Same inner-gutter bug once more, on the cart's own outer section --
+     .cart-page's grid-column: 2/3 (below) is what deliberately confines
+     it to the middle track of this base-theme 3-column mechanism; only
+     THAT property is overridden here (to span every track instead), not
+     .cart-page's OWN grid-template-columns/column-gap for its info |
+     summary split, which stays exactly as it was. */
+  main[data-template='cart'] .cart-page {
+    grid-column: 1 / -1 !important;
+  }
 }
 
 
