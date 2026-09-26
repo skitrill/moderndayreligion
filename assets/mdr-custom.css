@@ -837,10 +837,28 @@ main[data-template='cart'] ~ footer {
    Width also trimmed (column-balance pass): relative to the now-narrower
    190px info column, 90px (the PDP's own width, tuned for a much wider
    purchase row) read as the strongest, most dominant shape in the row.
-   Height/tap-comfort above is untouched -- width only. */
+   Height/tap-comfort above is untouched -- width only.
+
+   The custom properties alone (--minimum-touch-target/
+   --quantity-selector-width) don't actually move anything: the PDP pass
+   further down this file (.quantity-selector :is(.quantity-minus,
+   .quantity-plus) and input[type='number']) hardcodes literal 29px/32px
+   widths that never read those variables, so setting them here was a
+   silent no-op (confirmed live -- computed width stayed ~92px). Overriding
+   the same literal properties, scoped to the cart, is what actually
+   narrows it. 24px buttons + 24px input + 2px border = ~74px, down from
+   ~92px, without touching the shared PDP sizing at all. */
 .cart-items__quantity .quantity-selector {
   --minimum-touch-target: 24px !important;
   --quantity-selector-width: 76px !important;
+}
+
+.cart-items__quantity .quantity-selector :is(.quantity-minus, .quantity-plus) {
+  width: 24px !important;
+}
+
+.cart-items__quantity .quantity-selector input[type='number'] {
+  width: 24px !important;
 }
 
 /* NOTE: the real row padding/margin/divider live in ONE place further
