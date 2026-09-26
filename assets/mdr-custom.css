@@ -2216,10 +2216,20 @@ button.link,
   position: relative;
 }
 
-/* the slim rectangular drop-down box */
+/* the slim rectangular drop-down box -- anchored to MAILING's own RIGHT
+   edge (not left), extending leftward/inward. Mailing is now always the
+   rightmost item in the forced-one-line footer nav row (WEBRACK/LOOKBOOK/
+   THE MODERN TIMES/ACCOUNT/MAILING, centered as a group -- see .mdr-fnav
+   above), so a left-anchored max-content box opening RIGHTWARD from it
+   was running well past the viewport's right edge on real phone widths
+   (confirmed live: 447px right edge inside a 375px viewport). Anchoring
+   from the right instead keeps the whole box inside the row/viewport
+   regardless of where Mailing itself lands. The landing variant is
+   unaffected -- .mdr-fnav--landing .mdr-fnav__drop overrides this to
+   position: static further down, which ignores left/right entirely. */
 .mdr-fnav__drop {
   position: absolute;
-  left: 0;
+  right: 0;
   top: calc(100% + 5px);
   z-index: 20;
   display: flex;
