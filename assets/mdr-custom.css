@@ -198,6 +198,18 @@ footer {
      A solid background-color directly on <footer> itself doesn't depend
      on that layering at all, so it can't go wrong the same way. */
   background-color: var(--mdr-primary);
+  /* the same subtle diagonal hazard-tape pattern the product grid cards
+     use (--mdr-tape, defined further down this file) -- background-image
+     layers on top of the solid colour above, doesn't replace it. */
+  background-image: var(--mdr-tape);
+}
+
+/* Header: same hazard-tape pattern, layered on top of its own background
+   colour (background_color_top, sections/header-group.json -- a JSON
+   section setting, so it can only ever be a flat colour; the pattern
+   itself has to be added here instead). */
+#header-group {
+  background-image: var(--mdr-tape);
 }
 
 .footer-content .list-unstyled {
