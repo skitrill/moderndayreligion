@@ -51,40 +51,75 @@ product-price *,
 }
 
 /* ---- Global: shrink the whole page a touch ---------------------------------- */
+/* ==========================================================================
+   MDR DESIGN TOKENS -- the one shared source for colour, spacing and
+   component sizing. Product grid, PDP, cart, landing page and footer all
+   read these instead of redeclaring their own values; changing site-wide
+   colour/spacing/sizing happens here, not by hunting through every rule
+   that uses it.
+   ========================================================================== */
 :root {
-  /* ---- Color experiment: the site's one primary UI colour, everywhere it's
-     actually brand/UI paint (header/footer fill, grid + divider lines,
-     borders, WEBRACK/RETURN accents, buttons) -- NOT product photography,
-     NOT the unrelated blue price colour, NOT the semantic --color-error
-     token (theme-styles-variables.liquid) that happens to share the old
-     hex by coincidence. Swap this one value (plus -rgb, used for every
-     faded/translucent variant via rgba(var(--mdr-primary-rgb), alpha)) to
-     flip the whole site's primary colour without hunting through the
-     file -- was dark red, now a deep blue experiment. */
+  /* ---- Colour ------------------------------------------------------------
+     --mdr-primary is the ONE experimental brand colour -- header/footer
+     fill, WEBRACK/RETURN accents, primary buttons. Every derived
+     line/border below reads it via --mdr-primary-rgb + an opacity, so
+     swapping the hex here re-tunes every hairline/border on the site in
+     one place, never a second hardcoded colour. NOT product photography,
+     NOT the unrelated blue price colour (--mdr-price-blue), NOT the
+     semantic --color-error token (theme-styles-variables.liquid) that
+     happens to share the old red hex by coincidence. */
   --mdr-primary: #040061;
   --mdr-primary-rgb: 4, 0, 97;
-  /* ---- Overscroll/safe-area: deliberately NOT tied to --mdr-primary, and
-     deliberately NOT page-detected/adaptive any more (a previous pass had
-     JS read the header/footer's own background and push it live into
-     these as you scrolled -- removed: it made the rubber-band glow and
-     safe-area strips read as a different colour depending on the page,
-     which is the opposite of "consistent"). One flat, neutral, colourless
-     value, fixed, identical at the top and bottom, on every page. This is
-     as close to Safari's own native rubber-band canvas as CSS safely
-     allows -- there's nothing actually behind the root canvas for a real
-     backdrop-filter blur to blur, so a true frosted/translucent look isn't
-     achievable there; the safe-area strips below (body::before/::after)
-     DO sit over real scrolled content, so those get an actual
-     backdrop-filter blur on top of this same neutral tint. */
-  --mdr-edge-top: #f4f4f2;
-  --mdr-edge-bottom: #f4f4f2;
-  --mdr-edge-color: #f4f4f2;
-  /* The one standard body-text grey site-wide -- same value the product
-     grid's own card titles/prices already use (further down this file).
-     Everything that's plain copy (not an intentional accent -- MDR
-     primary, the blue price/total colour, the orange Size Chart trigger)
-     reads this instead of a page-by-page black. */
+  --mdr-price-blue: #3a3ec4;
+
+  /* off-white product field -- the site's other half, everywhere content
+     (not brand chrome) sits. */
+  --mdr-off-white: #f6f3e7;
+
+  /* body copy grey -- the ONE grey every template's normal text reads,
+     same value the product-grid card titles introduced it with.
+     -light is for already-subdued copy (footer copyright, timestamps)
+     that should read one notch quieter still, not a third ad-hoc grey. */
   --mdr-text-gray: rgba(0, 0, 0, 0.5);
+  --mdr-text-gray-light: rgba(0, 0, 0, 0.35);
+
+  /* structural hairlines -- grid lines, NEW badge borders, cart dividers,
+     selector borders. One derived value + two opacity steps (a slightly
+     stronger one for borders that need to read a bit more present, e.g.
+     selected states) instead of each site picking its own alpha. */
+  --mdr-border: rgba(var(--mdr-primary-rgb), 0.14);
+  --mdr-border-strong: rgba(var(--mdr-primary-rgb), 0.3);
+
+  /* ---- Overscroll/safe-area -- deliberately flat and static, NOT tied to
+     scroll position or page content (a previous adaptive-colour JS pass
+     was removed for exactly this reason: it made the rubber-band glow and
+     safe-area strips read as a different colour per page). Off-white, not
+     --mdr-primary: most of the page IS the off-white field, and blue
+     bleeding into the overscroll area was the specific artifact flagged
+     as unwanted. No blur/gradient/translucency anywhere in this -- Safari
+     doesn't reliably blend a translucent fill into its own native chrome
+     (confirmed earlier), so a flat exact match is the only version that
+     actually disappears. */
+  --mdr-edge-top: var(--mdr-off-white);
+  --mdr-edge-bottom: var(--mdr-off-white);
+  --mdr-edge-color: var(--mdr-off-white);
+
+  /* ---- Structural sizing -- header/footer height and page/control
+     rhythm, read by the header, footer and section spacing rules below
+     instead of each one picking its own padding. */
+  --mdr-header-h: 91px;
+  --mdr-footer-pad-y: 4px;
+  --mdr-page-px: 16px;
+  --mdr-control-h: 30px;
+  --mdr-section-gap: clamp(16px, 4vw, 28px);
+  --mdr-grid-line: 1px;
+
+  /* ---- Mobile type scale -- everything site-wide (nav, grid title/price,
+     PDP title/price, body copy, cart, labels, buttons, footer) reads one
+     of these three steps rather than an arbitrary one-off size. */
+  --mdr-fs-xs: 0.56rem;
+  --mdr-fs-sm: 0.62rem;
+  --mdr-fs-md: 0.72rem;
 }
 
 html {
@@ -197,19 +232,12 @@ footer {
      -- footer text was readable but sitting on cream, not black, there).
      A solid background-color directly on <footer> itself doesn't depend
      on that layering at all, so it can't go wrong the same way. */
+  /* REMOVED: the hazard-tape pattern (--mdr-tape, still used on product
+     grid cards further down) was briefly layered on top of this as a
+     background-image -- flagged in the next audit pass as an unwanted
+     "striped/gradient artifact" once actually seen live. Footer is a
+     clean solid fill only, no pattern. */
   background-color: var(--mdr-primary);
-  /* the same subtle diagonal hazard-tape pattern the product grid cards
-     use (--mdr-tape, defined further down this file) -- background-image
-     layers on top of the solid colour above, doesn't replace it. */
-  background-image: var(--mdr-tape);
-}
-
-/* Header: same hazard-tape pattern, layered on top of its own background
-   colour (background_color_top, sections/header-group.json -- a JSON
-   section setting, so it can only ever be a flat colour; the pattern
-   itself has to be added here instead). */
-#header-group {
-  background-image: var(--mdr-tape);
 }
 
 .footer-content .list-unstyled {
@@ -465,6 +493,10 @@ product-price *,
 .cart-page__summary {
   box-shadow: none !important;
   background: transparent !important;
+  /* last cart item -> DISCOUNT: one consistent section gap (--mdr-
+     section-gap), not the base theme's own --padding-xl (main-cart.liquid),
+     which reads as excessive dead air on a long cart. */
+  padding-top: var(--mdr-section-gap) !important;
 }
 
 @media screen and (max-width: 749px) {
@@ -804,6 +836,16 @@ main .product-information__grid rte-formatter :is(p, li) {
   object-fit: contain !important;
 }
 
+/* Bigger thumbnail, every row identical -- base theme's own column width
+   is clamp(2.5rem, 15cqi, 7.5rem) (cart-products.liquid), which reads as
+   genuinely tiny (~40px) on a narrow phone-width cart. Raising the floor
+   is enough: every row still shares the exact same media column (this
+   only changes ITS size, not any row individually), so the "identical
+   bounding box" requirement holds regardless of garment artwork. */
+.cart-items {
+  --cart-item-media-width-min: 4.5rem !important;
+}
+
 /* ==========================================================================
    Batch: remove product-page rules, shrink long buttons, tighten page frame
    ========================================================================== */
@@ -1033,21 +1075,20 @@ main:not([data-template='index']) {
   filter: drop-shadow(0 0 11px rgba(122, 84, 52, 0.1)) !important;
 }
 
-/* Square frame around the product photo -- same hairline colour/thickness
-   as the product grid's own divider lines (1px, rgba(var(--mdr-primary-
-   rgb), 0.14)), sharp corners (no border-radius). Padding keeps the
-   border off the image's own edge rather than touching it directly.
-   Sizing itself (max-width/margin) is NOT set here -- .product-information__
-   grid .product-information__media (mobile) and its desktop counterpart
-   (both further down this file) are more specific (two classes) and would
-   win over a single-class rule here regardless of !important/source order,
-   so the actual width lives in those two rules, not this one. */
+/* REMOVED: a bordered square frame briefly sat around the PDP photo here.
+   Flagged in the next audit pass as inconsistent with the product grid,
+   which presents images with no border at all -- one system, matching
+   the grid (the stronger, baseline component): the PDP image now floats
+   on the off-white field with no outline, same as every card. Sizing
+   itself (max-width/margin) is NOT set here -- .product-information__grid
+   .product-information__media (further down this file) is more specific
+   (two classes) and would win over a single-class rule here regardless of
+   !important/source order, so the actual width lives in that rule, not
+   this one. */
 .product-information__media {
-  border: 1px solid rgba(var(--mdr-primary-rgb), 0.14) !important;
   box-sizing: border-box !important;
-  padding: 12px !important;
   /* small breathing room between the header/RETURN-WEBRACK bar and the
-     frame's own top edge -- was flush (0 gap) against it. */
+     image's own top edge -- was flush (0 gap) against it. */
   margin-top: 14px !important;
 }
 
@@ -1827,43 +1868,30 @@ body:has(main[data-template='index']) .page-wrapper {
    black grid. A higher, shared tint opacity dampens that swing so both
    read as the same dark glass regardless of what's scrolling under them.
    Blur is a hair lighter on mobile -- it read heavier there than intended. */
+/* REMOVED: the header used to switch to a translucent, blurred fill
+   (rgba(--mdr-primary-rgb, 0.88) + backdrop-filter: blur(20px)) once
+   .mdr-scrolled landed on <html>, on the theory that it'd read as one
+   continuous "glass" surface with the WEBRACK bar below it. In practice
+   this is the actual source of the blue/glass haze flagged across the
+   audit screenshots, and a header that changes appearance on scroll
+   directly contradicts "header must be identical on every page/state" --
+   so it's gone. --mdr-glass-tint/--mdr-glass-blur now resolve to one flat
+   value always; html.mdr-scrolled (still toggled by JS elsewhere, used
+   for other things) no longer touches either. */
 :root {
-  /* Flat, opaque, exactly <meta name="theme-color"> (meta-tags.liquid) --
-     the default/at-rest state. Any translucency here (even the 0.88 this
-     used to be, rgb(30,29,28) once blended with the page) is still a
-     DIFFERENT pixel value than the status bar's own flat black, so it
-     never actually disappears into it -- only a flat, unblurred, exact
-     colour match can. Swaps to the translucent blurred glass look once
-     .mdr-scrolled lands on <html> (see mdr-header-enhance.liquid) --
-     at that point something's actually scrolling underneath for the
-     blur to show, which is the point of the effect in the first place. */
   --mdr-glass-tint: var(--mdr-primary);
   --mdr-glass-blur: none;
-}
-
-html.mdr-scrolled {
-  --mdr-glass-tint: rgba(var(--mdr-primary-rgb), 0.88);
-  --mdr-glass-blur: blur(20px) saturate(160%);
-}
-
-@media screen and (max-width: 749px) {
-  html.mdr-scrolled {
-    --mdr-glass-blur: blur(14px) saturate(160%);
-  }
 }
 
 /* .header__underlay-closed is the real paint layer behind the top row's
    own content (see sections/header.liquid, [data-header-rows='single']
    .header__underlay-closed { background: var(--color-background-top-row) }
-   -- overriding it here instead of the theme setting keeps the blur/
-   translucency, which a plain background-color setting can't express).
-   The logo is already forced white (see blocks/_header-logo.liquid), so
-   it stays bright against this. */
+   -- overridden here so it reads the same token as --mdr-primary/the
+   footer, instead of a separate theme-setting colour). The logo is
+   already forced white (see blocks/_header-logo.liquid), so it stays
+   bright against this. */
 [data-header-rows='single'] .header__underlay-closed {
   background: var(--mdr-glass-tint) !important;
-  backdrop-filter: var(--mdr-glass-blur);
-  -webkit-backdrop-filter: var(--mdr-glass-blur);
-  transition: background-color 0.18s ease;
 }
 
 /* ---- Safe-area (notch/status-bar strip) fill -------------------------
@@ -2357,17 +2385,12 @@ main[data-template='collection']
      bottom padding either -- the button's own bottom edge now sits flush
      against the page below it */
   padding: 3px 0 0 0;
-  /* same --mdr-glass-tint/--mdr-glass-blur as the header bar above it (see
-     that rule's own comment) -- one shared recipe, so the two read as one
-     continuous glass surface instead of two separately-tuned ones, flat
-     black by default and switching to blurred glass together once
-     .mdr-scrolled lands. The WEBRACK button itself stays solid
-     page-off-white (see .mdr-allbar below) so it reads as a cutout
-     blending into the page, the one exception to this glass treatment. */
+  /* same --mdr-glass-tint token as the header bar above it -- one flat
+     value always now (the scroll-triggered blur both used to switch to
+     together has been removed, see that rule's own comment). The WEBRACK
+     button itself stays solid page-off-white (see .mdr-allbar below) so
+     it reads as a cutout blending into the page. */
   background: var(--mdr-glass-tint);
-  backdrop-filter: var(--mdr-glass-blur);
-  -webkit-backdrop-filter: var(--mdr-glass-blur);
-  transition: background-color 0.18s ease;
 }
 
 .mdr-allbar {
