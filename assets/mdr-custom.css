@@ -139,12 +139,15 @@ product-price *,
   /* ---- Overscroll canvas -- one flat value per PAGE, read by html/body/
      .page-wrapper for the rubber-band bounce region (beyond real content,
      header already scrolled away by the time this is visible) and as the
-     base under any genuine short-page gap. Off-white by default, the
-     homepage/lockscreen override further down this file switches it to
-     --mdr-primary for just that template. Deliberately flat/colourless --
-     no real content sits directly behind html itself for backdrop-filter
-     to blur, so a flat exact match is what actually disappears here. */
-  --mdr-edge-color: var(--mdr-off-white);
+     base under any genuine short-page gap. White (not the warm paper
+     --mdr-off-white) so it bleeds cleanly into the device edge itself --
+     the deepest layer, behind the glass/paper the actual page shows, not
+     tinted to match content sitting on top of it. The homepage/lockscreen
+     override further down this file switches it to --mdr-primary for
+     just that template. Deliberately flat/colourless -- no real content
+     sits directly behind html itself for backdrop-filter to blur, so a
+     flat exact match is what actually disappears here. */
+  --mdr-edge-color: #ffffff;
 
   /* ---- Safe-area strips (body::before/::after) -- a DIFFERENT case from
      --mdr-edge-color above: these sit permanently over the header/footer
