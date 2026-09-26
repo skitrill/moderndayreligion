@@ -762,17 +762,21 @@ main[data-template='cart'] ~ footer {
   order: 5 !important;
 }
 
-/* ---- Product-page copy: standardized to --mdr-text-gray (top of file),
-   the same grey the WEBRACK grid's own card titles/prices use -- this
-   used to be forced full black (#000000, a prior explicit ask to match
-   the cart's intensity); now flipped back the other way, matching the
-   grid instead, per a later request to standardize on ONE grey body-text
-   colour site-wide. The blue price/total colour and the swatch controls
-   below keep their own colour -- only plain copy reads this. -------- */
+/* Colour/size selector text (BLACK/CLEAR/BEIGE/... and XS/S/M/L) --
+   was full black, visually the strongest thing on the page. Faded to the
+   same muted grey as the product copy above so the selectors read as
+   technical/subordinate to the product itself, not competing with it.
+   Still readable (0.5 opacity black, same value used everywhere else on
+   the site as the "standard" body grey, not an accessibility-failing
+   faint one). Applies whether a variant is selected or not -- selection
+   is communicated by the filled-cell background/border below, not by
+   darkening the text. */
 .variant-picker .variant-option[data-testid='variant-option-single'],
 .variant-picker .variant-option[data-testid='variant-option-single'] .variant-option__swatch-value,
-.variant-picker .variant-option__swatch-value {
-  color: #000000 !important;
+.variant-picker .variant-option__swatch-value,
+.variant-picker .variant-option__button-label,
+.variant-picker .variant-option__button-label:has(:checked) {
+  color: var(--mdr-text-gray, rgba(0, 0, 0, 0.5)) !important;
 }
 
 /* Color/size labels were the theme's default font-size (~0.7rem) --
@@ -782,6 +786,15 @@ main[data-template='cart'] ~ footer {
 .variant-picker .variant-option__button-label,
 .variant-picker .variant-option__button-label * {
   font-size: var(--mdr-fs-xs, 0.56rem) !important;
+}
+
+/* Selected state: communicated by a filled cell (thin primary-colour
+   border + a faint primary-tinted background), not by the text itself
+   getting darker/heavier -- text colour above is deliberately identical
+   selected or not. */
+.variant-picker .variant-option__button-label:has(:checked) {
+  border-color: var(--mdr-primary, #040061) !important;
+  background-color: rgba(var(--mdr-primary-rgb, 4, 0, 97), 0.1) !important;
 }
 
 main .product-information__grid :is(h1, h2, h3, h4, h5, h6, p, li, legend,
@@ -1408,6 +1421,32 @@ main:not([data-template='index']) {
   display: inline-flex !important;
   align-items: center !important;
   justify-content: center !important;
+}
+
+/* BUY NOW -- replaces the Shop Pay wallet button (blocks/accelerated-
+   checkout.liquid): a real, independently-coloured control instead of
+   Shop Pay's own non-restylable purple brand button. Deep blue, not
+   purple -- ADD TO CART stays black (its own existing style, untouched),
+   giving CHECKOUT the other half of a deliberate two-action black/blue
+   hierarchy. Fills the accelerated-checkout-block container exactly
+   (that container is already height/width-matched to the row above). */
+.mdr-buy-now {
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  width: 100% !important;
+  height: 100% !important;
+  background: var(--mdr-primary, #040061) !important;
+  color: #ffffff !important;
+  border: 0 !important;
+  font-family: inherit;
+  cursor: pointer;
+}
+
+.mdr-buy-now:disabled {
+  background: #4a4a4a !important;
+  color: rgba(255, 255, 255, 0.7) !important;
+  cursor: default;
 }
 
 /* Sold out: Shopify hides the whole Buy-with-Shop column outright
@@ -2071,19 +2110,30 @@ body::after {
   }
 }
 
-/* size-chart panel -> all text mango-yellow.
+/* size-chart panel -> the site's own primary blue, not mango-yellow --
+   orange belongs to product graphics/content, not interface chrome.
    The product-copy rule that greys this column is (0,3,2) specific and
    !important, so we out-specify it with padded :not()s. */
 .size-chart,
 .size-chart *,
 main .product-information__grid .size-chart:not(._):not(._):not(._),
 main .product-information__grid .size-chart:not(._):not(._):not(._) * {
-  color: #fdb92e !important;
+  color: var(--mdr-primary, #040061) !important;
 }
 
 .size-chart__content th,
 .size-chart__content td {
-  border-color: rgb(253 185 46 / 0.28) !important;
+  border-color: var(--mdr-border-strong, rgba(4, 0, 97, 0.3)) !important;
+}
+
+/* SIZE CHART trigger row -- was a large CTA-style row; matched down to
+   the same size/weight/density as the product title/body copy above it
+   instead. Label stays left, the +/- indicator stays right (theme
+   default layout, untouched). */
+.size-chart__trigger,
+.size-chart__trigger-text {
+  font-size: var(--mdr-fs-xs, 0.56rem) !important;
+  font-weight: 400 !important;
 }
 
 /* ==========================================================================
@@ -2198,10 +2248,10 @@ main .product-information__grid.product-information__grid
   color: #3a3ec4 !important;
 }
 
-/* ...size chart still mango yellow */
+/* ...size chart -> the site's own primary blue, not mango yellow */
 main .product-information__grid.product-information__grid .size-chart,
 main .product-information__grid.product-information__grid .size-chart * {
-  color: #fdb92e !important;
+  color: var(--mdr-primary, #040061) !important;
 }
 
 /* ...product title -> matches the homepage product-card title's own grey

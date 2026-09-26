@@ -1,11 +1,23 @@
 
 
 {%- doc -%}
-  This block is used to display the accelerated checkout button.
-  Intended for product-form.liquid block.
+  This block used to render Shopify's own dynamic checkout button
+  ({{ form_obj | payment_button }}) -- which renders the Shop Pay wallet
+  button (purple, Shopify-branded, not restylable: Shop Pay's own brand
+  guidelines require its button to keep that look) whenever Shop Pay is
+  available as a payment method, falling back to a plain "Buy it now"
+  button only when it isn't.
+
+  Replaced with a real, independently-styleable "BUY NOW" control instead
+  of trying to reskin the Shop Pay pill: it adds the current variant/
+  quantity to the cart via Shopify's own cart API (the same request the
+  ADD TO CART button makes) and then sends the browser straight to
+  Shopify's own /checkout -- genuinely the same destination and checkout
+  system the accelerated button would have used, just without adopting
+  Shop Pay's own branded button chrome along the way.
 
   @param {string} can_add_to_cart - Whether the product can be added to the cart
-  @param form_obj - The form object
+  @param form_obj - The form object (unused now, kept for call-site compatibility)
 
   @example
   {% content_for 'block', type: 'accelerated-checkout', id: 'accelerated-checkout', can_add_to_cart: can_add_to_cart, form_obj: form %}
@@ -18,13 +30,7 @@
   endif
 %}
 
-{% capture accelerated_checkout_button %}
-  {% if product != blank and form_obj != blank %}
-    {{ form_obj | payment_button }}
-  {% endif %}
-{% endcapture %}
-
-{% if accelerated_checkout_button != blank %}
+{% if product != blank %}
   <div
     class="accelerated-checkout-block"
     ref="acceleratedCheckoutButtonContainer"
@@ -36,11 +42,72 @@
       hidden
     {% endunless %}
   >
-    {{ accelerated_checkout_button }}
+    <button
+      type="button"
+      class="button mdr-buy-now"
+      ref="mdrBuyNowButton"
+      data-testid="mdr-buy-now"
+      {% unless can_add_to_cart %}
+        disabled
+      {% endunless %}
+    >
+      Buy Now
+    </button>
   </div>
 {% endif %}
 
 {% render 'buy-buttons-styles' %}
+
+<script>
+  (function () {
+    if (window.__mdrBuyNow) return;
+    window.__mdrBuyNow = true;
+    var D = document;
+
+    function handler(e) {
+      var btn = e.target.closest('[ref="mdrBuyNowButton"]');
+      if (!btn || btn.disabled) return;
+      var form = btn.closest('form, product-form-component');
+      if (!form) return;
+      var variantInput = form.querySelector('[ref="variantId"]');
+      var qtyInput = form.querySelector('[ref="quantityInput"]');
+      var variantId = variantInput ? variantInput.value : null;
+      var quantity = qtyInput && qtyInput.value ? parseInt(qtyInput.value, 10) : 1;
+      if (!variantId) return;
+
+      var originalText = btn.textContent;
+      btn.disabled = true;
+      btn.textContent = 'Adding...';
+
+      fetch(window.Shopify && Shopify.routes && Shopify.routes.root
+          ? Shopify.routes.root + 'cart/add.js'
+          : '/cart/add.js', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
+        body: JSON.stringify({ items: [{ id: variantId, quantity: quantity }] })
+      })
+        .then(function (res) {
+          return res.json().then(function (data) {
+            if (!res.ok) throw data;
+            return data;
+          });
+        })
+        .then(function () {
+          window.location.href = (window.Shopify && Shopify.routes && Shopify.routes.root
+            ? Shopify.routes.root
+            : '/') + 'checkout';
+        })
+        .catch(function (err) {
+          btn.disabled = false;
+          btn.textContent = originalText;
+          var message = (err && (err.description || err.message)) || 'Something went wrong -- please try again.';
+          window.alert(message);
+        });
+    }
+
+    D.addEventListener('click', handler);
+  })();
+</script>
 
 {% schema %}
 {
