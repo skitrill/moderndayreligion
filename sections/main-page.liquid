@@ -6,6 +6,9 @@
   endif
 %}
 
+{%- if page.handle == 'the-modern-times' -%}
+  {%- render 'mdr-modern-times-content' -%}
+{%- else -%}
 <div
   class="section-background{% if section.settings.background_color != blank %} color-custom-{{ section.id }}{% endif %}"
 ></div>
@@ -26,6 +29,7 @@
     {% content_for 'blocks' %}
   </div>
 </div>
+{%- endif -%}
 
 {% schema %}
 {

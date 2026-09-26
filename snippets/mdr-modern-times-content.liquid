@@ -1,0 +1,200 @@
+{%- doc -%}
+  THE MODERN TIMES -- manifesto content, rendered directly by
+  sections/main-page.liquid when page.handle == 'the-modern-times'.
+
+  This is hardcoded rather than theme-editor blocks (like mdr-lookbook /
+  mdr-modern-times sections elsewhere in this theme) because the Page
+  resource's own "Theme template" hasn't been assigned to the matching
+  custom template (sections/mdr-modern-times.liquid + templates/page.the-
+  modern-times.json, both still in the theme, unused, ready to switch to
+  the moment that's set in Online Store > Pages > Theme template) -- that
+  step needs an actual admin login this session doesn't have. Rendering
+  straight from main-page.liquid means the content shows up on the page's
+  CURRENT (default) template with no admin step required.
+{%- enddoc -%}
+
+<div class="mdr-mtimes">
+  <header class="mdr-mtimes__intro">
+    <p class="mdr-mtimes__eyebrow">MODARE</p>
+    <h1 class="mdr-mtimes__heading">The Modern Times</h1>
+    <p class="mdr-mtimes__tagline">Progression, culture &amp; the world we live in.</p>
+  </header>
+
+  <div class="mdr-mtimes__rule" aria-hidden="true"></div>
+
+  <div class="mdr-mtimes__stream">
+    <div class="mdr-mtimes__text">
+      <p>The Modern Times is an ongoing record of MODARE — documenting the clothes, ideas, people and environments that shape our world.</p>
+      <p>MODARE exists within movement.</p>
+    </div>
+
+    <div class="mdr-mtimes__text">
+      <p>Rooted in streetwear, skateboarding, retro sport and the everyday cultures that continue to evolve around us, the project is built around one belief:</p>
+    </div>
+
+    <p class="mdr-mtimes__quote">Progression is ritual.</p>
+
+    <div class="mdr-mtimes__text">
+      <p>Progress is rarely one perfect movement forward.</p>
+      <p>Sometimes we advance. Sometimes we return. Then we move again.</p>
+    </div>
+
+    <p class="mdr-mtimes__quote">Forward. Reverse. Forward.</p>
+
+    <div class="mdr-mtimes__text">
+      <p>The repetition is the ritual.</p>
+    </div>
+
+    <div class="mdr-mtimes__text">
+      <p>This philosophy lives throughout MODARE — from the construction of our symbols to the way we approach clothing, culture and the world around us. The past remains present. Old uniforms become references. Sporting history becomes streetwear. Technical garments leave their original environments. Skateboarding turns repetition, failure and persistence into progression.</p>
+      <p>Nothing remains completely still.</p>
+    </div>
+
+    <div class="mdr-mtimes__text">
+      <p>MODERN DAY RELIGION is our language for that commitment.</p>
+    </div>
+
+    <div class="mdr-mtimes__text">
+      <p>Not religion in the literal sense, but the rituals, beliefs, habits and objects that people build their modern lives around. The things we return to every day. The things we practice until they become part of who we are.</p>
+      <p>Clothing can become part of that ritual.</p>
+      <p>So can skating.</p>
+      <p>Music. Sport. Art. Movement. Community. Creation.</p>
+      <p>These are pieces of modern culture — different practices existing within the same time.</p>
+      <p>MODARE observes them, participates in them and translates them into what we make.</p>
+    </div>
+
+    <div class="mdr-mtimes__text">
+      <p>The Modern Times is where that story continues.</p>
+    </div>
+
+    <div class="mdr-mtimes__text">
+      <p>With every collection, season and moment, this space will document another chapter: the references behind our garments, the environments surrounding them, the people wearing them, and our interpretation of the constantly changing modern world.</p>
+    </div>
+
+    <div class="mdr-mtimes__text">
+      <p>Some entries will explain.</p>
+      <p>Some will document.</p>
+      <p>Some will simply exist as evidence of the time.</p>
+      <p>Because MODARE was never intended to remain one thing.</p>
+    </div>
+
+    <p class="mdr-mtimes__quote">Adapt. Evolve. Continue.</p>
+    <p class="mdr-mtimes__quote">Progression is ritual.</p>
+
+    <div class="mdr-mtimes__signature">
+      <span>MODARE&reg;</span>
+      <span>MODERN DAY RELIGION</span>
+      <span>PROGRESSIVE CULTURE</span>
+    </div>
+  </div>
+</div>
+
+<style>
+  .mdr-mtimes {
+    background: var(--mdr-off-white, #f6f3e7);
+    padding-block: clamp(28px, 6vw, 64px) clamp(40px, 8vw, 88px);
+  }
+
+  .mdr-mtimes__intro {
+    max-width: 620px;
+    margin-inline: auto;
+    padding-inline: 20px;
+    text-align: center;
+  }
+
+  .mdr-mtimes__eyebrow {
+    margin: 0 0 6px;
+    font-size: var(--mdr-fs-sm, 0.62rem);
+    font-weight: 400;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--mdr-primary, #040061);
+    opacity: 0.72;
+  }
+
+  .mdr-mtimes__heading {
+    margin: 0 0 10px;
+    font-size: clamp(1.5rem, 6vw, 2.4rem);
+    font-weight: 400;
+    line-height: 1.05;
+    letter-spacing: 0.01em;
+    text-transform: uppercase;
+    color: var(--mdr-primary, #040061);
+  }
+
+  .mdr-mtimes__tagline {
+    margin: 0;
+    font-size: var(--mdr-fs-md, 0.72rem);
+    font-weight: 400;
+    letter-spacing: 0.03em;
+    text-transform: uppercase;
+    color: var(--mdr-text-gray, rgba(0, 0, 0, 0.5));
+  }
+
+  .mdr-mtimes__rule {
+    width: min(120px, 30vw);
+    height: 1px;
+    margin: clamp(20px, 4vw, 32px) auto;
+    background: var(--mdr-border-strong, rgba(4, 0, 97, 0.3));
+  }
+
+  .mdr-mtimes__stream {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: clamp(20px, 4vw, 32px);
+  }
+
+  .mdr-mtimes__text {
+    max-width: 560px;
+    width: 100%;
+    padding-inline: 20px;
+    text-align: center;
+  }
+
+  .mdr-mtimes__text p {
+    margin: 0;
+    font-size: var(--mdr-fs-md, 0.72rem);
+    line-height: 1.55;
+    letter-spacing: 0.01em;
+    color: var(--mdr-text-gray, rgba(0, 0, 0, 0.5));
+  }
+
+  .mdr-mtimes__text p + p {
+    margin-top: 10px;
+  }
+
+  .mdr-mtimes__quote {
+    max-width: 720px;
+    width: 100%;
+    margin: 0;
+    padding-inline: 20px;
+    text-align: center;
+    font-size: clamp(1.1rem, 4.2vw, 1.7rem);
+    font-weight: 400;
+    line-height: 1.2;
+    letter-spacing: 0.01em;
+    text-transform: uppercase;
+    color: var(--mdr-primary, #040061);
+  }
+
+  .mdr-mtimes__signature {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+    padding-block-start: 8px;
+  }
+
+  .mdr-mtimes__signature span {
+    font-size: var(--mdr-fs-sm, 0.62rem);
+    font-weight: 400;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--mdr-text-gray, rgba(0, 0, 0, 0.5));
+  }
+
+  .mdr-mtimes__signature span:first-child {
+    color: var(--mdr-primary, #040061);
+  }
+</style>
