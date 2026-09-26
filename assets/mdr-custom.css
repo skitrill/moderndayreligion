@@ -2493,7 +2493,11 @@ cart-drawer .button:not(.button-secondary, .button-unstyled) *,
   color: var(--button-color) !important;
 }
 
-/* ...but prices stay blue */
+/* ...but prices stay graphite, matching the PDP (not blue -- see the
+   consolidated price-colour rule near the top of this file; this block
+   is the actual one winning on the cart page, since it's more specific
+   and comes later in source order, so it has to carry the same colour
+   rather than the two silently disagreeing). */
 .cart-page .cart-items__price,
 .cart-page .cart-items__price *,
 .cart-page product-price,
@@ -2505,7 +2509,7 @@ cart-drawer .button:not(.button-secondary, .button-unstyled) *,
 .cart-totals [class*='price'],
 .cart-drawer [class*='price'],
 cart-drawer [class*='price'] {
-  color: #3a3ec4 !important;
+  color: rgba(0, 0, 0, 0.65) !important;
 }
 
 /* the cart-page count badge stays blue */
