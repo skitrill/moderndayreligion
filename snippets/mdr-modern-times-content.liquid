@@ -102,31 +102,37 @@
     text-align: center;
   }
 
+  /* Sizing/alignment below matches the store's own policy pages
+     (/policies/privacy-policy etc, a Shopify-native template) exactly:
+     title 0.875rem centered, section headings 0.75rem left-aligned, body
+     copy 0.625rem left-aligned -- same scale, same alignment, so this
+     page reads as the same "content" component as the rest of the site
+     rather than its own oversized editorial layout. */
   .mdr-mtimes__eyebrow {
-    margin: 0 0 6px;
-    font-size: var(--mdr-fs-sm, 0.62rem);
+    margin: 0 0 4px;
+    font-size: 0.625rem;
     font-weight: 400;
-    letter-spacing: 0.08em;
+    letter-spacing: 0.04em;
     text-transform: uppercase;
     color: var(--mdr-primary, #040061);
     opacity: 0.72;
   }
 
   .mdr-mtimes__heading {
-    margin: 0 0 10px;
-    font-size: clamp(1.5rem, 6vw, 2.4rem);
+    margin: 0 0 6px;
+    font-size: 0.875rem;
     font-weight: 400;
-    line-height: 1.05;
-    letter-spacing: 0.01em;
+    line-height: 1.2;
+    letter-spacing: normal;
     text-transform: uppercase;
     color: var(--mdr-primary, #040061);
   }
 
   .mdr-mtimes__tagline {
     margin: 0;
-    font-size: var(--mdr-fs-md, 0.72rem);
+    font-size: 0.625rem;
     font-weight: 400;
-    letter-spacing: 0.03em;
+    letter-spacing: 0.02em;
     text-transform: uppercase;
     color: var(--mdr-text-gray, rgba(0, 0, 0, 0.5));
   }
@@ -134,46 +140,46 @@
   .mdr-mtimes__rule {
     width: min(120px, 30vw);
     height: 1px;
-    margin: clamp(20px, 4vw, 32px) auto;
+    margin: 20px auto;
     background: var(--mdr-border-strong, rgba(4, 0, 97, 0.3));
   }
 
   .mdr-mtimes__stream {
     display: flex;
     flex-direction: column;
-    align-items: center;
-    gap: clamp(20px, 4vw, 32px);
+    align-items: stretch;
+    gap: 18px;
+    max-width: 560px;
+    margin-inline: auto;
   }
 
   .mdr-mtimes__text {
-    max-width: 560px;
     width: 100%;
     padding-inline: 20px;
-    text-align: center;
+    text-align: left;
   }
 
   .mdr-mtimes__text p {
     margin: 0;
-    font-size: var(--mdr-fs-md, 0.72rem);
-    line-height: 1.55;
+    font-size: 0.625rem;
+    line-height: 1.45;
     letter-spacing: 0.01em;
     color: var(--mdr-text-gray, rgba(0, 0, 0, 0.5));
   }
 
   .mdr-mtimes__text p + p {
-    margin-top: 10px;
+    margin-top: 8px;
   }
 
   .mdr-mtimes__quote {
-    max-width: 720px;
     width: 100%;
     margin: 0;
     padding-inline: 20px;
-    text-align: center;
-    font-size: clamp(1.1rem, 4.2vw, 1.7rem);
+    text-align: left;
+    font-size: 0.75rem;
     font-weight: 400;
-    line-height: 1.2;
-    letter-spacing: 0.01em;
+    line-height: 1.3;
+    letter-spacing: normal;
     text-transform: uppercase;
     color: var(--mdr-primary, #040061);
   }
@@ -181,15 +187,16 @@
   .mdr-mtimes__signature {
     display: flex;
     flex-direction: column;
-    align-items: center;
-    gap: 4px;
-    padding-block-start: 8px;
+    align-items: flex-start;
+    gap: 3px;
+    padding-inline: 20px;
+    padding-block-start: 4px;
   }
 
   .mdr-mtimes__signature span {
-    font-size: var(--mdr-fs-sm, 0.62rem);
+    font-size: 0.625rem;
     font-weight: 400;
-    letter-spacing: 0.1em;
+    letter-spacing: 0.04em;
     text-transform: uppercase;
     color: var(--mdr-text-gray, rgba(0, 0, 0, 0.5));
   }
