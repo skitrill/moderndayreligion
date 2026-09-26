@@ -29,25 +29,33 @@
 }
 
 /* ...except anywhere the demo font's glyph-watermarking breaks the actual
-   text. Confirmed so far: $ (prices), the digit 4 (breaks any two/three-
-   digit number containing one -- sizes, measurements, quantities...), and
-   ( ) parentheses (the size chart's "44 (XS)" style labels). The [- page]
-   zoom control and [top] scroll button (their own [ ] bracket glyphs) are
-   handled further down this file. All of these go to Futura instead of
-   PGF Qualta, set directly (not through the --font-*--family variables
-   above) so they don't inherit the new typeface no matter which role a
-   given element would otherwise pick up. */
+   text. Confirmed: $ (prices), the digit 4 (breaks any two/three-digit
+   number containing one -- sizes, measurements, quantities...), and ( )
+   parentheses (the size chart's "44 (XS)" style labels) all render as a
+   "DEMO" watermark glyph instead of the real character in this font.
+   PRICE elements (.price/product-price/.cart-totals) were deliberately
+   kept on Futura for exactly this reason -- moved to PGF Qualta below by
+   explicit request despite the confirmed-live DEMO-glyph bug on $ and any
+   4 in a price (e.g. $49.99); this is a known, accepted regression until
+   a licensed (non-demo) copy of the font replaces pgf-qualta-regular.otf,
+   not an oversight. Still-Futura below (.size-chart__content, .quantity-
+   selector): not "price," left as-is. The [- page] zoom control and [top]
+   scroll button (their own [ ] bracket glyphs) are handled further down
+   this file. */
+.size-chart__content,
+.size-chart__content *,
+.quantity-selector,
+.quantity-selector * {
+  font-family: 'Futura', 'Futura PT', 'Century Gothic', sans-serif !important;
+}
+
 .price,
 .price *,
 product-price,
 product-price *,
-.size-chart__content,
-.size-chart__content *,
-.quantity-selector,
-.quantity-selector *,
 .cart-totals,
 .cart-totals * {
-  font-family: 'Futura', 'Futura PT', 'Century Gothic', sans-serif !important;
+  font-family: 'PGF Qualta', 'Anonymous Pro', monospace !important;
 }
 
 /* ---- Global: shrink the whole page a touch ---------------------------------- */
