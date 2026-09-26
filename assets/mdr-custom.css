@@ -93,17 +93,21 @@ product-price *,
   --mdr-text-gray: rgba(0, 0, 0, 0.5);
   --mdr-text-gray-light: rgba(0, 0, 0, 0.35);
 
-  /* structural hairlines -- grid lines, NEW badge borders, cart dividers,
-     selector borders. One derived value + two opacity steps (a slightly
-     stronger one for borders that need to read a bit more present, e.g.
-     selected states) instead of each site picking its own alpha. */
-  --mdr-border: rgba(var(--mdr-primary-rgb), 0.14);
-  --mdr-border-strong: rgba(var(--mdr-primary-rgb), 0.3);
-  /* PDP-specific: the image frame and variant/size selector outlines --
-     considerably fainter than the grid's own dividers (--mdr-border
-     above, still used there), almost disappearing into the off-white
-     field rather than reading as a visible purple/lavender line. */
+  /* structural hairlines -- ONE token for every quiet structural border
+     site-wide: PDP image frame, color/size selectors, product-grid
+     dividers (vertical + horizontal), the NEW badge, cart row dividers.
+     These used to read as three different borders (a 0.14-alpha grid/
+     cart line, a 0.3-alpha NEW-badge/size-box line, and this 0.08-alpha
+     PDP line) that didn't visually agree with each other -- confirmed as
+     a "purple/lavender inconsistency" once actually compared side by
+     side, so everything above now derives from this one value instead.
+     --mdr-border-strong stays separate and deliberately stronger: it's
+     reserved for the purchase bar / quantity-selector's own container
+     border (an actionable control, not a passive structural line) and
+     the size-chart table's internal cell gridlines, which need more
+     contrast to read as a table. Two tiers, not two accidents. */
   --mdr-border-faint: rgba(var(--mdr-primary-rgb), 0.08);
+  --mdr-border-strong: rgba(var(--mdr-primary-rgb), 0.3);
 
   /* ---- Overscroll/safe-area -- one flat value per PAGE (not per scroll
      position, not per header/footer element -- a previous JS pass tried
@@ -495,7 +499,14 @@ footer .footer-utilities__group-copyright {
   --spacing-scale-default: 0.75;
 }
 
-/* ---- Prices in dark brown, everywhere --------------------------------------- */
+/* ---- Prices, everywhere -> the PDP's own graphite, not blue --------------
+   Was a bright #3a3ec4 blue (a stale "dark brown, everywhere" comment even
+   named a THIRD, never-applied colour -- leftover from an earlier design
+   pass). The PDP's own price is deliberately graphite, not blue -- blue is
+   reserved for actual brand/action moments (SIZE CHART, BUY NOW), not
+   ordinary product information -- so every other price on the site
+   (cart line items, unit price, cart totals) now reads the same way
+   instead of standing out as its own inconsistent accent colour. */
 .price,
 .price *,
 .compare-at-price,
@@ -512,20 +523,11 @@ product-price *,
 [class*='total-value'],
 [class*='cart-totals'] [class*='value'],
 [class*='cart-totals'] .price,
-[class*='totals'] [class*='price'] {
-  /* #040061 is near-invisible on black, so a legible sibling of it */
-  color: #3a3ec4 !important;
-}
-
-/* order / estimated total -> the same blue */
-.cart-totals__total-value,
-.cart-totals__total-value *,
-[class*='cart-totals'] [class*='total'] [class*='value'],
-[class*='cart-totals'] [class*='total'] .price,
+[class*='totals'] [class*='price'],
 .cart-drawer__total .price,
 .cart__total .price,
 .totals__total-value {
-  color: #3a3ec4 !important;
+  color: rgba(0, 0, 0, 0.65) !important;
 }
 
 /* ---- Cart page: end at the same right edge as the header (the cart link).
@@ -948,13 +950,19 @@ main .product-information__grid rte-formatter :is(p, li) {
   margin-inline: auto !important;
 }
 
-/* ---- Cart line items: smaller, standardized-grey type ---------------------- */
+/* ---- Cart line items: same information hierarchy as the PDP ---------------
+   Name = PDP product-title style (--mdr-text-gray, 0.6rem, matching
+   .product-details h1 exactly instead of its own slightly smaller size).
+   Variant/property = the same graphite -- the PDP doesn't actually have a
+   separate "faded secondary" tier for this kind of information (its own
+   description and variant-selector copy both read the same --mdr-text-
+   gray as the title; --mdr-text-gray-light is reserved for things a
+   notch quieter still, like the footer copyright), so this already
+   matches rather than needing its own third tone. */
 .cart-items__title {
-  font-size: 0.58rem !important;
+  font-size: 0.6rem !important;
 }
 
-/* title + variant/property copy -> the one standard grey (--mdr-text-gray,
-   top of file) -- unit price/line total keep their own blue, see below. */
 .cart-items__title,
 .cart-items__title a,
 .cart-items__title *,
@@ -965,6 +973,15 @@ main .product-information__grid rte-formatter :is(p, li) {
 .cart-items__property dt,
 .cart-items__property dd {
   color: var(--mdr-text-gray) !important;
+}
+
+/* Price = PDP price style: bold, slightly darker graphite (colour set
+   site-wide further up this file), not the same plain weight as the
+   name/variant above it -- same hierarchy the PDP itself uses between
+   its title and its price. */
+.cart-items__price,
+.cart-items__price * {
+  font-weight: 700 !important;
 }
 
 .cart-items__price,
@@ -1009,6 +1026,13 @@ main .product-information__grid rte-formatter :is(p, li) {
    bounding box" requirement holds regardless of garment artwork. */
 .cart-items__table-row {
   grid-template-columns: clamp(4.5rem, 24cqi, 7.5rem) minmax(0, 1fr) minmax(var(--cart-item-price-width), auto) !important;
+  /* was "start" (base theme default) -- with a media column this much
+     taller than the compact name/variant/price text stack next to it,
+     top-alignment left a visible block of empty space under the text,
+     unbalancing the row. Centering the whole composition against the
+     image reads as one deliberate row instead of text pinned to the
+     top of a much taller box. */
+  align-items: center !important;
 }
 
 /* ==========================================================================
@@ -1283,18 +1307,18 @@ main:not([data-template='index']) {
    had internal card-to-card hairlines but no outer edge, reading as
    incomplete/missing lines right where the section starts and ends. ---- */
 .product-recommendations {
-  border-top: 1px solid rgba(var(--mdr-primary-rgb), 0.14) !important;
+  border-top: 1px solid var(--mdr-border-faint, rgba(4, 0, 97, 0.08)) !important;
 }
 
 .product-recommendations .resource-list,
 .product-recommendations .resource-list--grid {
   column-gap: 2px !important;
   row-gap: 2px !important;
-  background: rgba(var(--mdr-primary-rgb), 0.14) !important;
+  background: var(--mdr-border-faint, rgba(4, 0, 97, 0.08)) !important;
 }
 
 .product-recommendations .resource-list--grid {
-  border-bottom: 1px solid rgba(var(--mdr-primary-rgb), 0.14) !important;
+  border-bottom: 1px solid var(--mdr-border-faint, rgba(4, 0, 97, 0.08)) !important;
 }
 
 .product-recommendations .resource-list__item {
@@ -1348,7 +1372,7 @@ main:not([data-template='index']) {
 }
 
 /* Divider between line items -- same hairline colour/opacity as the
-   product grid's own lines (rgba(var(--mdr-primary-rgb), 0.14)), full viewport width
+   product grid's own lines (--mdr-border-faint), full viewport width
    like the grid's lines too, not just this row's own (page-margin-inset)
    width -- the classic 100vw + negative-margin full-bleed trick, since
    .cart-items__table-row { border: 0 !important } above (and this row's
@@ -1361,7 +1385,7 @@ main:not([data-template='index']) {
   bottom: 0;
   width: 100vw;
   margin-left: -50vw;
-  border-bottom: 1px solid rgba(var(--mdr-primary-rgb), 0.14);
+  border-bottom: 1px solid var(--mdr-border-faint, rgba(4, 0, 97, 0.08));
   pointer-events: none;
 }
 
@@ -2153,14 +2177,33 @@ body::after {
   pointer-events: none;
 }
 
+/* The header itself doesn't know about the safe area at all (viewport-fit=
+   cover on the <meta name="viewport"> tag, needed for the edge-blending
+   above, means content can render UNDER the notch/status bar unless it
+   opts out) -- on load, before any scroll, the logo/CART/account row was
+   rendering flush with the true top of the screen, so the status bar's
+   time/wifi/battery icons sat directly on top of that text (confirmed on
+   device). Only the row's CONTENT is pushed down here, not the header's
+   own box/background -- the header isn't pinned (enable_sticky_header:
+   never, see the comment above body::before) and scrolls away with the
+   page, so body::before above is what actually owns painting that strip;
+   this only needs to stop the header's own text competing with the status
+   bar while it's still on-screen at the top of the page. */
+.header__row--top .header__columns {
+  padding-top: env(safe-area-inset-top, 0px) !important;
+}
+
 /* ==========================================================================
    Sizes joined into one long bordered box + tighter phone gutters
    ========================================================================== */
 
-/* one long box around the whole size row */
+/* one long box around the whole size row -- was a stronger 0.3-alpha
+   border, visibly darker/more purple than the color selector's own
+   fieldset border (--mdr-border-faint) right above it; unified to the
+   same faint token so both rows read as one consistent border system. */
 .variant-option--buttons {
   position: relative !important;
-  border: 1px solid rgba(var(--mdr-primary-rgb), 0.3) !important;
+  border: 1px solid var(--mdr-border-faint, rgba(4, 0, 97, 0.08)) !important;
   padding: 0 !important;
   margin-top: 16px !important;
   display: flex !important;
@@ -2715,7 +2758,7 @@ main[data-template='collection']
      already sits flush at the true left edge (see .mdr-allbar-wrap), so a
      leading vertical stroke there just cut the row in two instead of
      reading as one open, unbroken strip top to end. */
-  border-top: 1px solid rgba(var(--mdr-primary-rgb), 0.14);
+  border-top: 1px solid var(--mdr-border-faint, rgba(4, 0, 97, 0.08));
 }
 
 .mdr-allbar__toggle {
@@ -3029,8 +3072,8 @@ main[data-template='collection'] [id$='__product_list_fa6P9H'] .resource-list__i
 }
 
 main[data-template='collection'] [id$='__product_list_fa6P9H'] .resource-list--grid {
-  background: rgba(var(--mdr-primary-rgb), 0.14) !important;
-  border-bottom: 1px solid rgba(var(--mdr-primary-rgb), 0.14) !important;
+  background: var(--mdr-border-faint, rgba(4, 0, 97, 0.08)) !important;
+  border-bottom: 1px solid var(--mdr-border-faint, rgba(4, 0, 97, 0.08)) !important;
 }
 
 /* card = a plain column, a touch of breathing room below the price so it
@@ -3119,10 +3162,16 @@ main[data-template='collection'] [id$='__product_list_fa6P9H'] .card-gallery::af
   letter-spacing: 0.04em;
   line-height: 1;
   text-transform: uppercase;
-  color: rgba(0, 0, 0, 0.55);
+  font-weight: 400;
+  /* matches the PDP's own secondary/faded graphite tier (description,
+     metadata) -- was a darker 0.55 alpha with a 0.3-alpha border, both
+     stronger than the product name/price right below it, letting NEW
+     compete with the actual product information instead of sitting
+     quietly beside it. */
+  color: var(--mdr-text-gray-light, rgba(0, 0, 0, 0.35));
   background: transparent;
   padding: 2px 7px;
-  border: 1px solid rgba(var(--mdr-primary-rgb), 0.3);
+  border: 1px solid var(--mdr-border-faint, rgba(4, 0, 97, 0.08));
   pointer-events: none;
 }
 
@@ -3164,9 +3213,20 @@ main[data-template='collection'] [id$='__product_list_fa6P9H'] .product-card pro
   line-height: 1.25 !important;
   letter-spacing: 0.02em !important;
   text-align: left !important;
-  /* ash/grey, not near-black */
-  color: rgba(0, 0, 0, 0.5) !important;
+  /* ash/grey, not near-black -- title only; price overrides this
+     immediately below to match the PDP's own price treatment. */
+  color: var(--mdr-text-gray, rgba(0, 0, 0, 0.5)) !important;
   text-transform: uppercase !important;
+}
+
+/* Price specifically -> same graphite hierarchy the PDP price uses
+   (bold, slightly darker than the product name/title above it) instead
+   of sharing the title's plain weight/tone -- the PDP already
+   deliberately differentiates title vs price this way; the grid card
+   was treating both identically, flattening that hierarchy. */
+main[data-template='collection'] [id$='__product_list_fa6P9H'] .product-card product-price .price {
+  font-weight: 700 !important;
+  color: rgba(0, 0, 0, 0.65) !important;
 }
 
 main[data-template='collection'] [id$='__product_list_fa6P9H'] .product-card product-price,
