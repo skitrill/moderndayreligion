@@ -420,8 +420,19 @@ footer {
      grid cards further down) was briefly layered on top of this as a
      background-image -- flagged in the next audit pass as an unwanted
      "striped/gradient artifact" once actually seen live. Footer is a
-     clean solid fill only, no pattern. */
-  background-color: var(--mdr-primary);
+     clean solid fill only, no pattern.
+     Glass experiment: was solid var(--mdr-primary) -- now the same
+     shared glass tokens as the header/WEBRACK (see the :root block,
+     "EXPERIMENT -- frosted liquid-glass"), so all three read as one
+     consistent surface material instead of three separately-tuned
+     translucent panels. border-top (not -bottom, this is the last thing
+     on the page) is the same subtle highlight the header uses on its
+     own bottom edge. */
+  background-color: var(--mdr-glass-tint);
+  backdrop-filter: var(--mdr-glass-blur);
+  -webkit-backdrop-filter: var(--mdr-glass-blur);
+  border-top: 1px solid var(--mdr-glass-border);
+  box-shadow: var(--mdr-glass-shadow);
 }
 
 .footer-content .list-unstyled {
@@ -512,10 +523,13 @@ footer .utilities,
    selector from the shared typography rule above. */
 footer .footer-utilities__group-copyright {
   /* even quieter than the nav/policy links above it -- an explicit dim
-     white rather than --color-foreground-muted, which doesn't reliably
-     resolve to something dim enough against the footer's own dark blue. */
+     value rather than --color-foreground-muted, so it reliably reads
+     dimmer regardless of what that resolves to. Glass experiment: was
+     rgba(255,255,255,0.45) (dim white) for the solid blue; now the same
+     secondary graphite the rest of the site uses for quiet copy
+     (timestamps, footnotes). */
   font-size: 0.44rem !important;
-  color: rgba(255, 255, 255, 0.45) !important;
+  color: var(--mdr-text-gray-light) !important;
 }
 
 /* ---- Product page: details column fills to the cart edge, tight gap ------- */
@@ -2237,30 +2251,77 @@ body:has(main[data-template='index']) .page-wrapper {
    black grid. A higher, shared tint opacity dampens that swing so both
    read as the same dark glass regardless of what's scrolling under them.
    Blur is a hair lighter on mobile -- it read heavier there than intended. */
-/* REMOVED: the header used to switch to a translucent, blurred fill
-   (rgba(--mdr-primary-rgb, 0.88) + backdrop-filter: blur(20px)) once
-   .mdr-scrolled landed on <html>, on the theory that it'd read as one
-   continuous "glass" surface with the WEBRACK bar below it. In practice
-   this is the actual source of the blue/glass haze flagged across the
-   audit screenshots, and a header that changes appearance on scroll
-   directly contradicts "header must be identical on every page/state" --
-   so it's gone. --mdr-glass-tint/--mdr-glass-blur now resolve to one flat
-   value always; html.mdr-scrolled (still toggled by JS elsewhere, used
-   for other things) no longer touches either. */
+/* REMOVED (kept for history): the header used to switch to a translucent,
+   blurred fill once .mdr-scrolled landed on <html>, so it'd read as glass
+   only after scrolling. That was rejected -- it directly contradicted
+   "header must be identical on every page/state," and was the source of
+   a scroll-dependent haze. What follows is a DIFFERENT thing: a
+   permanent, always-on glass surface (never toggled by scroll state),
+   replacing the solid #040061 fill outright rather than switching to it
+   conditionally. html.mdr-scrolled still doesn't touch either token.
+
+   ==========================================================================
+   EXPERIMENT -- frosted liquid-glass header/WEBRACK/footer, replacing the
+   large solid #040061 surfaces. #040061 itself is untouched everywhere
+   else (BUY NOW, SIZE CHART, selected states, --mdr-primary) -- this only
+   changes what these three surfaces paint with.
+
+   TO REVERT: restore the six values in this :root block to the ones in
+   the comment beside each, and the two --color-foreground blocks below
+   (header, footer) back to white/its muted steps. Everything else in this
+   section (backdrop-filter/border/shadow additions) is inert once the
+   tint goes back to a solid colour, safe to leave in place.
+   ========================================================================== */
 :root {
-  --mdr-glass-tint: var(--mdr-primary);
-  --mdr-glass-blur: none;
+  --mdr-glass-tint: rgba(255, 255, 255, 0.55); /* was: var(--mdr-primary) */
+  --mdr-glass-blur: blur(24px) saturate(1.4); /* was: none */
+  --mdr-glass-border: rgba(255, 255, 255, 0.7); /* new */
+  --mdr-glass-shadow: 0 4px 24px rgba(0, 0, 0, 0.06); /* new */
 }
 
 /* .header__underlay-closed is the real paint layer behind the top row's
    own content (see sections/header.liquid, [data-header-rows='single']
    .header__underlay-closed { background: var(--color-background-top-row) }
-   -- overridden here so it reads the same token as --mdr-primary/the
-   footer, instead of a separate theme-setting colour). The logo is
-   already forced white (see blocks/_header-logo.liquid), so it stays
-   bright against this. */
+   -- overridden here so it reads the shared glass tokens instead of a
+   separate theme-setting colour). The logo/CART/USER text is switched
+   from white to graphite below (was: white on solid blue). backdrop-
+   filter is scoped to this one ~68px-tall row, not any document-spanning
+   layer -- safe for scroll performance and doesn't interact with the
+   safe-area strips (body::before/::after, untouched, still flat/solid). */
 [data-header-rows='single'] .header__underlay-closed {
   background: var(--mdr-glass-tint) !important;
+  backdrop-filter: var(--mdr-glass-blur) !important;
+  -webkit-backdrop-filter: var(--mdr-glass-blur) !important;
+  border-bottom: 1px solid var(--mdr-glass-border) !important;
+  box-shadow: var(--mdr-glass-shadow) !important;
+}
+
+/* Fallback for browsers without backdrop-filter support (older Android
+   WebView, some older Safari versions) -- without blur to soften what's
+   behind it, a thin 0.55-alpha wash reads muddy against product photos
+   scrolling underneath, so this raises opacity to read as a deliberate
+   translucent-but-substantial panel instead. */
+@supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+  [data-header-rows='single'] .header__underlay-closed,
+  .mdr-allbar-wrap,
+  .mdr-allbar,
+  footer {
+    background-color: rgba(246, 243, 231, 0.92) !important;
+  }
+}
+
+/* Logo -> near-black graphite (was: brightness(0) invert(1), i.e. solid
+   white, for the solid blue fill this sat on). invert(1) on an already-
+   fully-black image (brightness(0) first) flips it to white; dropping
+   the invert leaves it black, and the opacity softens that to a graphite
+   rather than jet-black, matching the "dark graphite" ask without
+   flattening the wordmark to pure ink. Scoped to the HEADER logo only
+   (.mdr-logo-image, blocks/_header-logo.liquid) -- the homepage hero
+   logo (.mdr-landing__logo img) is a different element, still on its own
+   solid blue screen, out of scope for this experiment. */
+#header-component .mdr-logo-image {
+  filter: brightness(0) !important;
+  opacity: 0.85 !important;
 }
 
 /* ---- Safe-area (notch/status-bar strip) fill -------------------------
@@ -2498,21 +2559,21 @@ main[data-template='collection'] [id$='__product_list_fa6P9H'] .resource-list__i
   --color-foreground-subdued: var(--mdr-text-gray) !important;
 }
 
-/* ---- Footer: now on the same black fill as the header, so its text needs
-   the header's own white-on-black treatment instead of the site's default
-   black-on-cream. footer * (not just footer) is needed because the rule
-   above re-declares these variables directly on every element via the *
-   selector -- setting them only on <footer> wouldn't reach its children,
-   since a directly-set custom property always wins over one inherited
-   from an ancestor. ---------------------------------------------------- */
+/* ---- Footer: glass experiment -- was white-on-solid-blue, now graphite
+   on the light glass fill (same --mdr-text-gray family the rest of the
+   site's body copy uses). footer * (not just footer) is needed because
+   the rule above re-declares these variables directly on every element
+   via the * selector -- setting them only on <footer> wouldn't reach its
+   children, since a directly-set custom property always wins over one
+   inherited from an ancestor. ---------------------------------------- */
 footer,
 footer *,
 footer ::before,
 footer ::after {
-  --color-foreground: #ffffff !important;
-  --color-foreground-rgb: 255 255 255 !important;
-  --color-foreground-muted: rgb(255 255 255 / 0.72) !important;
-  --color-foreground-subdued: rgb(255 255 255 / 0.45) !important;
+  --color-foreground: var(--mdr-text-gray) !important;
+  --color-foreground-rgb: 0 0 0 !important;
+  --color-foreground-muted: var(--mdr-text-gray) !important;
+  --color-foreground-subdued: var(--mdr-text-gray-light) !important;
 }
 
 /* ==========================================================================
@@ -2664,19 +2725,21 @@ cart-drawer [class*='price'] {
   color: #3a3ec4 !important;
 }
 
-/* header cart -> white text, no background. Same horizontal padding as
-   User (below) -- with the column now left-aligned (.header__drawer,
-   blocks/_header-menu.liquid), matching padding-inline is what makes
-   Cart's and User's TEXT start from the exact same x position, not just
-   their (differently-sized) boxes -- a shared left edge is what actually
-   reads as "one unified column" instead of two independently-placed
-   labels. */
+/* header cart/user -> graphite text (glass experiment: was white, for the
+   solid blue this sat on). Same class covers both CART and USER (the
+   account link reuses .header__cart-link -- confirmed live), so one
+   change reaches both. Same horizontal padding as User (below) -- with
+   the column now left-aligned (.header__drawer, blocks/_header-menu.
+   liquid), matching padding-inline is what makes Cart's and User's TEXT
+   start from the exact same x position, not just their (differently-
+   sized) boxes -- a shared left edge is what actually reads as "one
+   unified column" instead of two independently-placed labels. */
 .header__cart-link,
 #header-component .header__cart-link,
 #header-component a[href$='/cart'] {
   display: inline-block !important;
   padding: 4px 8px !important;
-  color: #ffffff !important;
+  color: var(--mdr-text-gray) !important;
   background-color: transparent !important;
   background-image: none !important;
   border: 0 !important;
@@ -2689,13 +2752,13 @@ cart-drawer [class*='price'] {
 
 .header__cart-link *,
 #header-component .header__cart-link * {
-  color: #ffffff !important;
+  color: var(--mdr-text-gray) !important;
 }
 
 .header__cart-link:hover,
 #header-component .header__cart-link:hover {
   background-color: transparent !important;
-  color: #ffffff !important;
+  color: var(--mdr-text-gray) !important;
 }
 
 /* lookbook heading -> follow the red default */
@@ -2798,12 +2861,16 @@ main[data-template='collection']
      bottom padding either -- the button's own bottom edge now sits flush
      against the page below it */
   padding: 3px 0 0 0;
-  /* same --mdr-glass-tint token as the header bar above it -- one flat
-     value always now (the scroll-triggered blur both used to switch to
-     together has been removed, see that rule's own comment). The WEBRACK
-     button itself stays solid page-off-white (see .mdr-allbar below) so
-     it reads as a cutout blending into the page. */
+  /* same shared glass tokens as the header bar above it (glass
+     experiment -- was solid var(--mdr-primary) via the same token, see
+     that rule's own comment; the button's own fill below now matches
+     this instead of staying solid off-white against it). Mobile-only in
+     practice: on desktop .mdr-allbar-wrap is shrunk to max-content (see
+     the header-merge rules near the top of this file) so this background
+     only shows on mobile's full-width strip. */
   background: var(--mdr-glass-tint);
+  backdrop-filter: var(--mdr-glass-blur);
+  -webkit-backdrop-filter: var(--mdr-glass-blur);
 }
 
 .mdr-allbar {
@@ -2869,7 +2936,16 @@ main[data-template='collection']
    it's uniform width at any angle. */
 .mdr-allbar {
   clip-path: polygon(0 0, calc(100% - 18px) 0, 100% 100%, 0 100%);
-  background-color: #f6f3e7;
+  /* glass experiment: was a solid #f6f3e7 cream cutout against the blue
+     header -- WEBRACK/RETURN now belongs to the same glass surface as
+     the header/footer instead of reading as an unrelated cream
+     attachment. clip-path still applies to backdrop-filter the same way
+     it applies to background -- the blur only shows through the cut
+     ribbon shape, not a square behind it. Geometry (the diagonal cut)
+     is untouched. */
+  background-color: var(--mdr-glass-tint);
+  backdrop-filter: var(--mdr-glass-blur);
+  -webkit-backdrop-filter: var(--mdr-glass-blur);
   background-image: none;
 }
 
