@@ -552,7 +552,10 @@ footer .utilities {
   justify-content: center !important;
   align-items: center !important;
   column-gap: 18px !important;
-  row-gap: 5px !important;
+  /* was 5px -- now the vertical rhythm between three DELIBERATE full-width
+     lines (nav / policy / copyright, see below), not incidental wrap gap,
+     so it gets a touch more room to read as three intentional rows. */
+  row-gap: 8px !important;
   /* explicit centered content column, not just an incidental result of
      flex justify-content on an already-full-width row -- keeps the nav +
      policy links from ever reading as a wide, sparse spread on a very
@@ -564,14 +567,61 @@ footer .utilities {
   text-align: center !important;
 }
 
-.mdr-fnav,
+/* Nav row -- forced onto exactly one line, own dedicated row. Was
+   display: contents (the <li>s sat as direct flex items of .utilities
+   itself, wrapping wherever they individually ran out of room -- with 5
+   items now (WEBRACK/LOOKBOOK/THE MODERN TIMES/ACCOUNT/MAILING) that
+   split mid-group, e.g. MAILING stranding itself onto the SAME line as
+   the policy links instead of either its own group). Now .mdr-fnav is a
+   real flex row of its own -- one atomic item within .utilities,
+   flex-basis: 100% guarantees it always claims a full line by itself,
+   flex-wrap: nowrap keeps all 5 items together on that one line instead
+   of ever splitting again, and justify-content: center here (not just on
+   the outer .utilities) is what actually centers ITS OWN children now
+   that it's 100% wide -- the outer row's centering only ever centered
+   nav as a whole block, not the items inside it.
+   gap tightened from the shared 18px down to 8px, nav-only (.mdr-fnav ul
+   stays `display: contents` below, so this gap is read as the "column-
+   gap" between the 5 li's) -- confirmed live as the exact amount five
+   items at this font-size need to just fit one line at 375px without
+   any of them wrapping (5 items' own text totals ~290px inside a 323px
+   content box -- 18px gaps would need ~360px, 8px gaps need ~322px).
+   No overflow-x/scroll fallback here on purpose: .mdr-fnav__mailing's own
+   dropdown (.mdr-fnav__drop, further down this file) is position:
+   absolute against THIS element as its nearest positioned ancestor's
+   sibling context -- giving .mdr-fnav itself an overflow other than
+   visible would clip that dropdown the instant it opens (confirmed
+   against the general rule that overflow-x: auto/hidden forces overflow-y
+   to stop being "visible" too, even when not set explicitly). 8px gaps
+   already fit all 5 items on one line at 375px with a few px to spare;
+   narrower than that, they overflow visibly rather than silently
+   clipping a real feature. */
+.mdr-fnav {
+  display: flex !important;
+  flex-basis: 100% !important;
+  flex-wrap: nowrap !important;
+  justify-content: center !important;
+  align-items: center !important;
+  gap: 8px !important;
+  max-width: 100%;
+}
+
 .mdr-fnav ul {
   display: contents;
 }
 
+/* Policy links -- same "own dedicated full-width line" treatment as nav
+   above, so MAILING (end of the nav row) and PRIVACY POLICY (start of
+   this row) never share a line and compete for the same centered group
+   again. Already display:flex (a real box, not contents) so flex-basis
+   alone is enough; justify-content:center is new -- without it, a 100%-
+   wide flex row defaults its own children to flex-start (left-aligned),
+   which reads off-center the moment this row is wider than its content. */
 .policy-list-inline {
+  flex-basis: 100% !important;
   flex-direction: row !important;
   flex-wrap: wrap !important;
+  justify-content: center !important;
   gap: 20px !important;
 }
 
