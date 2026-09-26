@@ -3069,9 +3069,10 @@ main[data-template='collection']
   margin: 0;
   /* flush at the true left edge now, not lined up under the logo. No
      bottom padding either -- the button's own bottom edge now sits flush
-     against the page below it. Trimmed 3px -> 2px (header-height pass,
-     item 5: tighten dead space, don't shrink the wordmark). */
-  padding: 2px 0 0 0;
+     against the page below it. Trimmed 3px -> 2px -> 1px (minimal-rail
+     pass: "reduce unnecessary vertical padding... a thin navigation rail,
+     not another large section"). */
+  padding: 1px 0 0 0;
   /* No own background/blur any more (navigation-integration pass) --
      #header-group now paints ONE shared glass surface for the header row
      and this row together (see that rule, further up this file), and
@@ -3097,11 +3098,12 @@ main[data-template='collection']
   /* taller ribbon for an easy tap and a taller drag track once open (was
      2px originally); reduced back down ~20% from the first pass (9px),
      which read as more height than actually needed. Trimmed again here
-     (7px -> 6px -> 5px) alongside the smaller type below -- a small,
-     refined touch target, not a full nav element (header-height pass,
-     item 5). No clip-path any more (header/WEBRACK rebuild -- see the
-     comment above .mdr-allbar-wrap::before). */
-  padding: 5px 0;
+     (7px -> 6px -> 5px -> 4px) alongside the smaller type below -- a
+     small, refined touch target, not a full nav element (minimal-rail
+     pass: "a thin navigation rail, not another large section"). No
+     clip-path any more (header/WEBRACK rebuild -- see the comment above
+     .mdr-allbar-wrap::before). */
+  padding: 4px 0;
   border: 0;
   background: transparent;
   color: #000;
@@ -3140,51 +3142,32 @@ main[data-template='collection']
    text. Both are gone outright (not hidden -- the JS that built the SVG
    border and measured/repositioned it on every resize/open/close is
    removed too, not just this CSS): no clip-path, no polygon, no fill, no
-   outline, no box of any kind. The angled character is preserved a
-   different way now -- see .mdr-allbar-wrap::before/::after below, one
-   thin trailing line (the same --mdr-border token the product grid's own
-   dividers use) with a short diagonal termination, not a shape enclosing
-   the label. */
+   outline, no box of any kind. */
 .mdr-allbar {
   background-color: transparent;
   background-image: none;
 }
 
-/* The trailing line + diagonal termination -- "WEBRACK » ________ /".
-   Two pseudo-elements on the WRAP (not the button), reordered after it
-   via flex `order` so they always fill whatever space is left in the row
-   regardless of viewport width -- no JS measurement needed, unlike the
-   SVG this replaces. Hidden outright while WEBRACK/RETURN is open (see
-   below): the expanding category list claims the row instead, and
-   forcing a fixed-width line to coexist with that would fight its own
-   width transition. */
-.mdr-allbar-wrap::before,
-.mdr-allbar-wrap::after {
-  content: '';
-  align-self: center;
-  background: var(--mdr-border);
-}
-
+/* Minimal rail pass: the trailing line used to end in a short diagonal
+   flourish (echoing the old ribbon's own cut) -- simplified to one plain
+   straight hairline now ("exactly the same neutral line colour/weight as
+   the product-grid dividers", not its own decorative detail). One
+   pseudo-element on the WRAP (not the button), reordered after it via
+   flex `order` so it always fills whatever space is left in the row
+   regardless of viewport width -- no JS measurement needed. Hidden
+   outright while WEBRACK/RETURN is open (see below): the expanding
+   category list claims the row instead. */
 .mdr-allbar-wrap::before {
+  content: '';
   order: 2;
+  align-self: center;
   flex: 1 1 auto;
   height: 1px;
   margin-inline-start: 10px;
+  background: var(--mdr-border);
 }
 
-.mdr-allbar-wrap::after {
-  /* short diagonal termination, same weight/colour as the line before it
-     -- echoes the old ribbon's own 18px diagonal cut without enclosing
-     anything. */
-  order: 3;
-  width: 12px;
-  height: 1px;
-  transform: rotate(-34deg);
-  transform-origin: left center;
-}
-
-.mdr-allbar-wrap:has(.mdr-allbar.is-open)::before,
-.mdr-allbar-wrap:has(.mdr-allbar.is-open)::after {
+.mdr-allbar-wrap:has(.mdr-allbar.is-open)::before {
   display: none;
 }
 
@@ -3250,11 +3233,11 @@ main[data-template='collection']
   /* as tall as the WEBRACK cap height */
   font-size: 1.7em;
   line-height: 0.6;
-  /* the one accent touch on WEBRACK/RETURN -- a literal directional mark
-     (the chevron itself), not the label text next to it, which stays
-     ink. "Small functional details," not a colour treatment of the
-     control as a whole. */
-  color: var(--mdr-accent);
+  /* minimal-rail pass: was the accent indigo -- "the lavender/purple
+     chevron accent" this asked to remove. No colour of its own now, just
+     inherits .mdr-allbar__toggle's ink, so the chevron reads as part of
+     the WEBRACK/RETURN mark itself (typography/icon), not a separate
+     coloured detail. */
 }
 
 .mdr-allbar__chev svg {
@@ -3264,17 +3247,15 @@ main[data-template='collection']
   transition: transform var(--animation-speed) var(--animation-easing);
 }
 
+/* minimal-rail pass: was a filled chip (background/padding/border-inline-
+   end) around the open-state chevron -- "remove any box, background
+   fill... or separate container around the chevrons. They should simply
+   sit beside WEBRACK as typography/icons." Just a small gap from the
+   label now, no box, no fill, no divider of its own (the row's own
+   trailing line/border-top already provide the structure). */
 .mdr-allbar.is-open .mdr-allbar__chev:not(.mdr-allbar__chev--back) {
-  background: var(--mdr-selected);
-  color: var(--mdr-ink);
-  padding: 2px 4px;
   margin-inline-start: 2px;
-  /* the divider marking the end of "WEBRACK «" now sits right after the
-     chevron chip, not between the label and the chevron -- so the label
-     and its chevron read as one unit before the list starts */
   margin-inline-end: 8px;
-  border-inline-end: 1px solid var(--mdr-border);
-  letter-spacing: 0.04em;
 }
 
 /* open state -> the same » icon flipped to point back at "WEBRACK", a
@@ -3354,14 +3335,18 @@ main[data-template='collection']
 .mdr-allbar__list a {
   display: inline-flex;
   align-items: center;
-  color: var(--mdr-ink);
+  /* minimal-rail pass: was ink (the same tone as WEBRACK itself) -- category
+     labels read as the site's existing secondary gray typography instead,
+     so WEBRACK stays the slightly-darker anchor and the categories beside
+     it read as one notch quieter, same relationship body copy/selectors
+     already use elsewhere. */
+  color: var(--mdr-graphite);
   text-decoration: none;
   opacity: 0.72;
   white-space: nowrap;
   flex: 0 0 auto;
   padding-inline: 0;
-  transition: opacity 0.15s ease, background-color 0.12s ease, color 0.12s ease,
-    padding-inline 0.12s ease;
+  transition: opacity 0.15s ease, color 0.12s ease;
   /* without this, mobile browsers flash their own default grey/blue tap
      overlay across the whole tappable box -- border included -- on every
      tap. Only the label opacity above should respond to a tap, not the
@@ -3374,23 +3359,19 @@ main[data-template='collection']
   opacity: 1;
 }
 
-/* the selected title -- a solid bg fill, not just a brighter label, same
-   cream-chip treatment as the open chevron (.mdr-allbar__chev) -- so
-   "currently showing" reads as a filled swatch riding along the list
-   instead of one line of text looking slightly less dim than its
-   neighbours */
+/* the selected title -- minimal-rail pass: was a solid cream-chip fill
+   (same treatment the open chevron used to have) -- "active category can
+   be communicated through slightly darker text or a very subtle
+   underline -- do not introduce a large accent colour." Darker ink text
+   (full opacity, same tone as WEBRACK itself) plus a thin underline in
+   the shared structural-line colour, no fill/box/padding change, so nothing
+   here can affect the row's height between states. */
 .mdr-allbar__list a[aria-current='page'] {
   opacity: 1;
-  background-color: #e9e1c4;
-  color: #1a1a1a;
-  padding-inline: 8px;
-  /* stretch already fills the list's own content-box height, but that
-     box sits inside .mdr-allbar's 7px 0 padding -- so without this the
-     fill still stopped short of the bar's actual top/bottom edge. A
-     negative margin matching that padding pulls it out to bleed all the
-     way to the edge, so the highlight reads as a full-height swatch
-     across the whole ribbon, not a strip wrapped tight around the text */
-  margin-block: -7px;
+  color: var(--mdr-ink);
+  text-decoration: underline;
+  text-decoration-color: var(--mdr-border-strong);
+  text-underline-offset: 3px;
 }
 
 /* Invisible drag-catcher covering the WHOLE wrap -- position:absolute takes
