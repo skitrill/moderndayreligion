@@ -105,7 +105,16 @@ product-price *,
      --mdr-border-strong: the purchase-bar/quantity-selector/size-chart-
        table tier that needs more contrast than a passive line.
      --mdr-selected: the selected-cell fill (color/size selectors) --
-       was rgba(0,0,0,0.05).
+       was rgba(0,0,0,0.05), then a warm-gray #d8d7d0 that read as its own
+       beige accent color next to the cooler mineral-neutral palette
+       around it (confirmed live: unselected cells were ALSO sitting on
+       the theme's old raw cream #F6F3E7, not --mdr-paper -- so selected
+       vs unselected was beige-on-cream, two separate off-whites, not one
+       surface with a restrained selected state). Now derived the same
+       way --mdr-muted is: a flat step off --mdr-paper itself (247,247,242
+       -> 236,236,231, ~4.5% darker, same R=G/B-5 proportion as paper and
+       --mdr-border), so it reads as "this site's paper, one notch down"
+       rather than a distinct hue.
      --mdr-accent: the ONE spot of colour on an otherwise neutral site --
        muted indigo, used sparingly (WEBRACK/RETURN directional chevrons,
        size-chart interaction, focus/active indicators, small functional
@@ -117,7 +126,7 @@ product-price *,
   --mdr-muted: #b7b7b1;
   --mdr-border: #dededa;
   --mdr-border-strong: #b3b3ad;
-  --mdr-selected: #d8d7d0;
+  --mdr-selected: #ecece7;
   --mdr-accent: #5558a6;
   --mdr-glass: var(--mdr-glass-tint, rgba(255, 255, 255, 0.55));
 
@@ -160,15 +169,22 @@ product-price *,
   /* ---- Overscroll canvas -- one flat value per PAGE, read by html/body/
      .page-wrapper for the rubber-band bounce region (beyond real content,
      header already scrolled away by the time this is visible) and as the
-     base under any genuine short-page gap. White (not the warm paper
-     --mdr-off-white) so it bleeds cleanly into the device edge itself --
-     the deepest layer, behind the glass/paper the actual page shows, not
-     tinted to match content sitting on top of it. The homepage/lockscreen
+     base under any genuine short-page gap. The homepage/lockscreen
      override further down this file switches it to --mdr-primary for
-     just that template. Deliberately flat/colourless -- no real content
-     sits directly behind html itself for backdrop-filter to blur, so a
-     flat exact match is what actually disappears here. */
-  --mdr-edge-color: #ffffff;
+     just that template.
+     Was a separate pure white, on the theory that this layer never sits
+     behind real content so it should stay a colourless "device edge"
+     tone. Direct reversal: .page-wrapper's own genuine short-page gap
+     (e.g. the breathing room above the footer on a normal-height page,
+     footer's margin-top:auto pushing it down) is NOT overscroll-only --
+     it's a real, often-visible strip sitting directly between the page's
+     own off-white content and the footer, so a separate white read as a
+     visible rectangular seam ("off-white page -> white block -> footer")
+     instead of one continuous surface. Same paper as everything else now;
+     still flat/colourless in the sense that matters (one solid value, no
+     gradient/blur), just no longer a DIFFERENT solid value from the page
+     it's adjacent to. */
+  --mdr-edge-color: var(--mdr-paper);
 
   /* ---- Safe-area strips (body::before/::after) -- a DIFFERENT case from
      --mdr-edge-color above: these sit permanently over the header/footer
@@ -1147,6 +1163,20 @@ main[data-template='cart'] ~ footer {
   border-color: var(--mdr-border-faint, rgba(4, 0, 97, 0.08)) !important;
 }
 
+/* Unselected cell fill -- was unstyled, so it fell through to the
+   theme's own color-palette setting (#F6F3E7, the pre-mineral-neutral
+   warm cream) instead of --mdr-paper (#f7f7f2, the actual current page
+   background). Barely different values sitting edge to edge (an
+   unselected color/size cell directly against the page canvas around
+   it) is exactly the kind of seam this token system exists to prevent --
+   confirmed live via computed styles, not visible to the eye as two
+   colors so much as a very faint "square inside a square" haze. Matched
+   to --mdr-paper exactly so an unselected cell is genuinely invisible
+   against the page except for its own border. */
+.variant-picker .variant-option__button-label {
+  background-color: var(--mdr-paper) !important;
+}
+
 /* Selected state -- neutral MDR system: was a thin deep-blue border +
    faint blue-tinted background (a bright accent colour on an otherwise
    neutral page). Now the same tone/contrast language the rest of the
@@ -1596,6 +1626,21 @@ main:not([data-template='index']) {
   /* small breathing room between the header/RETURN-WEBRACK bar and the
      frame's own top edge -- was flush (0 gap) against it. */
   margin-top: 14px !important;
+}
+
+/* Inner field behind the garment photo -- base theme's slideshow-container
+   (snippets/slideshow-styles.liquid) paints its own background straight
+   from the section's color-palette setting (#F6F3E7, the same pre-
+   mineral-neutral cream the unselected variant cells were also still
+   reading), completely independent of --mdr-paper. That put a second,
+   slightly different off-white INSIDE this frame's border -- a "square
+   inside a square" against the page's own #f7f7f2 canvas around the
+   frame. Scoped to the PDP media area only (not a blanket slideshow-
+   container rule) so any other section using this same base component
+   with an intentionally different color scheme is untouched. Frame
+   border/size/padding above is unrelated and unchanged. */
+.product-information__media slideshow-container {
+  background-color: var(--mdr-paper) !important;
 }
 
 /* No glow on the product-page hero -- the 20% halo was tracing a faint box
