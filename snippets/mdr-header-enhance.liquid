@@ -359,73 +359,6 @@
       var bar = D.createElement('div');
       bar.className = 'mdr-allbar' + (isHome ? '' : ' mdr-allbar--back');
 
-      /* One single line for the whole strip: the menu section's bottom
-         border, the WEBRACK button's own outline (left/top/diagonal-cut),
-         and the rest of the bottom border on the far side of the button --
-         all ONE continuous polyline, not separate elements for "the button
-         border" and "the menu border" meeting at a shared point. Sized to
-         the wrap's real (responsive) width via positionAllbarBorder() below,
-         re-run on resize/load/font-load, instead of a fixed viewBox -- the
-         button's own portion of the path stays a fixed 95px shape, but the
-         line then has to keep extending to whatever the actual right edge
-         is on this viewport. */
-      var borderSvg = D.createElementNS('http://www.w3.org/2000/svg', 'svg');
-      borderSvg.setAttribute('class', 'mdr-allbar__border');
-      borderSvg.setAttribute('preserveAspectRatio', 'none');
-      borderSvg.setAttribute('aria-hidden', 'true');
-      var borderPoly = D.createElementNS('http://www.w3.org/2000/svg', 'polyline');
-      borderPoly.setAttribute('fill', 'none');
-      borderPoly.setAttribute('stroke', 'rgba(0,0,0,0.14)');
-      borderPoly.setAttribute('stroke-width', '1');
-      borderPoly.setAttribute('stroke-linejoin', 'round');
-      /* the grid's own vertical hairlines are a solid CSS background-color
-         fill showing through a 1px gap -- a hard, un-anti-aliased edge. An
-         SVG stroke anti-aliases by default, feathering that same 1px
-         across a soft ~2px band of partial opacity, which reads visibly
-         lighter/thinner side-by-side with the grid even at an identical
-         nominal width. crispEdges removes that feathering so the two
-         match in actual visual weight, not just declared width. */
-      borderPoly.setAttribute('shape-rendering', 'crispEdges');
-      borderSvg.appendChild(borderPoly);
-
-      function positionAllbarBorder() {
-        /* Open, .mdr-allbar.is-open already draws its own plain
-           `border-top` (CSS) -- clip-path: none there too, so there's no
-           diagonal left for this SVG to trace. Leaving it visible on top
-           of that CSS border was drawing a second, slightly offset line
-           along the same edge (plus a stray vertical stroke down the
-           viewport's own right edge, from this polyline's last point).
-           Hide it for that state and let the one CSS border alone speak
-           for it; only the closed button's diagonal cut actually needs
-           the SVG. */
-        if (bar.classList.contains('is-open')) {
-          borderSvg.style.display = 'none';
-          return;
-        }
-        borderSvg.style.display = '';
-        var wr = wrap.getBoundingClientRect();
-        var br = bar.getBoundingClientRect();
-        if (!wr.width || !br.width) return;
-        var W = wr.width, H = wr.height;
-        var x0 = br.left - wr.left;
-        var y0 = br.top - wr.top;
-        var x1 = x0 + br.width;
-        var y1 = y0 + br.height;
-        /* same 18px diagonal run as the button's own clip-path
-           (calc(100% - 18px)) -- capped so a very narrow button never
-           inverts the cut. */
-        var cut = Math.min(18, br.width);
-        borderSvg.setAttribute('viewBox', '0 0 ' + W + ' ' + H);
-        borderPoly.setAttribute(
-          'points',
-          x0 + ',' + y1 + ' ' +
-          x0 + ',' + y0 + ' ' +
-          (x1 - cut) + ',' + y0 + ' ' +
-          x1 + ',' + y1 + ' ' +
-          W + ',' + y1
-        );
-      }
-
       /* WEBRACK: a clean double-chevron, not the raw "»" glyph. RETURN
          gets a single chevron instead -- the two read as distinct icons,
          not the same mark flipped, matching the reference. */
@@ -535,48 +468,9 @@
       bar.appendChild(toggle);
       bar.appendChild(list);
       wrap.appendChild(bar);
-      /* a child of WRAP, not of bar: positionAllbarBorder() below sizes its
-         viewBox/points to the wrap's full width (so the line can continue
-         past the button, all the way to the wrap's own right edge -- see
-         that function's own comment), but `.mdr-allbar__border`'s
-         `position: absolute; inset: 0` resolves against whatever element
-         it's actually parented to. Nested under the narrower 95px `bar`
-         instead, that box -- and every point past its own right edge --
-         gets silently clipped, which is what was making the line stop dead
-         at the button instead of continuing across the rest of the menu
-         strip. */
-      wrap.appendChild(borderSvg);
 
       /* sit it directly below the header, on every page */
       header.parentNode.insertBefore(wrap, header.nextSibling);
-
-      /* Real pixel measurements, so a single requestAnimationFrame right
-         after insertion isn't enough on its own -- the very first layout
-         pass can still land before web fonts swap in (changing the
-         button's own line-height/height) or before other on-load reflows
-         settle. A ResizeObserver on the wrap itself reacts to ANY actual
-         size change -- fonts, zoom toggle, viewport resize, content
-         change -- so the line is correct from the first real paint, no
-         interaction required. */
-      if (window.requestAnimationFrame) {
-        requestAnimationFrame(positionAllbarBorder);
-      } else {
-        positionAllbarBorder();
-      }
-      if (window.ResizeObserver) {
-        /* wrap alone isn't enough: its own width never changes (always
-           100%), only the BAR's does -- 95px closed, full width open, per
-           its own CSS transition. Without watching bar too, the line kept
-           whatever shape it had at the last wrap-triggered recompute (the
-           small closed-button outline) frozen through every open/close,
-           instead of following the bar out to full width and back. */
-        new ResizeObserver(positionAllbarBorder).observe(wrap);
-        new ResizeObserver(positionAllbarBorder).observe(bar);
-      } else {
-        window.addEventListener('resize', positionAllbarBorder, { passive: true });
-      }
-      window.addEventListener('load', positionAllbarBorder);
-      if (D.fonts && D.fonts.ready) D.fonts.ready.then(positionAllbarBorder);
 
       /* line its label up under the logo, at every breakpoint (the header
          centres its own content on desktop, so a fixed gutter won't do) */
@@ -609,11 +503,6 @@
       function setOpen(on) {
         bar.classList.toggle('is-open', on);
         toggle.setAttribute('aria-expanded', on ? 'true' : 'false');
-        /* immediate, not just left to the wrap/bar ResizeObservers below --
-           those only fire once the width transition actually moves, so the
-           SVG would still show its stale (pre-toggle) shape for the first
-           frame or two of every open/close. */
-        positionAllbarBorder();
         if (typeof positionTouchzone === 'function') requestAnimationFrame(positionTouchzone);
       }
       window.__mdrAllbarOpen = function () { setOpen(true); };

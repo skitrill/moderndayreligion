@@ -136,23 +136,34 @@ product-price *,
      now neutral instead of blue-tinted (declared above, with --mdr-border). */
   --mdr-border-faint: var(--mdr-border);
 
-  /* ---- Overscroll/safe-area -- one flat value per PAGE (not per scroll
-     position, not per header/footer element -- a previous JS pass tried
-     both of those and was removed each time for making the edge read as
-     inconsistent or introducing a translucent haze). Off-white by
-     default here, matching most templates (PDP, grid, cart, plain pages)
-     -- the homepage/lockscreen override further down this file switches
-     this to --mdr-primary for just those two templates, so the ROOT
-     canvas always matches whichever surface actually is that page's own
-     background, same principle the blue homepage already demonstrated,
-     generalised to every template instead of hardcoded to one colour.
-     No blur/gradient/translucency anywhere in this -- Safari doesn't
-     reliably blend a translucent fill into its own native chrome
-     (confirmed earlier), so a flat exact match is the only version that
-     actually disappears. */
-  --mdr-edge-top: var(--mdr-off-white);
-  --mdr-edge-bottom: var(--mdr-off-white);
+  /* ---- Overscroll canvas -- one flat value per PAGE, read by html/body/
+     .page-wrapper for the rubber-band bounce region (beyond real content,
+     header already scrolled away by the time this is visible) and as the
+     base under any genuine short-page gap. Off-white by default, the
+     homepage/lockscreen override further down this file switches it to
+     --mdr-primary for just that template. Deliberately flat/colourless --
+     no real content sits directly behind html itself for backdrop-filter
+     to blur, so a flat exact match is what actually disappears here. */
   --mdr-edge-color: var(--mdr-off-white);
+
+  /* ---- Safe-area strips (body::before/::after) -- a DIFFERENT case from
+     --mdr-edge-color above: these sit permanently over the header/footer
+     (fixed, top/bottom of viewport), which DO have real glass surfaces of
+     their own now, so matching THEM means glass here too, not flat. Was
+     flat/colourless like the overscroll canvas above -- confirmed live
+     that this was the actual source of the visible seam between the
+     status bar and the header ("OFF-WHITE STRIP -> GLASS HEADER" instead
+     of one continuous material) once the header itself became translucent
+     glass instead of a solid colour; a flat strip stopped matching what
+     was now underneath it. --mdr-edge-blur is "none" only on the
+     homepage (flat blue landing screen, no header/footer at all there,
+     see body:has(main[data-template='index']) further down) -- everywhere
+     else it's the same blur/saturate the header/footer already use, so
+     the strip is genuinely the SAME material continuing upward/downward,
+     not a second translucent layer trying to approximate it. */
+  --mdr-edge-top: var(--mdr-glass-tint, var(--mdr-off-white));
+  --mdr-edge-bottom: var(--mdr-glass-tint, var(--mdr-off-white));
+  --mdr-edge-blur: var(--mdr-glass-blur, none);
 
   /* ---- Structural sizing -- header/footer height and page/control
      rhythm, read by the header, footer and section spacing rules below
@@ -2135,6 +2146,11 @@ body:has(main[data-template='index']) {
   --mdr-edge-top: var(--mdr-primary);
   --mdr-edge-bottom: var(--mdr-primary);
   --mdr-edge-color: var(--mdr-primary);
+  /* flat, no blur -- #header-group/footer are display:none on this
+     template (see below), so there's no glass surface here for the
+     strips to continue; a flat exact match is correct again, same
+     reasoning as --mdr-edge-color. */
+  --mdr-edge-blur: none;
 }
 
 /* .page-wrapper (base.css), not html/body, is the ACTUAL scroll container
@@ -2325,8 +2341,17 @@ body:has(main[data-template='index']) .page-wrapper {
 :root {
   --mdr-glass-tint: rgba(255, 255, 255, 0.55); /* was: var(--mdr-primary) */
   --mdr-glass-blur: blur(24px) saturate(1.4); /* was: none */
-  --mdr-glass-border: rgba(255, 255, 255, 0.7); /* new */
-  --mdr-glass-shadow: 0 4px 24px rgba(0, 0, 0, 0.06); /* new */
+  /* Header/footer rebuild pass: this used to be its own white highlight
+     border (rgba(255,255,255,0.7)) -- a second, different-coloured line
+     from the grid's own dividers. "Lines, not boxes" means ONE structural-
+     line token site-wide (--mdr-border, the same value the product grid/
+     PDP/cart already read), not a glass-specific highlight -- aliased
+     here rather than rewriting every var(--mdr-glass-border) call site. */
+  --mdr-glass-border: var(--mdr-border);
+  /* Was 0 4px 24px rgba(0,0,0,0.06) -- read as a floating card, not flat
+     architecture ("reduce any visible shadow... avoid floating cards").
+     Flat surfaces are bounded by the border line above alone now. */
+  --mdr-glass-shadow: none;
 }
 
 /* ---- ONE continuous surface for the header + WEBRACK/RETURN together
@@ -2367,17 +2392,17 @@ body:has(main[data-template='index']) .page-wrapper {
   box-shadow: none !important;
 }
 
-/* The angled division between the header row and WEBRACK/RETURN (mobile
-   stacked layout) -- NOT a separate block underneath, a border on the
-   row itself. Full-width straight hairline for most of the row, with
-   .mdr-allbar's own existing diagonal-cut outline (clip-path + its SVG
-   stroke, .mdr-allbar__border, both untouched -- "preserve the current
-   angled silhouette") providing the actual angled character right where
-   the WEBRACK/RETURN label sits -- the geometry now reads as a division
-   CUT INTO the header's own surface at that spot, not a shape attached
-   below it. On desktop .mdr-allbar-wrap is absolutely positioned inline
-   with the logo (see the min-width:750px block above) with no row of its
-   own to divide, so this border naturally doesn't apply there. */
+/* The division between the header row and WEBRACK/RETURN (mobile stacked
+   layout) -- a border on the row itself, not a separate block underneath.
+   This is the "header divider" -- one of the structural lines item 12
+   asks to share ONE token with the product grid/PDP/cart (--mdr-border),
+   distinct from WEBRACK's own trailing angled line within its row
+   (.mdr-allbar-wrap::before/::after, further down this file) -- the two
+   sit at different heights (this one along the row's own top edge, that
+   one mid-row, beside the label) so they read as one coherent system, not
+   a doubled line. On desktop .mdr-allbar-wrap is absolutely positioned
+   inline with the logo (see the min-width:750px block above) with no row
+   of its own to divide, so this border naturally doesn't apply there. */
 .mdr-allbar-wrap {
   border-top: 1px solid var(--mdr-border);
 }
@@ -2420,14 +2445,22 @@ body:has(main[data-template='index']) .page-wrapper {
    reading that strip as light (dark status-bar icons on a pale
    background) even with theme-color set to black -- Safari's status-bar
    colouring leans on what's actually PAINTED under the safe area, not
-   just the meta hint. A previous attempt painted that strip by stretching
-   .header__underlay-closed itself up into it, but that layer also
-   carries the scroll-triggered blur/tint -- so the strip would have
-   picked up the same translucency and gone visibly grey instead of flat
-   black. This is a separate, always-solid, always-fixed layer instead:
-   pinned to the true viewport top (not the header, which now scrolls
-   away -- see enable_sticky_header: never), so it keeps covering the
-   safe area regardless of scroll position or the header's own state. */
+   just the meta hint. This is a separate, always-fixed layer (not the
+   header itself, which scrolls away -- see enable_sticky_header: never),
+   so it keeps covering the safe area regardless of scroll position or
+   the header's own state.
+   GLASS: now the same material as the header/footer (--mdr-edge-top/
+   -blur), not a flat colourless fill -- confirmed live this was the
+   actual source of a visible seam ("OFF-WHITE STRIP" directly above
+   "GLASS HEADER" instead of one continuous surface) once the header
+   itself became translucent glass instead of a solid colour underneath
+   it. #header-group's own glass background already extends to the true
+   top of the page (y:0, underneath this strip) -- this strip blurring
+   the SAME thing #header-group's own backdrop-filter would blur if this
+   strip weren't here is what makes the two genuinely read as one
+   surface rather than two layers that happen to match. Scoped to this
+   one small env(safe-area-inset-top) region, not a document-spanning
+   blur layer. */
 body::before {
   content: '';
   position: fixed;
@@ -2435,27 +2468,16 @@ body::before {
   left: 0;
   right: 0;
   height: env(safe-area-inset-top, 0px);
-  /* --mdr-edge-top (:root above) -- flat, colourless neutral, fixed, the
-     same on every page. A translucent/blurred fill was tried here once
-     already (see the header's own .mdr-glass-tint further down for the
-     full story) and rejected: ANY translucency here is still a different
-     pixel value than whatever's actually behind it, so it never truly
-     "disappears" the way a flat, exact colour match does -- doubly true
-     now that this is deliberately colourless rather than colour-matched
-     to anything. Safari's own native "Liquid Glass" chrome already
-     supplies the translucent/blurred look at the OS level; this strip's
-     only job is to stay neutral so it doesn't fight that with a red or
-     cream tint of its own. */
   background: var(--mdr-edge-top);
+  backdrop-filter: var(--mdr-edge-blur);
+  -webkit-backdrop-filter: var(--mdr-edge-blur);
   z-index: 2147483001;
   pointer-events: none;
 }
 
-/* Same fix, bottom edge: the home-indicator strip on notch-style iPhones.
-   Same story as the top strip above -- Safari reads the safe area itself
-   from what's actually painted there, not from page content that merely
-   happens to reach nearby, so this stays its own fixed, colourless layer
-   too rather than trying to match the footer's own colour underneath. */
+/* Same fix, bottom edge: the home-indicator strip on notch-style iPhones,
+   now matching the footer's own glass the same way the top strip matches
+   the header. */
 body::after {
   content: '';
   position: fixed;
@@ -2463,9 +2485,9 @@ body::after {
   left: 0;
   right: 0;
   height: env(safe-area-inset-bottom, 0px);
-  /* --mdr-edge-bottom (:root above) -- flat, colourless neutral, fixed,
-     the same on every page. */
   background: var(--mdr-edge-bottom);
+  backdrop-filter: var(--mdr-edge-blur);
+  -webkit-backdrop-filter: var(--mdr-edge-blur);
   z-index: 2147483001;
   pointer-events: none;
 }
@@ -2978,9 +3000,9 @@ main[data-template='collection']
   /* taller ribbon for an easy tap and a taller drag track once open (was
      2px originally); reduced back down ~20% from the first pass (9px),
      which read as more height than actually needed. Trimmed again here
-     (7px -> 6px) alongside the smaller type below -- a small, refined tab
-     instead of a full nav element, not a redesign of the cutout itself
-     (clip-path/18px diagonal untouched). */
+     (7px -> 6px) alongside the smaller type below -- a small, refined
+     touch target, not a full nav element. No clip-path any more (header/
+     WEBRACK rebuild -- see the comment above .mdr-allbar-wrap::before). */
   padding: 6px 0;
   border: 0;
   background: transparent;
@@ -3012,61 +3034,73 @@ main[data-template='collection']
   animation: none !important;
 }
 
-/* WEBRACK and RETURN share one ribbon/flag-tail shape: a plain rectangle
-   with the top-right corner cut on a diagonal down to the bottom-right
-   corner. The fill is one clipped polygon directly on .mdr-allbar itself.
-   The outline is a separate SVG stroke (.mdr-allbar__border, markup built
-   in mdr-header-enhance.liquid) instead of a second inset clip-path layer
-   -- a plain CSS border can't draw along a clip-path's cut edge (there's
-   no box edge there for it to follow), and a two-layer clip-path trick
-   tapers unevenly along the diagonal. An SVG stroke has neither problem:
-   it's uniform width at any angle. */
+/* Header/WEBRACK rebuild -- "lines, not boxes". WEBRACK/RETURN used to be
+   a ribbon/flag-tail SHAPE: a clipped polygon fill (this rule) plus a
+   traced SVG outline (.mdr-allbar__border, built in mdr-header-enhance.
+   liquid) following that same cut edge -- confirmed live that this read
+   as an outlined button/tab attached under the header, not navigation
+   text. Both are gone outright (not hidden -- the JS that built the SVG
+   border and measured/repositioned it on every resize/open/close is
+   removed too, not just this CSS): no clip-path, no polygon, no fill, no
+   outline, no box of any kind. The angled character is preserved a
+   different way now -- see .mdr-allbar-wrap::before/::after below, one
+   thin trailing line (the same --mdr-border token the product grid's own
+   dividers use) with a short diagonal termination, not a shape enclosing
+   the label. */
 .mdr-allbar {
-  clip-path: polygon(0 0, calc(100% - 18px) 0, 100% 100%, 0 100%);
-  /* Navigation-integration pass: no fill of its own any more -- was a
-     solid #f6f3e7 cream cutout, then (glass experiment) the same glass
-     tint as the header. Now fully transparent: #header-group's one
-     shared surface (further up this file) shows straight through, and
-     the diagonal shape is carried entirely by clip-path (still applied,
-     geometry untouched) plus .mdr-allbar__border's own SVG outline below
-     -- an etched division in the continuous surface, not a block sitting
-     on top of it. */
   background-color: transparent;
   background-image: none;
 }
 
-.mdr-allbar__border {
-  position: absolute;
-  inset: 0;
-  width: 100%;
-  height: 100%;
-  display: block;
-  pointer-events: none;
-  /* now a child of .mdr-allbar-wrap, not of .mdr-allbar (see
-     mdr-header-enhance.liquid) -- needs its own stacking above the
-     button's z-index: 1 fill to still paint on top of it. */
-  z-index: 2;
+/* The trailing line + diagonal termination -- "WEBRACK » ________ /".
+   Two pseudo-elements on the WRAP (not the button), reordered after it
+   via flex `order` so they always fill whatever space is left in the row
+   regardless of viewport width -- no JS measurement needed, unlike the
+   SVG this replaces. Hidden outright while WEBRACK/RETURN is open (see
+   below): the expanding category list claims the row instead, and
+   forcing a fixed-width line to coexist with that would fight its own
+   width transition. */
+.mdr-allbar-wrap::before,
+.mdr-allbar-wrap::after {
+  content: '';
+  align-self: center;
+  background: var(--mdr-border);
+}
+
+.mdr-allbar-wrap::before {
+  order: 2;
+  flex: 1 1 auto;
+  height: 1px;
+  margin-inline-start: 10px;
+}
+
+.mdr-allbar-wrap::after {
+  /* short diagonal termination, same weight/colour as the line before it
+     -- echoes the old ribbon's own 18px diagonal cut without enclosing
+     anything. */
+  order: 3;
+  width: 12px;
+  height: 1px;
+  transform: rotate(-34deg);
+  transform-origin: left center;
+}
+
+.mdr-allbar-wrap:has(.mdr-allbar.is-open)::before,
+.mdr-allbar-wrap:has(.mdr-allbar.is-open)::after {
+  display: none;
 }
 
 .mdr-allbar.is-open {
-  /* overrides the fixed 95px above -- the border needs to actually strike
-     full width when open, not stay pinned to the closed pill size */
+  /* claims the full row once open, showing the category list -- the
+     trailing line/diagonal (.mdr-allbar-wrap::before/::after) is hidden
+     in this state already (see that rule's own :has() guard), so there's
+     no fixed-width decoration left to fight this width change. */
   width: 100%;
-  /* square the corner back off instead of keeping the cut -- with no
-     shape left to close diagonally (top and bottom already match), a
-     plain rectangle reads correctly here */
-  clip-path: none;
-  /* once open, the ribbon side goes plain black -- only the list panel next
-     to it keeps the tape pattern (see .mdr-allbar__list) -- so the two
-     sections read as visually distinct again instead of one flat surface */
   background-image: none;
-  /* squared off now, so plain straight border instead of the SVG's
-     diagonal-cut outline -- still skipping the bottom edge, which stays
-     the wrap's job alone. No left edge either once open -- the bar
-     already sits flush at the true left edge (see .mdr-allbar-wrap), so a
-     leading vertical stroke there just cut the row in two instead of
-     reading as one open, unbroken strip top to end. */
-  border-top: 1px solid var(--mdr-border-faint, rgba(4, 0, 97, 0.08));
+  /* the row's own top edge (matches .mdr-allbar-wrap's closed-state
+     border-top above, same token) -- still needed explicitly here since
+     .mdr-allbar itself has no border of its own the rest of the time. */
+  border-top: 1px solid var(--mdr-border);
 }
 
 .mdr-allbar__toggle {
