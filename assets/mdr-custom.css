@@ -316,6 +316,20 @@ html {
   main[data-template='collection'] [id$='__product_list_fa6P9H'] .section--page-width > * {
     grid-column: 1 / -1 !important;
   }
+
+  /* Same inner-gutter bug, the PDP's own image/details grid this time
+     (confirmed live: 80px narrower than main's content box, and with
+     less room to give up than the grid, it was clipping "ADD TO CART"
+     outright). .product-information IS the .section--page-width element
+     here (not a further-nested descendant like the collection grid), so
+     the override targets it directly rather than via a child combinator.
+     Scoped to the PDP specifically -- NOT a blanket main .section--page-
+     width > * rule -- because .cart-page (further down this file) sets
+     its own deliberate grid-column: 2/3 on this exact same base-theme
+     mechanism, which a blanket override would fight. */
+  main[data-template='product'] .product-information.section--page-width > * {
+    grid-column: 1 / -1 !important;
+  }
 }
 
 
