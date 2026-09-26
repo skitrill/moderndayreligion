@@ -1247,6 +1247,46 @@
     window.addEventListener('resize', fixScrollfadeBleed, { passive: true });
   })();
 
+  /* =====================================================================
+     Desktop header merge -- positions WEBRACK/RETURN (.mdr-allbar-wrap)
+     right after the logo on the same row (mdr-custom.css stacks them in
+     one shared grid cell and takes the wrap out of flow with
+     position: absolute so this can place it). A fixed CSS margin-left
+     was tried first and confirmed broken live on an actual 1200px-wide
+     desktop: the logo's own left inset comes from the header's
+     responsive gutter, which grows with viewport width, so the logo's
+     RIGHT edge isn't a constant either -- a fixed offset cleared it at
+     one width and overlapped it at another. This measures the logo's
+     real rendered edge instead, so it's correct at any width. Mobile
+     (<750px) resets the inline style so the normal stacked layout
+     (untouched by any of this) isn't affected by a stale value from a
+     previous wider layout. */
+  (function () {
+    if (window.__mdrAllbarDesktopPosition) return;
+    window.__mdrAllbarDesktopPosition = true;
+    var D = document;
+
+    function positionAllbarDesktop() {
+      var wrap = D.querySelector('.mdr-allbar-wrap');
+      var logo = D.querySelector('.mdr-logo-image') || D.querySelector('.header-logo');
+      var group = D.getElementById('header-group');
+      if (!wrap || !logo || !group) return;
+      if (window.innerWidth < 750) {
+        wrap.style.left = '';
+        return;
+      }
+      var logoRect = logo.getBoundingClientRect();
+      var groupRect = group.getBoundingClientRect();
+      var gap = 24;
+      wrap.style.left = (logoRect.right - groupRect.left + gap) + 'px';
+    }
+
+    if (D.readyState !== 'loading') positionAllbarDesktop();
+    D.addEventListener('DOMContentLoaded', positionAllbarDesktop);
+    window.addEventListener('load', positionAllbarDesktop);
+    window.addEventListener('resize', positionAllbarDesktop, { passive: true });
+  })();
+
   /* The page-adaptive overscroll/edge-colour system that used to live
      here (reading the header/footer's own background and pushing it live
      into --mdr-edge-top/--mdr-edge-bottom/--mdr-edge-color as you

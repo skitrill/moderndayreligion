@@ -247,13 +247,21 @@ html {
        these. */
     width: max-content !important;
     height: max-content !important;
-    align-self: center !important;
-    /* clears the shrunk logo's own rendered width (tuned to the desktop
-       height above) plus a comfortable gap, so the two read as one
-       deliberate row instead of overlapping. */
-    margin: 0 0 0 300px !important;
     padding: 0 !important;
     background: transparent !important;
+    /* Taken out of the grid flow entirely and positioned by JS instead of
+       a fixed margin-left -- confirmed live on an actual 1200px-wide
+       desktop that a fixed pixel offset overlapped the logo: the logo's
+       own left inset comes from the header's responsive --page-margin-
+       style gutter, which grows with viewport width, so its right edge
+       (and therefore where WEBRACK needs to start) isn't a constant. See
+       positionAllbarDesktop() in mdr-header-enhance.liquid, which
+       measures the logo's real rendered edge and sets `left` directly. A
+       grid container is a valid containing block for an absolutely
+       positioned item without needing position:relative on it. */
+    position: absolute !important;
+    top: 50% !important;
+    transform: translateY(-50%) !important;
     /* the header's own column now shares this exact grid cell (see
        #header-group above) -- confirmed via elementFromPoint that its
        column was painting on top of this despite coming first in DOM and
@@ -282,6 +290,16 @@ html {
   main {
     padding-inline: min(30%, calc((100% - 800px) / 2)) !important;
     box-sizing: border-box !important;
+  }
+
+  /* The product-grid section carries its own page-width gutter on top of
+     main's new border (confirmed live on an actual 1200px-wide desktop:
+     the grid rendered ~80px narrower than main's own content box, one
+     inset nested inside another) -- neutralised here so the grid uses
+     the full width main already reserves for it, one border instead of
+     two slightly-different ones stacking. */
+  main[data-template='collection'] [id$='__product_list_fa6P9H'] {
+    padding-inline: 0 !important;
   }
 }
 
