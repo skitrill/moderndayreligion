@@ -248,12 +248,17 @@ html {
     width: max-content !important;
     height: max-content !important;
     align-self: center !important;
-    /* clears the shrunk logo's own rendered width (tuned to the 13px
-       size above) plus a comfortable gap, so the two read as one
+    /* clears the shrunk logo's own rendered width (tuned to the desktop
+       height above) plus a comfortable gap, so the two read as one
        deliberate row instead of overlapping. */
     margin: 0 0 0 300px !important;
     padding: 0 !important;
     background: transparent !important;
+    /* the header's own column now shares this exact grid cell (see
+       #header-group above) -- confirmed via elementFromPoint that its
+       column was painting on top of this despite coming first in DOM and
+       having no z-index of its own, so this needs to unambiguously win. */
+    z-index: 2147483000 !important;
   }
 }
 
