@@ -703,23 +703,24 @@ main[data-template='cart'] ~ footer {
 
 .product-details > .group-block > .group-block-content > rte-formatter[class*='__text_aEtTtq'] {
   order: 2 !important;
-  /* a centered, comfortably narrow reading column -- was left-aligned
-     (ragged-edge) copy inside a centered block; both the block AND the
-     copy itself (description, bullets, model line) are centered now. */
+  /* a centered, comfortably narrow reading column -- the BLOCK stays
+     perfectly centered on the page (width + margin-inline: auto) no
+     matter how much text it holds, but the copy inside it (description,
+     bullets, model line) reads left-aligned/ragged-edge, not centered --
+     back to that after a brief stint centering the text too. */
   width: 92% !important;
   margin-inline: auto !important;
-  text-align: center !important;
-  --text-align: center !important;
+  text-align: left !important;
+  --text-align: left !important;
 }
 
-/* The bullet list specifically: text-align: center alone still leaves
-   default disc markers hugging the LEFT edge of each (now center-sitting)
-   line, reading as lopsided. list-style: none removes the marker glyph
-   entirely -- centered bullet copy reads fine without one (nothing else
-   here relies on it being a literal <ul> visually). */
+/* Left-aligned copy reads fine with normal bullet markers -- restored
+   (they were dropped specifically because centered text made a
+   left-hugging disc marker look lopsided against center-sitting lines;
+   that reason no longer applies). */
 .product-details > .group-block > .group-block-content > rte-formatter[class*='__text_aEtTtq'] ul {
-  list-style: none;
-  padding-inline-start: 0;
+  list-style: disc;
+  padding-inline-start: 1.2em;
 }
 
 .product-details > .group-block > .group-block-content > variant-picker {
