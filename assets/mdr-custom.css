@@ -97,6 +97,11 @@ product-price *,
      selected states) instead of each site picking its own alpha. */
   --mdr-border: rgba(var(--mdr-primary-rgb), 0.14);
   --mdr-border-strong: rgba(var(--mdr-primary-rgb), 0.3);
+  /* PDP-specific: the image frame and variant/size selector outlines --
+     considerably fainter than the grid's own dividers (--mdr-border
+     above, still used there), almost disappearing into the off-white
+     field rather than reading as a visible purple/lavender line. */
+  --mdr-border-faint: rgba(var(--mdr-primary-rgb), 0.08);
 
   /* ---- Overscroll/safe-area -- deliberately flat and static, NOT tied to
      scroll position or page content (a previous adaptive-colour JS pass
@@ -314,7 +319,10 @@ footer .utilities,
 .footer-utilities__text,
 .policy-list-inline,
 .policy-list-inline a {
-  font-size: 0.58rem !important;
+  /* quieter -- was reading nearly as loud as the purchasing interface
+     above it. Sized down further (0.58rem -> 0.5rem); copyright below
+     goes smaller and dimmer still. */
+  font-size: 0.5rem !important;
   line-height: 1 !important;
   letter-spacing: 0.04em !important;
   font-weight: 400 !important;
@@ -338,7 +346,11 @@ footer .utilities,
    merely repeat the plain .footer-utilities__group-copyright (0,1,0)
    selector from the shared typography rule above. */
 footer .footer-utilities__group-copyright {
-  color: var(--color-foreground-muted) !important;
+  /* even quieter than the nav/policy links above it -- an explicit dim
+     white rather than --color-foreground-muted, which doesn't reliably
+     resolve to something dim enough against the footer's own dark blue. */
+  font-size: 0.44rem !important;
+  color: rgba(255, 255, 255, 0.45) !important;
 }
 
 /* ---- Product page: details column fills to the cart edge, tight gap ------- */
@@ -760,6 +772,11 @@ main[data-template='cart'] ~ footer {
 
 .product-details > .group-block > .group-block-content > .buy-buttons-block {
   order: 5 !important;
+  /* extra separation on top of the shared 11px gap (further up this
+     file) -- OPTIONS -> PURCHASE was reading slightly compressed against
+     everything above it; ~14px more (25px total) gives the purchase row
+     its own clear beat without a big structural change. */
+  margin-top: 14px !important;
 }
 
 /* Colour/size selector text (BLACK/CLEAR/BEIGE/... and XS/S/M/L) --
@@ -788,13 +805,23 @@ main[data-template='cart'] ~ footer {
   font-size: var(--mdr-fs-xs, 0.56rem) !important;
 }
 
+/* Every option row's own outline -- and the individual cell dividers
+   inside it -- considerably fainter than before (was --mdr-border-strong,
+   0.3 alpha, reading as a visible lavender/purple line). Structure stays,
+   the line itself almost disappears into the off-white field. */
+.variant-picker .variant-option {
+  border-color: var(--mdr-border-faint, rgba(4, 0, 97, 0.08)) !important;
+}
+
 /* Selected state: communicated by a filled cell (thin primary-colour
    border + a faint primary-tinted background), not by the text itself
    getting darker/heavier -- text colour above is deliberately identical
-   selected or not. */
+   selected or not. Background toned down further (was 0.1) -- still
+   reads clearly next to the faded borders above without becoming a loud
+   block of colour. */
 .variant-picker .variant-option__button-label:has(:checked) {
   border-color: var(--mdr-primary, #040061) !important;
-  background-color: rgba(var(--mdr-primary-rgb, 4, 0, 97), 0.1) !important;
+  background-color: rgba(var(--mdr-primary-rgb, 4, 0, 97), 0.06) !important;
 }
 
 main .product-information__grid :is(h1, h2, h3, h4, h5, h6, p, li, legend,
@@ -813,7 +840,11 @@ main .product-information__grid .text-block:not(product-price) :is(span, p, li, 
    rule) both stay their own size -- this only reaches the actual
    paragraph/bullet copy. */
 main .product-information__grid rte-formatter :is(p, li) {
-  font-size: 0.56rem !important;
+  /* ~7% smaller than the grid's own 0.56rem tier, and a slightly tighter
+     line-height -- the description was reading visually denser than the
+     clean selector area below it. */
+  font-size: 0.52rem !important;
+  line-height: 1.3 !important;
 }
 
 /* ---- Product hero image size, all viewport widths -- was 91% (mobile
@@ -1151,7 +1182,7 @@ main:not([data-template='index']) {
    !important/source order, so the actual width lives in that rule, not
    this one. */
 .product-information__media {
-  border: 1px solid var(--mdr-border, rgba(4, 0, 97, 0.14)) !important;
+  border: 1px solid var(--mdr-border-faint, rgba(4, 0, 97, 0.08)) !important;
   box-sizing: border-box !important;
   padding: 4px 12px 12px !important;
   /* small breathing room between the header/RETURN-WEBRACK bar and the
@@ -2112,13 +2143,15 @@ body::after {
 
 /* size-chart panel -> the site's own primary blue, not mango-yellow --
    orange belongs to product graphics/content, not interface chrome.
+   Lightened slightly (0.8 alpha, was solid) so it sits at roughly the
+   same visual weight as the product title rather than out-shouting it.
    The product-copy rule that greys this column is (0,3,2) specific and
    !important, so we out-specify it with padded :not()s. */
 .size-chart,
 .size-chart *,
 main .product-information__grid .size-chart:not(._):not(._):not(._),
 main .product-information__grid .size-chart:not(._):not(._):not(._) * {
-  color: var(--mdr-primary, #040061) !important;
+  color: rgba(var(--mdr-primary-rgb, 4, 0, 97), 0.8) !important;
 }
 
 .size-chart__content th,
@@ -2132,7 +2165,7 @@ main .product-information__grid .size-chart:not(._):not(._):not(._) * {
    default layout, untouched). */
 .size-chart__trigger,
 .size-chart__trigger-text {
-  font-size: var(--mdr-fs-xs, 0.56rem) !important;
+  font-size: 0.52rem !important;
   font-weight: 400 !important;
 }
 
@@ -2242,16 +2275,20 @@ main .product-information__grid .product-details {
   --color-foreground-muted: var(--mdr-text-gray) !important;
 }
 
-/* ...prices still blue */
+/* PDP price -> graphite, same family as the product title (--mdr-text-
+   gray, 0.5 alpha) but slightly darker for a touch more presence -- was
+   blue, which was pulling attention away from the product itself. Blue
+   is reserved for actual actions/brand moments (SIZE CHART, BUY NOW)
+   now, not price display. */
 main .product-information__grid.product-information__grid
   :is(.price, .price *, product-price, product-price *) {
-  color: #3a3ec4 !important;
+  color: rgba(0, 0, 0, 0.65) !important;
 }
 
-/* ...size chart -> the site's own primary blue, not mango yellow */
+/* ...size chart -> the site's own primary blue, lightened, not mango yellow */
 main .product-information__grid.product-information__grid .size-chart,
 main .product-information__grid.product-information__grid .size-chart * {
-  color: var(--mdr-primary, #040061) !important;
+  color: rgba(var(--mdr-primary-rgb, 4, 0, 97), 0.8) !important;
 }
 
 /* ...product title -> matches the homepage product-card title's own grey
