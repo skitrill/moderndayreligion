@@ -2973,8 +2973,9 @@ main[data-template='collection']
   margin: 0;
   /* flush at the true left edge now, not lined up under the logo. No
      bottom padding either -- the button's own bottom edge now sits flush
-     against the page below it */
-  padding: 3px 0 0 0;
+     against the page below it. Trimmed 3px -> 2px (header-height pass,
+     item 5: tighten dead space, don't shrink the wordmark). */
+  padding: 2px 0 0 0;
   /* No own background/blur any more (navigation-integration pass) --
      #header-group now paints ONE shared glass surface for the header row
      and this row together (see that rule, further up this file), and
@@ -3000,10 +3001,11 @@ main[data-template='collection']
   /* taller ribbon for an easy tap and a taller drag track once open (was
      2px originally); reduced back down ~20% from the first pass (9px),
      which read as more height than actually needed. Trimmed again here
-     (7px -> 6px) alongside the smaller type below -- a small, refined
-     touch target, not a full nav element. No clip-path any more (header/
-     WEBRACK rebuild -- see the comment above .mdr-allbar-wrap::before). */
-  padding: 6px 0;
+     (7px -> 6px -> 5px) alongside the smaller type below -- a small,
+     refined touch target, not a full nav element (header-height pass,
+     item 5). No clip-path any more (header/WEBRACK rebuild -- see the
+     comment above .mdr-allbar-wrap::before). */
+  padding: 5px 0;
   border: 0;
   background: transparent;
   color: #000;
