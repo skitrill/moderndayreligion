@@ -225,6 +225,16 @@ html {
      without touching the JS that builds/drives the WEBRACK bar itself. */
   #header-group {
     display: grid;
+    /* required so .mdr-allbar-wrap's position: absolute (below) resolves
+       its top/left against THIS box -- confirmed live that display:grid
+       alone does NOT make an element a containing block for an
+       absolutely positioned child (that's only true for the child's
+       grid-area placement, not for resolving its actual offsets); without
+       this, "top: 50%" was computing against the viewport itself (the
+       nearest ACTUALLY positioned ancestor, all the way up the tree),
+       landing 400px down the page on an 800px-tall viewport instead of
+       centered in the header's own ~68px height. */
+    position: relative;
   }
 
   #header-group > .header-section,
