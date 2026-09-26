@@ -26,16 +26,6 @@
         Cart
         {%- if cart.item_count > 0 %} ({{ cart.item_count }}){% endif -%}
       </a>
-      <a
-        href="{{ routes.account_url }}"
-        class="header__cart-link header__user-link"
-      >
-        {%- if customer -%}
-          {{- customer.first_name -}}
-        {%- else -%}
-          User
-        {%- endif -%}
-      </a>
     </div>
 
   {% when 'navigation_bar' %}
@@ -270,20 +260,12 @@
     --header-drawer-min-height: 60px;
     display: flex;
     min-height: var(--header-drawer-min-height);
-    /* Cart / User stacked directly on each other as one unified column,
-       not the old side-by-side chevron-dropdown + Cart row -- the
-       dropdown (header-drawer, previously rendered here) is gone entirely
-       now, so User is just a second plain link under Cart, no toggle.
-       justify-content: flex-start lines Cart's own top edge up with the
-       logo's top edge instead of both just sharing the vertical center.
-       align-items: flex-start (not flex-end) left-aligns Cart and User to
-       the SAME x position -- right-aligning a column staggers each
-       line's LEFT edge by however much shorter/longer its own text is,
-       which reads as two independently-placed labels rather than one
-       column; left-aligning keeps that edge identical regardless of
-       word length (combined with matching padding-inline on both, see
-       mdr-custom.css, so their TEXT -- not just their boxes -- shares
-       that edge too). */
+    /* Was Cart + a second User/account link stacked as one column --
+       User moved out to the site's own footer/landing nav (mdr-footer-nav
+       liquid) for more breathing room in the masthead itself, so this is
+       just Cart alone now. justify-content: flex-start lines Cart's own
+       top edge up with the logo's top edge instead of centering a now-
+       single line for no reason. */
     flex-direction: column;
     align-items: flex-start;
     justify-content: flex-start;
@@ -302,10 +284,6 @@
     text-decoration: none;
     white-space: nowrap;
   }
-
-  /* User -- plain text now, same as Cart (the bordered-button look tried
-     here earlier was removed), spaced by .header__drawer's own gap
-     (above), not a margin here. */
 
   #header-component[data-menu-style='drawer'] .header__drawer {
     display: flex;

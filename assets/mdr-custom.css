@@ -3079,14 +3079,15 @@ cart-drawer [class*='price'] {
   color: #3a3ec4 !important;
 }
 
-/* header cart/user -> graphite text (glass experiment: was white, for the
-   solid blue this sat on). Same class covers both CART and USER (the
-   account link reuses .header__cart-link -- confirmed live), so one
-   change reaches both. Precision pass: was 4px 8px padding on each link
-   PLUS the drawer's own 4px gap -- 12px of dead air between the two
-   lines. Padding trimmed to near-zero; all real spacing now lives in
-   ONE place, the drawer's own `gap` below, not split across three
-   different box models. */
+/* header cart link -> graphite text (glass experiment: was white, for the
+   solid blue this sat on). Used to also cover the USER/account link
+   (which reused this same class) before that link moved out to the
+   footer/landing nav for masthead breathing room -- selector kept broad
+   ([href$='/cart'] etc.) in case a future header variant reintroduces a
+   second link here, but only CART renders today. Precision pass: was
+   4px 8px padding PLUS the drawer's own 4px gap -- dead air around a
+   single line now that there's no second line to space it from. Padding
+   trimmed to near-zero. */
 .header__cart-link,
 #header-component .header__cart-link,
 #header-component a[href$='/cart'] {
@@ -3108,17 +3109,18 @@ cart-drawer [class*='price'] {
   color: var(--mdr-text-gray) !important;
 }
 
-/* CART/DERRICK as one compact, vertically-centered group instead of two
-   independently-padded lines pinned to the row's top edge. Was:
-   padding-top: 20px (blocks/_header-menu.liquid) pushing the whole group
+/* CART, vertically centered and right-aligned in the header's own right
+   column. Was: padding-top: 20px (blocks/_header-menu.liquid) pushing it
    down a fixed amount, align-items: flex-start left-aligning it (correct
-   when it sat under the logo's own left edge; wrong now that this
-   column is the header's own RIGHT side) -- centered vertically and
-   right-aligned instead, so the group's own right edge (not each line's
-   independently) lines up with the viewport the same way the logo's
-   left edge does. padding-inline-end nudges that edge in by the same
-   ~17px the logo sits in from the left (confirmed live: was only 10px,
-   7px short of matching). */
+   when it sat under the logo's own left edge; wrong now that this column
+   is the header's own RIGHT side) -- centered vertically and right-
+   aligned instead, so its own right edge lines up with the viewport the
+   same way the logo's left edge does. padding-inline-end nudges that edge
+   in by the same ~17px the logo sits in from the left (confirmed live:
+   was only 10px, 7px short of matching).
+   gap: 2px is a leftover from when USER sat directly under Cart as a
+   second line in this same column -- harmless now with one child, left
+   as-is rather than pulled out for a single-line no-op. */
 .header__drawer {
   height: 100% !important;
   padding-top: 0 !important;

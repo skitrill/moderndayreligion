@@ -5,7 +5,13 @@
   collection.json -- "/" is the landing page, not the grid, and this avoids
   needing a manually-created admin Page the way the other three links
   below do), LOOKBOOK -> /pages/lookbook, MAILING -> a slim drop-down box
-  with a newsletter sign-up, THE MODERN TIMES -> its page.
+  with a newsletter sign-up, THE MODERN TIMES -> its page, ACCOUNT ->
+  routes.account_url (moved here from the header's own CART/USER drawer --
+  that drawer was carrying two links stacked on each other with barely any
+  room to breathe; account only needs to exist SOMEWHERE reachable, not
+  specifically in the masthead, so it lives here now, next to the site's
+  other secondary destinations, on both the footer and this same snippet's
+  landing-page render).
   The stock .footer-content .menu is hidden in mdr-custom.css.
 
   @param {string} [variant] - optional modifier, added as `mdr-fnav--{{ variant }}`
@@ -20,6 +26,15 @@
     <li><a href="{{ routes.all_products_collection_url }}">Webrack</a></li>
     <li><a href="/pages/lookbook">Lookbook</a></li>
     <li><a href="{{ pages['the-modern-times'].url | default: '/pages/the-modern-times' }}">The Modern Times</a></li>
+    <li>
+      <a href="{{ routes.account_url }}">
+        {%- if customer -%}
+          {{- customer.first_name -}}
+        {%- else -%}
+          Account
+        {%- endif -%}
+      </a>
+    </li>
     <li class="mdr-fnav__mailing">
       <button
         type="button"
