@@ -3173,15 +3173,17 @@ main[data-template='collection']
 
 .mdr-allbar.is-open {
   /* claims the full row once open, showing the category list -- the
-     trailing line/diagonal (.mdr-allbar-wrap::before/::after) is hidden
-     in this state already (see that rule's own :has() guard), so there's
-     no fixed-width decoration left to fight this width change. */
+     trailing line (.mdr-allbar-wrap::before) is hidden in this state
+     already (see that rule's own :has() guard), so there's no fixed-
+     width decoration left to fight this width change. */
   width: 100%;
   background-image: none;
-  /* the row's own top edge (matches .mdr-allbar-wrap's closed-state
-     border-top above, same token) -- still needed explicitly here since
-     .mdr-allbar itself has no border of its own the rest of the time. */
-  border-top: 1px solid var(--mdr-border);
+  /* No border-top of its own any more -- it used to duplicate
+     .mdr-allbar-wrap's own border-top (the row's actual top edge,
+     always present, open or closed), stacking two 1px borders into 2px
+     and growing the row by 1px exactly while open. Confirmed live:
+     removing this is what makes open/closed height genuinely identical
+     ("must maintain the same fixed height in both states"). */
 }
 
 .mdr-allbar__toggle {
