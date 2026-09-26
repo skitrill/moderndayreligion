@@ -92,7 +92,7 @@
 
 <style>
   .mdr-mtimes {
-    background: var(--mdr-off-white, #f7f7f2);
+    background: var(--mdr-paper, #f7f7f2);
     padding-block: clamp(28px, 6vw, 64px) clamp(40px, 8vw, 88px);
   }
 
@@ -115,7 +115,11 @@
     font-weight: 400;
     letter-spacing: 0.04em;
     text-transform: uppercase;
-    color: var(--mdr-primary, #040061);
+    /* mineral-neutral pass: was var(--mdr-primary) (deep blue) -- that's
+       retired from ordinary page content, not just chrome, so this reads
+       ink like every other strong mark on the site instead of standing
+       out as leftover brand blue. */
+    color: var(--mdr-ink, #202020);
     opacity: 0.72;
   }
 
@@ -126,7 +130,7 @@
     line-height: 1.2;
     letter-spacing: normal;
     text-transform: uppercase;
-    color: var(--mdr-primary, #040061);
+    color: var(--mdr-ink, #202020);
   }
 
   .mdr-mtimes__tagline {
@@ -135,7 +139,7 @@
     font-weight: 400;
     letter-spacing: 0.02em;
     text-transform: uppercase;
-    color: var(--mdr-text-gray, rgba(0, 0, 0, 0.5));
+    color: var(--mdr-graphite, #858581);
   }
 
   /* same treatment as the policy pages' own "Last updated" line
@@ -146,14 +150,14 @@
     font-weight: 400;
     letter-spacing: 0.02em;
     text-transform: uppercase;
-    color: var(--mdr-text-gray-light, rgba(0, 0, 0, 0.35));
+    color: var(--mdr-muted, #b7b7b1);
   }
 
   .mdr-mtimes__rule {
     width: min(120px, 30vw);
     height: 1px;
     margin: 12px auto;
-    background: var(--mdr-border-strong, rgba(4, 0, 97, 0.3));
+    background: var(--mdr-border-strong, #b3b3ad);
   }
 
   .mdr-mtimes__stream {
@@ -176,7 +180,7 @@
     font-size: 0.625rem;
     line-height: 1.4;
     letter-spacing: 0.01em;
-    color: var(--mdr-text-gray, rgba(0, 0, 0, 0.5));
+    color: var(--mdr-graphite, #858581);
   }
 
   .mdr-mtimes__text p + p {
@@ -193,7 +197,7 @@
     line-height: 1.3;
     letter-spacing: normal;
     text-transform: uppercase;
-    color: var(--mdr-primary, #040061);
+    color: var(--mdr-ink, #202020);
   }
 
   .mdr-mtimes__signature {
@@ -210,10 +214,10 @@
     font-weight: 400;
     letter-spacing: 0.04em;
     text-transform: uppercase;
-    color: var(--mdr-text-gray, rgba(0, 0, 0, 0.5));
+    color: var(--mdr-graphite, #858581);
   }
 
   .mdr-mtimes__signature span:first-child {
-    color: var(--mdr-primary, #040061);
+    color: var(--mdr-ink, #202020);
   }
 </style>
