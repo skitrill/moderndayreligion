@@ -3157,17 +3157,16 @@ main[data-template='collection']
   width: 88px;
   overflow: hidden;
   white-space: nowrap;
-  /* Hit-area pass: back up from 4px to ~13px (was 7px -> 6px -> 5px -> 4px
-     across the minimal-rail passes, which made the row thin but also
-     shrank WEBRACK's own tap target right down against the header above
-     it -- confirmed as the actual cause of mistaps landing on the logo
-     instead). Padding is invisible (no border/fill on this row -- the
-     glass comes from #header-group, further up this file), so this adds
-     real touch-target height and breathing room from the header without
-     reading as a bigger/bulkier visible bar -- the label/chevron
-     themselves are untouched, still the same small type. ~44px total
-     with .mdr-allbar-wrap's own spacing below. */
-  padding: 13px 0;
+  /* Hit-area pass: the actual ~44px touch target lives on
+     .mdr-allbar__toggle's own padding now, not here -- putting it on
+     .mdr-allbar instead was tried first, but align-self: stretch on the
+     toggle doesn't reliably stretch it in this particular circular case
+     (.mdr-allbar's own auto content-box height is ITSELF derived from
+     the toggle's natural size, so "stretch to fill the content box"
+     stretches it to... its own natural size, a no-op) -- confirmed live,
+     leaving a dead zone above/below the visibly-small toggle that
+     neither it nor the touchzone actually covered. Kept small here. */
+  padding: 4px 0;
   border: 0;
   background: transparent;
   color: #000;
@@ -3253,11 +3252,6 @@ main[data-template='collection']
 .mdr-allbar__toggle {
   display: inline-flex;
   align-items: center;
-  /* fills .mdr-allbar's now-taller box (13px 0 padding, hit-area pass)
-     top to bottom instead of sitting as a small centred island within
-     it -- without this, the extra padding just became dead space above/
-     below the actual clickable text, not part of the tap target at all. */
-  align-self: stretch;
   gap: 0;
   flex: 0 0 auto;
   margin: 0;
@@ -3270,7 +3264,13 @@ main[data-template='collection']
   position: relative;
   isolation: isolate;
   z-index: 3;
-  padding: 2px 8px;
+  /* Hit-area pass: THIS padding (not .mdr-allbar's, see that rule's own
+     comment) is what actually gives WEBRACK/RETURN their ~44px touch
+     target -- a real box the toggle itself owns, so every pixel of it is
+     genuinely clickable, not a stretched approximation with dead zones
+     top/bottom. Visible type is untouched (font-size below), so the bar
+     doesn't read as bigger -- just easier to land a tap on precisely. */
+  padding: 13px 8px;
   border: 0;
   background: none;
   /* neutral MDR system: was blue -- the opacity below (0.5 idle / 1 open)
