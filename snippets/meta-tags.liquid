@@ -13,9 +13,16 @@
   name="viewport"
   content="width=device-width,initial-scale=1,viewport-fit=cover"
 >
+{%- comment -%}
+  Matches assets/mdr-custom.css's --mdr-edge-color per template: the
+  homepage and the password/lockscreen page are permanently blue, single-
+  surface screens (#040061); every other template's own dominant surface
+  is the off-white field, so its edge -- and the browser-chrome tint this
+  meta tag governs -- reads as that instead.
+{%- endcomment -%}
 <meta
   name="theme-color"
-  content="#040061"
+  content="{% if request.page_type == 'index' or request.page_type == 'password' %}#040061{% else %}#f6f3e7{% endif %}"
 >
 
 {%- liquid

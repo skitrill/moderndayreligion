@@ -103,14 +103,18 @@ product-price *,
      field rather than reading as a visible purple/lavender line. */
   --mdr-border-faint: rgba(var(--mdr-primary-rgb), 0.08);
 
-  /* ---- Overscroll/safe-area -- deliberately flat and static, NOT tied to
-     scroll position or page content (a previous adaptive-colour JS pass
-     was removed for exactly this reason: it made the rubber-band glow and
-     safe-area strips read as a different colour per page). Off-white, not
-     --mdr-primary: most of the page IS the off-white field, and blue
-     bleeding into the overscroll area was the specific artifact flagged
-     as unwanted. No blur/gradient/translucency anywhere in this -- Safari
-     doesn't reliably blend a translucent fill into its own native chrome
+  /* ---- Overscroll/safe-area -- one flat value per PAGE (not per scroll
+     position, not per header/footer element -- a previous JS pass tried
+     both of those and was removed each time for making the edge read as
+     inconsistent or introducing a translucent haze). Off-white by
+     default here, matching most templates (PDP, grid, cart, plain pages)
+     -- the homepage/lockscreen override further down this file switches
+     this to --mdr-primary for just those two templates, so the ROOT
+     canvas always matches whichever surface actually is that page's own
+     background, same principle the blue homepage already demonstrated,
+     generalised to every template instead of hardcoded to one colour.
+     No blur/gradient/translucency anywhere in this -- Safari doesn't
+     reliably blend a translucent fill into its own native chrome
      (confirmed earlier), so a flat exact match is the only version that
      actually disappears. */
   --mdr-edge-top: var(--mdr-off-white);
@@ -132,6 +136,25 @@ product-price *,
      its own -- see product-information__media, the title/price group and
      the description block below. */
   --mdr-pdp-content-width: 70%;
+
+  /* ---- PDP vertical rhythm -- one named scale, read by the exact
+     sequence below instead of each gap being its own one-off number:
+     IMAGE FRAME -(2xs)- TITLE -(3xs)- PRICE -(xs)- DESCRIPTION -(xs)-
+     COLOR SELECTOR -(sm)- SIZE SELECTOR -(md)- SIZE CHART -(lg)-
+     PURCHASE BAR -(lg, as flow padding)- FOOTER. Horizontal placement
+     (left/right boundary) is deliberately NOT a variable here -- the
+     color/size selectors, Size Chart and purchase bar already share one
+     boundary structurally (they're all direct children of the same
+     fixed-width .product-details box, see the width/gutter note above
+     .product-details), so there is no per-component margin to unify;
+     introducing a second, competing width source would risk breaking
+     that alignment rather than protecting it. */
+  --mdr-space-3xs: 3px;
+  --mdr-space-2xs: 6px;
+  --mdr-space-xs: 11px;
+  --mdr-space-sm: 16px;
+  --mdr-space-md: 20px;
+  --mdr-space-lg: 28px;
 
   /* ---- Mobile type scale -- everything site-wide (nav, grid title/price,
      PDP title/price, body copy, cart, labels, buttons, footer) reads one
@@ -692,7 +715,7 @@ main[data-template='cart'] ~ footer {
 
 /* title <-> price sit right on top of each other now */
 .group-block-content:has(> product-price) {
-  gap: 3px !important;
+  gap: var(--mdr-space-3xs, 3px) !important;
 }
 
 .group-block-content:has(> product-price) > product-price {
@@ -705,14 +728,24 @@ main[data-template='cart'] ~ footer {
 }
 
 /* image <-> title: the whole details column is wrapped in one shell
-   group-block whose own top padding was the gap under the image. --------- */
+   group-block whose own top padding was the gap under the image. Bottom
+   padding is the PDP's controlled hand-off to the footer -- was the base
+   theme's own unexamined 20px default, which (combined with main's
+   sticky-footer flex-grow, further down this file) let the visual gap
+   swing anywhere from this fixed amount up to whatever's left of the
+   viewport on a short page. Fixing it here as one deliberate value
+   doesn't erase that swing (short pages still bottom out at the
+   viewport), but it does guarantee the FLOW gap -- the part actually
+   under this file's control -- is always exactly --mdr-space-lg, never
+   more, never less, regardless of description length or variant count. */
 .product-details > .group-block {
-  padding-block-start: 6px !important;
+  padding-block-start: var(--mdr-space-2xs, 6px) !important;
+  padding-block-end: var(--mdr-space-lg, 28px) !important;
 }
 
 /* tighter rhythm between each block in the details column (was 24px) ---- */
 .product-details > .group-block > .group-block-content {
-  gap: 11px !important;
+  gap: var(--mdr-space-xs, 11px) !important;
 }
 
 /* ---- Product-page block order: title/price -> description -> size/color
@@ -768,15 +801,25 @@ main[data-template='cart'] ~ footer {
 
 .product-details > .group-block > .group-block-content > .details.size-chart {
   order: 4 !important;
+  /* the base theme ships this accordion with its own margin-top: -7.5px
+     (presumably tuned for its default, larger surrounding gaps) -- left
+     alone, that nearly cancels the shared gap above (11px - 7.5px =
+     3.5px), so SIZE SELECTOR -> SIZE CHART was rendering far tighter
+     than every other gap on the page instead of the deliberate "medium"
+     beat the rest of the sequence uses. Overriding it outright (not
+     adding to it) makes the TOTAL gap above this element exactly
+     --mdr-space-md, same logic as buy-buttons-block below. */
+  margin-top: calc(var(--mdr-space-md, 20px) - var(--mdr-space-xs, 11px)) !important;
 }
 
 .product-details > .group-block > .group-block-content > .buy-buttons-block {
   order: 5 !important;
-  /* extra separation on top of the shared 11px gap (further up this
-     file) -- OPTIONS -> PURCHASE was reading slightly compressed against
-     everything above it; ~14px more (25px total) gives the purchase row
-     its own clear beat without a big structural change. */
-  margin-top: 14px !important;
+  /* extra separation on top of the shared gap above -- OPTIONS ->
+     PURCHASE was reading slightly compressed against everything above
+     it. Expressed relative to the shared gap so the TOTAL distance
+     above the purchase bar is exactly --mdr-space-lg, matching the
+     named scale instead of a one-off pixel count. */
+  margin-top: calc(var(--mdr-space-lg, 28px) - var(--mdr-space-xs, 11px)) !important;
 }
 
 /* Colour/size selector text (BLACK/CLEAR/BEIGE/... and XS/S/M/L) --
@@ -1836,6 +1879,17 @@ body:has(main[data-template='index']) {
   height: 100%;
   overflow: hidden;
   background-color: var(--mdr-primary) !important;
+  /* the safe-area strips (body::before/::after) and the rubber-band
+     canvas itself (background-color above already hardcodes it directly,
+     but --mdr-edge-color is what OTHER rules on this page still read,
+     e.g. .page-wrapper below) all switch to the primary blue here too --
+     same principle as the off-white default everywhere else: the ROOT
+     canvas matches whatever this specific page's own background actually
+     is, so there's no seam at the safe-area boundary between a blue page
+     and an off-white-default edge. */
+  --mdr-edge-top: var(--mdr-primary);
+  --mdr-edge-bottom: var(--mdr-primary);
+  --mdr-edge-color: var(--mdr-primary);
 }
 
 /* .page-wrapper (base.css), not html/body, is the ACTUAL scroll container
