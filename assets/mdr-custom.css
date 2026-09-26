@@ -267,21 +267,20 @@ html {
    the actual page content (product grid, PDP, cart, editorial pages)
    sits centered in a narrow column with a huge margin on both sides
    instead of stretching to fill a wide desktop viewport.
-   min(30%, ...) rather than a flat 30%: the cart page's own two-column
-   layout (.cart-page, further down this file) needs at least ~340px for
-   its fixed 300px summary column plus its 40px gap, PLUS another ~80px
-   .cart-page loses to its own parent section's existing gutter (measured
-   live -- .cart-page's box is ~80px narrower than main's own content
-   box) -- a flat 30% on a ~750-1000px "desktop" (not a huge monitor)
-   leaves far less than that, which was collapsing the product-info
-   column to zero width and wrapping every line one character at a time.
-   A 650px content floor keeps real room on that narrower end (confirmed
-   live); above ~1625px viewport width, true 30% already yields more
-   than 650px on its own, so this is purely a safety floor there, not a
-   cap on the "huge" look. */
+   min(30%, ...) rather than a flat 30%: both the cart page's two-column
+   layout (product info | 300px summary) AND the PDP's own two-column
+   grid (image | details, whose details column needs real room for the
+   3-segment quantity/ADD TO CART/BUY NOW row) need a genuine minimum
+   width to render at all -- a flat 30% on a ~750-1000px "desktop" (not a
+   huge monitor) was collapsing them: cart wrapped every line one
+   character at a time, and the PDP's purchase row clipped "ADD TO CART"
+   outright. An 800px content floor keeps both usable (confirmed live);
+   above ~2000px viewport width true 30% already yields more than 800px
+   on its own, so this only steps in as a safety floor on ordinary
+   laptop/desktop widths, not a cap on the "huge" look on a big monitor. */
 @media screen and (min-width: 750px) {
   main {
-    padding-inline: min(30%, calc((100% - 650px) / 2)) !important;
+    padding-inline: min(30%, calc((100% - 800px) / 2)) !important;
     box-sizing: border-box !important;
   }
 }
