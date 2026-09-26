@@ -1,0 +1,180 @@
+/*
+ * ------------------------------------------------------------
+ * IMPORTANT: The contents of this file are auto-generated.
+ *
+ * This file may be updated by the Shopify admin theme editor
+ * or related systems. Please exercise caution as any changes
+ * made to this file may be overwritten.
+ * ------------------------------------------------------------
+ */
+{
+  "sections": {
+    "modern_times": {
+      "type": "mdr-modern-times",
+      "blocks": {
+        "text_1": {
+          "type": "text",
+          "settings": {
+            "content": "The Modern Times is an ongoing record of MODARE — documenting the clothes, ideas, people and environments that shape our world.\nMODARE exists within movement."
+          }
+        },
+        "image_1": {
+          "type": "image",
+          "settings": {
+            "image": "",
+            "layout": "full",
+            "caption": ""
+          }
+        },
+        "text_2": {
+          "type": "text",
+          "settings": {
+            "content": "Rooted in streetwear, skateboarding, retro sport and the everyday cultures that continue to evolve around us, the project is built around one belief:"
+          }
+        },
+        "quote_1": {
+          "type": "quote",
+          "settings": {
+            "content": "Progression is ritual."
+          }
+        },
+        "text_3": {
+          "type": "text",
+          "settings": {
+            "content": "Progress is rarely one perfect movement forward.\nSometimes we advance. Sometimes we return. Then we move again."
+          }
+        },
+        "quote_2": {
+          "type": "quote",
+          "settings": {
+            "content": "Forward. Reverse. Forward."
+          }
+        },
+        "text_4": {
+          "type": "text",
+          "settings": {
+            "content": "The repetition is the ritual."
+          }
+        },
+        "image_2": {
+          "type": "image",
+          "settings": {
+            "image": "",
+            "layout": "half",
+            "caption": ""
+          }
+        },
+        "image_3": {
+          "type": "image",
+          "settings": {
+            "image": "",
+            "layout": "half",
+            "caption": ""
+          }
+        },
+        "text_5": {
+          "type": "text",
+          "settings": {
+            "content": "This philosophy lives throughout MODARE — from the construction of our symbols to the way we approach clothing, culture and the world around us. The past remains present. Old uniforms become references. Sporting history becomes streetwear. Technical garments leave their original environments. Skateboarding turns repetition, failure and persistence into progression.\nNothing remains completely still."
+          }
+        },
+        "text_6": {
+          "type": "text",
+          "settings": {
+            "content": "MODERN DAY RELIGION is our language for that commitment."
+          }
+        },
+        "text_7": {
+          "type": "text",
+          "settings": {
+            "content": "Not religion in the literal sense, but the rituals, beliefs, habits and objects that people build their modern lives around. The things we return to every day. The things we practice until they become part of who we are.\nClothing can become part of that ritual.\nSo can skating.\nMusic. Sport. Art. Movement. Community. Creation.\nThese are pieces of modern culture — different practices existing within the same time.\nMODARE observes them, participates in them and translates them into what we make."
+          }
+        },
+        "image_4": {
+          "type": "image",
+          "settings": {
+            "image": "",
+            "layout": "full",
+            "caption": ""
+          }
+        },
+        "text_8": {
+          "type": "text",
+          "settings": {
+            "content": "The Modern Times is where that story continues."
+          }
+        },
+        "text_9": {
+          "type": "text",
+          "settings": {
+            "content": "With every collection, season and moment, this space will document another chapter: the references behind our garments, the environments surrounding them, the people wearing them, and our interpretation of the constantly changing modern world."
+          }
+        },
+        "text_10": {
+          "type": "text",
+          "settings": {
+            "content": "Some entries will explain.\nSome will document.\nSome will simply exist as evidence of the time.\nBecause MODARE was never intended to remain one thing."
+          }
+        },
+        "quote_3": {
+          "type": "quote",
+          "settings": {
+            "content": "Adapt. Evolve. Continue."
+          }
+        },
+        "quote_4": {
+          "type": "quote",
+          "settings": {
+            "content": "Progression is ritual."
+          }
+        },
+        "signature_1": {
+          "type": "signature",
+          "settings": {
+            "content": "MODARE®\nMODERN DAY RELIGION\nPROGRESSIVE CULTURE"
+          }
+        }
+      },
+      "block_order": [
+        "text_1",
+        "image_1",
+        "text_2",
+        "quote_1",
+        "text_3",
+        "quote_2",
+        "text_4",
+        "image_2",
+        "image_3",
+        "text_5",
+        "text_6",
+        "text_7",
+        "image_4",
+        "text_8",
+        "text_9",
+        "text_10",
+        "quote_3",
+        "quote_4",
+        "signature_1"
+      ],
+      "settings": {
+        "eyebrow": "MODARE",
+        "heading": "The Modern Times",
+        "tagline": "Progression, culture & the world we live in."
+      }
+    },
+    "main": {
+      "type": "main-page",
+      "settings": {
+        "content_direction": "column",
+        "gap": 0,
+        "background_color": "#f6f3e7",
+        "padding-block-start": 0,
+        "padding-block-end": 0
+      }
+    }
+  },
+  "order": [
+    "modern_times",
+    "main"
+  ]
+}
