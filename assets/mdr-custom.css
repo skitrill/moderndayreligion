@@ -137,24 +137,28 @@ product-price *,
      the description block below. */
   --mdr-pdp-content-width: 70%;
 
-  /* ---- PDP vertical rhythm -- one named scale, read by the exact
-     sequence below instead of each gap being its own one-off number:
-     IMAGE FRAME -(2xs)- TITLE -(3xs)- PRICE -(xs)- DESCRIPTION -(xs)-
-     COLOR SELECTOR -(sm)- SIZE SELECTOR -(md)- SIZE CHART -(lg)-
-     PURCHASE BAR -(lg, as flow padding)- FOOTER. Horizontal placement
-     (left/right boundary) is deliberately NOT a variable here -- the
-     color/size selectors, Size Chart and purchase bar already share one
-     boundary structurally (they're all direct children of the same
-     fixed-width .product-details box, see the width/gutter note above
-     .product-details), so there is no per-component margin to unify;
-     introducing a second, competing width source would risk breaking
-     that alignment rather than protecting it. */
+  /* ---- PDP vertical rhythm, upper section -- IMAGE FRAME -(2xs)- TITLE
+     -(3xs)- PRICE -(xs)- DESCRIPTION -(xs)- COLOR SELECTOR. Horizontal
+     placement (left/right boundary) is deliberately NOT a variable here
+     -- the color/size selectors, Size Chart and purchase bar already
+     share one boundary structurally (they're all direct children of the
+     same fixed-width .product-details box, see the width/gutter note
+     above .product-details), so there is no per-component margin to
+     unify; introducing a second, competing width source would risk
+     breaking that alignment rather than protecting it. */
   --mdr-space-3xs: 3px;
   --mdr-space-2xs: 6px;
   --mdr-space-xs: 11px;
-  --mdr-space-sm: 16px;
-  --mdr-space-md: 20px;
-  --mdr-space-lg: 28px;
+
+  /* ---- PDP commerce area -- COLOR SELECTOR -(control-gap)- SIZE
+     SELECTOR -(control-gap)- SIZE CHART -(control-gap)- PURCHASE BAR
+     -(footer-gap)- FOOTER. One tight, uniform rhythm inside the actual
+     purchasing UI (control-gap), then a deliberately slightly larger
+     beat once before the footer (footer-gap) to read as a boundary
+     between "shopping controls" and "site navigation" -- not another
+     step in the same tight rhythm, and not a large blank section either. */
+  --pdp-control-gap: 12px;
+  --pdp-footer-gap: 18px;
 
   /* ---- Mobile type scale -- everything site-wide (nav, grid title/price,
      PDP title/price, body copy, cart, labels, buttons, footer) reads one
@@ -736,11 +740,15 @@ main[data-template='cart'] ~ footer {
    viewport on a short page. Fixing it here as one deliberate value
    doesn't erase that swing (short pages still bottom out at the
    viewport), but it does guarantee the FLOW gap -- the part actually
-   under this file's control -- is always exactly --mdr-space-lg, never
-   more, never less, regardless of description length or variant count. */
+   under this file's control -- is always exactly --pdp-footer-gap, never
+   more, never less, regardless of description length or variant count.
+   Deliberately its own token, not --pdp-control-gap: this is the one
+   beat in the sequence meant to read as slightly more separated (a
+   boundary between the purchasing controls and site navigation), not
+   another step in the tight in-between rhythm. */
 .product-details > .group-block {
   padding-block-start: var(--mdr-space-2xs, 6px) !important;
-  padding-block-end: var(--mdr-space-lg, 28px) !important;
+  padding-block-end: var(--pdp-footer-gap, 18px) !important;
 }
 
 /* tighter rhythm between each block in the details column (was 24px) ---- */
@@ -799,27 +807,42 @@ main[data-template='cart'] ~ footer {
   order: 3 !important;
 }
 
+/* Color selector -> Size selector: the base theme gives EVERY
+   .variant-option fieldset (color's own included) a margin-top: 16px --
+   left alone that would also inflate the description -> color gap
+   above (out of scope here, not requested), so only the SECOND-and-
+   later fieldset is targeted, tightening just the one relationship this
+   spec calls out. */
+.variant-picker .variant-option + .variant-option {
+  margin-top: var(--pdp-control-gap, 12px) !important;
+}
+
 .product-details > .group-block > .group-block-content > .details.size-chart {
   order: 4 !important;
   /* the base theme ships this accordion with its own margin-top: -7.5px
      (presumably tuned for its default, larger surrounding gaps) -- left
      alone, that nearly cancels the shared gap above (11px - 7.5px =
-     3.5px), so SIZE SELECTOR -> SIZE CHART was rendering far tighter
-     than every other gap on the page instead of the deliberate "medium"
-     beat the rest of the sequence uses. Overriding it outright (not
-     adding to it) makes the TOTAL gap above this element exactly
-     --mdr-space-md, same logic as buy-buttons-block below. */
-  margin-top: calc(var(--mdr-space-md, 20px) - var(--mdr-space-xs, 11px)) !important;
+     3.5px). Overriding it outright (not adding to it) makes the TOTAL
+     gap above this element exactly --pdp-control-gap, same logic as
+     buy-buttons-block below. */
+  margin-top: calc(var(--pdp-control-gap, 12px) - var(--mdr-space-xs, 11px)) !important;
+  /* the <details> element's own top padding (8px, base theme) was adding
+     empty space above the "Size Chart +" trigger text on top of the gap
+     above it -- collapsed accordion height should come from the trigger
+     text itself plus a small controlled amount of room, not this extra
+     padding. Bottom stays 0 (unchanged): only relevant when the panel is
+     open, out of scope here. */
+  padding-top: 4px !important;
 }
 
 .product-details > .group-block > .group-block-content > .buy-buttons-block {
   order: 5 !important;
-  /* extra separation on top of the shared gap above -- OPTIONS ->
-     PURCHASE was reading slightly compressed against everything above
-     it. Expressed relative to the shared gap so the TOTAL distance
-     above the purchase bar is exactly --mdr-space-lg, matching the
-     named scale instead of a one-off pixel count. */
-  margin-top: calc(var(--mdr-space-lg, 28px) - var(--mdr-space-xs, 11px)) !important;
+  /* Size Chart -> Purchase bar: same mechanism as size-chart's own
+     margin-top above -- the TOTAL distance above the purchase bar is
+     exactly --pdp-control-gap, matching the tight commerce-area rhythm
+     (not the larger --pdp-footer-gap, which is reserved for the one beat
+     after the purchase bar, not before it). */
+  margin-top: calc(var(--pdp-control-gap, 12px) - var(--mdr-space-xs, 11px)) !important;
 }
 
 /* Colour/size selector text (BLACK/CLEAR/BEIGE/... and XS/S/M/L) --
