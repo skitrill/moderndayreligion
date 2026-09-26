@@ -435,6 +435,19 @@ footer {
   box-shadow: var(--mdr-glass-shadow);
 }
 
+/* The two .section-background divs mentioned above (footer + footer-
+   utilities, each their own solid var(--mdr-primary) fill, Shopify's own
+   mechanism) stayed harmless while <footer>'s own backstop was ALSO a
+   solid, identical blue -- the exact stacking-order bug they're prone to
+   was invisible because both layers happened to match. Confirmed live on
+   the PDP once <footer> went translucent: solid blue was still painting
+   over the new glass here specifically (the same template already
+   flagged above as where this stacking quirk shows up). Hidden outright
+   now that <footer>'s own background is the real, only paint layer. */
+footer .section-background {
+  display: none !important;
+}
+
 .footer-content .list-unstyled {
   display: flex !important;
   flex-direction: column !important;
