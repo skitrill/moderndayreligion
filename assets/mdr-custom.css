@@ -285,20 +285,6 @@ html {
   }
 }
 
-/* Desktop only: center the product grid's own name/price text (was left-
-   aligned, with the mobile-only right column mirroring to the right --
-   that rule is itself scoped to max-width:749px, so it's untouched).
-   The NEW badge stays a top-right corner tag, not part of this -- centering
-   a corner marker isn't meaningful the way centering body text is. */
-@media screen and (min-width: 750px) {
-  main[data-template='collection'] [id$='__product_list_fa6P9H'] .product-card .text-block,
-  main[data-template='collection'] [id$='__product_list_fa6P9H'] .product-card .text-block p,
-  main[data-template='collection'] [id$='__product_list_fa6P9H'] .product-card product-price,
-  main[data-template='collection'] [id$='__product_list_fa6P9H'] .product-card product-price > div,
-  main[data-template='collection'] [id$='__product_list_fa6P9H'] .product-card product-price .price {
-    text-align: center !important;
-  }
-}
 
 /* Mobile: hold the logo on one line even when the cart count widens "CART (n)". */
 @media screen and (max-width: 749px) {
@@ -3377,4 +3363,23 @@ main[data-template='collection'] [id$='__product_list_fa6P9H'] .product-card .pr
 /* "The Modern Times" is now a plain <li><a> inside .mdr-fnav's own <ul>
    (see mdr-footer-nav.liquid) -- it inherits .mdr-fnav a's typography
    directly, same as WEBRACK/LOOKBOOK/MAILING, no separate rule needed. */
+
+/* Desktop only: center the product grid's own name/price text (was left-
+   aligned, with the mobile-only right column mirroring to the right --
+   that rule is itself scoped to max-width:749px, so it's untouched).
+   The NEW badge stays a top-right corner tag, not part of this --
+   centering a corner marker isn't meaningful the way centering body text
+   is. Placed at the very end of the file, not alongside this file's
+   other desktop-only rules near the top: the plain "left" rule above
+   (same selector chain, same specificity) otherwise wins on source
+   order alone despite both carrying !important. */
+@media screen and (min-width: 750px) {
+  main[data-template='collection'] [id$='__product_list_fa6P9H'] .product-card .text-block,
+  main[data-template='collection'] [id$='__product_list_fa6P9H'] .product-card .text-block p,
+  main[data-template='collection'] [id$='__product_list_fa6P9H'] .product-card product-price,
+  main[data-template='collection'] [id$='__product_list_fa6P9H'] .product-card product-price > div,
+  main[data-template='collection'] [id$='__product_list_fa6P9H'] .product-card product-price .price {
+    text-align: center !important;
+  }
+}
 
