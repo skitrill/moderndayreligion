@@ -1079,20 +1079,21 @@ main:not([data-template='index']) {
   filter: drop-shadow(0 0 11px rgba(122, 84, 52, 0.1)) !important;
 }
 
-/* REMOVED: a bordered square frame briefly sat around the PDP photo here.
-   Flagged in the next audit pass as inconsistent with the product grid,
-   which presents images with no border at all -- one system, matching
-   the grid (the stronger, baseline component): the PDP image now floats
-   on the off-white field with no outline, same as every card. Sizing
-   itself (max-width/margin) is NOT set here -- .product-information__grid
+/* Square frame around the PDP photo -- same hairline colour/thickness as
+   the product grid's own divider lines (--mdr-border, 1px). Restored
+   after a brief removal (an audit pass flagged it as inconsistent with
+   the grid's borderless cards) -- back by request. Sizing itself
+   (max-width/margin) is NOT set here -- .product-information__grid
    .product-information__media (further down this file) is more specific
    (two classes) and would win over a single-class rule here regardless of
    !important/source order, so the actual width lives in that rule, not
    this one. */
 .product-information__media {
+  border: 1px solid var(--mdr-border, rgba(4, 0, 97, 0.14)) !important;
   box-sizing: border-box !important;
+  padding: 4px 12px 12px !important;
   /* small breathing room between the header/RETURN-WEBRACK bar and the
-     image's own top edge -- was flush (0 gap) against it. */
+     frame's own top edge -- was flush (0 gap) against it. */
   margin-top: 14px !important;
 }
 
