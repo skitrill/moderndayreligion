@@ -595,8 +595,23 @@ footer .utilities {
    to stop being "visible" too, even when not set explicitly). 8px gaps
    already fit all 5 items on one line at 375px with a few px to spare;
    narrower than that, they overflow visibly rather than silently
-   clipping a real feature. */
-.mdr-fnav {
+   clipping a real feature.
+   :not(.mdr-fnav--landing) -- this same snippet (mdr-footer-nav.liquid)
+   renders on the homepage landing screen too, with BOTH classes on the
+   one <nav> ("mdr-fnav mdr-fnav--landing"). This block's !important
+   values were unscoped at first and, having no matching !important on
+   the landing side to fight, silently overrode .mdr-fnav--landing's own
+   flex-direction:column/align-items:flex-start further down this file
+   regardless of its higher specificity -- !important always wins over a
+   normal declaration, specificity or not. Broke the landing screen
+   badly: flex-basis:100% in THAT flex-column context reads as HEIGHT,
+   not width, so the nav stretched to fill almost the entire viewport
+   height, shoving the centered-logo composition up to the very top
+   (confirmed live: nav box measured 619px tall in a 714px-tall viewport).
+   Excluding .mdr-fnav--landing here is the actual fix -- the landing
+   nav's own column/stacked treatment never needed any of this row-
+   specific logic in the first place. */
+.mdr-fnav:not(.mdr-fnav--landing) {
   display: flex !important;
   flex-basis: 100% !important;
   flex-wrap: nowrap !important;
