@@ -313,7 +313,7 @@ html {
      the child across every column instead removes that inner gutter, so
      the grid uses the full width main already reserves for it -- one
      border instead of two slightly-different ones stacking. */
-  main[data-template='collection'] [id$='__product_list_fa6P9H'].section--page-width > * {
+  main[data-template='collection'] [id$='__product_list_fa6P9H'] .section--page-width > * {
     grid-column: 1 / -1 !important;
   }
 }
