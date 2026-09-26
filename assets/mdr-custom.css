@@ -552,10 +552,18 @@ footer .utilities {
   justify-content: center !important;
   align-items: center !important;
   column-gap: 18px !important;
-  /* was 5px -- now the vertical rhythm between three DELIBERATE full-width
-     lines (nav / policy / copyright, see below), not incidental wrap gap,
-     so it gets a touch more room to read as three intentional rows. */
-  row-gap: 8px !important;
+  /* Was 5px, briefly 8px (once nav/policy/copyright became three
+     deliberate full-width lines instead of incidental wrap groups) --
+     "small, like the padding between the product title and price" on the
+     product grid, which measures as a genuine 0px gap there (confirmed
+     live: title's own bottom edge and price's own top edge are pixel-
+     identical, no margin, no flex gap -- the only separation is each
+     line's own line-height: 1 leading, same as every line here). Matched
+     exactly rather than picking an arbitrary "small" number: 0px, relying
+     on the same line-height: 1 the footer's own type already uses (see
+     the shared footer typography rule below) to keep the three lines
+     legibly apart without adding any deliberate space between them. */
+  row-gap: 0px !important;
   /* explicit centered content column, not just an incidental result of
      flex justify-content on an already-full-width row -- keeps the nav +
      policy links from ever reading as a wide, sparse spread on a very
