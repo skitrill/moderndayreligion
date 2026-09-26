@@ -85,26 +85,40 @@ product-price *,
   --mdr-price-blue: #3a3ec4;
 
   /* ---- Neutral MDR system -- the actual palette every template should
-     read from now. Canvas/ink/graphite/muted/border/glass, nothing else;
-     avoid a second ad-hoc gray anywhere downstream of this block.
-     --mdr-paper: the warm canvas everything sits on (same value as
-       --mdr-off-white below -- kept as its own name since "paper" is the
-       conceptual role, not just "a light color").
-     --mdr-ink: near-black/charcoal -- the strong tier (product titles on
-       the PDP stay --mdr-graphite; this is for things that need to read
-       as the SITE's strongest mark: BUY NOW, active/pressed states).
-     --mdr-graphite / --mdr-muted: aliases for the existing text tiers
-       (--mdr-text-gray / -light) under the names this pass standardises
-       on -- same values, not a third gray.
-     --mdr-border: the one structural hairline tier (was blue-tinted via
-       --mdr-primary-rgb; now a neutral cool-gray so grid lines/selector
-       borders/dividers stop reading as a faint blue tint). */
-  --mdr-paper: #f6f3e7;
-  --mdr-ink: rgba(0, 0, 0, 0.85);
-  --mdr-graphite: rgba(0, 0, 0, 0.5);
-  --mdr-muted: rgba(0, 0, 0, 0.35);
-  --mdr-border: rgba(0, 0, 0, 0.08);
-  --mdr-border-strong: rgba(0, 0, 0, 0.3);
+     read from now. Canvas/ink/graphite/muted/border/glass/accent, nothing
+     else; avoid a second ad-hoc gray anywhere downstream of this block.
+     Mineral-neutral pass: solid hex values now, not alpha-black over
+     paper -- alpha-based grays read differently depending on what's
+     behind them (paper vs glass vs the new near-white edge), which
+     fought a single consistent palette; flat values are the same colour
+     everywhere, by design.
+     --mdr-paper: the site canvas -- was a warm cream (#f6f3e7), tested
+       here at a much cleaner near-white mineral tone specifically so it
+       reads closer to the translucent white glass header/footer sit on,
+       not warmer/creamier than them.
+     --mdr-ink: primary/strong text.
+     --mdr-graphite: normal/secondary/product text (was rgba(0,0,0,0.5)).
+     --mdr-muted: the one step quieter than graphite (footer copyright,
+       timestamps) -- derived as a lighter tint toward --mdr-paper rather
+       than a separate value, so it's still clearly the same family.
+     --mdr-border: structural hairlines (was rgba(0,0,0,0.08)).
+     --mdr-border-strong: the purchase-bar/quantity-selector/size-chart-
+       table tier that needs more contrast than a passive line.
+     --mdr-selected: the selected-cell fill (color/size selectors) --
+       was rgba(0,0,0,0.05).
+     --mdr-accent: the ONE spot of colour on an otherwise neutral site --
+       muted indigo, used sparingly (WEBRACK/RETURN directional chevrons,
+       size-chart interaction, focus/active indicators, small functional
+       details only) -- NOT the header/footer/grid/large buttons, which
+       stay neutral. */
+  --mdr-paper: #f7f7f2;
+  --mdr-ink: #202020;
+  --mdr-graphite: #858581;
+  --mdr-muted: #b7b7b1;
+  --mdr-border: #dededa;
+  --mdr-border-strong: #b3b3ad;
+  --mdr-selected: #d8d7d0;
+  --mdr-accent: #5558a6;
   --mdr-glass: var(--mdr-glass-tint, rgba(255, 255, 255, 0.55));
 
   /* off-white product field -- the site's other half, everywhere content
@@ -1095,12 +1109,13 @@ main[data-template='cart'] ~ footer {
    faint blue-tinted background (a bright accent colour on an otherwise
    neutral page). Now the same tone/contrast language the rest of the
    selection system already uses (matches the BLACK/S grid-cell look this
-   spec calls out as the reference): a subtle warm-gray fill, a faint
-   structural border (not a bold accent line), and darker graphite text
-   -- recognisable through tone, not colour. */
+   spec calls out as the reference): a subtle warm-gray fill (--mdr-
+   selected, mineral-neutral pass), a faint structural border (not a bold
+   accent line), and darker ink text -- recognisable through tone, not
+   colour. */
 .variant-picker .variant-option__button-label:has(:checked) {
   border-color: var(--mdr-border-strong) !important;
-  background-color: rgba(0, 0, 0, 0.05) !important;
+  background-color: var(--mdr-selected) !important;
 }
 
 .variant-picker .variant-option__button-label:has(:checked),
@@ -1459,11 +1474,11 @@ footer {
    from page-wrapper's background -- so real content is never at the mercy
    of whatever colour a wrapping element happens to have. */
 main:not([data-template='index']) {
-  background-color: #f6f3e7 !important;
+  background-color: var(--mdr-paper) !important;
 }
 
 .product-card__content {
-  background-color: #f6f3e7 !important;
+  background-color: var(--mdr-paper) !important;
   background-image: var(--mdr-tape) !important;
   border: 0 !important;
   box-shadow: none !important;
@@ -1536,12 +1551,12 @@ main:not([data-template='index']) {
 }
 
 .product-recommendations .resource-list__item {
-  background: #f6f3e7 !important;
+  background: var(--mdr-paper) !important;
 }
 
 .product-recommendations .product-card,
 .product-recommendations .product-card__content {
-  background: #f6f3e7 !important;
+  background: var(--mdr-paper) !important;
 }
 
 /* auto-fit (not a fixed repeat count) so a lone recommendation doesn't
@@ -1652,7 +1667,7 @@ main:not([data-template='index']) {
   box-sizing: border-box !important;
   padding: 6px 8px !important;
   border: 1px solid var(--mdr-border-strong) !important;
-  background: #f6f3e7;
+  background: var(--mdr-paper);
   color: #000000 !important;
   font-size: 0.62rem !important;
   line-height: 1.3 !important;
@@ -2002,7 +2017,7 @@ button.link,
   align-items: stretch;
   width: max-content;
   height: 22px;
-  background: #f6f3e7;
+  background: var(--mdr-paper);
   border: 1px solid var(--mdr-border-strong);
   pointer-events: auto;
 }
@@ -2103,7 +2118,7 @@ button.link,
   width: 140px;
   margin: 0;
   padding: 5px 7px;
-  background: #f6f3e7;
+  background: var(--mdr-paper);
   border: 1px solid var(--mdr-border-strong);
   font-family: var(--font-accent--family, inherit);
   font-size: 0.6rem;
@@ -2565,19 +2580,22 @@ body::after {
   border-left: 0 !important;
 }
 
-/* selected size -> deep off-white fill, dark text */
+/* selected size -> the one shared selected-cell fill (mineral-neutral
+   pass -- was its own ad-hoc #d6d1c4/#1a1a1a pairing, now the same
+   --mdr-selected/--mdr-ink tokens the color selector's own selected
+   state uses, further up this file). */
 .variant-option--buttons .variant-option__button-label__pill {
   inset: 0 !important;
-  background: #d6d1c4 !important;
+  background: var(--mdr-selected) !important;
 }
 
 .variant-option--buttons .variant-option__button-label:has(input:checked) {
-  color: #1a1a1a !important;
+  color: var(--mdr-ink) !important;
 }
 
 .variant-option--buttons .variant-option__button-label:has(input:checked)
   :is(.variant-option__button-label__text, span) {
-  color: #1a1a1a !important;
+  color: var(--mdr-ink) !important;
 }
 
 /* phone: narrower side gutters */
@@ -2621,18 +2639,27 @@ main .product-information__grid .size-chart:not(._):not(._):not(._) * {
   font-weight: 400 !important;
 }
 
+/* the +/- disclosure icon specifically -- "size-chart interaction" is one
+   of the small functional spots --mdr-accent is meant for; the label text
+   next to it stays graphite (the shared rule further up this file). */
+.size-chart__trigger .icon-plus {
+  color: var(--mdr-accent) !important;
+}
+
 /* ==========================================================================
-   Highlight / hover / text-selection -> deep off-white
+   Highlight / hover / text-selection / focus -> neutral system, mineral-
+   neutral pass (was an ad-hoc #d6d1c4/#1a1a1a pairing, now the shared
+   --mdr-selected/--mdr-ink tokens)
    ========================================================================== */
 
 ::selection {
-  background: #d6d1c4;
-  color: #1a1a1a;
+  background: var(--mdr-selected);
+  color: var(--mdr-ink);
 }
 
 ::-moz-selection {
-  background: #d6d1c4;
-  color: #1a1a1a;
+  background: var(--mdr-selected);
+  color: var(--mdr-ink);
 }
 
 /* link highlight on hover / active (overrides the dark-brown in base.css) --
@@ -2640,14 +2667,26 @@ main .product-information__grid .size-chart:not(._):not(._):not(._) * {
    animation plays FROM; without it the highlight just snapped on/off. */
 a:not([class*='button']):not(.header-logo) {
   transition: background-color var(--animation-speed) var(--animation-easing),
-    color var(--animation-speed) var(--animation-easing);
+    color var(--animation-speed) var(--animation-easing), outline-color var(--animation-speed) var(--animation-easing);
 }
 
 a:not([class*='button']):not(.header-logo):hover,
-a:not([class*='button']):not(.header-logo):active,
+a:not([class*='button']):not(.header-logo):active {
+  background-color: var(--mdr-selected) !important;
+  color: var(--mdr-ink) !important;
+}
+
+/* Focus/active indicator -- the ONE place a keyboard user's focus ring
+   gets the accent colour instead of the neutral hover/active fill above:
+   "focus/active indicators" is explicitly one of the small, functional
+   spots --mdr-accent is meant for, not a background treatment. Outline
+   only, no fill -- stays a clearly visible ring without becoming a block
+   of colour. */
 a:not([class*='button']):not(.header-logo):focus-visible {
-  background-color: #d6d1c4 !important;
-  color: #1a1a1a !important;
+  background-color: var(--mdr-selected) !important;
+  color: var(--mdr-ink) !important;
+  outline: 2px solid var(--mdr-accent);
+  outline-offset: 1px;
 }
 
 /* ...but the homepage product cards never take that white highlight */
@@ -3164,6 +3203,11 @@ main[data-template='collection']
   /* as tall as the WEBRACK cap height */
   font-size: 1.7em;
   line-height: 0.6;
+  /* the one accent touch on WEBRACK/RETURN -- a literal directional mark
+     (the chevron itself), not the label text next to it, which stays
+     ink. "Small functional details," not a colour treatment of the
+     control as a whole. */
+  color: var(--mdr-accent);
 }
 
 .mdr-allbar__chev svg {
@@ -3174,15 +3218,15 @@ main[data-template='collection']
 }
 
 .mdr-allbar.is-open .mdr-allbar__chev:not(.mdr-allbar__chev--back) {
-  background: #e9e1c4;
-  color: #1a1a1a;
+  background: var(--mdr-selected);
+  color: var(--mdr-ink);
   padding: 2px 4px;
   margin-inline-start: 2px;
   /* the divider marking the end of "WEBRACK «" now sits right after the
      chevron chip, not between the label and the chevron -- so the label
      and its chevron read as one unit before the list starts */
   margin-inline-end: 8px;
-  border-inline-end: 1px solid rgba(0, 0, 0, 0.12);
+  border-inline-end: 1px solid var(--mdr-border);
   letter-spacing: 0.04em;
 }
 
@@ -3256,7 +3300,7 @@ main[data-template='collection']
      spans the full row, list included. A second border-top here used to
      sit right on top of that one, a hair off from it, and read as a
      double line. */
-  background-color: #f6f3e7;
+  background-color: var(--mdr-paper);
   background-image: none;
 }
 
@@ -3423,7 +3467,7 @@ main[data-template='collection']
 /* 1px grid gaps read as hairlines: the grid paints a faint line colour and
    every card fills its cell with solid black on top. */
 main[data-template='collection'] [id$='__product_list_fa6P9H'] .resource-list__item {
-  background: #f6f3e7 !important;
+  background: var(--mdr-paper) !important;
 }
 
 main[data-template='collection'] [id$='__product_list_fa6P9H'] .resource-list--grid {
@@ -3435,7 +3479,7 @@ main[data-template='collection'] [id$='__product_list_fa6P9H'] .resource-list--g
    doesn't sit flush on the row's hairline */
 main[data-template='collection'] [id$='__product_list_fa6P9H'] .product-card,
 main[data-template='collection'] [id$='__product_list_fa6P9H'] .product-card__content {
-  background: #f6f3e7 !important;
+  background: var(--mdr-paper) !important;
   background-image: none !important;
   box-shadow: none !important;
   padding: 0 !important;
@@ -3470,7 +3514,7 @@ main[data-template='collection'] [id$='__product_list_fa6P9H'] .resource-list__i
 main[data-template='collection'] [id$='__product_list_fa6P9H'] .card-gallery,
 main[data-template='collection'] [id$='__product_list_fa6P9H'] .product-media-container {
   position: relative;
-  background-color: #f6f3e7 !important;
+  background-color: var(--mdr-paper) !important;
   background-image: none !important;
   border: 0 !important;
   border-radius: 0 !important;
