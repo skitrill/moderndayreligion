@@ -70,28 +70,53 @@ product-price *,
    ========================================================================== */
 :root {
   /* ---- Colour ------------------------------------------------------------
-     --mdr-primary is the ONE experimental brand colour -- header/footer
-     fill, WEBRACK/RETURN accents, primary buttons. Every derived
-     line/border below reads it via --mdr-primary-rgb + an opacity, so
-     swapping the hex here re-tunes every hairline/border on the site in
-     one place, never a second hardcoded colour. NOT product photography,
-     NOT the unrelated blue price colour (--mdr-price-blue), NOT the
-     semantic --color-error token (theme-styles-variables.liquid) that
-     happens to share the old red hex by coincidence. */
+     --mdr-primary: kept in the design system (NOT deleted) but retired
+     from ordinary interface use as of the neutral MDR system pass. It was
+     the ONE experimental brand colour -- header/footer fill, WEBRACK/
+     RETURN accents, primary buttons, structural hairlines -- but that was
+     built around the earlier all-blue direction; the site is intentionally
+     neutral now (warm paper + glass + ink + graphite), so product artwork
+     can carry the colour instead of the chrome fighting it. Still resolves
+     to the same value for anything that references it directly (nothing
+     in ordinary UI does any more -- audited and moved to the neutral
+     tokens below), and stays available if a future drop wants an accent. */
   --mdr-primary: #040061;
   --mdr-primary-rgb: 4, 0, 97;
   --mdr-price-blue: #3a3ec4;
 
+  /* ---- Neutral MDR system -- the actual palette every template should
+     read from now. Canvas/ink/graphite/muted/border/glass, nothing else;
+     avoid a second ad-hoc gray anywhere downstream of this block.
+     --mdr-paper: the warm canvas everything sits on (same value as
+       --mdr-off-white below -- kept as its own name since "paper" is the
+       conceptual role, not just "a light color").
+     --mdr-ink: near-black/charcoal -- the strong tier (product titles on
+       the PDP stay --mdr-graphite; this is for things that need to read
+       as the SITE's strongest mark: BUY NOW, active/pressed states).
+     --mdr-graphite / --mdr-muted: aliases for the existing text tiers
+       (--mdr-text-gray / -light) under the names this pass standardises
+       on -- same values, not a third gray.
+     --mdr-border: the one structural hairline tier (was blue-tinted via
+       --mdr-primary-rgb; now a neutral cool-gray so grid lines/selector
+       borders/dividers stop reading as a faint blue tint). */
+  --mdr-paper: #f6f3e7;
+  --mdr-ink: rgba(0, 0, 0, 0.85);
+  --mdr-graphite: rgba(0, 0, 0, 0.5);
+  --mdr-muted: rgba(0, 0, 0, 0.35);
+  --mdr-border: rgba(0, 0, 0, 0.08);
+  --mdr-border-strong: rgba(0, 0, 0, 0.3);
+  --mdr-glass: var(--mdr-glass-tint, rgba(255, 255, 255, 0.55));
+
   /* off-white product field -- the site's other half, everywhere content
      (not brand chrome) sits. */
-  --mdr-off-white: #f6f3e7;
+  --mdr-off-white: var(--mdr-paper);
 
   /* body copy grey -- the ONE grey every template's normal text reads,
      same value the product-grid card titles introduced it with.
      -light is for already-subdued copy (footer copyright, timestamps)
      that should read one notch quieter still, not a third ad-hoc grey. */
-  --mdr-text-gray: rgba(0, 0, 0, 0.5);
-  --mdr-text-gray-light: rgba(0, 0, 0, 0.35);
+  --mdr-text-gray: var(--mdr-graphite);
+  --mdr-text-gray-light: var(--mdr-muted);
 
   /* structural hairlines -- ONE token for every quiet structural border
      site-wide: PDP image frame, color/size selectors, product-grid
@@ -101,13 +126,15 @@ product-price *,
      PDP line) that didn't visually agree with each other -- confirmed as
      a "purple/lavender inconsistency" once actually compared side by
      side, so everything above now derives from this one value instead.
+     Neutral MDR system: was rgba(var(--mdr-primary-rgb), 0.08) (a blue
+     tint) -- now the plain neutral --mdr-border above.
      --mdr-border-strong stays separate and deliberately stronger: it's
      reserved for the purchase bar / quantity-selector's own container
      border (an actionable control, not a passive structural line) and
      the size-chart table's internal cell gridlines, which need more
-     contrast to read as a table. Two tiers, not two accidents. */
-  --mdr-border-faint: rgba(var(--mdr-primary-rgb), 0.08);
-  --mdr-border-strong: rgba(var(--mdr-primary-rgb), 0.3);
+     contrast to read as a table. Two tiers, not two accidents -- also
+     now neutral instead of blue-tinted (declared above, with --mdr-border). */
+  --mdr-border-faint: var(--mdr-border);
 
   /* ---- Overscroll/safe-area -- one flat value per PAGE (not per scroll
      position, not per header/footer element -- a previous JS pass tried
@@ -1014,15 +1041,16 @@ main[data-template='cart'] ~ footer {
    technical/subordinate to the product itself, not competing with it.
    Still readable (0.5 opacity black, same value used everywhere else on
    the site as the "standard" body grey, not an accessibility-failing
-   faint one). Applies whether a variant is selected or not -- selection
-   is communicated by the filled-cell background/border below, not by
-   darkening the text. */
+   faint one). Was: applies whether selected or not, with only the fill/
+   border below carrying selection. Neutral MDR system now asks for
+   "darker graphite text" on the selected cell too (see :has(:checked)
+   below, more specific, wins over this) -- selection is fill + border +
+   text weight together now, not fill/border alone. */
 .variant-picker .variant-option[data-testid='variant-option-single'],
 .variant-picker .variant-option[data-testid='variant-option-single'] .variant-option__swatch-value,
 .variant-picker .variant-option__swatch-value,
-.variant-picker .variant-option__button-label,
-.variant-picker .variant-option__button-label:has(:checked) {
-  color: var(--mdr-text-gray, rgba(0, 0, 0, 0.5)) !important;
+.variant-picker .variant-option__button-label {
+  color: var(--mdr-graphite) !important;
 }
 
 /* Color/size labels were the theme's default font-size (~0.7rem) --
@@ -1042,15 +1070,21 @@ main[data-template='cart'] ~ footer {
   border-color: var(--mdr-border-faint, rgba(4, 0, 97, 0.08)) !important;
 }
 
-/* Selected state: communicated by a filled cell (thin primary-colour
-   border + a faint primary-tinted background), not by the text itself
-   getting darker/heavier -- text colour above is deliberately identical
-   selected or not. Background toned down further (was 0.1) -- still
-   reads clearly next to the faded borders above without becoming a loud
-   block of colour. */
+/* Selected state -- neutral MDR system: was a thin deep-blue border +
+   faint blue-tinted background (a bright accent colour on an otherwise
+   neutral page). Now the same tone/contrast language the rest of the
+   selection system already uses (matches the BLACK/S grid-cell look this
+   spec calls out as the reference): a subtle warm-gray fill, a faint
+   structural border (not a bold accent line), and darker graphite text
+   -- recognisable through tone, not colour. */
 .variant-picker .variant-option__button-label:has(:checked) {
-  border-color: var(--mdr-primary, #040061) !important;
-  background-color: rgba(var(--mdr-primary-rgb, 4, 0, 97), 0.06) !important;
+  border-color: var(--mdr-border-strong) !important;
+  background-color: rgba(0, 0, 0, 0.05) !important;
+}
+
+.variant-picker .variant-option__button-label:has(:checked),
+.variant-picker .variant-option__button-label:has(:checked) * {
+  color: var(--mdr-ink) !important;
 }
 
 main .product-information__grid :is(h1, h2, h3, h4, h5, h6, p, li, legend,
@@ -1565,7 +1599,7 @@ main:not([data-template='index']) {
   flex-wrap: nowrap !important;
   align-items: stretch !important;
   gap: 0 !important;
-  border: 1px solid rgba(var(--mdr-primary-rgb), 0.3) !important;
+  border: 1px solid var(--mdr-border-strong) !important;
   /* anchor for the quantity/limit error message below -- position:
      relative, not a layout change, so this doesn't disturb the row's own
      sizing */
@@ -1596,7 +1630,7 @@ main:not([data-template='index']) {
   margin-bottom: 8px;
   box-sizing: border-box !important;
   padding: 6px 8px !important;
-  border: 1px solid rgba(var(--mdr-primary-rgb), 0.3) !important;
+  border: 1px solid var(--mdr-border-strong) !important;
   background: #f6f3e7;
   color: #000000 !important;
   font-size: 0.62rem !important;
@@ -1707,18 +1741,21 @@ main:not([data-template='index']) {
 
 /* BUY NOW -- replaces the Shop Pay wallet button (blocks/accelerated-
    checkout.liquid): a real, independently-coloured control instead of
-   Shop Pay's own non-restylable purple brand button. Deep blue, not
-   purple -- ADD TO CART stays black (its own existing style, untouched),
-   giving CHECKOUT the other half of a deliberate two-action black/blue
-   hierarchy. Fills the accelerated-checkout-block container exactly
-   (that container is already height/width-matched to the row above). */
+   Shop Pay's own non-restylable purple brand button. Neutral MDR system:
+   was deep blue (a two-action black/blue hierarchy) -- blue is retired
+   from ordinary interface use, so this is a dark graphite instead. Still
+   deliberately distinct from ADD TO CART's own near-black (its own
+   existing style, untouched) -- two dark tones instead of black/colour,
+   not identical, not colour. Fills the accelerated-checkout-block
+   container exactly (that container is already height/width-matched to
+   the row above). */
 .mdr-buy-now {
   display: inline-flex !important;
   align-items: center !important;
   justify-content: center !important;
   width: 100% !important;
   height: 100% !important;
-  background: var(--mdr-primary, #040061) !important;
+  background: #333333 !important;
   color: #ffffff !important;
   border: 0 !important;
   font-family: inherit;
@@ -1945,7 +1982,7 @@ button.link,
   width: max-content;
   height: 22px;
   background: #f6f3e7;
-  border: 1px solid rgba(var(--mdr-primary-rgb), 0.3);
+  border: 1px solid var(--mdr-border-strong);
   pointer-events: auto;
 }
 
@@ -2046,7 +2083,7 @@ button.link,
   margin: 0;
   padding: 5px 7px;
   background: #f6f3e7;
-  border: 1px solid rgba(var(--mdr-primary-rgb), 0.3);
+  border: 1px solid var(--mdr-border-strong);
   font-family: var(--font-accent--family, inherit);
   font-size: 0.6rem;
   letter-spacing: 0.04em;
@@ -2292,21 +2329,63 @@ body:has(main[data-template='index']) .page-wrapper {
   --mdr-glass-shadow: 0 4px 24px rgba(0, 0, 0, 0.06); /* new */
 }
 
-/* .header__underlay-closed is the real paint layer behind the top row's
-   own content (see sections/header.liquid, [data-header-rows='single']
-   .header__underlay-closed { background: var(--color-background-top-row) }
-   -- overridden here so it reads the shared glass tokens instead of a
-   separate theme-setting colour). The logo/CART/USER text is switched
-   from white to graphite below (was: white on solid blue). backdrop-
-   filter is scoped to this one ~68px-tall row, not any document-spanning
-   layer -- safe for scroll performance and doesn't interact with the
-   safe-area strips (body::before/::after, untouched, still flat/solid). */
-[data-header-rows='single'] .header__underlay-closed {
+/* ---- ONE continuous surface for the header + WEBRACK/RETURN together
+   (navigation-integration pass). Was: .header__underlay-closed painted
+   its own glass panel for the top row, and .mdr-allbar-wrap/.mdr-allbar
+   painted a SECOND, separately-declared (if matching-valued) glass panel
+   for the row below -- same tokens, but still two panels, which is what
+   read as "a separate cream/glass tab attached underneath" rather than
+   one component. The fix moves the actual paint (background/blur/
+   border/shadow) up to #header-group, the real shared ancestor of both
+   the header row AND .mdr-allbar-wrap (confirmed earlier this session:
+   mdr-header-enhance.liquid inserts the wrap as the header's own next
+   SIBLING, both direct children of #header-group) -- every panel below
+   this point becomes transparent and just lets this one surface show
+   through, so there's exactly one background, one blur, one border, one
+   shadow, full stop. #header-group already has position:relative on
+   desktop (further up this file, needed for the WEBRACK-merge JS); it's
+   unconditional now, not just at that breakpoint. */
+#header-group {
+  position: relative;
   background: var(--mdr-glass-tint) !important;
   backdrop-filter: var(--mdr-glass-blur) !important;
   -webkit-backdrop-filter: var(--mdr-glass-blur) !important;
   border-bottom: 1px solid var(--mdr-glass-border) !important;
   box-shadow: var(--mdr-glass-shadow) !important;
+}
+
+/* .header__underlay-closed (the header row's own paint layer,
+   sections/header.liquid) and the WEBRACK/RETURN wrap + pill: all
+   transparent now, letting #header-group's one surface above show
+   through instead of layering their own panels on top of it. */
+[data-header-rows='single'] .header__underlay-closed,
+.mdr-allbar-wrap,
+.mdr-allbar {
+  background: transparent !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+  box-shadow: none !important;
+}
+
+/* The angled division between the header row and WEBRACK/RETURN (mobile
+   stacked layout) -- NOT a separate block underneath, a border on the
+   row itself. Full-width straight hairline for most of the row, with
+   .mdr-allbar's own existing diagonal-cut outline (clip-path + its SVG
+   stroke, .mdr-allbar__border, both untouched -- "preserve the current
+   angled silhouette") providing the actual angled character right where
+   the WEBRACK/RETURN label sits -- the geometry now reads as a division
+   CUT INTO the header's own surface at that spot, not a shape attached
+   below it. On desktop .mdr-allbar-wrap is absolutely positioned inline
+   with the logo (see the min-width:750px block above) with no row of its
+   own to divide, so this border naturally doesn't apply there. */
+.mdr-allbar-wrap {
+  border-top: 1px solid var(--mdr-border);
+}
+
+@media screen and (min-width: 750px) {
+  .mdr-allbar-wrap {
+    border-top: 0 !important;
+  }
 }
 
 /* Fallback for browsers without backdrop-filter support (older Android
@@ -2315,9 +2394,7 @@ body:has(main[data-template='index']) .page-wrapper {
    scrolling underneath, so this raises opacity to read as a deliberate
    translucent-but-substantial panel instead. */
 @supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
-  [data-header-rows='single'] .header__underlay-closed,
-  .mdr-allbar-wrap,
-  .mdr-allbar,
+  #header-group,
   footer {
     background-color: rgba(246, 243, 231, 0.92) !important;
   }
@@ -2443,7 +2520,7 @@ body::after {
 .variant-option--buttons .variant-option__button-label {
   flex: 1 1 0 !important;
   border: 0 !important;
-  border-left: 1px solid rgba(var(--mdr-primary-rgb), 0.16) !important;
+  border-left: 1px solid rgba(0, 0, 0, 0.12) !important;
   padding: 4px 4px !important;
   min-height: 24px !important;
   align-items: center !important;
@@ -2481,15 +2558,16 @@ body::after {
 
 /* size-chart panel -> the site's own primary blue, not mango-yellow --
    orange belongs to product graphics/content, not interface chrome.
-   Lightened slightly (0.8 alpha, was solid) so it sits at roughly the
-   same visual weight as the product title rather than out-shouting it.
+   Neutral MDR system: was deep blue -- SIZE CHART is a utility link, not
+   a coloured CTA, so it now reads as the same graphite as the product
+   title/body copy around it instead of standing out as brand colour.
    The product-copy rule that greys this column is (0,3,2) specific and
    !important, so we out-specify it with padded :not()s. */
 .size-chart,
 .size-chart *,
 main .product-information__grid .size-chart:not(._):not(._):not(._),
 main .product-information__grid .size-chart:not(._):not(._):not(._) * {
-  color: rgba(var(--mdr-primary-rgb, 4, 0, 97), 0.8) !important;
+  color: var(--mdr-graphite) !important;
 }
 
 .size-chart__content th,
@@ -2619,18 +2697,19 @@ main .product-information__grid .product-details {
 
 /* PDP price -> graphite, same family as the product title (--mdr-text-
    gray, 0.5 alpha) but slightly darker for a touch more presence -- was
-   blue, which was pulling attention away from the product itself. Blue
-   is reserved for actual actions/brand moments (SIZE CHART, BUY NOW)
-   now, not price display. */
+   blue. Neutral MDR system: blue is retired from ordinary interface use
+   entirely now (SIZE CHART and BUY NOW below included), not just price
+   display -- the site runs on the neutral ink/graphite/muted system, no
+   colour accent, so product artwork is what actually reads as colour. */
 main .product-information__grid.product-information__grid
   :is(.price, .price *, product-price, product-price *) {
   color: rgba(0, 0, 0, 0.65) !important;
 }
 
-/* ...size chart -> the site's own primary blue, lightened, not mango yellow */
+/* ...size chart -> graphite, a utility link rather than a coloured CTA */
 main .product-information__grid.product-information__grid .size-chart,
 main .product-information__grid.product-information__grid .size-chart * {
-  color: rgba(var(--mdr-primary-rgb, 4, 0, 97), 0.8) !important;
+  color: var(--mdr-graphite) !important;
 }
 
 /* ...product title -> matches the homepage product-card title's own grey
@@ -2874,16 +2953,11 @@ main[data-template='collection']
      bottom padding either -- the button's own bottom edge now sits flush
      against the page below it */
   padding: 3px 0 0 0;
-  /* same shared glass tokens as the header bar above it (glass
-     experiment -- was solid var(--mdr-primary) via the same token, see
-     that rule's own comment; the button's own fill below now matches
-     this instead of staying solid off-white against it). Mobile-only in
-     practice: on desktop .mdr-allbar-wrap is shrunk to max-content (see
-     the header-merge rules near the top of this file) so this background
-     only shows on mobile's full-width strip. */
-  background: var(--mdr-glass-tint);
-  backdrop-filter: var(--mdr-glass-blur);
-  -webkit-backdrop-filter: var(--mdr-glass-blur);
+  /* No own background/blur any more (navigation-integration pass) --
+     #header-group now paints ONE shared glass surface for the header row
+     and this row together (see that rule, further up this file), and
+     this is set transparent there too. Kept here only as documentation:
+     this element contributes no paint of its own, just layout. */
 }
 
 .mdr-allbar {
@@ -2949,16 +3023,15 @@ main[data-template='collection']
    it's uniform width at any angle. */
 .mdr-allbar {
   clip-path: polygon(0 0, calc(100% - 18px) 0, 100% 100%, 0 100%);
-  /* glass experiment: was a solid #f6f3e7 cream cutout against the blue
-     header -- WEBRACK/RETURN now belongs to the same glass surface as
-     the header/footer instead of reading as an unrelated cream
-     attachment. clip-path still applies to backdrop-filter the same way
-     it applies to background -- the blur only shows through the cut
-     ribbon shape, not a square behind it. Geometry (the diagonal cut)
-     is untouched. */
-  background-color: var(--mdr-glass-tint);
-  backdrop-filter: var(--mdr-glass-blur);
-  -webkit-backdrop-filter: var(--mdr-glass-blur);
+  /* Navigation-integration pass: no fill of its own any more -- was a
+     solid #f6f3e7 cream cutout, then (glass experiment) the same glass
+     tint as the header. Now fully transparent: #header-group's one
+     shared surface (further up this file) shows straight through, and
+     the diagonal shape is carried entirely by clip-path (still applied,
+     geometry untouched) plus .mdr-allbar__border's own SVG outline below
+     -- an etched division in the continuous surface, not a block sitting
+     on top of it. */
+  background-color: transparent;
   background-image: none;
 }
 
@@ -3014,10 +3087,11 @@ main[data-template='collection']
   padding: 2px 8px;
   border: 0;
   background: none;
-  /* dark red -- the opacity below (0.5 idle / 1 open) already gives this
-     a "faded" look while closed without needing a separate faded colour
-     value. */
-  color: var(--mdr-primary);
+  /* neutral MDR system: was blue -- the opacity below (0.5 idle / 1 open)
+     already gives this a "faded" look while closed without needing a
+     separate faded colour value, so ink alone (not an accent colour)
+     carries the same effect. */
+  color: var(--mdr-ink);
   font: inherit;
   /* WEBRACK / RETURN, same ~10% bump over .mdr-allbar's own (now smaller)
      0.66rem, so it's still harder to miss / mistap next to the logo */
@@ -3062,7 +3136,7 @@ main[data-template='collection']
      chevron chip, not between the label and the chevron -- so the label
      and its chevron read as one unit before the list starts */
   margin-inline-end: 8px;
-  border-inline-end: 1px solid rgba(var(--mdr-primary-rgb), 0.16);
+  border-inline-end: 1px solid rgba(0, 0, 0, 0.12);
   letter-spacing: 0.04em;
 }
 
@@ -3143,7 +3217,7 @@ main[data-template='collection']
 .mdr-allbar__list a {
   display: inline-flex;
   align-items: center;
-  color: var(--mdr-primary);
+  color: var(--mdr-ink);
   text-decoration: none;
   opacity: 0.72;
   white-space: nowrap;
@@ -3448,21 +3522,23 @@ main[data-template='collection'] [id$='__product_list_fa6P9H'] .product-card pro
   line-height: 1.25 !important;
   letter-spacing: 0.02em !important;
   text-align: left !important;
-  /* ash/grey, not near-black -- title only; price overrides this
-     immediately below to match the PDP's own price treatment. */
-  color: var(--mdr-text-gray, rgba(0, 0, 0, 0.5)) !important;
+  /* ash/grey, not near-black -- same tier for both title and price now
+     (see the comment further down where price used to get its own
+     bolder/darker override). */
+  color: var(--mdr-graphite) !important;
   text-transform: uppercase !important;
 }
 
-/* Price specifically -> same graphite hierarchy the PDP price uses
-   (bold, slightly darker than the product name/title above it) instead
-   of sharing the title's plain weight/tone -- the PDP already
-   deliberately differentiates title vs price this way; the grid card
-   was treating both identically, flattening that hierarchy. */
-main[data-template='collection'] [id$='__product_list_fa6P9H'] .product-card product-price .price {
-  font-weight: 700 !important;
-  color: rgba(0, 0, 0, 0.65) !important;
-}
+/* Price -> back to matching the title's own weight/tone exactly (was
+   briefly bolded/darkened here to mirror the PDP's title/price
+   hierarchy, then reversed by explicit request: on the grid specifically,
+   title and price should read as one information system, not two
+   different weights -- "MODERN CREW PRINT" / "$9.99" as one quiet block
+   under the artwork, not price competing for attention. The PDP's own
+   price treatment is intentionally untouched -- this reversal is grid-
+   only, the shared .text-block p / product-price .price rule above
+   already gives price the exact same weight/font-size/colour as the
+   title, nothing further to add here now. */
 
 main[data-template='collection'] [id$='__product_list_fa6P9H'] .product-card product-price,
 main[data-template='collection'] [id$='__product_list_fa6P9H'] .product-card product-price.spacing-style,
