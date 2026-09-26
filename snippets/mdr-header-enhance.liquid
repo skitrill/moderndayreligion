@@ -481,6 +481,93 @@
       /* sit it directly below the header, on every page */
       header.parentNode.insertBefore(wrap, header.nextSibling);
 
+      /* Connect-the-rule pass: the thin horizontal line (.mdr-allbar-wrap
+         ::before, CSS) used to be positioned with a flat CSS margin/flex-
+         grow guess (10px gap, same on every page regardless of the actual
+         rendered chevron) -- close, but a visible seam, and no two
+         chevron glyphs land at exactly the same pixel offset from the
+         button's own edge (WEBRACK's double-chevron vs RETURN's single
+         one, different label lengths sharing one fixed-width box, etc).
+         "The rule should begin directly from the mouth/tip-side of the
+         last chevron... no visible 1px gap... optically identical" needs
+         the line to start at the chevron's own drawn geometry, not the
+         button's box edge -- so this measures it for real instead of
+         guessing.
+         getBoundingClientRect() on the <path> elements themselves (not
+         the <svg>, and not the viewBox numbers) returns their actual
+         rendered, POST-transform position in real page pixels -- already
+         accounting for the icon's own font-size-relative scaling AND the
+         scaleX(-1) flip RETURN's chevron uses, for free, with no manual
+         viewBox/transform math to keep in sync if either ever changes.
+         Desktop bails out entirely: .mdr-allbar-wrap shrinks to
+         width:max-content there (a compact pill beside the logo, see
+         mdr-custom.css), so this connecting line is already 0px wide and
+         invisible -- nothing to align. Mobile only, matching the same
+         750px threshold every other measurement in this file already
+         uses. */
+      function positionAllbarRule() {
+        if (window.innerWidth >= 750) {
+          wrap.style.removeProperty('--mdr-rule-left');
+          wrap.style.removeProperty('--mdr-rule-width');
+          wrap.style.removeProperty('--mdr-rule-top');
+          wrap.style.removeProperty('--mdr-rule-height');
+          return;
+        }
+        var svg = toggle.querySelector('.mdr-allbar__chev svg');
+        if (!svg) return;
+        var paths = svg.querySelectorAll('path');
+        if (!paths.length) return;
+
+        var minX = Infinity, maxX = -Infinity, minY = Infinity, maxY = -Infinity;
+        for (var i = 0; i < paths.length; i++) {
+          var r = paths[i].getBoundingClientRect();
+          minX = Math.min(minX, r.left);
+          maxX = Math.max(maxX, r.right);
+          minY = Math.min(minY, r.top);
+          maxY = Math.max(maxY, r.bottom);
+        }
+
+        var wrapRect = wrap.getBoundingClientRect();
+        var svgRect = svg.getBoundingClientRect();
+        var vb = svg.viewBox && svg.viewBox.baseVal;
+        /* stroke-width="1.6" is authored into every chevron path (both
+           CHEV_SVG and CHEV_SVG_SINGLE, above) in viewBox units -- scaling
+           it by the svg's own rendered-size-to-viewBox ratio gives the
+           REAL on-screen stroke thickness at whatever size this icon
+           currently renders at, so the connecting line is always drawn at
+           the chevron's own actual weight, not a hardcoded pixel guess
+           that would drift if the icon's font-size (and therefore its
+           size) ever changes. */
+        var strokeWidth = (vb && vb.width)
+          ? 1.6 * (svgRect.width / vb.width)
+          : 1.6;
+        var centerY = (minY + maxY) / 2;
+
+        wrap.style.setProperty('--mdr-rule-height', Math.max(1, strokeWidth) + 'px');
+        wrap.style.setProperty('--mdr-rule-top', (centerY - wrapRect.top - Math.max(1, strokeWidth) / 2) + 'px');
+
+        if (isHome) {
+          /* WEBRACK: line picks up exactly where the last chevron's own
+             drawn stroke ends (its rightmost point -- the vertex a
+             right-pointing chevron comes to), continuing on in the same
+             direction it's already pointing. */
+          wrap.style.setProperty('--mdr-rule-left', (maxX - wrapRect.left) + 'px');
+          wrap.style.setProperty('--mdr-rule-width', Math.max(0, wrapRect.right - maxX) + 'px');
+        } else {
+          /* RETURN: mirrored -- the line runs in from the row's own left
+             edge and terminates at the left-pointing chevron's own
+             leftmost point, arriving at RETURN from the direction the
+             chevron is pointing (back), not the direction WEBRACK's rule
+             departs in. */
+          wrap.style.setProperty('--mdr-rule-left', '0px');
+          wrap.style.setProperty('--mdr-rule-width', Math.max(0, minX - wrapRect.left) + 'px');
+        }
+      }
+
+      positionAllbarRule();
+      window.addEventListener('resize', positionAllbarRule, { passive: true });
+      window.addEventListener('load', positionAllbarRule);
+
       /* line its label up under the logo, at every breakpoint (the header
          centres its own content on desktop, so a fixed gutter won't do) */
       /* the button now starts flush at the true left edge (CSS:

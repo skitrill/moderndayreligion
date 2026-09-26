@@ -3414,21 +3414,43 @@ main[data-template='collection']
 
 /* Minimal rail pass: the trailing line used to end in a short diagonal
    flourish (echoing the old ribbon's own cut) -- simplified to one plain
-   straight hairline now ("exactly the same neutral line colour/weight as
-   the product-grid dividers", not its own decorative detail). One
-   pseudo-element on the WRAP (not the button), reordered after it via
-   flex `order` so it always fills whatever space is left in the row
-   regardless of viewport width -- no JS measurement needed. Hidden
-   outright while WEBRACK/RETURN is open (see below): the expanding
-   category list claims the row instead. */
+   straight hairline. Was a flex-item pseudo-element (order + flex:1 1 auto
+   + a flat 10px margin guess), same neutral grey as the product-grid
+   dividers (var(--mdr-border)) -- "connect the rule directly into the
+   chevron" pass replaces both of those: position is now a real measured
+   pixel value (mdr-header-enhance.liquid's positionAllbarRule(), written
+   to a handful of --mdr-rule-* custom properties on this same element),
+   because the old fixed margin left a visible gap that varied slightly
+   between WEBRACK's double-chevron and RETURN's single one and never
+   actually touched either; and colour is now var(--mdr-ink) at the same
+   0.5 opacity .mdr-allbar__toggle itself idles at (not --mdr-border) so
+   the line and the chevron read as one continuous stroke -- literally the
+   same colour value and the same opacity, not two things visually tuned
+   to look close. Height is likewise a measured match to the chevron's own
+   rendered stroke-width, not a flat 1px guess.
+   position:absolute (not a flex item any more) -- removed from the wrap's
+   own flex flow entirely, so .mdr-allbar's own position (still a real
+   flex item) no longer depends on this element's flex-grow to get pushed
+   to either end of the row; see .mdr-allbar--back's own margin-inline-
+   start:auto, further down, for how RETURN still lands at the row's end
+   without it.
+   Defaults to 0 width/0 left until JS runs -- happens synchronously,
+   right after this element is inserted into the DOM, so there's no
+   flash of a wrongly-positioned line to see first. Desktop: JS clears
+   these properties outright there (.mdr-allbar-wrap is width:max-content
+   on desktop, no line to show at all), so the 0px fallback is what
+   actually renders -- correctly invisible, matching desktop's existing
+   look exactly. */
 .mdr-allbar-wrap::before {
   content: '';
-  order: 2;
-  align-self: center;
-  flex: 1 1 auto;
-  height: 1px;
-  margin-inline-start: 10px;
-  background: var(--mdr-border);
+  position: absolute;
+  left: var(--mdr-rule-left, 0px);
+  top: var(--mdr-rule-top, 0px);
+  width: var(--mdr-rule-width, 0px);
+  height: var(--mdr-rule-height, 1px);
+  background: var(--mdr-ink);
+  opacity: 0.5;
+  pointer-events: none;
 }
 
 .mdr-allbar-wrap:has(.mdr-allbar.is-open)::before {
@@ -3460,17 +3482,17 @@ main[data-template='collection']
    flat appearance as WEBRACK throughout -- nothing here touches any of
    those, only WHICH END of the row the bar and the divider land on. */
 @media screen and (max-width: 749px) {
-  /* the divider now leads (order swaps with the bar below), trailing
-     margin instead of leading -- mirrors margin-inline-start:10px above
-     exactly, just flipped to the other side of the line. */
-  .mdr-allbar-wrap:has(.mdr-allbar--back)::before {
-    order: 0;
-    margin-inline-start: 0;
-    margin-inline-end: 10px;
-  }
-
+  /* Pushes RETURN to the row's own end. Used to be `order: 2` on the bar
+     plus `flex: 1 1 auto` on the (then flex-item) divider pseudo-element
+     eating the leftover space in front of it -- now that the divider is
+     position:absolute (connect-the-rule pass, see .mdr-allbar-wrap::before
+     above) it's no longer a flex item at all, so it can't do that pushing
+     any more. .mdr-allbar is the only real flex child left in the row now,
+     and a lone flex item's own auto margin still pushes it to whichever
+     end that margin faces -- same visual result, one property instead of
+     two, no `order` needed since there's nothing left to reorder against. */
   .mdr-allbar--back {
-    order: 2;
+    margin-inline-start: auto;
   }
 
   /* Comfortable right padding -- WEBRACK sits flush at the row's true left
