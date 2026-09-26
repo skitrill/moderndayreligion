@@ -33,17 +33,17 @@
    number containing one -- sizes, measurements, quantities...), and ( )
    parentheses (the size chart's "44 (XS)" style labels) all render as a
    "DEMO" watermark glyph instead of the real character in this font.
-   PRICE elements (.price/product-price/.cart-totals) were deliberately
-   kept on Futura for exactly this reason -- moved to PGF Qualta below by
-   explicit request despite the confirmed-live DEMO-glyph bug on $ and any
-   4 in a price (e.g. $49.99); this is a known, accepted regression until
-   a licensed (non-demo) copy of the font replaces pgf-qualta-regular.otf,
-   not an oversight. Still-Futura below (.size-chart__content, .quantity-
-   selector): not "price," left as-is. The [- page] zoom control and [top]
+   PRICE elements (.price/product-price/.cart-totals) and the size chart
+   table (.size-chart__content -- EU sizes 44-54, chest/shoulder/length/
+   sleeve measurements, all full of 4s, plus "(XS)"-style parenthesised
+   labels) are both moved to PGF Qualta below by explicit request despite
+   the confirmed-live DEMO-glyph bug on most of their digits and every
+   parenthesis; this is a known, accepted regression until a licensed
+   (non-demo) copy of the font replaces pgf-qualta-regular.otf, not an
+   oversight. Still-Futura below (.quantity-selector): not "price" or
+   size-chart content, left as-is. The [- page] zoom control and [top]
    scroll button (their own [ ] bracket glyphs) are handled further down
    this file. */
-.size-chart__content,
-.size-chart__content *,
 .quantity-selector,
 .quantity-selector * {
   font-family: 'Futura', 'Futura PT', 'Century Gothic', sans-serif !important;
@@ -54,7 +54,9 @@
 product-price,
 product-price *,
 .cart-totals,
-.cart-totals * {
+.cart-totals *,
+.size-chart__content,
+.size-chart__content * {
   font-family: 'PGF Qualta', 'Anonymous Pro', monospace !important;
 }
 
@@ -2234,6 +2236,10 @@ main .product-information__grid .size-chart:not(._):not(._):not(._) * {
 .size-chart__content th,
 .size-chart__content td {
   border-color: var(--mdr-border-strong, rgba(4, 0, 97, 0.3)) !important;
+  /* was the base theme's own 10.3125px -- reduced to match the site's
+     standard small-copy tier (same size the variant selector labels use)
+     instead of standing out as its own larger size. */
+  font-size: var(--mdr-fs-xs, 0.56rem) !important;
 }
 
 /* SIZE CHART trigger row -- was a large CTA-style row; matched down to
