@@ -244,7 +244,12 @@
 
     /* TEMP: only a few products -- clone the tiles so the grid looks full
        while we test. Clones are inert + tagged [data-mdr-clone]; delete
-       this function + its calls when done. */
+       this function + its calls when done.
+       Desktop (>=750px) opts out entirely: with only 4 real products,
+       padding to 24 meant every row of the wide 4-column desktop grid
+       was just the same 4 products repeating on a loop as you scrolled
+       down the page -- much more obvious there than on mobile's narrower
+       2-column layout, and reads as a bug rather than "a full grid". */
     function padFill() {
       var sec = featured();
       if (!sec) return;
@@ -253,6 +258,8 @@
 
       var clones = grid.querySelectorAll('[data-mdr-clone]');
       for (var c = clones.length - 1; c >= 0; c--) clones[c].remove();
+
+      if (window.innerWidth >= 750) return;
 
       var originals = [];
       var kids = grid.children;
