@@ -392,6 +392,13 @@ html {
     font-size: 16px;
     white-space: nowrap;
   }
+
+  /* nudged right, off the true screen edge -- was margin-left: -12px
+     (blocks/_header-logo.liquid), pulling it flush left; +5vw shifts it
+     back in the other direction by 5% of the viewport width. */
+  #header-component .header-logo {
+    margin-left: calc(-12px + 5vw) !important;
+  }
 }
 
 /* ---- Product cards: same treatment everywhere ----------------------------------
