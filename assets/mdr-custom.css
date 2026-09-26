@@ -2641,8 +2641,11 @@ main .product-information__grid .size-chart:not(._):not(._):not(._) * {
 
 /* the +/- disclosure icon specifically -- "size-chart interaction" is one
    of the small functional spots --mdr-accent is meant for; the label text
-   next to it stays graphite (the shared rule further up this file). */
-.size-chart__trigger .icon-plus {
+   next to it stays graphite (the shared rule further up this file).
+   :not(._) padding matches that rule's own specificity-boosting trick
+   (further up this file) -- without it this loses to that rule's higher
+   specificity despite coming later in source. */
+main .product-information__grid .size-chart .icon-plus:not(._):not(._):not(._) {
   color: var(--mdr-accent) !important;
 }
 
