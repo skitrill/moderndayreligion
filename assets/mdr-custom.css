@@ -714,6 +714,20 @@ main[data-template='cart'] ~ footer {
   --text-align: left !important;
 }
 
+/* The theme's own block renderer sets --text-align directly on each
+   paragraph/list item (an inline style, from the text block's own
+   "alignment" setting), not just inherited from an ancestor -- a custom
+   property set closer to the element always wins over one merely
+   inherited from further up, so the container rule above alone left the
+   actual text still centered. Reaching the real elements directly here
+   is what the earlier centered-title+price rule elsewhere in this file
+   already had to do for the same reason. */
+.product-details > .group-block > .group-block-content > rte-formatter[class*='__text_aEtTtq'] p,
+.product-details > .group-block > .group-block-content > rte-formatter[class*='__text_aEtTtq'] li {
+  text-align: left !important;
+  --text-align: left !important;
+}
+
 /* Left-aligned copy reads fine with normal bullet markers -- restored
    (they were dropped specifically because centered text made a
    left-hugging disc marker look lopsided against center-sitting lines;
