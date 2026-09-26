@@ -1214,6 +1214,20 @@
     function fixScrollfadeBleed() {
       var el = D.querySelector("[id$='__product_list_fa6P9H'] .mdr-scrollfade");
       if (!el) return;
+      /* Desktop now deliberately insets the grid inside a large page
+         border (mdr-custom.css, main { padding-inline: 30% }) instead of
+         running it edge-to-edge -- this full-bleed correction is a
+         mobile-only fix (the WEBRACK swipe animation's clipping issue is
+         a narrow-viewport concern), so it has to bail out above that
+         breakpoint or it just measures the new deliberate gap and
+         cancels it back out with a negative margin, exactly like the
+         clipping bug it was written to fix. */
+      if (window.innerWidth >= 750) {
+        el.style.marginLeft = '';
+        el.style.marginRight = '';
+        el.style.width = '';
+        return;
+      }
       var zoomFactor = parseFloat(D.body.style.zoom) || 1;
       el.style.marginLeft = '';
       el.style.marginRight = '';
