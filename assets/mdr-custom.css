@@ -305,11 +305,16 @@ html {
   /* The product-grid section carries its own page-width gutter on top of
      main's new border (confirmed live on an actual 1200px-wide desktop:
      the grid rendered ~80px narrower than main's own content box, one
-     inset nested inside another) -- neutralised here so the grid uses
-     the full width main already reserves for it, one border instead of
-     two slightly-different ones stacking. */
-  main[data-template='collection'] [id$='__product_list_fa6P9H'] {
-    padding-inline: 0 !important;
+     inset nested inside another). This ISN'T padding (padding-inline:0
+     was tried first and did nothing) -- .section--page-width is a grid
+     whose base-theme rule confines every direct child to the middle
+     "content" grid-column (of an implicit [gutter | content | gutter]
+     track layout), which is what was actually narrowing it. Spanning
+     the child across every column instead removes that inner gutter, so
+     the grid uses the full width main already reserves for it -- one
+     border instead of two slightly-different ones stacking. */
+  main[data-template='collection'] [id$='__product_list_fa6P9H'].section--page-width > * {
+    grid-column: 1 / -1 !important;
   }
 }
 
