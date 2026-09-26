@@ -3435,6 +3435,67 @@ main[data-template='collection']
   display: none;
 }
 
+/* ==========================================================================
+   Right-side RETURN -- mobile reachability pass. Every internal page
+   except the product-detail page (mdr-header-enhance.liquid decides which,
+   via .mdr-allbar--back-right) mirrors the whole row: instead of
+   "‹ RETURN ─────────────────" it reads "───────────────── RETURN ›",
+   RETURN landing near the right edge where a right thumb naturally rests
+   on mobile, instead of the far-left corner, the single hardest spot to
+   reach one-handed.
+   Mobile-only (max-width: 749px): desktop never had a "full-width row" to
+   mirror against in the first place -- .mdr-allbar-wrap is absolutely
+   positioned directly beside the logo there (see the desktop-merge rules
+   elsewhere in this file), a compact inline tab, not a row with a thumb-
+   reach concern. Left untouched at that breakpoint entirely.
+   Same row height/typography/font-size/divider colour/vertical alignment/
+   flat appearance as WEBRACK throughout -- nothing here touches any of
+   those, only WHICH END of the row the bar and the divider land on. */
+@media screen and (max-width: 749px) {
+  /* the divider now leads (order swaps with the bar below), trailing
+     margin instead of leading -- mirrors margin-inline-start:10px above
+     exactly, just flipped to the other side of the line. */
+  .mdr-allbar-wrap:has(.mdr-allbar--back-right)::before {
+    order: 0;
+    margin-inline-start: 0;
+    margin-inline-end: 10px;
+  }
+
+  .mdr-allbar--back-right {
+    order: 2;
+  }
+
+  /* Comfortable right padding -- WEBRACK sits flush at the row's true left
+     edge on purpose (.mdr-allbar-wrap has no inline padding at all), but a
+     mirrored RETURN flush against the true right edge would sit right in
+     the curved corner/bezel area on most phones, the opposite of "easier
+     to reach". The site's own standard page gutter (--mdr-page-px, used
+     for margins everywhere else) gives it the same breathing room real
+     page content already gets, not an arbitrary new number. */
+  .mdr-allbar-wrap:has(.mdr-allbar--back-right) {
+    padding-inline-end: var(--mdr-page-px, 16px);
+  }
+
+  /* "Do not make only the text clickable" -- .mdr-allbar__toggle (base
+     rule, below) sizes itself to its own label+chevron content
+     (inline-flex, flex: 0 0 auto), which is exactly right for WEBRACK
+     (the touchzone drag-catcher covers the rest of the box and forwards
+     taps to it) but WRONG here: RETURN pages never build a touchzone at
+     all (mdr-header-enhance.liquid returns early for every non-home page,
+     before the touchzone is ever created), so anything in .mdr-allbar's
+     box OUTSIDE the toggle's own tight content bounds was dead space --
+     no touchzone to forward the tap, no button under it either. Stretching
+     the toggle to the full width of its 88px box (shared with WEBRACK,
+     "the same and stable") makes the ENTIRE box a real, native, directly-
+     tappable <button> -- a genuinely bigger, more generous touch target,
+     not just a visual repositioning. Content stays right-justified inside
+     it so RETURN still reads flush against the row's own right edge. */
+  .mdr-allbar--back-right .mdr-allbar__toggle {
+    width: 100%;
+    justify-content: flex-end;
+  }
+}
+
 .mdr-allbar.is-open {
   /* claims the full row once open, showing the category list -- the
      trailing line (.mdr-allbar-wrap::before) is hidden in this state
@@ -3552,6 +3613,15 @@ main[data-template='collection']
 
 .mdr-allbar__chev--back svg {
   transform: scaleX(-1);
+}
+
+/* Right-side RETURN's own chevron -- trails the label instead of leading
+   it (margin flips from -end to -start to match), and stays right-
+   pointing: CHEV_SVG_SINGLE (mdr-header-enhance.liquid) is already
+   authored pointing right, so unlike .mdr-allbar__chev--back this one
+   needs no scaleX flip at all. */
+.mdr-allbar__chev--forward {
+  margin-inline-start: 6px;
 }
 
 /* the stock "«" beside the logo is gone -- the WEBRACK bar takes that job */

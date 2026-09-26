@@ -352,12 +352,26 @@
          directly is also more robust than a hardcoded path if that ever
          moves again. */
       var isHome = !!D.querySelector("[id$='__product_list_fa6P9H']");
+      /* Right-side RETURN reachability pass: every internal page EXCEPT the
+         product-detail page moves RETURN to the right side of the row (a
+         mobile-reachability request -- the right thumb naturally lands
+         near the right edge, and RETURN was stuck on the far left, the
+         hardest spot to reach one-handed). PDP is explicitly excluded
+         ("leave the current product-detail page navigation unchanged for
+         now") -- data-template='product' is the same attribute mdr-custom.
+         css already keys off of elsewhere (layout/theme.liquid's own
+         <main data-template="{{ template }}">), so this checks the exact
+         same signal, not a guess at the URL shape. */
+      var isProduct = !isHome && !!D.querySelector("main[data-template='product']");
+      var isBackRight = !isHome && !isProduct;
 
       var wrap = D.createElement('div');
       wrap.className = 'mdr-allbar-wrap';
 
       var bar = D.createElement('div');
-      bar.className = 'mdr-allbar' + (isHome ? '' : ' mdr-allbar--back');
+      bar.className = 'mdr-allbar' +
+        (isHome ? '' : ' mdr-allbar--back') +
+        (isBackRight ? ' mdr-allbar--back-right' : '');
 
       /* WEBRACK: a clean double-chevron, not the raw "»" glyph. RETURN
          gets a single chevron instead -- the two read as distinct icons,
@@ -367,7 +381,11 @@
         'stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">' +
         '<path d="M1.5 2l4 4-4 4"/><path d="M7.5 2l4 4-4 4"/></svg>';
       /* authored right-pointing, same as CHEV_SVG -- .mdr-allbar__chev--back
-         svg { transform: scaleX(-1) } already flips it to point left */
+         svg { transform: scaleX(-1) } already flips it to point left. The
+         right-side RETURN keeps it right-pointing (no flip): the reference
+         composition is "──────── RETURN ›", the chevron mirrored to the
+         trailing edge alongside the label, not a literal "still points
+         backward" arrow. */
       var CHEV_SVG_SINGLE =
         '<svg viewBox="0 0 8 12" fill="none" stroke="currentColor" ' +
         'stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">' +
@@ -378,10 +396,16 @@
       toggle.className = 'mdr-allbar__toggle';
       toggle.setAttribute('aria-expanded', 'false');
       /* RETURN and WEBRACK now share one box style (border + diagonal tip,
-         see CSS), so RETURN gets its chevron back too. */
+         see CSS), so RETURN gets its chevron back too. Three compositions:
+         WEBRACK (label, then forward chevron), left RETURN/PDP (back
+         chevron, then label), right RETURN (label, then forward chevron --
+         same order as WEBRACK, mirrored to the row's other end by CSS). */
       toggle.innerHTML = isHome
         ? '<span class="mdr-allbar__label">Webrack</span>' +
           '<span class="mdr-allbar__chev" aria-hidden="true">' + CHEV_SVG + '</span>'
+        : isBackRight
+        ? '<span class="mdr-allbar__label">Return</span>' +
+          '<span class="mdr-allbar__chev mdr-allbar__chev--forward" aria-hidden="true">' + CHEV_SVG_SINGLE + '</span>'
         : '<span class="mdr-allbar__chev mdr-allbar__chev--back" aria-hidden="true">' + CHEV_SVG_SINGLE + '</span>' +
           '<span class="mdr-allbar__label">Return</span>';
 
