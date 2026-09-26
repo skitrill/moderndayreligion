@@ -836,14 +836,18 @@ main .product-information__grid rte-formatter :is(p, li) {
   object-fit: contain !important;
 }
 
-/* Bigger thumbnail, every row identical -- base theme's own column width
-   is clamp(2.5rem, 15cqi, 7.5rem) (cart-products.liquid), which reads as
-   genuinely tiny (~40px) on a narrow phone-width cart. Raising the floor
-   is enough: every row still shares the exact same media column (this
+/* Bigger thumbnail, every row identical -- base theme's row grid hardcodes
+   its media column to clamp(2.5rem, 15cqi, 7.5rem) directly
+   (.cart-items__table-row, cart-products.liquid); --cart-item-media-
+   width-min is declared right next to it but never actually referenced
+   there, so overriding the custom property alone (tried first) did
+   nothing -- the grid-template-columns value itself has to be
+   overridden. Reads as genuinely tiny (~53px) on a phone-width cart
+   otherwise. Every row still shares this exact same media column (this
    only changes ITS size, not any row individually), so the "identical
    bounding box" requirement holds regardless of garment artwork. */
-.cart-items {
-  --cart-item-media-width-min: 4.5rem !important;
+.cart-items__table-row {
+  grid-template-columns: clamp(4.5rem, 24cqi, 7.5rem) minmax(0, 1fr) minmax(var(--cart-item-price-width), auto) !important;
 }
 
 /* ==========================================================================
