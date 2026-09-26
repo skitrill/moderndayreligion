@@ -121,6 +121,13 @@ product-price *,
   --mdr-accent: #5558a6;
   --mdr-glass: var(--mdr-glass-tint, rgba(255, 255, 255, 0.55));
 
+  /* Landing/entrance screen only (sections/mdr-landing.liquid, the full-
+     screen no-header/no-footer static page at "/") -- TEST graphite
+     instead of the deep-blue --mdr-primary. Deliberately its own token,
+     not a global one: this is scoped to that one template only, not a
+     second brand colour for the rest of the shop. */
+  --mdr-landing-bg: #171717;
+
   /* off-white product field -- the site's other half, everywhere content
      (not brand chrome) sits. */
   --mdr-off-white: var(--mdr-paper);
@@ -821,10 +828,23 @@ main[data-template='cart'] ~ footer {
   margin-block-start: 4px !important;
 }
 
-.cart-items__table-row {
-  padding-bottom: 6px !important;
-  margin-bottom: 4px !important;
+/* Cart-only quantity control, shorter -- "the black quantity boxes
+   currently attract almost as much attention as the product itself...
+   the hierarchy should be product -> variant/price -> quantity, not
+   product -> giant black rectangle." Scoped to .cart-items__quantity
+   specifically (not .quantity-selector directly) so the PDP's own
+   purchase-row quantity control -- the exact same shared component --
+   is completely untouched; this only reaches the cart context. */
+.cart-items__quantity .quantity-selector {
+  --minimum-touch-target: 24px !important;
 }
+
+/* NOTE: the real row padding/margin/divider live in ONE place further
+   down this file (cart rhythm pass, "one repeatable row height/padding
+   system") -- a duplicate .cart-items__table-row rule used to exist here
+   too (padding-bottom: 6px, margin-bottom: 4px), silently dead the whole
+   time (the later rule's !important values always won on source order),
+   removed rather than left as a second, contradictory source of truth. */
 
 /* ---- Quantity selector: bordered segmented box, matches the SIZE box's
    hairline-divided look instead of a plain white slab -------------------- */
@@ -1268,18 +1288,16 @@ main .product-information__grid rte-formatter :is(p, li) {
   object-fit: contain !important;
 }
 
-/* Bigger thumbnail, every row identical -- base theme's row grid hardcodes
-   its media column to clamp(2.5rem, 15cqi, 7.5rem) directly
-   (.cart-items__table-row, cart-products.liquid); --cart-item-media-
-   width-min is declared right next to it but never actually referenced
-   there, so overriding the custom property alone (tried first) did
-   nothing -- the grid-template-columns value itself has to be
-   overridden. Reads as genuinely tiny (~53px) on a phone-width cart
-   otherwise. Every row still shares this exact same media column (this
-   only changes ITS size, not any row individually), so the "identical
-   bounding box" requirement holds regardless of garment artwork. */
+/* Cart rhythm pass: thumbnail sized down from clamp(4.5rem, 24cqi, 7.5rem)
+   (up to 120px) -- "each cart item is too tall" traced largely to this:
+   the whole row's height was following the image, not the compact name/
+   variant/price/qty text stack beside it. Still comfortably larger than
+   the ~53px the base theme default read as "genuinely tiny" (the
+   original reason this was sized up in the first place) -- every row
+   still shares this exact same media column, so the "identical bounding
+   box" requirement holds regardless of garment artwork. */
 .cart-items__table-row {
-  grid-template-columns: clamp(4.5rem, 24cqi, 7.5rem) minmax(0, 1fr) minmax(var(--cart-item-price-width), auto) !important;
+  grid-template-columns: clamp(3.5rem, 18cqi, 5.5rem) minmax(0, 1fr) minmax(var(--cart-item-price-width), auto) !important;
   /* was "start" (base theme default) -- with a media column this much
      taller than the compact name/variant/price text stack next to it,
      top-alignment left a visible block of empty space under the text,
@@ -1614,33 +1632,45 @@ main:not([data-template='index']) {
   border: 1px solid var(--color-input-border, #5c564a) !important;
 }
 
-/* ---- Cart line items: much less air between each row ---------------------
+/* ---- Cart line items: one repeatable row height/padding system --------
    Horizon's own row spacing is padding-bottom (a merchant "gap" setting,
    usually 24px+) PLUS margin-bottom (--margin-lg, 1rem) stacked on top of
    each other -- the two together are what read as "a lot of space between
-   each product cart item" in the screenshot. */
+   each product cart item" in the screenshot. Cart-rhythm pass: trimmed
+   further (10px/6px -> 8px/4px) now that the thumbnail itself is also
+   smaller (further up this file), so the row's total height drops on
+   both fronts instead of just one. */
 .cart-items__table-row {
-  padding-bottom: 10px !important;
-  margin-bottom: 6px !important;
+  padding-bottom: 8px !important;
+  margin-bottom: 4px !important;
   position: relative;
 }
 
-/* Divider between line items -- same hairline colour/opacity as the
-   product grid's own lines (--mdr-border-faint), full viewport width
-   like the grid's lines too, not just this row's own (page-margin-inset)
-   width -- the classic 100vw + negative-margin full-bleed trick, since
-   .cart-items__table-row { border: 0 !important } above (and this row's
-   own box not actually spanning the viewport) both rule out a plain
-   border-bottom on the row itself. */
+/* Divider between line items -- cart-rhythm pass: was a 100vw full-bleed
+   trick (deliberately wider than the row itself, to the true viewport
+   edges) -- reversed outright now: "the horizontal separator for every
+   cart item should begin and end at those same [page] margins rather
+   than running edge-to-edge." Simpler than the code it replaces: a plain
+   inset:0 on this row's own box IS that width already (--mdr-border,
+   the one shared structural-line token every divider on the site reads
+   from -- product grid, WEBRACK, footer, this). */
 .cart-items__table-row:not(:last-child)::after {
   content: '';
   position: absolute;
-  left: 50%;
+  left: 0;
+  right: 0;
   bottom: 0;
-  width: 100vw;
-  margin-left: -50vw;
-  border-bottom: 1px solid var(--mdr-border-faint, rgba(4, 0, 97, 0.08));
+  border-bottom: 1px solid var(--mdr-border);
   pointer-events: none;
+}
+
+/* Cart heading -> first item: was the base theme's own 15px margin-top
+   on .cart-page__items (the wrapper right after the CART heading) --
+   "substantially reduce the empty space... the first item should begin
+   shortly beneath the cart heading, like the first line of the same
+   document, not a separate section." */
+.cart-page__items {
+  margin-top: 6px !important;
 }
 
 /* ---- Product form: quantity + ADD TO CART + Buy-with-Shop on one line,
@@ -2175,27 +2205,29 @@ body:has(main[data-template='index']) footer {
    regardless of viewport height -- instead of just relying on there being
    "not quite enough content to scroll", which breaks the instant a short
    viewport (small phone, landscape) makes the stack taller than 100vh.
-   Red, not black, so it matches the body::before/::after safe-area
-   patches further down this file (already red, shared site-wide) --
-   those didn't visually blend against this page specifically before,
-   since this was the one remaining black surface on an otherwise all-red
-   site. */
+   TEST: graphite (--mdr-landing-bg, #171717) instead of the deep-blue
+   --mdr-primary -- this is scoped to the landing screen alone (this rule
+   and the two below it), not a change to --mdr-primary itself or to any
+   other template, so the shop stays exactly as it was. The goal per this
+   test is specifically to stop establishing blue as MDR's primary brand
+   colour via the very first thing a visitor sees, without turning
+   graphite into a second global colour the rest of the site inherits. */
 html:has(main[data-template='index']),
 body:has(main[data-template='index']) {
   height: 100%;
   overflow: hidden;
-  background-color: var(--mdr-primary) !important;
+  background-color: var(--mdr-landing-bg) !important;
   /* the safe-area strips (body::before/::after) and the rubber-band
      canvas itself (background-color above already hardcodes it directly,
      but --mdr-edge-color is what OTHER rules on this page still read,
-     e.g. .page-wrapper below) all switch to the primary blue here too --
+     e.g. .page-wrapper below) all switch to the same graphite here too --
      same principle as the off-white default everywhere else: the ROOT
      canvas matches whatever this specific page's own background actually
-     is, so there's no seam at the safe-area boundary between a blue page
-     and an off-white-default edge. */
-  --mdr-edge-top: var(--mdr-primary);
-  --mdr-edge-bottom: var(--mdr-primary);
-  --mdr-edge-color: var(--mdr-primary);
+     is, so there's no seam at the safe-area boundary (full-screen bleed
+     into the iOS top/bottom chrome, preserved exactly as before). */
+  --mdr-edge-top: var(--mdr-landing-bg);
+  --mdr-edge-bottom: var(--mdr-landing-bg);
+  --mdr-edge-color: var(--mdr-landing-bg);
   /* flat, no blur -- #header-group/footer are display:none on this
      template (see below), so there's no glass surface here for the
      strips to continue; a flat exact match is correct again, same
@@ -2206,15 +2238,11 @@ body:has(main[data-template='index']) {
 /* .page-wrapper (base.css), not html/body, is the ACTUAL scroll container
    at desktop widths (990px+) -- html/body overflow:hidden alone doesn't
    stop it from scrolling on its own there. background-color: explicit
-   here now too -- .page-wrapper's own generic rule (further up this
-   file) reads --mdr-edge-color, which used to coincidentally match
-   --mdr-primary (both #8B0000) so this never needed its own colour; now
-   that the overscroll canvas is a separate neutral colour, the homepage's
-   permanently-red-now-blue landing screen needs to say so explicitly. */
+   here too, same --mdr-landing-bg token. */
 body:has(main[data-template='index']) .page-wrapper {
   height: 100vh !important;
   overflow: hidden !important;
-  background-color: var(--mdr-primary) !important;
+  background-color: var(--mdr-landing-bg) !important;
 }
 
 .mdr-landing-section {
@@ -2241,10 +2269,15 @@ body:has(main[data-template='index']) .page-wrapper {
   /* +15% then +20% more from the original min(60vw, 420px) */
   width: min(82.8vw, 580px);
   height: auto;
-  /* on the black landing background now (was the cream body background
-     before), same navy-on-transparent -> white treatment as the header's
-     own logo (blocks/_header-logo.liquid .mdr-logo-image). */
-  filter: brightness(0) invert(1);
+  /* on the graphite landing background now (--mdr-landing-bg test, was
+     solid blue before that, cream body background before that), same
+     navy-on-transparent starting point as the header's own logo (blocks/
+     _header-logo.liquid .mdr-logo-image), but NOT stopped at stark white
+     -- invert(1) alone gives pure #fff, which read as "blue-white" cold
+     against the graphite; sepia+saturate add a touch of warmth back in
+     (a warm off-white, not a second colour), brightness pulls it just
+     off pure white. */
+  filter: brightness(0) invert(1) sepia(0.35) saturate(0.55) brightness(0.97);
 }
 
 /* Desktop: smaller landing wordmark -- was capped at 580px, reading as
@@ -2284,7 +2317,10 @@ body:has(main[data-template='index']) .page-wrapper {
 
 .mdr-fnav--landing a,
 .mdr-fnav--landing .mdr-fnav__toggle {
-  color: rgba(255, 255, 255, 0.75) !important;
+  /* warm off-white, matching the logo's own new tint just above --
+     "warm/off-white... rather than stark blue-white" -- was plain
+     rgba(255,255,255,0.75). */
+  color: rgba(247, 240, 228, 0.75) !important;
 }
 
 .mdr-fnav--landing .mdr-fnav__mailing {
@@ -2838,6 +2874,17 @@ main .product-information__grid.product-information__grid .product-details h1 {
   color: #000000 !important;
 }
 
+/* Hit-area pass: the home-link's own clickable box constrained strictly
+   to the header row it visually belongs to -- height:100% (base theme)
+   already ties it to that row's own height, not more, but this pins it
+   explicitly and clips anything that could ever push past it, so it can
+   never bleed down into WEBRACK's row below regardless of content
+   changes. */
+#header-component .header-logo {
+  max-height: 100%;
+  overflow: hidden;
+}
+
 
 /* cart text -> the one standard grey (--mdr-text-gray, top of file) --
    this blanket rule is what actually wins for most cart copy (title,
@@ -3071,13 +3118,28 @@ main[data-template='collection']
      bottom padding either -- the button's own bottom edge now sits flush
      against the page below it. Trimmed 3px -> 2px -> 1px (minimal-rail
      pass: "reduce unnecessary vertical padding... a thin navigation rail,
-     not another large section"). */
+     not another large section"), then given a bit back on mobile only
+     (hit-area pass, below): 1px left this row touching the header row's
+     own bottom edge with zero gap, which is exactly where a mistap could
+     land on the logo instead of WEBRACK. */
   padding: 1px 0 0 0;
   /* No own background/blur any more (navigation-integration pass) --
      #header-group now paints ONE shared glass surface for the header row
      and this row together (see that rule, further up this file), and
      this is set transparent there too. Kept here only as documentation:
      this element contributes no paint of its own, just layout. */
+}
+
+/* Hit-area pass, mobile only: real breathing room between the masthead
+   and this row, on top of the 13px/44px touch-target increase above --
+   was 0px, the two rows touching exactly at the header's own bottom
+   edge, which is where a mistap could land on the logo instead of
+   WEBRACK. Desktop doesn't need this: .mdr-allbar-wrap sits inline with
+   the logo there (min-width:750px block above), not stacked below it. */
+@media screen and (max-width: 749px) {
+  .mdr-allbar-wrap {
+    margin-top: 6px;
+  }
 }
 
 .mdr-allbar {
@@ -3095,15 +3157,17 @@ main[data-template='collection']
   width: 88px;
   overflow: hidden;
   white-space: nowrap;
-  /* taller ribbon for an easy tap and a taller drag track once open (was
-     2px originally); reduced back down ~20% from the first pass (9px),
-     which read as more height than actually needed. Trimmed again here
-     (7px -> 6px -> 5px -> 4px) alongside the smaller type below -- a
-     small, refined touch target, not a full nav element (minimal-rail
-     pass: "a thin navigation rail, not another large section"). No
-     clip-path any more (header/WEBRACK rebuild -- see the comment above
-     .mdr-allbar-wrap::before). */
-  padding: 4px 0;
+  /* Hit-area pass: back up from 4px to ~13px (was 7px -> 6px -> 5px -> 4px
+     across the minimal-rail passes, which made the row thin but also
+     shrank WEBRACK's own tap target right down against the header above
+     it -- confirmed as the actual cause of mistaps landing on the logo
+     instead). Padding is invisible (no border/fill on this row -- the
+     glass comes from #header-group, further up this file), so this adds
+     real touch-target height and breathing room from the header without
+     reading as a bigger/bulkier visible bar -- the label/chevron
+     themselves are untouched, still the same small type. ~44px total
+     with .mdr-allbar-wrap's own spacing below. */
+  padding: 13px 0;
   border: 0;
   background: transparent;
   color: #000;
@@ -3189,6 +3253,11 @@ main[data-template='collection']
 .mdr-allbar__toggle {
   display: inline-flex;
   align-items: center;
+  /* fills .mdr-allbar's now-taller box (13px 0 padding, hit-area pass)
+     top to bottom instead of sitting as a small centred island within
+     it -- without this, the extra padding just became dead space above/
+     below the actual clickable text, not part of the tap target at all. */
+  align-self: stretch;
   gap: 0;
   flex: 0 0 auto;
   margin: 0;
