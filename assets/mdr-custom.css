@@ -122,6 +122,12 @@ product-price *,
   --mdr-section-gap: clamp(16px, 4vw, 28px);
   --mdr-grid-line: 1px;
 
+  /* PDP: the image frame, title, price and description all read this one
+     width so they form a single centered column instead of each picking
+     its own -- see product-information__media, the title/price group and
+     the description block below. */
+  --mdr-pdp-content-width: 70%;
+
   /* ---- Mobile type scale -- everything site-wide (nav, grid title/price,
      PDP title/price, body copy, cart, labels, buttons, footer) reads one
      of these three steps rather than an arbitrary one-off size. */
@@ -655,7 +661,12 @@ main[data-template='cart'] ~ footer {
 
 .group-block-content:has(> product-price) > .text-block,
 .group-block-content:has(> product-price) > product-price {
-  width: 100% !important;
+  /* --mdr-pdp-content-width (:root), same as the image frame above and
+     the description block below it -- title/price used to run the full
+     details-column width (100%) while the frame sat narrower, reading as
+     off-centre against it. */
+  width: var(--mdr-pdp-content-width, 70%) !important;
+  margin-inline: auto !important;
   /* these are themselves column-flex containers; flex-direction:column
      means horizontal centering of the (block) child is align-items, not
      text-align. Their own children are centered via `.text-block > *
@@ -703,38 +714,44 @@ main[data-template='cart'] ~ footer {
 
 .product-details > .group-block > .group-block-content > rte-formatter[class*='__text_aEtTtq'] {
   order: 2 !important;
-  /* a centered, comfortably narrow reading column -- the BLOCK stays
-     perfectly centered on the page (width + margin-inline: auto) no
-     matter how much text it holds, but the copy inside it (description,
-     bullets, model line) reads left-aligned/ragged-edge, not centered --
-     back to that after a brief stint centering the text too. */
-  width: 92% !important;
+  /* --mdr-pdp-content-width (:root) -- same exact width as the image
+     frame above and the title/price group above that, so the whole
+     column (frame, title, price, description) shares one centered axis
+     instead of the description running its own wider column against a
+     narrower frame. Text inside is centered too now (was left/ragged-
+     edge briefly) -- balanced, deliberate line breaks over a controlled
+     centered width read as "one composition" per this page's own brief,
+     rather than a body-copy column. */
+  width: var(--mdr-pdp-content-width, 70%) !important;
   margin-inline: auto !important;
-  text-align: left !important;
-  --text-align: left !important;
+  text-align: center !important;
+  --text-align: center !important;
 }
 
 /* The theme's own block renderer sets --text-align directly on each
    paragraph/list item (an inline style, from the text block's own
    "alignment" setting), not just inherited from an ancestor -- a custom
    property set closer to the element always wins over one merely
-   inherited from further up, so the container rule above alone left the
-   actual text still centered. Reaching the real elements directly here
-   is what the earlier centered-title+price rule elsewhere in this file
-   already had to do for the same reason. */
+   inherited from further up, so the container rule above alone wouldn't
+   reach the actual text. Reaching the real elements directly here is
+   what the title+price rule elsewhere in this file already had to do for
+   the same reason. */
 .product-details > .group-block > .group-block-content > rte-formatter[class*='__text_aEtTtq'] p,
 .product-details > .group-block > .group-block-content > rte-formatter[class*='__text_aEtTtq'] li {
-  text-align: left !important;
-  --text-align: left !important;
+  text-align: center !important;
+  --text-align: center !important;
+  /* balances line lengths (no lone short orphan word on its own line) --
+     supported in current Safari/Chrome, a no-op progressive enhancement
+     where it isn't. */
+  text-wrap: balance;
 }
 
-/* Left-aligned copy reads fine with normal bullet markers -- restored
-   (they were dropped specifically because centered text made a
-   left-hugging disc marker look lopsided against center-sitting lines;
-   that reason no longer applies). */
+/* Centered bullet copy reads lopsided with a left-hugging disc marker,
+   so bullets go markerless again here (this is the one spot on the page
+   that's a literal <ul>; nothing else depends on it looking like one). */
 .product-details > .group-block > .group-block-content > rte-formatter[class*='__text_aEtTtq'] ul {
-  list-style: disc;
-  padding-inline-start: 1.2em;
+  list-style: none;
+  padding-inline-start: 0;
 }
 
 .product-details > .group-block > .group-block-content > variant-picker {
@@ -805,8 +822,12 @@ main .product-information__grid rte-formatter :is(p, li) {
      inside it, which doesn't contribute to a normal in-flow content size
      at all, so shrink-to-fit sizing had nothing real to measure. An
      explicit width resolves against the containing block directly,
-     independent of that. */
-  width: 70% !important;
+     independent of that. --mdr-pdp-content-width (:root) is shared with
+     the title/price group and the description block below, so the image
+     frame, title, price and description are all the exact same width,
+     centered on the exact same axis -- one composition, not three
+     independently-sized pieces. */
+  width: var(--mdr-pdp-content-width, 70%) !important;
   margin-inline: auto !important;
 }
 
