@@ -744,7 +744,6 @@ product-price,
 product-price *,
 .cart-items__price,
 .cart-items__price *,
-.cart-items__unit-price-wrapper,
 .cart-totals__price,
 .cart-totals__total-value,
 .cart-totals__total-value *,
@@ -834,9 +833,14 @@ main[data-template='cart'] ~ footer {
    product -> giant black rectangle." Scoped to .cart-items__quantity
    specifically (not .quantity-selector directly) so the PDP's own
    purchase-row quantity control -- the exact same shared component --
-   is completely untouched; this only reaches the cart context. */
+   is completely untouched; this only reaches the cart context.
+   Width also trimmed (column-balance pass): relative to the now-narrower
+   190px info column, 90px (the PDP's own width, tuned for a much wider
+   purchase row) read as the strongest, most dominant shape in the row.
+   Height/tap-comfort above is untouched -- width only. */
 .cart-items__quantity .quantity-selector {
   --minimum-touch-target: 24px !important;
+  --quantity-selector-width: 76px !important;
 }
 
 /* NOTE: the real row padding/margin/divider live in ONE place further
@@ -1224,47 +1228,56 @@ main .product-information__grid rte-formatter :is(p, li) {
   margin-inline: auto !important;
 }
 
-/* ---- Cart line items: same information hierarchy as the PDP ---------------
-   Name = PDP product-title style (--mdr-text-gray, 0.6rem, matching
-   .product-details h1 exactly instead of its own slightly smaller size).
-   Variant/property = the same graphite -- the PDP doesn't actually have a
-   separate "faded secondary" tier for this kind of information (its own
-   description and variant-selector copy both read the same --mdr-text-
-   gray as the title; --mdr-text-gray-light is reserved for things a
-   notch quieter still, like the footer copyright), so this already
-   matches rather than needing its own third tone. */
+/* ---- Cart line items: editorial inventory-sheet hierarchy (typography
+   pass) -- four distinct tiers now instead of two:
+   MODERNA TEE     -- title: primary soft-gray, regular weight.
+   CHARCOAL, M     -- variant: same family, quieter AND smaller.
+   9.99 (unit)     -- unit price: small, soft gray, regular weight -- was
+                      sharing the line total's darker/bold treatment via a
+                      [class*='price'] wildcard rule further down this
+                      file that happened to also match its class name;
+                      excluded from that rule and given its own, below.
+   9.99 / 99.98    -- line total (far right): darker, slightly more
+                      prominent, but explicitly NOT bold any more (was
+                      700 -- "not heavy/bold" is a direct reversal of the
+                      earlier PDP-matching bold treatment, for the cart
+                      specifically). */
 .cart-items__title {
   font-size: 0.6rem !important;
 }
 
 .cart-items__title,
 .cart-items__title a,
-.cart-items__title *,
+.cart-items__title * {
+  color: var(--mdr-text-gray) !important;
+}
+
 .cart-items__variant,
 .cart-items__variant dt,
 .cart-items__variant dd,
 .cart-items__property,
 .cart-items__property dt,
 .cart-items__property dd {
-  color: var(--mdr-text-gray) !important;
+  font-size: 0.54rem !important;
+  color: var(--mdr-text-gray-light) !important;
 }
 
-/* Price = PDP price style: bold, slightly darker graphite (colour set
-   site-wide further up this file), not the same plain weight as the
-   name/variant above it -- same hierarchy the PDP itself uses between
-   its title and its price. */
 .cart-items__price,
 .cart-items__price * {
-  font-weight: 700 !important;
+  font-weight: 500 !important;
 }
 
 .cart-items__price,
 .cart-items__price *,
-.cart-items__unit-price-wrapper,
-.cart-items__unit-price-wrapper *,
 .cart-items__variants,
 .cart-items__variants dd {
   font-size: 0.6rem !important;
+}
+
+.cart-items__unit-price-wrapper,
+.cart-items__unit-price-wrapper * {
+  font-size: 0.56rem !important;
+  font-weight: 400 !important;
 }
 
 /* image link stays clickable but gets no highlight / hover treatment */
@@ -1297,7 +1310,20 @@ main .product-information__grid rte-formatter :is(p, li) {
    still shares this exact same media column, so the "identical bounding
    box" requirement holds regardless of garment artwork. */
 .cart-items__table-row {
-  grid-template-columns: clamp(3.5rem, 18cqi, 5.5rem) minmax(0, 1fr) minmax(var(--cart-item-price-width), auto) !important;
+  /* Column-balance pass: info column was minmax(0, 1fr) -- stretching to
+     claim ALL leftover row width, so the (much narrower) name/variant/
+     qty stack inside it just left dead space between itself and the
+     price column, not a deliberate gap. "[ thumbnail ] [ info+qty ]
+     [ flexible space ] [ line total ]" without adding a 4th real column
+     (this is still the base theme's own 3-column named-area grid --
+     media/details/quantity/price, cart-products.liquid -- unchanged):
+     info is capped at a defined width instead (comfortably more than its
+     content needs, per "allow the information column slightly more
+     width"), and PRICE becomes the 1fr column instead -- it's already
+     text-align: end (cart-products.liquid), so it rides at the true
+     right edge of that now-wide column, with the leftover space between
+     them reading as genuine, deliberate breathing room. */
+  grid-template-columns: clamp(3.5rem, 18cqi, 5.5rem) minmax(0, 190px) 1fr !important;
   /* was "start" (base theme default) -- with a media column this much
      taller than the compact name/variant/price text stack next to it,
      top-alignment left a visible block of empty space under the text,
@@ -1664,13 +1690,28 @@ main:not([data-template='index']) {
   pointer-events: none;
 }
 
-/* Cart heading -> first item: was the base theme's own 15px margin-top
-   on .cart-page__items (the wrapper right after the CART heading) --
-   "substantially reduce the empty space... the first item should begin
-   shortly beneath the cart heading, like the first line of the same
-   document, not a separate section." */
+/* Cart heading removed outright -- "CART [12]" duplicated what's already
+   in the global masthead (CART/DERRICK), so this second heading was
+   redundant. display:none (not visibility/opacity) so it leaves no
+   placeholder, margin or padding behind -- the theme-editor block itself
+   is untouched (functionality/settings still there, just not rendered),
+   consistent with how the rest of this file hides other stock elements
+   rather than editing Liquid/section settings. */
+.cart-page__title {
+  display: none !important;
+}
+
+/* First item now begins right after RETURN's own row, at the same
+   deliberate top spacing every other template uses for its first piece
+   of real content (was 20px page padding-top + a 6px item margin, one
+   on top of the other, once the heading between them was removed --
+   collapsed into one clean value here instead). */
+.cart-page {
+  padding-top: 12px !important;
+}
+
 .cart-page__items {
-  margin-top: 6px !important;
+  margin-top: 0 !important;
 }
 
 /* ---- Product form: quantity + ADD TO CART + Buy-with-Shop on one line,
@@ -2953,6 +2994,18 @@ cart-drawer [class*='price'] {
   color: rgba(0, 0, 0, 0.65) !important;
 }
 
+/* Typography pass: .cart-page [class*='price'] above is a wildcard --
+   it also matches .cart-items__unit-price-wrapper's own class name (it
+   contains "price"), pulling the unit price into the same darker tone
+   as the line total. Excluded back out here, same specificity as that
+   rule but later in source, so this is what actually wins: unit price
+   stays soft gray ("small, soft gray, regular weight"), distinct from
+   the darker, slightly-more-prominent line total beside it. */
+.cart-page .cart-items__unit-price-wrapper,
+.cart-page .cart-items__unit-price-wrapper * {
+  color: var(--mdr-text-gray) !important;
+}
+
 /* the cart-page count badge stays blue */
 .cart-bubble,
 .cart-bubble *,
@@ -3265,12 +3318,17 @@ main[data-template='collection']
   isolation: isolate;
   z-index: 3;
   /* Hit-area pass: THIS padding (not .mdr-allbar's, see that rule's own
-     comment) is what actually gives WEBRACK/RETURN their ~44px touch
-     target -- a real box the toggle itself owns, so every pixel of it is
-     genuinely clickable, not a stretched approximation with dead zones
-     top/bottom. Visible type is untouched (font-size below), so the bar
-     doesn't read as bigger -- just easier to land a tap on precisely. */
-  padding: 13px 8px;
+     comment) is what actually gives WEBRACK/RETURN their touch target --
+     a real box the toggle itself owns, so every pixel of it is genuinely
+     clickable, not a stretched approximation with dead zones top/bottom.
+     Visible type is untouched (font-size below), so the bar doesn't read
+     as bigger -- just easier to land a tap on precisely.
+     Vertical-only trim: 13px -> 12px is a deliberate "~5% only, very
+     subtle" reduction of the row's overall height per explicit request --
+     not a return to the earlier cramped state. Horizontal 8px left alone
+     (width isn't the complaint). Still a full ~40px tall tap target, well
+     above any comfortable-mobile-touch floor. */
+  padding: 12px 8px;
   border: 0;
   background: none;
   /* neutral MDR system: was blue -- the opacity below (0.5 idle / 1 open)
