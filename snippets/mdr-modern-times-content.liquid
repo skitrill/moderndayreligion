@@ -18,6 +18,7 @@
     <p class="mdr-mtimes__eyebrow">MODARE</p>
     <h1 class="mdr-mtimes__heading">The Modern Times</h1>
     <p class="mdr-mtimes__tagline">Progression, culture &amp; the world we live in.</p>
+    <p class="mdr-mtimes__published">Published September 25, 2026 &middot; 8:54 PM EDT</p>
   </header>
 
   <div class="mdr-mtimes__rule" aria-hidden="true"></div>
@@ -135,6 +136,17 @@
     letter-spacing: 0.02em;
     text-transform: uppercase;
     color: var(--mdr-text-gray, rgba(0, 0, 0, 0.5));
+  }
+
+  /* same treatment as the policy pages' own "Last updated" line
+     (/policies/privacy-policy) -- quieter than the tagline above it. */
+  .mdr-mtimes__published {
+    margin: 6px 0 0;
+    font-size: 0.56rem;
+    font-weight: 400;
+    letter-spacing: 0.02em;
+    text-transform: uppercase;
+    color: var(--mdr-text-gray-light, rgba(0, 0, 0, 0.35));
   }
 
   .mdr-mtimes__rule {
