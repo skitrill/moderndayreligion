@@ -2117,6 +2117,16 @@ body:has(main[data-template='index']) .page-wrapper {
   filter: brightness(0) invert(1);
 }
 
+/* Desktop: smaller landing wordmark -- was capped at 580px, reading as
+   oversized against the rest of the (now generally smaller/quieter)
+   desktop chrome, same complaint as the header logo before it was
+   reduced. Mobile keeps the full min(82.8vw, 580px) sizing above. */
+@media screen and (min-width: 750px) {
+  .mdr-landing__logo img {
+    width: min(28vw, 320px);
+  }
+}
+
 /* .mdr-fnav's own base rule (further up this file) makes the nav and its
    <ul> display:contents so its <li>s sit inline with the footer's policy
    links -- here they need to actually be their own stacked column instead,
