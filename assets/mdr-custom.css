@@ -236,16 +236,47 @@ html {
        catcher) is `inset: 0` on THIS element, so if it stayed full-size
        here it would sit on top of the logo/CART/USER across the entire
        shared row and swallow their clicks -- shrinking the wrap to its
-       content keeps that touch layer confined to the pill alone. */
+       content keeps that touch layer confined to the pill alone.
+       !important throughout: this rule and the plain (mobile-targeting)
+       .mdr-allbar-wrap rule further down the file have equal specificity,
+       and that one comes later in source order, so it wins ties without
+       these. */
     width: max-content !important;
     height: max-content !important;
-    align-self: center;
+    align-self: center !important;
     /* clears the shrunk logo's own rendered width (tuned to the 13px
        size above) plus a comfortable gap, so the two read as one
        deliberate row instead of overlapping. */
-    margin-left: 300px;
+    margin: 0 0 0 300px !important;
     padding: 0 !important;
     background: transparent !important;
+  }
+}
+
+/* Desktop: a large, deliberately dramatic page border -- the header/
+   footer brand bars stay full-width (they're chrome, not content), but
+   the actual page content (product grid, PDP, cart, editorial pages)
+   sits centered in a narrow column with a huge margin on both sides
+   instead of stretching to fill a wide desktop viewport. */
+@media screen and (min-width: 750px) {
+  main {
+    padding-inline: 30% !important;
+    box-sizing: border-box !important;
+  }
+}
+
+/* Desktop only: center the product grid's own name/price text (was left-
+   aligned, with the mobile-only right column mirroring to the right --
+   that rule is itself scoped to max-width:749px, so it's untouched).
+   The NEW badge stays a top-right corner tag, not part of this -- centering
+   a corner marker isn't meaningful the way centering body text is. */
+@media screen and (min-width: 750px) {
+  main[data-template='collection'] [id$='__product_list_fa6P9H'] .product-card .text-block,
+  main[data-template='collection'] [id$='__product_list_fa6P9H'] .product-card .text-block p,
+  main[data-template='collection'] [id$='__product_list_fa6P9H'] .product-card product-price,
+  main[data-template='collection'] [id$='__product_list_fa6P9H'] .product-card product-price > div,
+  main[data-template='collection'] [id$='__product_list_fa6P9H'] .product-card product-price .price {
+    text-align: center !important;
   }
 }
 
