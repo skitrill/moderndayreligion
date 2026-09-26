@@ -202,12 +202,50 @@ html {
   color-scheme: dark;
 }
 
-/* Desktop keeps the logo at its original size. */
+/* Desktop: smaller wordmark, and the header collapses to one row instead
+   of two -- WEBRACK/RETURN (.mdr-allbar-wrap, a full-width strip normally
+   stacked BELOW the header on its own row) is pulled up to sit inline
+   with the logo instead. Was 21px, reading as an oversized banner
+   spanning most of the header's width. */
 @media screen and (min-width: 750px) {
   #header-component .header-logo,
   #header-component .header-logo span,
   #header-component [data-testid='header-logo'] {
-    font-size: 21px;
+    font-size: 13px;
+  }
+
+  /* .mdr-allbar-wrap (WEBRACK/RETURN) and .header are both direct
+     children of #header-group already (mdr-header-enhance.liquid inserts
+     it as header's own next sibling, not a descendant) -- stacking them
+     in the same single grid cell is what actually merges the two rows,
+     without touching the JS that builds/drives the WEBRACK bar itself. */
+  #header-group {
+    display: grid;
+  }
+
+  #header-group > .header-section,
+  #header-group > .mdr-allbar-wrap {
+    grid-column: 1;
+    grid-row: 1;
+  }
+
+  .mdr-allbar-wrap {
+    /* was width:100%/a full row of its own height -- shrunk to wrap just
+       the WEBRACK pill so it only occupies the small area it actually
+       needs. This matters beyond looks: .mdr-allbar__touchzone (the drag
+       catcher) is `inset: 0` on THIS element, so if it stayed full-size
+       here it would sit on top of the logo/CART/USER across the entire
+       shared row and swallow their clicks -- shrinking the wrap to its
+       content keeps that touch layer confined to the pill alone. */
+    width: max-content !important;
+    height: max-content !important;
+    align-self: center;
+    /* clears the shrunk logo's own rendered width (tuned to the 13px
+       size above) plus a comfortable gap, so the two read as one
+       deliberate row instead of overlapping. */
+    margin-left: 300px;
+    padding: 0 !important;
+    background: transparent !important;
   }
 }
 
