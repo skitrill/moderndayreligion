@@ -25,14 +25,21 @@
   Liquid has no built-in `newline` global -- this is the standard idiom:
   capturing the raw template source between these two tags (an actual
   line break lives there, in the file itself) gives a one-character
-  string containing just "\n". Get this wrong (e.g. leave `newline`
-  undefined) and `split: newline` silently becomes `split: nil`, which
-  Liquid's split filter treats as "split into individual characters" --
-  the exact bug that was collapsing every paragraph on this page into one
-  character per line.
+  string containing just "\n". Get this wrong and `split: newline`
+  silently becomes `split: nil` (or `split: ""`), which Liquid's split
+  filter treats as "split into individual characters" -- the exact bug
+  that was collapsing every paragraph on this page into one character
+  per line.
+  The trim dashes matter here: `{%- capture newline -%}` (dash on BOTH
+  sides) trims away the very newline sitting between the two tags before
+  it can ever be captured, leaving `newline` as an empty string --
+  `split: ""` still splits into individual characters, same bug, just
+  from a different undefined-ish value. No dash on the sides FACING the
+  blank line in between (only on the outer sides) is what actually
+  preserves it.
 {%- endcomment -%}
-{%- capture newline -%}
-{%- endcapture -%}
+{%- capture newline %}
+{% endcapture -%}
 
 <section
   id="mdr-modern-times-{{ section.id }}"
