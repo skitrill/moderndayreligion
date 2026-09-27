@@ -940,10 +940,52 @@ main[data-template='cart'] ~ footer {
    before the next row's divider even though almost none of it is visibly
    ink. Shrinking it (still comfortably tappable) plus trimming the row's
    own padding/margin and the gap above the quantity control tightens each
-   line without losing the divider between items. */
+   line without losing the divider between items.
+   Repositioned pass: moved out of the quantity row entirely and into the
+   empty space under the price instead -- .cart-items__table-row is
+   already position:relative (base theme), and neither of this button's
+   own ancestors (.cart-items__quantity, .cart-items__quantity-controls)
+   set their own position, so the row itself is the real containing block
+   here; right:0 lines it up with the price column's own right edge
+   (.cart-items__price is text-align:end against that same row edge), and
+   bottom mirrors the row's own padding-bottom so it reads as sitting on
+   the row's own baseline, not floating at an arbitrary height. Taking it
+   out of flow like this also means .cart-items__quantity-controls no
+   longer needs to reserve any room for it next to the quantity selector.
+   26px -> 18.2px (~18px): "30% smaller" against the previous 26px box. */
 .cart-items__remove {
-  width: 26px !important;
-  height: 26px !important;
+  position: absolute;
+  right: 0;
+  bottom: 8px;
+  width: 18px !important;
+  height: 18px !important;
+}
+
+/* SVG glyph itself, 30% down from the base theme's own 20px -- the button
+   box above already shrank to match, so the icon isn't left stranded in
+   now-oversized empty padding. */
+.cart-items__remove svg {
+  width: 14px !important;
+  height: 14px !important;
+}
+
+/* "square edges, not rounded" -- the base icon (assets/icon-delete.svg)
+   draws every stroke end/join round. Overridden here rather than editing
+   that shared asset file directly: it's also used by quick-order-list.liquid
+   elsewhere in the theme, out of scope for a cart-page-only request.
+   stroke-linecap/-linejoin are real CSS properties (not just SVG
+   presentation attributes), so a plain rule on the <path>s is enough --
+   no JS runtime workaround needed here the way the icon's colour needed
+   (that was a color-scheme/currentColor-specific browser quirk, not a
+   general limit on styling SVG children of a button). square (not butt):
+   square extends each open stroke end a half-stroke-width past its own
+   endpoint with a flat cut, which is what "sharp/geometric" actually
+   looks like on a glyph this small -- butt would read as slightly
+   truncated/short on the open strokes (the top bar, the two vertical
+   ticks) instead. */
+.cart-items__remove path {
+  stroke-linecap: square !important;
+  stroke-linejoin: miter !important;
 }
 
 /* Was invisible -- and genuinely not a normal specificity problem: setting
