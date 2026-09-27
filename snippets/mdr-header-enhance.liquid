@@ -1350,8 +1350,16 @@
      quirk -- this is the runtime fix for the ones that do.
      Cart rows re-render in place (quantity edits, item removal) rather
      than a full page reload, so a MutationObserver re-applies this to any
-     row swapped in later, not just whatever was present at first load.
-     ===================================================================== */
+     row swapped in later, not just whatever was present at first load --
+     watching document.body (not .cart-items itself): confirmed live that
+     a remove-item AJAX update replaces .cart-items wholesale with a new
+     element, not just its children, which silently orphans an observer
+     that was attached to the OLD reference (it keeps watching a detached
+     node no longer connected to anything, and never fires again) -- the
+     icon went back to invisible after the very first removal in testing.
+     body is never itself replaced, so this survives any number of cart
+     updates; subtree:true still catches the swap wherever it happens
+     underneath it. */
   (function () {
     if (window.__mdrCartRemoveColor) return;
     window.__mdrCartRemoveColor = true;
@@ -1368,9 +1376,8 @@
     D.addEventListener('DOMContentLoaded', fix);
     window.addEventListener('load', fix);
 
-    var cartItems = D.querySelector('.cart-items');
-    if (cartItems && window.MutationObserver) {
-      new MutationObserver(fix).observe(cartItems, { childList: true, subtree: true });
+    if (window.MutationObserver) {
+      new MutationObserver(fix).observe(D.body, { childList: true, subtree: true });
     }
   })();
 
