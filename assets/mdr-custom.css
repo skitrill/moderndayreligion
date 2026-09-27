@@ -3413,61 +3413,70 @@ main[data-template='collection']
   background-image: none;
 }
 
-/* Minimal rail pass: the trailing line used to end in a short diagonal
-   flourish (echoing the old ribbon's own cut) -- simplified to one plain
-   straight hairline. Was a flex-item pseudo-element (order + flex:1 1 auto
-   + a flat 10px margin guess) -- "connect the rule directly into the
-   chevron" pass replaced that with a real measured pixel value
-   (mdr-header-enhance.liquid's positionAllbarRule(), written to a handful
-   of --mdr-rule-* custom properties on this same element), because the
-   old fixed margin left a visible gap that varied slightly between
-   WEBRACK's double-chevron and RETURN's single one and never actually
-   touched either.
-   Colour/weight, second pass: that same connect-the-rule change also
-   swapped the colour to var(--mdr-ink) at 0.5 opacity (matching the
-   chevron/toggle's own idle tone) and sized the height to the chevron's
-   own measured stroke-width -- reasoned as "one continuous stroke system"
-   with the icon, but live it read as a thick, dark, dominant bar next to
-   the site's actual hairlines, "something your eye notices before the
-   clothes." Reverted to the real reference instead: var(--mdr-border-
-   faint, rgba(4,0,97,0.08)) (aliased to --mdr-border) at a flat 1px, the
-   exact token+weight the product grid's own dividers use (see
-   .product-recommendations above, .cart-items__table-row's own divider,
-   etc) -- no separate opacity multiplier on top of it, because --mdr-
-   border is already tuned to be the site's one "faint hairline" value on
-   its own; stacking another 0.5 opacity over it would make this line
-   fainter than every other divider on the site, not identical to them.
-   Height is a flat 1px now, not a chevron-stroke measurement -- matching
-   the grid's own hairline weight is the explicit ask, not matching the
-   icon's weight.
-   The MEASURED POSITION (left/width/top, still JS-driven) is exactly what
-   this pass keeps: only color/weight reverted, not the connection itself.
-   position:absolute (not a flex item any more) -- removed from the wrap's
-   own flex flow entirely, so .mdr-allbar's own position (still a real
-   flex item) no longer depends on this element's flex-grow to get pushed
-   to either end of the row; see .mdr-allbar--back's own margin-inline-
-   start:auto, further down, for how RETURN still lands at the row's end
-   without it.
-   Defaults to 0 width/0 left until JS runs -- happens synchronously,
-   right after this element is inserted into the DOM, so there's no
-   flash of a wrongly-positioned line to see first. Desktop: JS clears
-   these properties outright there (.mdr-allbar-wrap is width:max-content
-   on desktop, no line to show at all), so the 0px fallback is what
-   actually renders -- correctly invisible, matching desktop's existing
-   look exactly. */
-.mdr-allbar-wrap::before {
-  content: '';
+/* ==========================================================================
+   The line IS the icon. WEBRACK/RETURN's arrow used to be a separate SVG
+   chevron glued beside a CSS/pseudo-element hairline, tip-aligned via JS
+   measurement so the two never showed a seam. This pass removes the
+   "two things carefully aligned" approach entirely: .mdr-allbar__line is
+   one real <svg>, one <path> (mdr-header-enhance.liquid's buildLinePath()),
+   drawing the horizontal rule AND the chevron's wings as one continuous
+   stroke in the same coordinate space -- there is no alignment step any
+   more because there was never a second element to align in the first
+   place. "The concept is: the divider line itself is the navigation icon."
+   position:absolute, sized to the wrap's own full box (JS sets width/
+   height/viewBox to the wrap's real pixel dimensions, 1:1, no scaling) --
+   same role .mdr-allbar-wrap::before used to play, just a real element now
+   instead of a pseudo-element, because a pseudo-element can't hold a
+   dynamic <path> the way this needs. .mdr-allbar is still the only real
+   flex child of the wrap; see .mdr-allbar--back's own margin-inline-start:
+   auto, further down, for how RETURN still lands at the row's end without
+   this line participating in flex layout at all. */
+.mdr-allbar__line {
   position: absolute;
-  left: var(--mdr-rule-left, 0px);
-  top: var(--mdr-rule-top, 0px);
-  width: var(--mdr-rule-width, 0px);
-  height: 1px;
-  background: var(--mdr-border-faint, rgba(4, 0, 97, 0.08));
+  inset: 0;
   pointer-events: none;
+  overflow: visible;
 }
 
-.mdr-allbar-wrap:has(.mdr-allbar.is-open)::before {
-  display: none;
+.mdr-allbar__line-path {
+  fill: none;
+  /* same token/weight the product grid's own dividers use -- "the chevron
+     should therefore be extremely minimal... use the exact same subtle
+     hairline weight/color as the existing MDR grid/divider lines", not a
+     conventional thicker navigation arrow. */
+  stroke: var(--mdr-border-faint, rgba(4, 0, 97, 0.08));
+  stroke-width: 1;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  /* guarantees a crisp, un-scaled 1px stroke regardless of any transform
+     ancestor -- there isn't one here today, but this is free insurance
+     against the exact "half-pixel blur at different viewport widths"
+     failure mode called out explicitly. */
+  vector-effect: non-scaling-stroke;
+  stroke-dashoffset: 0;
+  /* "roughly 180-250ms... crisp and mechanical, not bouncy, elastic or
+     playful" -- a steep, near-linear ease (not the spring-like curves
+     used for WEBRACK's own width expand) reads as a fast mechanical zip,
+     not a soft fade. */
+  transition: stroke-dashoffset 0.2s cubic-bezier(0.65, 0, 0.35, 1);
+}
+
+/* WEBRACK open, or RETURN's one-shot tap-to-navigate flourish (see
+   mdr-header-enhance.liquid's setOpen()/click handler) -- both just add
+   this one class to the WRAP (not .mdr-allbar itself, so this reaches the
+   line correctly regardless of which element .is-open happens to be on).
+   --mdr-line-len is the path's own real getTotalLength(), written by
+   buildLinePath() every time the path is (re)built, so the dash pattern
+   always matches the CURRENT geometry exactly, at any viewport width --
+   animating to a stale length would either stop short (visible fragment
+   left behind) or overshoot into the gap (line reappearing before fully
+   hidden). Offset animates 0 -> full length: the visible stroke appears
+   to erase starting from whichever end the path's own "d" attribute
+   starts at (buildLinePath sets WEBRACK's start at the OUTER tip, RETURN's
+   at the LABEL side -- opposite ends on purpose), "the animation should
+   travel in the opposite direction" between the two. */
+.mdr-allbar-wrap--zap .mdr-allbar__line-path {
+  stroke-dashoffset: var(--mdr-line-len, 0);
 }
 
 /* ==========================================================================
@@ -3498,9 +3507,9 @@ main[data-template='collection']
   /* Pushes RETURN to the row's own end. Used to be `order: 2` on the bar
      plus `flex: 1 1 auto` on the (then flex-item) divider pseudo-element
      eating the leftover space in front of it -- now that the divider is
-     position:absolute (connect-the-rule pass, see .mdr-allbar-wrap::before
-     above) it's no longer a flex item at all, so it can't do that pushing
-     any more. .mdr-allbar is the only real flex child left in the row now,
+     position:absolute (.mdr-allbar__line, above) it's no longer a flex
+     item at all, so it can't do that pushing any more. .mdr-allbar is the
+     only real flex child left in the row now,
      and a lone flex item's own auto margin still pushes it to whichever
      end that margin faces -- same visual result, one property instead of
      two, no `order` needed since there's nothing left to reorder against. */
@@ -3597,18 +3606,13 @@ main[data-template='collection']
   -webkit-tap-highlight-color: transparent;
 }
 
-/* Idle-dim / brighten-on-open now lives on the LABEL specifically, not the
-   whole toggle -- used to be one `opacity: 0.5` on .mdr-allbar__toggle
-   covering label AND chevron together, which also faded the chevron to a
-   soft mid-grey. "The color and thickness of the chevrons should match
-   the [connecting] line" (a flat, always-on-coloured, always-full-opacity
-   hairline) needs the chevron NOT to move with this idle/open toggle
-   state at all -- it reads as structural iconography, like the line
-   itself, not "content" that dims/brightens with interaction the way the
-   WEBRACK/RETURN word itself does. Splitting the opacity onto the label
-   alone keeps that same idle/open interaction on the text -- the only
-   thing it was ever really about -- while the chevron (below) gets its
-   own constant, line-matched colour untouched by it. */
+/* Idle-dim / brighten-on-open on the label text -- WEBRACK/RETURN dims
+   while idle, reads at full strength once WEBRACK is open. The line+
+   chevron (.mdr-allbar__line-path, above) is NOT tied to this: it reads
+   as structural iconography, like a divider, not "content" that dims and
+   brightens with interaction the way the word itself does -- it has its
+   own constant hairline colour, and its own separate open/close signal
+   (.mdr-allbar-wrap--zap) drives its stroke-dashoffset wipe instead. */
 .mdr-allbar__label {
   opacity: 0.5;
   transition: opacity var(--animation-speed) var(--animation-easing);
@@ -3616,63 +3620,6 @@ main[data-template='collection']
 
 .mdr-allbar.is-open .mdr-allbar__label {
   opacity: 1;
-}
-
-.mdr-allbar__chev {
-  display: inline-flex;
-  align-items: center;
-  /* as tall as the WEBRACK cap height */
-  font-size: 1.7em;
-  line-height: 0.6;
-}
-
-/* Connect-the-rule pass, second half: the chevron's stroke colour used to
-   be plain currentColor (-> .mdr-allbar__toggle's ink, at whatever
-   opacity the toggle itself was carrying) -- "the chevrons should match
-   the line" needs it to be the exact same value the connecting rule now
-   draws in (mdr-custom.css, .mdr-allbar-wrap::before): var(--mdr-border-
-   faint, rgba(4,0,97,0.08)), the site's one shared hairline/divider token,
-   at full, constant opacity (not tied to .mdr-allbar__label's idle/open
-   fade above -- a divider line doesn't fade in and out either). Weight is
-   matched too, at the SVG source (mdr-header-enhance.liquid's CHEV_SVG/
-   CHEV_SVG_SINGLE, stroke-width 1.6 -> 1, ~1px rendered at this icon's
-   current size). */
-.mdr-allbar__chev svg {
-  stroke: var(--mdr-border-faint, rgba(4, 0, 97, 0.08));
-  display: block;
-  width: 0.62em;
-  height: 0.62em;
-  transition: transform var(--animation-speed) var(--animation-easing);
-}
-
-/* minimal-rail pass: was a filled chip (background/padding/border-inline-
-   end) around the open-state chevron -- "remove any box, background
-   fill... or separate container around the chevrons. They should simply
-   sit beside WEBRACK as typography/icons." Just a small gap from the
-   label now, no box, no fill, no divider of its own (the row's own
-   trailing line/border-top already provide the structure). */
-.mdr-allbar.is-open .mdr-allbar__chev:not(.mdr-allbar__chev--back) {
-  margin-inline-start: 2px;
-  margin-inline-end: 8px;
-}
-
-/* open state -> the same » icon flipped to point back at "WEBRACK", a
-   real reversed chevron instead of swapping in literal "|<|" text */
-.mdr-allbar.is-open .mdr-allbar__chev:not(.mdr-allbar__chev--back) svg {
-  transform: scaleX(-1);
-}
-
-/* off-home: the bar is a back button -- big left chevron before the word */
-/* RETURN now shares WEBRACK's fixed 95px width and hidden overflow from
-   the base .mdr-allbar rule instead of sizing to its own unlimited
-   content width -- "the same [length as WEBRACK] and stable" */
-
-.mdr-allbar__chev--back {
-  margin-inline-end: 6px;
-}
-
-.mdr-allbar__chev--back svg {
-  transform: scaleX(-1);
 }
 
 /* the stock "«" beside the logo is gone -- the WEBRACK bar takes that job */

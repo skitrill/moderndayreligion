@@ -359,52 +359,19 @@
       var bar = D.createElement('div');
       bar.className = 'mdr-allbar' + (isHome ? '' : ' mdr-allbar--back');
 
-      /* WEBRACK: a clean double-chevron, not the raw "»" glyph. RETURN
-         gets a single chevron instead -- the two read as distinct icons,
-         not the same mark flipped, matching the reference.
-         stroke-width 1.6 -> 1: "the color and thickness of the chevrons
-         should match the line" -- the connecting rule (mdr-custom.css,
-         .mdr-allbar-wrap::before) is a flat 1px hairline now, matching the
-         product grid's own dividers, and the chevron was still drawn at
-         its older, bolder weight (1.6, plus round joins that visually
-         bulge slightly past that at the vertex) -- reads as a thick icon
-         glued onto a thin line rather than one continuous stroke. 1 is the
-         value that renders at ~1px at this icon's actual current size
-         (viewBox-to-rendered-size ratio is ~1:1 here), matching the line
-         it now connects into. Colour match lives in CSS (.mdr-allbar__chev
-         svg), not here -- stroke="currentColor" stays as-is, just resolves
-         to a different value now. */
-      var CHEV_SVG =
-        '<svg viewBox="0 0 14 12" fill="none" stroke="currentColor" ' +
-        'stroke-width="1" stroke-linecap="round" stroke-linejoin="round">' +
-        '<path d="M1.5 2l4 4-4 4"/><path d="M7.5 2l4 4-4 4"/></svg>';
-      /* authored right-pointing, same as CHEV_SVG -- .mdr-allbar__chev--back
-         svg { transform: scaleX(-1) } already flips it to point left */
-      var CHEV_SVG_SINGLE =
-        '<svg viewBox="0 0 8 12" fill="none" stroke="currentColor" ' +
-        'stroke-width="1" stroke-linecap="round" stroke-linejoin="round">' +
-        '<path d="M2 2l4 4-4 4"/></svg>';
-
       var toggle = D.createElement('button');
       toggle.type = 'button';
       toggle.className = 'mdr-allbar__toggle';
       toggle.setAttribute('aria-expanded', 'false');
-      /* RETURN and WEBRACK now share one box style (border + diagonal tip,
-         see CSS), so RETURN gets its chevron back too. RETURN is always
-         "chevron, then label" ("‹ RETURN"), on every non-home page
-         (cart, lookbook, The Modern Times, policy pages, and now product
-         too) -- only WHICH END of the row it sits at changes (mobile-only
-         CSS, see .mdr-allbar--back's :has() rules in mdr-custom.css), not
-         its own internal composition or the chevron's direction. An
-         earlier version of this flipped both the order and the chevron to
-         point right ("RETURN ›") for the right-aligned case -- reverted:
-         the button is supposed to read "‹ RETURN" everywhere, just parked
-         at a different end of the row. */
+      /* No separate chevron element at all any more -- "remove the
+         existing chevron icons completely... do not use text characters
+         such as >>, <<, ›, <, SVG icon libraries, or a separate chevron
+         element." Just the word itself; the arrow is drawn as part of
+         .mdr-allbar__line below, sharing one continuous stroke with the
+         connecting rule instead of sitting beside it as its own icon. */
       toggle.innerHTML = isHome
-        ? '<span class="mdr-allbar__label">Webrack</span>' +
-          '<span class="mdr-allbar__chev" aria-hidden="true">' + CHEV_SVG + '</span>'
-        : '<span class="mdr-allbar__chev mdr-allbar__chev--back" aria-hidden="true">' + CHEV_SVG_SINGLE + '</span>' +
-          '<span class="mdr-allbar__label">Return</span>';
+        ? '<span class="mdr-allbar__label">Webrack</span>'
+        : '<span class="mdr-allbar__label">Return</span>';
 
       var list = D.createElement('div');
       list.className = 'mdr-allbar__list';
@@ -490,99 +457,125 @@
       bar.appendChild(list);
       wrap.appendChild(bar);
 
+      /* The line-as-icon redesign: WEBRACK/RETURN's arrow is no longer a
+         separate glyph, SVG icon, or CSS-clipped shape sitting beside the
+         connecting rule -- it's cut directly into the SAME stroke as the
+         rule itself, one <path>, so there is no seam where "line" ends
+         and "icon" begins to ever misalign in the first place. One <svg>
+         per bar, appended as a sibling of the toggle/list (not inside
+         them) so it can span the full row width independent of the
+         button's own box. */
+      var SVG_NS = 'http://www.w3.org/2000/svg';
+      var lineSvg = D.createElementNS(SVG_NS, 'svg');
+      lineSvg.setAttribute('class', 'mdr-allbar__line');
+      lineSvg.setAttribute('aria-hidden', 'true');
+      lineSvg.setAttribute('focusable', 'false');
+      var linePath = D.createElementNS(SVG_NS, 'path');
+      linePath.setAttribute('class', 'mdr-allbar__line-path');
+      lineSvg.appendChild(linePath);
+      wrap.appendChild(lineSvg);
+
       /* sit it directly below the header, on every page */
       header.parentNode.insertBefore(wrap, header.nextSibling);
 
-      /* Connect-the-rule pass: the thin horizontal line (.mdr-allbar-wrap
-         ::before, CSS) used to be positioned with a flat CSS margin/flex-
-         grow guess (10px gap, same on every page regardless of the actual
-         rendered chevron) -- close, but a visible seam.
-         Tip-to-tip precision pass: the first version of this fix measured
-         each chevron <path>'s getBoundingClientRect() (rendered STROKE
-         bounds) instead -- an improvement, but still not exact: stroke-
-         linejoin="round" rounds the OUTSIDE of the vertex's own angle,
-         which bulges the rendered ink slightly PAST the true mathematical
-         point at a sharp corner like this, so the bounding box's own
-         edge lands a fraction of a pixel beyond the actual tip, not AT it
-         (confirmed as the "overlap/offset" this request flags). Bounding-
-         box measurement is exactly the kind of "relying on the glyph's
-         box, not its visible geometry" this asks to avoid -- true even
-         though this was already a hand-drawn SVG chevron, not a text
-         character, going in.
-         Fixed properly now: chevTipPoint() below reads the path's own
-         GEOMETRY directly -- getTotalLength()/getPointAtLength() -- to
-         find the exact vertex coordinate the path data describes (every
-         chevron here is two equal-length straight segments meeting at a
-         point, so that point sits at exactly half the path's total
-         length, by construction, for any chevron built this same way).
-         getScreenCTM() + matrixTransform() then converts that exact
-         local SVG-space point straight into real page pixels, accounting
-         for the viewBox scale AND any CSS transform on the <svg> itself
-         (RETURN's scaleX(-1) flip included) in one step -- no manual
-         viewBox/transform math to keep in sync, and no stroke-rendering
-         fuzz (caps, joins, anti-aliasing) anywhere in the calculation.
-         Desktop bails out entirely: .mdr-allbar-wrap shrinks to
+      /* Builds the line+chevron as ONE path, drawn directly in the wrap's
+         own real pixel coordinate space (svg width/height/viewBox all set
+         to the wrap's exact measured size, no scaling transform anywhere)
+         so the diagonal wings render at a true, undistorted angle at any
+         viewport width -- "alignment cannot break at different viewport
+         widths" ruled out an approach where a fixed viewBox gets stretched
+         to fit, since non-uniform stretching would skew the diagonals
+         differently per width.
+         The path is two subpaths sharing one exact coordinate (the
+         vertex): [outer wing tip -> vertex -> label-side start] as one
+         unbroken 2-segment stroke (this covers the ENTIRE horizontal
+         line, since the wing tip is the path's literal starting point --
+         "the horizontal section must enter the exact mathematical center
+         of the chevron point" is true by construction, not by measuring
+         two separately-built pieces afterward), then a single moveto to
+         draw the second wing (vertex -> inner wing tip). A perfect zero-
+         lift trace isn't geometrically possible for a 3-way junction (the
+         vertex has three strokes meeting at it -- horizontal, upper wing,
+         lower wing -- which no single continuous line can visit without
+         doubling back), but rendered pixels are identical either way:
+         same stroke-width/colour/cap the whole way, both subpaths meeting
+         at one exact shared point, so nothing visibly "joins" -- it reads
+         as one continuous wire because, pixel for pixel, it is one.
+         Desktop bails out (0-size svg, empty path): .mdr-allbar-wrap is
          width:max-content there (a compact pill beside the logo, see
-         mdr-custom.css), so this connecting line is already 0px wide and
-         invisible -- nothing to align. Mobile only, matching the same
-         750px threshold every other measurement in this file already
-         uses. */
-      function chevTipPoint(svg, path) {
-        var len = path.getTotalLength();
-        var local = path.getPointAtLength(len / 2);
-        var ctm = svg.getScreenCTM();
-        if (!ctm) return null;
-        var pt = svg.createSVGPoint();
-        pt.x = local.x;
-        pt.y = local.y;
-        return pt.matrixTransform(ctm);
-      }
-
-      function positionAllbarRule() {
+         mdr-custom.css) -- no row-spanning line to draw, matching every
+         earlier pass's own mobile-only scope for this same element. */
+      function buildLinePath() {
         if (window.innerWidth >= 750) {
-          wrap.style.removeProperty('--mdr-rule-left');
-          wrap.style.removeProperty('--mdr-rule-width');
-          wrap.style.removeProperty('--mdr-rule-top');
+          lineSvg.setAttribute('width', 0);
+          lineSvg.setAttribute('height', 0);
+          linePath.setAttribute('d', '');
           return;
         }
-        var svg = toggle.querySelector('.mdr-allbar__chev svg');
-        if (!svg) return;
-        var paths = svg.querySelectorAll('path');
-        if (!paths.length) return;
-        /* the LAST path is always the one nearest the line: WEBRACK's
-           double-chevron draws its second (rightmost) » as the final
-           <path>, and RETURN only ever has the one single-chevron path,
-           so this is the correct tip either way without branching on
-           isHome here too. */
-        var tip = chevTipPoint(svg, paths[paths.length - 1]);
-        if (!tip) return;
-
+        var label = toggle.querySelector('.mdr-allbar__label');
+        if (!label) return;
         var wrapRect = wrap.getBoundingClientRect();
-        /* the vertex sits at exactly the icon's own vertical middle by
-           construction (viewBox height 12, vertex y=6) -- tip.y IS that
-           centerline already, no separate stroke-height math needed. */
-        wrap.style.setProperty('--mdr-rule-top', (tip.y - wrapRect.top - 0.5) + 'px');
+        var toggleRect = toggle.getBoundingClientRect();
+        var labelRect = label.getBoundingClientRect();
+        var w = wrapRect.width;
+        var h = wrapRect.height;
+        if (!w || !h) return;
+        lineSvg.setAttribute('width', w);
+        lineSvg.setAttribute('height', h);
+        lineSvg.setAttribute('viewBox', '0 0 ' + w + ' ' + h);
 
+        /* toggle's own vertical center, not the label's -- .mdr-allbar__
+           toggle is align-items:center, so this is exactly where the
+           label visually sits regardless of its own line-height box. */
+        var midY = (toggleRect.top + toggleRect.height / 2) - wrapRect.top;
+        var gap = 7; // label-to-stroke gap, matches the old label/chevron rhythm
+        var wingDx = 5; // subtle -- "very minimal, not a conventional thick arrow"
+        var wingDy = 4;
+        var edgeInset = 2; // keeps the vertex just short of the true row edge
+
+        var d;
         if (isHome) {
-          /* WEBRACK: line picks up exactly at the last chevron's own
-             vertex, continuing on in the same direction it's already
-             pointing. */
-          wrap.style.setProperty('--mdr-rule-left', (tip.x - wrapRect.left) + 'px');
-          wrap.style.setProperty('--mdr-rule-width', Math.max(0, wrapRect.right - tip.x) + 'px');
+          /* WEBRACK: label -> gap -> vertex (near the right edge), wings
+             pointing back toward the label (>). Path starts at the OUTER
+             wing tip so the whole horizontal run + that wing is one
+             unbroken stroke ending at the label -- open/close erases from
+             the outer tip inward (see CSS), i.e. away from the word. */
+          var startX = (labelRect.right - wrapRect.left) + gap;
+          var vertexX = Math.max(startX, w - edgeInset);
+          d = 'M ' + (vertexX - wingDx) + ' ' + (midY - wingDy) +
+            ' L ' + vertexX + ' ' + midY +
+            ' L ' + startX + ' ' + midY +
+            ' M ' + vertexX + ' ' + midY +
+            ' L ' + (vertexX - wingDx) + ' ' + (midY + wingDy);
         } else {
-          /* RETURN: mirrored -- the line runs in from the row's own left
-             edge and terminates exactly at the left-pointing chevron's
-             own vertex, arriving at RETURN from the direction the
-             chevron is pointing (back), not the direction WEBRACK's rule
-             departs in. */
-          wrap.style.setProperty('--mdr-rule-left', '0px');
-          wrap.style.setProperty('--mdr-rule-width', Math.max(0, tip.x - wrapRect.left) + 'px');
+          /* RETURN: mirrored -- vertex near the left edge, wings pointing
+             back toward the label on the right (<). Path starts at the
+             LABEL side this time (opposite end from WEBRACK's), so the
+             erase animation sweeps the opposite physical direction too --
+             "the animation should travel in the opposite direction". */
+          var endX = (labelRect.left - wrapRect.left) - gap;
+          var vertexX2 = Math.min(endX, edgeInset);
+          d = 'M ' + endX + ' ' + midY +
+            ' L ' + vertexX2 + ' ' + midY +
+            ' L ' + (vertexX2 + wingDx) + ' ' + (midY - wingDy) +
+            ' M ' + vertexX2 + ' ' + midY +
+            ' L ' + (vertexX2 + wingDx) + ' ' + (midY + wingDy);
         }
+        linePath.setAttribute('d', d);
+
+        /* dash length only -- NOT dashoffset (that stays purely CSS-
+           class-driven, see .mdr-allbar-wrap--zap / .is-open in
+           mdr-custom.css) -- setting offset here as an inline style would
+           permanently out-specificity those class rules and the open/
+           close transition would never fire again. */
+        var len = linePath.getTotalLength();
+        wrap.style.setProperty('--mdr-line-len', len);
+        linePath.style.strokeDasharray = len + ' ' + len;
       }
 
-      positionAllbarRule();
-      window.addEventListener('resize', positionAllbarRule, { passive: true });
-      window.addEventListener('load', positionAllbarRule);
+      buildLinePath();
+      window.addEventListener('resize', buildLinePath, { passive: true });
+      window.addEventListener('load', buildLinePath);
 
       /* line its label up under the logo, at every breakpoint (the header
          centres its own content on desktop, so a fixed gutter won't do) */
@@ -608,12 +601,16 @@
          touchzone's own `touch-action: pan-x` (see CSS) already keeps a
          drag on the titles from also scrolling the page, for free, scoped
          to just that gesture -- no page-wide lock needed or wanted. */
-      /* the open/closed chevron direction is a CSS flip of the same SVG
-         (.mdr-allbar.is-open .mdr-allbar__chev svg) -- previously this
-         swapped the icon's innerHTML for the literal text "|<|", which
-         read as a stray, oddly-spaced glyph instead of a real icon */
+      /* "Zap" is the line+chevron's own open/close state -- a fast (see
+         .mdr-allbar-wrap--zap / .is-open in mdr-custom.css, ~220ms)
+         stroke-dashoffset wipe, replacing the old instant display:none
+         and the old CSS scaleX(-1) chevron flip alike: there's no
+         separate icon left to flip, the whole line+arrow graphic zips
+         away as one stroke while the category list slides in underneath
+         it, and zips back in on close. */
       function setOpen(on) {
         bar.classList.toggle('is-open', on);
+        wrap.classList.toggle('mdr-allbar-wrap--zap', on);
         toggle.setAttribute('aria-expanded', on ? 'true' : 'false');
         if (typeof positionTouchzone === 'function') requestAnimationFrame(positionTouchzone);
       }
@@ -625,9 +622,25 @@
         toggle.addEventListener('click', function (e) {
           e.preventDefault();
           e.stopPropagation();
-          if (typeof window.mdrGoBack === 'function') window.mdrGoBack();
-          else if (history.length > 1) history.back();
-          else location.href = '/';
+          /* RETURN never "opens" anything -- .mdr-allbar-wrap--zap here is
+             a one-shot flourish, not a persistent state toggle: play the
+             same zip transition (mdr-custom.css), reversed direction by
+             construction (buildLinePath's RETURN path starts at the
+             LABEL end, WEBRACK's starts at the OUTER end -- see that
+             function's own comment), then actually navigate once there's
+             been enough time to SEE the zip start, not zero. A plain,
+             un-delayed history.back() would swap the page out the same
+             tick the class gets added -- the browser never gets a chance
+             to paint a single animated frame before the transition target
+             page starts loading. 160ms: close to the ~180-220ms the zip
+             itself runs, short enough that the page still feels
+             instant-responsive, not delayed for its own sake. */
+          wrap.classList.add('mdr-allbar-wrap--zap');
+          setTimeout(function () {
+            if (typeof window.mdrGoBack === 'function') window.mdrGoBack();
+            else if (history.length > 1) history.back();
+            else location.href = '/';
+          }, 160);
         });
         return;
       }
@@ -654,11 +667,18 @@
            instantly instead of racing the navigation. */
         var navLink = e.target.closest && e.target.closest('a[href]');
         if (navLink) {
-          bar.classList.add('mdr-allbar--instant');
+          /* moved from `bar` to `wrap`: .mdr-allbar__line now lives as a
+             sibling of `bar`, not inside it, so a class added only to
+             `bar` never reached it via the existing ".mdr-allbar--instant
+             *" descendant selector -- the line would still animate its
+             zip-closed transition while the page was already navigating
+             away, the exact stutter this instant-close path exists to
+             prevent. Adding it to `wrap` instead reaches both. */
+          wrap.classList.add('mdr-allbar--instant');
           setOpen(false);
           requestAnimationFrame(function () {
             requestAnimationFrame(function () {
-              bar.classList.remove('mdr-allbar--instant');
+              wrap.classList.remove('mdr-allbar--instant');
             });
           });
           return;
