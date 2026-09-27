@@ -510,7 +510,6 @@
           wrap.style.removeProperty('--mdr-rule-left');
           wrap.style.removeProperty('--mdr-rule-width');
           wrap.style.removeProperty('--mdr-rule-top');
-          wrap.style.removeProperty('--mdr-rule-height');
           return;
         }
         var svg = toggle.querySelector('.mdr-allbar__chev svg');
@@ -528,23 +527,14 @@
         }
 
         var wrapRect = wrap.getBoundingClientRect();
-        var svgRect = svg.getBoundingClientRect();
-        var vb = svg.viewBox && svg.viewBox.baseVal;
-        /* stroke-width="1.6" is authored into every chevron path (both
-           CHEV_SVG and CHEV_SVG_SINGLE, above) in viewBox units -- scaling
-           it by the svg's own rendered-size-to-viewBox ratio gives the
-           REAL on-screen stroke thickness at whatever size this icon
-           currently renders at, so the connecting line is always drawn at
-           the chevron's own actual weight, not a hardcoded pixel guess
-           that would drift if the icon's font-size (and therefore its
-           size) ever changes. */
-        var strokeWidth = (vb && vb.width)
-          ? 1.6 * (svgRect.width / vb.width)
-          : 1.6;
         var centerY = (minY + maxY) / 2;
-
-        wrap.style.setProperty('--mdr-rule-height', Math.max(1, strokeWidth) + 'px');
-        wrap.style.setProperty('--mdr-rule-top', (centerY - wrapRect.top - Math.max(1, strokeWidth) / 2) + 'px');
+        /* Height is a flat 1px in CSS now (matching the product grid's own
+           hairline dividers, not the chevron's own stroke-width -- a
+           refinement pass reverted that measurement: it made the line
+           read as a thick, dark bar next to the site's actual hairlines).
+           Centering math still divides by 1 (not the old measured stroke
+           width) to match. */
+        wrap.style.setProperty('--mdr-rule-top', (centerY - wrapRect.top - 0.5) + 'px');
 
         if (isHome) {
           /* WEBRACK: line picks up exactly where the last chevron's own

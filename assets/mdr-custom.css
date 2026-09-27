@@ -3415,19 +3415,32 @@ main[data-template='collection']
 /* Minimal rail pass: the trailing line used to end in a short diagonal
    flourish (echoing the old ribbon's own cut) -- simplified to one plain
    straight hairline. Was a flex-item pseudo-element (order + flex:1 1 auto
-   + a flat 10px margin guess), same neutral grey as the product-grid
-   dividers (var(--mdr-border)) -- "connect the rule directly into the
-   chevron" pass replaces both of those: position is now a real measured
-   pixel value (mdr-header-enhance.liquid's positionAllbarRule(), written
-   to a handful of --mdr-rule-* custom properties on this same element),
-   because the old fixed margin left a visible gap that varied slightly
-   between WEBRACK's double-chevron and RETURN's single one and never
-   actually touched either; and colour is now var(--mdr-ink) at the same
-   0.5 opacity .mdr-allbar__toggle itself idles at (not --mdr-border) so
-   the line and the chevron read as one continuous stroke -- literally the
-   same colour value and the same opacity, not two things visually tuned
-   to look close. Height is likewise a measured match to the chevron's own
-   rendered stroke-width, not a flat 1px guess.
+   + a flat 10px margin guess) -- "connect the rule directly into the
+   chevron" pass replaced that with a real measured pixel value
+   (mdr-header-enhance.liquid's positionAllbarRule(), written to a handful
+   of --mdr-rule-* custom properties on this same element), because the
+   old fixed margin left a visible gap that varied slightly between
+   WEBRACK's double-chevron and RETURN's single one and never actually
+   touched either.
+   Colour/weight, second pass: that same connect-the-rule change also
+   swapped the colour to var(--mdr-ink) at 0.5 opacity (matching the
+   chevron/toggle's own idle tone) and sized the height to the chevron's
+   own measured stroke-width -- reasoned as "one continuous stroke system"
+   with the icon, but live it read as a thick, dark, dominant bar next to
+   the site's actual hairlines, "something your eye notices before the
+   clothes." Reverted to the real reference instead: var(--mdr-border-
+   faint, rgba(4,0,97,0.08)) (aliased to --mdr-border) at a flat 1px, the
+   exact token+weight the product grid's own dividers use (see
+   .product-recommendations above, .cart-items__table-row's own divider,
+   etc) -- no separate opacity multiplier on top of it, because --mdr-
+   border is already tuned to be the site's one "faint hairline" value on
+   its own; stacking another 0.5 opacity over it would make this line
+   fainter than every other divider on the site, not identical to them.
+   Height is a flat 1px now, not a chevron-stroke measurement -- matching
+   the grid's own hairline weight is the explicit ask, not matching the
+   icon's weight.
+   The MEASURED POSITION (left/width/top, still JS-driven) is exactly what
+   this pass keeps: only color/weight reverted, not the connection itself.
    position:absolute (not a flex item any more) -- removed from the wrap's
    own flex flow entirely, so .mdr-allbar's own position (still a real
    flex item) no longer depends on this element's flex-grow to get pushed
@@ -3447,9 +3460,8 @@ main[data-template='collection']
   left: var(--mdr-rule-left, 0px);
   top: var(--mdr-rule-top, 0px);
   width: var(--mdr-rule-width, 0px);
-  height: var(--mdr-rule-height, 1px);
-  background: var(--mdr-ink);
-  opacity: 0.5;
+  height: 1px;
+  background: var(--mdr-border-faint, rgba(4, 0, 97, 0.08));
   pointer-events: none;
 }
 
