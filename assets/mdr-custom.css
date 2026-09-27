@@ -3378,10 +3378,11 @@ main[data-template='collection']
   line-height: 1;
   cursor: pointer;
   -webkit-tap-highlight-color: transparent;
-  /* the dim-while-idle/full-once-open opacity lives on .mdr-allbar__toggle
+  /* the dim-while-idle/full-once-open opacity lives on .mdr-allbar__label
      now (below), not here -- this rule also draws the border (SVG) and
-     the background fill, and a tap should only brighten the label, not
-     the box around it */
+     the background fill, and a tap should only brighten the label text,
+     not the box around it or the chevron beside it (which has its own
+     constant, line-matched colour instead -- see .mdr-allbar__chev svg) */
   /* 0.26s, tightened from 0.34s -- snappier open/close, still using the
      same ease-out curve so it settles smoothly rather than just stopping */
   transition: width 0.26s cubic-bezier(0.16, 1, 0.3, 1);
@@ -3582,10 +3583,9 @@ main[data-template='collection']
   padding: 12px 8px;
   border: 0;
   background: none;
-  /* neutral MDR system: was blue -- the opacity below (0.5 idle / 1 open)
-     already gives this a "faded" look while closed without needing a
-     separate faded colour value, so ink alone (not an accent colour)
-     carries the same effect. */
+  /* neutral MDR system: was blue -- ink is what the LABEL renders in (see
+     .mdr-allbar__label for its own idle/open opacity, split out from this
+     rule so the chevron -- below -- doesn't inherit it too). */
   color: var(--mdr-ink);
   font: inherit;
   /* WEBRACK / RETURN, same ~10% bump over .mdr-allbar's own (now smaller)
@@ -3595,15 +3595,26 @@ main[data-template='collection']
   text-transform: inherit;
   cursor: pointer;
   -webkit-tap-highlight-color: transparent;
-  /* plain text, no chrome -- dim while idle, full once opened. Lives here
-     (the label + chevron) rather than on .mdr-allbar itself, so tapping
-     WEBRACK brightens only the font -- the border and background fill
-     stay exactly as they were, same weight open or closed */
+}
+
+/* Idle-dim / brighten-on-open now lives on the LABEL specifically, not the
+   whole toggle -- used to be one `opacity: 0.5` on .mdr-allbar__toggle
+   covering label AND chevron together, which also faded the chevron to a
+   soft mid-grey. "The color and thickness of the chevrons should match
+   the [connecting] line" (a flat, always-on-coloured, always-full-opacity
+   hairline) needs the chevron NOT to move with this idle/open toggle
+   state at all -- it reads as structural iconography, like the line
+   itself, not "content" that dims/brightens with interaction the way the
+   WEBRACK/RETURN word itself does. Splitting the opacity onto the label
+   alone keeps that same idle/open interaction on the text -- the only
+   thing it was ever really about -- while the chevron (below) gets its
+   own constant, line-matched colour untouched by it. */
+.mdr-allbar__label {
   opacity: 0.5;
   transition: opacity var(--animation-speed) var(--animation-easing);
 }
 
-.mdr-allbar.is-open .mdr-allbar__toggle {
+.mdr-allbar.is-open .mdr-allbar__label {
   opacity: 1;
 }
 
@@ -3613,14 +3624,21 @@ main[data-template='collection']
   /* as tall as the WEBRACK cap height */
   font-size: 1.7em;
   line-height: 0.6;
-  /* minimal-rail pass: was the accent indigo -- "the lavender/purple
-     chevron accent" this asked to remove. No colour of its own now, just
-     inherits .mdr-allbar__toggle's ink, so the chevron reads as part of
-     the WEBRACK/RETURN mark itself (typography/icon), not a separate
-     coloured detail. */
 }
 
+/* Connect-the-rule pass, second half: the chevron's stroke colour used to
+   be plain currentColor (-> .mdr-allbar__toggle's ink, at whatever
+   opacity the toggle itself was carrying) -- "the chevrons should match
+   the line" needs it to be the exact same value the connecting rule now
+   draws in (mdr-custom.css, .mdr-allbar-wrap::before): var(--mdr-border-
+   faint, rgba(4,0,97,0.08)), the site's one shared hairline/divider token,
+   at full, constant opacity (not tied to .mdr-allbar__label's idle/open
+   fade above -- a divider line doesn't fade in and out either). Weight is
+   matched too, at the SVG source (mdr-header-enhance.liquid's CHEV_SVG/
+   CHEV_SVG_SINGLE, stroke-width 1.6 -> 1, ~1px rendered at this icon's
+   current size). */
 .mdr-allbar__chev svg {
+  stroke: var(--mdr-border-faint, rgba(4, 0, 97, 0.08));
   display: block;
   width: 0.62em;
   height: 0.62em;

@@ -361,16 +361,28 @@
 
       /* WEBRACK: a clean double-chevron, not the raw "»" glyph. RETURN
          gets a single chevron instead -- the two read as distinct icons,
-         not the same mark flipped, matching the reference. */
+         not the same mark flipped, matching the reference.
+         stroke-width 1.6 -> 1: "the color and thickness of the chevrons
+         should match the line" -- the connecting rule (mdr-custom.css,
+         .mdr-allbar-wrap::before) is a flat 1px hairline now, matching the
+         product grid's own dividers, and the chevron was still drawn at
+         its older, bolder weight (1.6, plus round joins that visually
+         bulge slightly past that at the vertex) -- reads as a thick icon
+         glued onto a thin line rather than one continuous stroke. 1 is the
+         value that renders at ~1px at this icon's actual current size
+         (viewBox-to-rendered-size ratio is ~1:1 here), matching the line
+         it now connects into. Colour match lives in CSS (.mdr-allbar__chev
+         svg), not here -- stroke="currentColor" stays as-is, just resolves
+         to a different value now. */
       var CHEV_SVG =
         '<svg viewBox="0 0 14 12" fill="none" stroke="currentColor" ' +
-        'stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">' +
+        'stroke-width="1" stroke-linecap="round" stroke-linejoin="round">' +
         '<path d="M1.5 2l4 4-4 4"/><path d="M7.5 2l4 4-4 4"/></svg>';
       /* authored right-pointing, same as CHEV_SVG -- .mdr-allbar__chev--back
          svg { transform: scaleX(-1) } already flips it to point left */
       var CHEV_SVG_SINGLE =
         '<svg viewBox="0 0 8 12" fill="none" stroke="currentColor" ' +
-        'stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">' +
+        'stroke-width="1" stroke-linecap="round" stroke-linejoin="round">' +
         '<path d="M2 2l4 4-4 4"/></svg>';
 
       var toggle = D.createElement('button');
