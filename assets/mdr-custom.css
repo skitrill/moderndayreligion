@@ -933,17 +933,34 @@ main[data-template='cart'] ~ footer {
   height: 26px !important;
 }
 
-/* Was invisible: the base theme sets this to var(--color-foreground),
-   which computes to the OLD cream (#f6f3e7, rgb(246,243,231)) on this
-   page's colour scheme -- nearly the same value as --mdr-paper, the
-   page's own background, so the delete icon (an inline SVG using
-   stroke="currentColor") was rendering practically camouflage-on-paper.
-   Same light-graphite token the unit price already uses -- "like the
-   product price in cart list" -- covers both the button's own color AND
-   the SVG's stroke via currentColor inheritance, no separate SVG rule
-   needed. */
+/* Was invisible -- and NOT a normal CSS specificity problem (confirmed
+   live: even a freshly-injected color:...!important rule, and even a
+   direct inline style="color:...!important" set via the console, both
+   had zero visible effect on this specific element -- something was
+   winning over even that, which a plain author-stylesheet rule never
+   should). The real cause: body has color-scheme: dark set globally,
+   intentionally, further up this file ("tells Safari to treat the whole
+   page as a dark surface" for the rubber-band overscroll fill) --
+   color-scheme inherits onto every element by default, including this
+   native <button>, and Chromium/WebKit give native form controls (button,
+   input) their OWN dark-mode-adjusted default rendering when they inherit
+   color-scheme: dark, via an internal -webkit-text-fill-color the UA
+   supplies for the control -- which paints OVER author `color` for a
+   transparent-background native button like this one specifically
+   (confirmed live: forcing color-scheme back to light on the button is
+   what actually fixed it in testing, not the color declaration itself,
+   which was already correct). Every OTHER button on the site has its own
+   solid background (ADD TO CART, quantity selector, etc.), which is
+   apparently enough to keep Chromium from reaching for that UA fallback
+   -- this transparent-background icon button is the one place on the
+   whole site that actually exposed it.
+   color-scheme: light is scoped to just this button, not a change to the
+   site-wide dark declaration -- that still does its real job (Safari
+   chrome/overscroll) everywhere else. Same light-graphite token the unit
+   price already uses -- "like the product price in cart list". */
 .cart-items__remove,
 .cart-items__remove svg {
+  color-scheme: light;
   color: var(--mdr-text-gray, #858581) !important;
 }
 
