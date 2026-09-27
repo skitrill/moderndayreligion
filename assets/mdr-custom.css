@@ -858,15 +858,6 @@ product-price *,
   }
 }
 
-/* Cart list -> summary gap, tightened. .cart-page__summary is a plain
-   layout wrapper (top padding only, 0 on every other side) -- not part of
-   .cart-summary's own bordered-card padding just inside it, so trimming
-   this one value alone shortens the distance from the last item row to
-   "DISCOUNT" without touching the summary card's own internal framing. */
-.cart-page__summary {
-  padding-top: 4px !important;
-}
-
 /* ---- Cart page: end at the same right edge as the header (the cart link).
    The section is a [gutter | 900 content | gutter] grid; the cart bled into the
    right gutter (grid-column 2/4). Confine it to the content track. --- */
@@ -887,10 +878,32 @@ product-price *,
 .cart-page__summary {
   box-shadow: none !important;
   background: transparent !important;
+}
+
+.cart-summary,
+.cart-summary__inner {
   /* last cart item -> DISCOUNT: one consistent section gap (--mdr-
      section-gap), not the base theme's own --padding-xl (main-cart.liquid),
      which reads as excessive dead air on a long cart. */
   padding-top: var(--mdr-section-gap) !important;
+}
+
+/* .cart-page__summary is the OUTERMOST of these three nested wrappers
+   (cart-page__summary > cart-summary > cart-summary__inner), each of
+   which independently carries its own top-only padding -- so its value
+   stacks with the other two's --mdr-section-gap instead of replacing it.
+   Tightened just this one, "a bit closer" to the last item row, without
+   touching --mdr-section-gap itself (shared token, still governs the
+   other two, and anything else using it later) or the summary card's own
+   internal framing (.cart-summary/.cart-summary__inner keep their full
+   gap). A second, identically-worded rule for this same selector used to
+   sit BEFORE this block instead of splitting it out -- same specificity,
+   !important, but earlier in the file, so it silently lost to this one
+   every time; removed rather than left as a second, contradictory source
+   of truth (same lesson as the cart-items__table-row duplicate from
+   earlier this session). */
+.cart-page__summary {
+  padding-top: 4px !important;
 }
 
 @media screen and (max-width: 749px) {
