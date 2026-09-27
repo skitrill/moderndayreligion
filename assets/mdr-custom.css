@@ -846,6 +846,27 @@ product-price *,
   color: rgba(0, 0, 0, 0.65) !important;
 }
 
+/* Estimated total, mobile: 10% smaller. calc() against the base theme's
+   own --font-size--lg (not a hardcoded px/rem) so this stays a genuine
+   "10% off whatever that token is" rather than a number that drifts out
+   of sync if the token itself ever changes. Scoped to the same max-width:
+   749px the base rule (snippets/cart-summary.liquid) already uses this
+   token under -- desktop reads --cart-font-size--xl instead, untouched. */
+@media screen and (max-width: 749px) {
+  .cart-totals__total-value {
+    font-size: calc(var(--font-size--lg) * 0.9) !important;
+  }
+}
+
+/* Cart list -> summary gap, tightened. .cart-page__summary is a plain
+   layout wrapper (top padding only, 0 on every other side) -- not part of
+   .cart-summary's own bordered-card padding just inside it, so trimming
+   this one value alone shortens the distance from the last item row to
+   "DISCOUNT" without touching the summary card's own internal framing. */
+.cart-page__summary {
+  padding-top: 4px !important;
+}
+
 /* ---- Cart page: end at the same right edge as the header (the cart link).
    The section is a [gutter | 900 content | gutter] grid; the cart bled into the
    right gutter (grid-column 2/4). Confine it to the content track. --- */
@@ -910,6 +931,20 @@ main[data-template='cart'] ~ footer {
 .cart-items__remove {
   width: 26px !important;
   height: 26px !important;
+}
+
+/* Was invisible: the base theme sets this to var(--color-foreground),
+   which computes to the OLD cream (#f6f3e7, rgb(246,243,231)) on this
+   page's colour scheme -- nearly the same value as --mdr-paper, the
+   page's own background, so the delete icon (an inline SVG using
+   stroke="currentColor") was rendering practically camouflage-on-paper.
+   Same light-graphite token the unit price already uses -- "like the
+   product price in cart list" -- covers both the button's own color AND
+   the SVG's stroke via currentColor inheritance, no separate SVG rule
+   needed. */
+.cart-items__remove,
+.cart-items__remove svg {
+  color: var(--mdr-text-gray, #858581) !important;
 }
 
 .cart-items__quantity {
