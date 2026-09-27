@@ -1,21 +1,38 @@
 {%- doc -%}
-  THE MODERN TIMES -- an editorial/manifesto page. Structured after a
-  magazine-style lookbook (large intro statement, alternating full-bleed
-  and two-up documentary photography, occasional bold pull-quotes), but
-  in the site's own palette (cream, the shared --mdr-primary blue, the
-  same hairline dividers the product grid uses) rather than the black
-  background the visual reference used.
+  THE MODERN TIMES -- editorial archive page: a masthead (imprint / title /
+  descriptor), a hairline rule, then a stream of blocks (Text / Pull Quote /
+  Image / Signature / Entry header), editable in the theme editor -- nothing
+  here is hardcoded copy. Image blocks with no image selected fall back to
+  tiling the store's own product photography (same fallback mdr-lookbook.
+  liquid uses), so the page never looks broken before real editorial
+  photography is uploaded.
 
-  Content lives entirely in blocks (Text / Pull Quote / Image), editable
-  in the theme editor -- nothing here is hardcoded copy. Image blocks
-  with no image selected fall back to tiling the store's own product
-  photography (same fallback mdr-lookbook.liquid uses), so the page never
-  looks broken before real editorial photography is uploaded.
+  "Entry header" is the reusable unit future editions accumulate around:
+  an issue label (e.g. "Vol. 001 / Issue 001"), a title, and a date/
+  category line, closed off with a hairline divider baked into the block
+  itself. Drop one in, followed by whatever Text/Quote/Image blocks make up
+  that entry's body, then another Entry header to start the next one --
+  the page is built to read as an ongoing archive, not a single one-off
+  manifesto.
 {%- enddoc -%}
 
 {%- liquid
   assign s = section.settings
 -%}
+
+{%- comment -%}
+  A literal newline character, for `| split: newline` below. Shopify
+  Liquid has no built-in `newline` global -- this is the standard idiom:
+  capturing the raw template source between these two tags (an actual
+  line break lives there, in the file itself) gives a one-character
+  string containing just "\n". Get this wrong (e.g. leave `newline`
+  undefined) and `split: newline` silently becomes `split: nil`, which
+  Liquid's split filter treats as "split into individual characters" --
+  the exact bug that was collapsing every paragraph on this page into one
+  character per line.
+{%- endcomment -%}
+{%- capture newline -%}
+{%- endcapture -%}
 
 <section
   id="mdr-modern-times-{{ section.id }}"
@@ -39,6 +56,19 @@
     {%- assign fallback_index = 0 -%}
     {%- for block in section.blocks -%}
       {%- case block.type -%}
+        {%- when 'entry' -%}
+          <header class="mdr-mtimes__entry" {{ block.shopify_attributes }}>
+            {%- if block.settings.issue != blank -%}
+              <p class="mdr-mtimes__entry-issue">{{ block.settings.issue }}</p>
+            {%- endif -%}
+            {%- if block.settings.title != blank -%}
+              <h2 class="mdr-mtimes__entry-title">{{ block.settings.title }}</h2>
+            {%- endif -%}
+            {%- if block.settings.meta != blank -%}
+              <p class="mdr-mtimes__entry-meta">{{ block.settings.meta }}</p>
+            {%- endif -%}
+          </header>
+
         {%- when 'text' -%}
           {%- assign lines = block.settings.content | split: newline -%}
           <div class="mdr-mtimes__text" {{ block.shopify_attributes }}>
@@ -121,120 +151,208 @@
 </section>
 
 {% stylesheet %}
+  /* Neutral MDR system: was a cream background (#f6f3e7) + the old
+     --mdr-primary blue for every accent colour on this page (eyebrow,
+     heading, quote, image border, signature) -- both retired site-wide by
+     the mineral-neutral pass everywhere else; this section had been
+     rendering blue/cream this whole time regardless, since it reads its
+     own literal values here rather than the shared tokens. Ported onto
+     --mdr-paper/--mdr-ink/--mdr-graphite/--mdr-muted/--mdr-border like
+     every other page. */
   .mdr-mtimes {
-    background: #f6f3e7;
+    background: var(--mdr-paper, #f7f7f2);
     padding-block: clamp(28px, 6vw, 64px) clamp(40px, 8vw, 88px);
   }
 
+  /* Editorial masthead hierarchy: MODARE reads as a small publisher/
+     imprint mark, THE MODERN TIMES is the dominant title, the descriptor
+     is quieter and smaller still -- three distinct steps, not three
+     centered lines set close to the same size. */
   .mdr-mtimes__intro {
     max-width: 620px;
     margin-inline: auto;
-    padding-inline: 20px;
+    padding-inline: clamp(24px, 6vw, 32px);
     text-align: center;
   }
 
   .mdr-mtimes__eyebrow {
-    margin: 0 0 6px;
+    margin: 0 0 10px;
     font-size: 0.6rem;
     font-weight: 400;
-    letter-spacing: 0.08em;
+    letter-spacing: 0.14em;
     text-transform: uppercase;
-    color: var(--mdr-primary, #040061);
-    opacity: 0.72;
+    /* imprint mark, not the headline -- graphite, not ink */
+    color: var(--mdr-graphite, #858581);
   }
 
   .mdr-mtimes__heading {
-    margin: 0 0 10px;
-    font-size: clamp(1.5rem, 6vw, 2.4rem);
+    margin: 0 0 12px;
+    /* bigger relative to the eyebrow above it than before (was clamp(1.5,
+       6vw, 2.4rem)) -- "THE MODERN TIMES should be the dominant title",
+       not one step up from a small imprint mark. */
+    font-size: clamp(1.9rem, 9vw, 3.2rem);
     font-weight: 400;
-    line-height: 1.05;
-    letter-spacing: 0.01em;
+    line-height: 1;
+    letter-spacing: 0;
     text-transform: uppercase;
-    color: var(--mdr-primary, #040061);
+    color: var(--mdr-ink, #202020);
   }
 
   .mdr-mtimes__tagline {
     margin: 0;
-    font-size: 0.72rem;
+    /* smaller and lighter than before (was 0.72rem / --mdr-text-gray) --
+       "lighter gray and smaller" than the title, not competing with it. */
+    font-size: 0.6rem;
     font-weight: 400;
     letter-spacing: 0.03em;
     text-transform: uppercase;
-    color: var(--mdr-text-gray, rgba(0, 0, 0, 0.5));
+    color: var(--mdr-muted, #b7b7b1);
   }
 
-  /* same hairline weight/colour as the product grid's own divider lines */
+  /* "Remove the random short underline... use the same hairline divider
+     language already established throughout the website" -- was a short
+     (120px/30vw) centered stub tinted with the old blue. Now a plain
+     full-measure hairline, same colour/weight as every other structural
+     line on the site (--mdr-border, 1px) -- a section break, not a
+     decorative flourish under the masthead. */
   .mdr-mtimes__rule {
-    width: min(120px, 30vw);
+    max-width: 620px;
+    margin-inline: auto;
+    margin-block: clamp(24px, 5vw, 40px);
     height: 1px;
-    margin: clamp(20px, 4vw, 32px) auto;
-    background: rgba(var(--mdr-primary-rgb, 4, 0, 97), 0.3);
+    background: var(--mdr-border, #dededa);
   }
 
   .mdr-mtimes__stream {
     display: flex;
     flex-direction: column;
-    align-items: center;
+    /* stretch, not center -- text/entry blocks manage their own alignment
+       now (left-aligned body copy), so the stream itself shouldn't force
+       everything to a centered column the way a single flat --align:center
+       used to. */
+    align-items: stretch;
     gap: clamp(20px, 4vw, 32px);
   }
 
-  .mdr-mtimes__text {
-    max-width: 560px;
+  /* ---- Entry header -- the reusable unit future editions accumulate
+     around: issue label, title, date/category, closed with a hairline
+     divider baked into the block itself so authors don't add one
+     separately for every new entry. ---------------------------------- */
+  .mdr-mtimes__entry {
+    max-width: 620px;
     width: 100%;
-    padding-inline: 20px;
-    text-align: center;
+    margin-inline: auto;
+    padding-inline: clamp(24px, 6vw, 32px);
+    padding-bottom: clamp(16px, 3vw, 24px);
+    border-bottom: 1px solid var(--mdr-border, #dededa);
+    text-align: left;
+  }
+
+  .mdr-mtimes__entry-issue {
+    margin: 0 0 6px;
+    font-size: 0.56rem;
+    font-weight: 400;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--mdr-muted, #b7b7b1);
+  }
+
+  .mdr-mtimes__entry-title {
+    margin: 0 0 6px;
+    font-size: clamp(1rem, 4vw, 1.4rem);
+    font-weight: 400;
+    line-height: 1.15;
+    letter-spacing: 0;
+    text-transform: uppercase;
+    color: var(--mdr-ink, #202020);
+  }
+
+  .mdr-mtimes__entry-meta {
+    margin: 0;
+    font-size: 0.56rem;
+    font-weight: 400;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    color: var(--mdr-graphite, #858581);
+  }
+
+  /* ---- Body copy -- left-aligned editorial column, comfortable page
+     gutters (24-32px, not the old 20px/centered-block treatment), same
+     scale/colour the rest of the site's own body copy (policy pages, PDP
+     description) already uses. ---------------------------------------- */
+  .mdr-mtimes__text {
+    max-width: 620px;
+    width: 100%;
+    margin-inline: auto;
+    padding-inline: clamp(24px, 6vw, 32px);
+    text-align: left;
   }
 
   .mdr-mtimes__text p {
     margin: 0;
-    font-size: 0.7rem;
-    line-height: 1.55;
+    font-size: 0.625rem;
+    font-weight: 400;
+    line-height: 1.6;
     letter-spacing: 0.01em;
-    color: var(--mdr-text-gray, rgba(0, 0, 0, 0.5));
+    color: var(--mdr-graphite, #858581);
   }
 
   .mdr-mtimes__text p + p {
     margin-top: 10px;
   }
 
-  /* large editorial statement line -- "PROGRESSION IS RITUAL." etc */
+  /* large editorial statement line -- "PROGRESSION IS RITUAL." etc. Kept
+     centered/uppercase/larger on purpose: a pull-quote is a deliberate
+     visual break from the body column, the print-editorial equivalent of
+     changing register mid-page -- "prefer left-aligned body copy" is
+     about paragraphs, not about flattening this into just another line
+     of body text. */
   .mdr-mtimes__quote {
     max-width: 720px;
     width: 100%;
-    margin: 0;
-    padding-inline: 20px;
+    margin: 0 auto;
+    padding-inline: clamp(24px, 6vw, 32px);
     text-align: center;
     font-size: clamp(1.1rem, 4.2vw, 1.7rem);
     font-weight: 400;
     line-height: 1.2;
     letter-spacing: 0.01em;
     text-transform: uppercase;
-    color: var(--mdr-primary, #040061);
+    color: var(--mdr-ink, #202020);
   }
 
   .mdr-mtimes__signature {
+    max-width: 620px;
+    width: 100%;
+    margin-inline: auto;
+    padding-inline: clamp(24px, 6vw, 32px);
     display: flex;
     flex-direction: column;
-    align-items: center;
+    align-items: flex-start;
     gap: 4px;
     padding-block-start: 8px;
   }
 
   .mdr-mtimes__signature span {
-    font-size: 0.62rem;
+    font-size: 0.6rem;
     font-weight: 400;
     letter-spacing: 0.1em;
     text-transform: uppercase;
-    color: var(--mdr-text-gray, rgba(0, 0, 0, 0.5));
+    color: var(--mdr-graphite, #858581);
   }
 
   .mdr-mtimes__signature span:first-child {
-    color: var(--mdr-primary, #040061);
+    color: var(--mdr-ink, #202020);
   }
 
   /* ---- Editorial image spreads -------------------------------------- */
   .mdr-mtimes__figure {
     margin: 0;
     width: 100%;
+    max-width: 620px;
+    margin-inline: auto;
+    padding-inline: clamp(24px, 6vw, 32px);
+    box-sizing: border-box;
   }
 
   .mdr-mtimes__figure--full {
@@ -268,8 +386,8 @@
     height: auto;
     aspect-ratio: 4 / 5;
     object-fit: cover;
-    background: #efe9d8;
-    border: 1px solid rgba(var(--mdr-primary-rgb, 4, 0, 97), 0.14);
+    background: var(--mdr-selected, #ecece7);
+    border: 1px solid var(--mdr-border, #dededa);
     box-sizing: border-box;
   }
 
@@ -283,7 +401,7 @@
     letter-spacing: 0.03em;
     text-transform: uppercase;
     text-align: center;
-    color: var(--mdr-text-gray, rgba(0, 0, 0, 0.5));
+    color: var(--mdr-graphite, #858581);
   }
 {% endstylesheet %}
 
@@ -313,6 +431,30 @@
     }
   ],
   "blocks": [
+    {
+      "type": "entry",
+      "name": "Entry header",
+      "settings": [
+        {
+          "type": "text",
+          "id": "issue",
+          "label": "Issue label",
+          "info": "e.g. Vol. 001 / Issue 001",
+          "default": "Vol. 001 / Issue 001"
+        },
+        {
+          "type": "text",
+          "id": "title",
+          "label": "Title",
+          "info": "Article or drop title"
+        },
+        {
+          "type": "text",
+          "id": "meta",
+          "label": "Date / category"
+        }
+      ]
+    },
     {
       "type": "text",
       "name": "Text",

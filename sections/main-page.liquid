@@ -6,9 +6,25 @@
   endif
 %}
 
-{%- if page.handle == 'the-modern-times' -%}
-  {%- render 'mdr-modern-times-content' -%}
-{%- else -%}
+{%- comment -%}
+  The Modern Times used to render its content straight from here, before
+  the page's own theme template pointed at a dedicated section (sections/
+  mdr-modern-times.liquid, templates/page.the-modern-times.json) with a
+  real block-based structure (Text/Quote/Image/Signature/Entry header)
+  instead of hardcoded copy. That template still includes THIS section
+  too (as its "main" entry, with no blocks configured) -- this special
+  case rendering the old hardcoded snippet ALONGSIDE the new section was
+  live on the page at the same time, was the actual cause of "the body
+  text collapsing into a character-wide column": snippets/mdr-modern-
+  times-content.liquid's own <style> tag (unscoped, sharing the exact
+  same class names as the new section) was cascading onto both instances,
+  while the SECTION's own block-rendering bug (an undefined `newline`
+  variable, fixed there) produced 130+ single-character <p> tags that
+  visually broke the page long before a reader would ever scroll far
+  enough to reach the old snippet's own separate, correctly-formatted
+  copy sitting ~30,000px further down. Removed outright, not just hidden:
+  the section is now the one and only source of this page's content.
+{%- endcomment -%}
 <div
   class="section-background{% if section.settings.background_color != blank %} color-custom-{{ section.id }}{% endif %}"
 ></div>
@@ -29,7 +45,6 @@
     {% content_for 'blocks' %}
   </div>
 </div>
-{%- endif -%}
 
 {% schema %}
 {
