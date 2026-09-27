@@ -379,7 +379,18 @@
 
   @media (min-width: 640px) {
     .mdr-mtimes__figure--half {
-      flex: 1 1 calc(50% - 10px);
+      /* flex-grow: 0 (was 1) -- with grow enabled, both figures grew past
+         their own 50%-based flex-basis all the way to the 450px max-width
+         cap regardless of how wide the stream itself actually was,
+         confirmed live: at an 800px stream, two 450px figures (900px
+         total) don't fit on one row and wrap onto separate ones instead
+         of pairing -- exactly the "half" layout failing to do the one
+         thing it's for. Grow: 0 keeps each figure at its own share of the
+         real container width (calc(50% - 10px)), so two of them always
+         add up to fit their row, at any stream width; 450px stays only as
+         a ceiling for unusually wide containers, not a target both
+         figures get pushed toward. */
+      flex: 0 1 calc(50% - 10px);
       max-width: calc(450px);
     }
   }
