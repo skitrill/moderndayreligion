@@ -262,7 +262,15 @@
     display: flex;
     flex-direction: column;
     align-items: center;
-    padding: clamp(16px, 5vw, 56px) clamp(10px, 4vw, 40px);
+    /* Compact pass: block (top/bottom) padding tightened from
+       clamp(16px, 5vw, 56px) -- at typical mobile widths that was ~19px,
+       modest on its own, but combined with center_vertically's own
+       min-height: 100svh (this page's own template setting, now turned
+       off -- see .mdr-lookbook--center below) the grid was floating in
+       roughly 200px of empty space above AND below it, on top of this
+       padding. Inline (left/right) padding is untouched -- the request
+       was about top/bottom space specifically. */
+    padding: clamp(10px, 2.5vw, 24px) clamp(10px, 4vw, 40px);
   }
 
   .mdr-lookbook--center {
