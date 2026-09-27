@@ -496,27 +496,48 @@
       /* Connect-the-rule pass: the thin horizontal line (.mdr-allbar-wrap
          ::before, CSS) used to be positioned with a flat CSS margin/flex-
          grow guess (10px gap, same on every page regardless of the actual
-         rendered chevron) -- close, but a visible seam, and no two
-         chevron glyphs land at exactly the same pixel offset from the
-         button's own edge (WEBRACK's double-chevron vs RETURN's single
-         one, different label lengths sharing one fixed-width box, etc).
-         "The rule should begin directly from the mouth/tip-side of the
-         last chevron... no visible 1px gap... optically identical" needs
-         the line to start at the chevron's own drawn geometry, not the
-         button's box edge -- so this measures it for real instead of
-         guessing.
-         getBoundingClientRect() on the <path> elements themselves (not
-         the <svg>, and not the viewBox numbers) returns their actual
-         rendered, POST-transform position in real page pixels -- already
-         accounting for the icon's own font-size-relative scaling AND the
-         scaleX(-1) flip RETURN's chevron uses, for free, with no manual
-         viewBox/transform math to keep in sync if either ever changes.
+         rendered chevron) -- close, but a visible seam.
+         Tip-to-tip precision pass: the first version of this fix measured
+         each chevron <path>'s getBoundingClientRect() (rendered STROKE
+         bounds) instead -- an improvement, but still not exact: stroke-
+         linejoin="round" rounds the OUTSIDE of the vertex's own angle,
+         which bulges the rendered ink slightly PAST the true mathematical
+         point at a sharp corner like this, so the bounding box's own
+         edge lands a fraction of a pixel beyond the actual tip, not AT it
+         (confirmed as the "overlap/offset" this request flags). Bounding-
+         box measurement is exactly the kind of "relying on the glyph's
+         box, not its visible geometry" this asks to avoid -- true even
+         though this was already a hand-drawn SVG chevron, not a text
+         character, going in.
+         Fixed properly now: chevTipPoint() below reads the path's own
+         GEOMETRY directly -- getTotalLength()/getPointAtLength() -- to
+         find the exact vertex coordinate the path data describes (every
+         chevron here is two equal-length straight segments meeting at a
+         point, so that point sits at exactly half the path's total
+         length, by construction, for any chevron built this same way).
+         getScreenCTM() + matrixTransform() then converts that exact
+         local SVG-space point straight into real page pixels, accounting
+         for the viewBox scale AND any CSS transform on the <svg> itself
+         (RETURN's scaleX(-1) flip included) in one step -- no manual
+         viewBox/transform math to keep in sync, and no stroke-rendering
+         fuzz (caps, joins, anti-aliasing) anywhere in the calculation.
          Desktop bails out entirely: .mdr-allbar-wrap shrinks to
          width:max-content there (a compact pill beside the logo, see
          mdr-custom.css), so this connecting line is already 0px wide and
          invisible -- nothing to align. Mobile only, matching the same
          750px threshold every other measurement in this file already
          uses. */
+      function chevTipPoint(svg, path) {
+        var len = path.getTotalLength();
+        var local = path.getPointAtLength(len / 2);
+        var ctm = svg.getScreenCTM();
+        if (!ctm) return null;
+        var pt = svg.createSVGPoint();
+        pt.x = local.x;
+        pt.y = local.y;
+        return pt.matrixTransform(ctm);
+      }
+
       function positionAllbarRule() {
         if (window.innerWidth >= 750) {
           wrap.style.removeProperty('--mdr-rule-left');
@@ -528,41 +549,34 @@
         if (!svg) return;
         var paths = svg.querySelectorAll('path');
         if (!paths.length) return;
-
-        var minX = Infinity, maxX = -Infinity, minY = Infinity, maxY = -Infinity;
-        for (var i = 0; i < paths.length; i++) {
-          var r = paths[i].getBoundingClientRect();
-          minX = Math.min(minX, r.left);
-          maxX = Math.max(maxX, r.right);
-          minY = Math.min(minY, r.top);
-          maxY = Math.max(maxY, r.bottom);
-        }
+        /* the LAST path is always the one nearest the line: WEBRACK's
+           double-chevron draws its second (rightmost) » as the final
+           <path>, and RETURN only ever has the one single-chevron path,
+           so this is the correct tip either way without branching on
+           isHome here too. */
+        var tip = chevTipPoint(svg, paths[paths.length - 1]);
+        if (!tip) return;
 
         var wrapRect = wrap.getBoundingClientRect();
-        var centerY = (minY + maxY) / 2;
-        /* Height is a flat 1px in CSS now (matching the product grid's own
-           hairline dividers, not the chevron's own stroke-width -- a
-           refinement pass reverted that measurement: it made the line
-           read as a thick, dark bar next to the site's actual hairlines).
-           Centering math still divides by 1 (not the old measured stroke
-           width) to match. */
-        wrap.style.setProperty('--mdr-rule-top', (centerY - wrapRect.top - 0.5) + 'px');
+        /* the vertex sits at exactly the icon's own vertical middle by
+           construction (viewBox height 12, vertex y=6) -- tip.y IS that
+           centerline already, no separate stroke-height math needed. */
+        wrap.style.setProperty('--mdr-rule-top', (tip.y - wrapRect.top - 0.5) + 'px');
 
         if (isHome) {
-          /* WEBRACK: line picks up exactly where the last chevron's own
-             drawn stroke ends (its rightmost point -- the vertex a
-             right-pointing chevron comes to), continuing on in the same
-             direction it's already pointing. */
-          wrap.style.setProperty('--mdr-rule-left', (maxX - wrapRect.left) + 'px');
-          wrap.style.setProperty('--mdr-rule-width', Math.max(0, wrapRect.right - maxX) + 'px');
+          /* WEBRACK: line picks up exactly at the last chevron's own
+             vertex, continuing on in the same direction it's already
+             pointing. */
+          wrap.style.setProperty('--mdr-rule-left', (tip.x - wrapRect.left) + 'px');
+          wrap.style.setProperty('--mdr-rule-width', Math.max(0, wrapRect.right - tip.x) + 'px');
         } else {
           /* RETURN: mirrored -- the line runs in from the row's own left
-             edge and terminates at the left-pointing chevron's own
-             leftmost point, arriving at RETURN from the direction the
+             edge and terminates exactly at the left-pointing chevron's
+             own vertex, arriving at RETURN from the direction the
              chevron is pointing (back), not the direction WEBRACK's rule
              departs in. */
           wrap.style.setProperty('--mdr-rule-left', '0px');
-          wrap.style.setProperty('--mdr-rule-width', Math.max(0, minX - wrapRect.left) + 'px');
+          wrap.style.setProperty('--mdr-rule-width', Math.max(0, tip.x - wrapRect.left) + 'px');
         }
       }
 
