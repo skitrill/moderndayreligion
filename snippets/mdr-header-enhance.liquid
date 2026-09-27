@@ -487,14 +487,15 @@
          to fit, since non-uniform stretching would skew the diagonals
          differently per width.
          The path is two subpaths sharing one exact coordinate (the
-         vertex): [outer wing tip -> vertex -> label-side start] as one
+         vertex): [one wing tip -> vertex -> the line's far end] as one
          unbroken 2-segment stroke (this covers the ENTIRE horizontal
-         line, since the wing tip is the path's literal starting point --
-         "the horizontal section must enter the exact mathematical center
-         of the chevron point" is true by construction, not by measuring
-         two separately-built pieces afterward), then a single moveto to
-         draw the second wing (vertex -> inner wing tip). A perfect zero-
-         lift trace isn't geometrically possible for a 3-way junction (the
+         line, since the vertex is a literal midpoint of that same L
+         command, not a separate piece measured afterward -- "the
+         horizontal section must enter the exact mathematical center of
+         the chevron point" and "zero gap between the chevron tip and
+         line" are both true by construction), then a single moveto to
+         draw the second wing (vertex -> the other wing tip). A perfect
+         zero-lift trace isn't geometrically possible for a 3-way junction (the
          vertex has three strokes meeting at it -- horizontal, upper wing,
          lower wing -- which no single continuous line can visit without
          doubling back), but rendered pixels are identical either way:
@@ -535,31 +536,47 @@
 
         var d;
         if (isHome) {
-          /* WEBRACK: label -> gap -> vertex (near the right edge), wings
-             pointing back toward the label (>). Path starts at the OUTER
-             wing tip so the whole horizontal run + that wing is one
-             unbroken stroke ending at the label -- open/close erases from
-             the outer tip inward (see CSS), i.e. away from the word. */
-          var startX = (labelRect.right - wrapRect.left) + gap;
-          var vertexX = Math.max(startX, w - edgeInset);
-          d = 'M ' + (vertexX - wingDx) + ' ' + (midY - wingDy) +
+          /* WEBRACK: reversed from the first version of this -- the
+             chevron now sits immediately after the label, THEN the line
+             runs on to the right edge ("WEBRACK >>────", not
+             "WEBRACK────>>"). wingBackX is the chevron's own open/back
+             side (right after the label); vertexX is its tip, one wingDx
+             further right. The MAIN stroke is [upper wing tip -> vertex
+             -> right edge] as one unbroken run -- the line doesn't just
+             start "near" the vertex, it's the literal continuation of the
+             same L command the vertex is defined by, so "zero gap between
+             chevron tip and line" is true by construction. Path starts
+             (t=0) at the label end and ends (t=len) at the right edge, on
+             purpose: the open/close erase (CSS stroke-dashoffset) always
+             clears from a path's own t=0 toward t=len, so starting at the
+             label makes the wipe travel left -> right, chevron-first --
+             "as though >> is pulling the line open". */
+          var wingBackX = (labelRect.right - wrapRect.left) + gap;
+          var vertexX = wingBackX + wingDx;
+          var lineEndX = Math.max(vertexX, w - edgeInset);
+          d = 'M ' + wingBackX + ' ' + (midY - wingDy) +
             ' L ' + vertexX + ' ' + midY +
-            ' L ' + startX + ' ' + midY +
+            ' L ' + lineEndX + ' ' + midY +
             ' M ' + vertexX + ' ' + midY +
-            ' L ' + (vertexX - wingDx) + ' ' + (midY + wingDy);
+            ' L ' + wingBackX + ' ' + (midY + wingDy);
         } else {
-          /* RETURN: mirrored -- vertex near the left edge, wings pointing
-             back toward the label on the right (<). Path starts at the
-             LABEL side this time (opposite end from WEBRACK's), so the
-             erase animation sweeps the opposite physical direction too --
-             "the animation should travel in the opposite direction". */
-          var endX = (labelRect.left - wrapRect.left) - gap;
-          var vertexX2 = Math.min(endX, edgeInset);
-          d = 'M ' + endX + ' ' + midY +
+          /* RETURN: mirrored -- chevron sits immediately BEFORE the label
+             (label is right-aligned, so this is the label's own left
+             edge), tip pointing left, line running on from the tip to the
+             row's left edge ("────< RETURN"). Path again starts (t=0) at
+             the label end, same as WEBRACK, so the erase direction is
+             controlled by the SAME rule (always label -> outward) while
+             the geometry itself points the opposite way -- the net result
+             is a right -> left wipe here, mirroring WEBRACK's left ->
+             right one, "motion travels right -> left when returning". */
+          var wingBackX2 = (labelRect.left - wrapRect.left) - gap;
+          var vertexX2 = wingBackX2 - wingDx;
+          var lineStartX = Math.min(vertexX2, edgeInset);
+          d = 'M ' + wingBackX2 + ' ' + (midY - wingDy) +
             ' L ' + vertexX2 + ' ' + midY +
-            ' L ' + (vertexX2 + wingDx) + ' ' + (midY - wingDy) +
+            ' L ' + lineStartX + ' ' + midY +
             ' M ' + vertexX2 + ' ' + midY +
-            ' L ' + (vertexX2 + wingDx) + ' ' + (midY + wingDy);
+            ' L ' + wingBackX2 + ' ' + (midY + wingDy);
         }
         linePath.setAttribute('d', d);
 

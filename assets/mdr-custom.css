@@ -3472,9 +3472,15 @@ main[data-template='collection']
    left behind) or overshoot into the gap (line reappearing before fully
    hidden). Offset animates 0 -> full length: the visible stroke appears
    to erase starting from whichever end the path's own "d" attribute
-   starts at (buildLinePath sets WEBRACK's start at the OUTER tip, RETURN's
-   at the LABEL side -- opposite ends on purpose), "the animation should
-   travel in the opposite direction" between the two. */
+   starts at -- buildLinePath sets BOTH bars' start point at their own
+   label end (by design, not coincidence), so the erase always begins
+   right at the chevron and sweeps outward toward the row's edge. Because
+   WEBRACK's chevron sits on the left (next to the label) and RETURN's
+   sits on the right (next to ITS label), that one shared rule produces a
+   left -> right wipe for WEBRACK and a right -> left wipe for RETURN --
+   "as though >> is pulling the line open" / "travels right -> left when
+   returning" -- without the two needing different animation logic, only
+   mirrored geometry. */
 .mdr-allbar-wrap--zap .mdr-allbar__line-path {
   stroke-dashoffset: var(--mdr-line-len, 0);
 }
