@@ -1332,6 +1332,48 @@
     window.addEventListener('resize', positionAllbarDesktop, { passive: true });
   })();
 
+  /* =====================================================================
+     Cart delete-icon colour -- a genuine rendering quirk, not a CSS
+     specificity problem: the icon's <path stroke="currentColor"> resolves
+     against a colour Chromium supplies for SVG children of a native
+     <button> that inherits color-scheme: dark (set globally on body,
+     intentionally, for Safari's own overscroll chrome) -- and that
+     resolution turns out to be locked in against the STATIC stylesheet
+     cascade specifically; the exact same `color` declaration applied as a
+     live style MUTATION instead (not a parsed stylesheet rule) reliably
+     fixes it, confirmed directly: setting color on the button, or on its
+     <svg>, both visibly changed THEIR OWN computed color and did nothing
+     for the icon; setting it on the <path> itself via a stylesheet rule
+     also did nothing; only setting it on the <path> via a live JS style
+     mutation actually repaints the stroke. mdr-custom.css still carries
+     the equivalent static rule for any browser that doesn't have this
+     quirk -- this is the runtime fix for the ones that do.
+     Cart rows re-render in place (quantity edits, item removal) rather
+     than a full page reload, so a MutationObserver re-applies this to any
+     row swapped in later, not just whatever was present at first load.
+     ===================================================================== */
+  (function () {
+    if (window.__mdrCartRemoveColor) return;
+    window.__mdrCartRemoveColor = true;
+    var D = document;
+
+    function fix() {
+      var paths = D.querySelectorAll('.cart-items__remove path');
+      for (var i = 0; i < paths.length; i++) {
+        paths[i].style.setProperty('color', 'var(--mdr-text-gray, #858581)', 'important');
+      }
+    }
+
+    fix();
+    D.addEventListener('DOMContentLoaded', fix);
+    window.addEventListener('load', fix);
+
+    var cartItems = D.querySelector('.cart-items');
+    if (cartItems && window.MutationObserver) {
+      new MutationObserver(fix).observe(cartItems, { childList: true, subtree: true });
+    }
+  })();
+
   /* The page-adaptive overscroll/edge-colour system that used to live
      here (reading the header/footer's own background and pushing it live
      into --mdr-edge-top/--mdr-edge-bottom/--mdr-edge-color as you
