@@ -390,7 +390,16 @@
          add up to fit their row, at any stream width; 450px stays only as
          a ceiling for unusually wide containers, not a target both
          figures get pushed toward. */
-      flex: 0 1 calc(50% - 10px);
+      /* -16px, not -10px: half of .mdr-mtimes__stream's own gap (clamp
+         (20px, 4vw, 32px), so up to 32px at wide-ish desktop widths, not
+         the 10px this was originally tuned for) -- two items at exactly
+         "50% - half the gap" plus the real gap between them always sums
+         to precisely 100%, whatever the gap's own clamped value actually
+         is. -10px undercounted that gap, which at 800px stream width put
+         two 390px figures + a 32px gap at 812px total, 12px over -- just
+         enough to force the second one onto its own row instead of
+         pairing (confirmed live). */
+      flex: 0 1 calc(50% - 16px);
       max-width: calc(450px);
     }
   }
