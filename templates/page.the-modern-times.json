@@ -90,6 +90,14 @@
             "content": "Not religion in the literal sense, but the rituals, beliefs, habits and objects that people build their modern lives around. The things we return to every day. The things we practice until they become part of who we are.\nClothing can become part of that ritual.\nSo can skating.\nMusic. Sport. Art. Movement. Community. Creation.\nThese are pieces of modern culture — different practices existing within the same time.\nMODARE observes them, participates in them and translates them into what we make."
           }
         },
+        "image_5": {
+          "type": "image",
+          "settings": {
+            "image": "",
+            "layout": "full",
+            "caption": ""
+          }
+        },
         "image_4": {
           "type": "image",
           "settings": {
@@ -148,6 +156,7 @@
         "text_5",
         "text_6",
         "text_7",
+        "image_5",
         "image_4",
         "text_8",
         "text_9",

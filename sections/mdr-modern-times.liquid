@@ -3,9 +3,14 @@
   descriptor), a hairline rule, then a stream of blocks (Text / Pull Quote /
   Image / Signature / Entry header), editable in the theme editor -- nothing
   here is hardcoded copy. Image blocks with no image selected fall back to
-  tiling the store's own product photography (same fallback mdr-lookbook.
-  liquid uses), so the page never looks broken before real editorial
-  photography is uploaded.
+  a fixed set of editorial photography (assets/mdr-mtimes-editorial-1.jpg
+  through -5.jpg -- plain theme assets, not Shopify Files, so they're read
+  via asset_url rather than the image_picker/image_url pipeline the rest
+  of this block uses), cycling one per block via fallback_index. Was a
+  product-photography fallback (same one mdr-lookbook.liquid still uses)
+  until real editorial photography replaced it here; a merchant picking a
+  real image in any block's own Image setting still overrides this
+  fallback for that block, same as before.
 
   "Entry header" is the reusable unit future editions accumulate around:
   an issue label (e.g. "Vol. 001 / Issue 001"), a title, and a date/
@@ -121,26 +126,18 @@
               }}
             {%- else -%}
               {%- liquid
-                assign fallback_product = null
-                assign products = collections.all.products
-                assign fallback_count = products.size
-                if fallback_count > 0
-                  assign fallback_pick = fallback_index | modulo: fallback_count
-                  assign fallback_product = products[fallback_pick]
-                endif
+                assign fallback_assets = 'mdr-mtimes-editorial-1.jpg|mdr-mtimes-editorial-2.jpg|mdr-mtimes-editorial-3.jpg|mdr-mtimes-editorial-4.jpg|mdr-mtimes-editorial-5.jpg' | split: '|'
+                assign fallback_count = fallback_assets.size
+                assign fallback_pick = fallback_index | modulo: fallback_count
+                assign fallback_asset = fallback_assets[fallback_pick]
                 assign fallback_index = fallback_index | plus: 1
               -%}
-              {%- if fallback_product and fallback_product.featured_media -%}
-                {{
-                  fallback_product.featured_media.preview_image
-                  | image_url: width: 1600
-                  | image_tag:
-                    loading: 'lazy',
-                    widths: '400, 600, 800, 1000, 1400, 1600',
-                    sizes: img_sizes,
-                    class: 'mdr-mtimes__img'
-                }}
-              {%- endif -%}
+              <img
+                src="{{ fallback_asset | asset_url }}"
+                alt=""
+                loading="lazy"
+                class="mdr-mtimes__img"
+              >
             {%- endif -%}
           {%- endcapture -%}
           <figure
