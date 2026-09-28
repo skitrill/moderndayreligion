@@ -999,6 +999,13 @@
           var p = point(e);
           var dx = p.x - startX;
           if (!moved && (Math.abs(dx) > THRESHOLD || Math.abs(p.y - startY) > THRESHOLD)) {
+            /* mostly vertical: that's the page scrolling natively (the zone
+               is touch-action: pan-y) -- stand down entirely, no list drag
+               and no tap forwarded on release */
+            if (Math.abs(p.y - startY) > Math.abs(dx)) {
+              dragging = false;
+              return;
+            }
             moved = true;
           }
           if (moved) {

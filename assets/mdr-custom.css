@@ -4039,17 +4039,20 @@ main[data-template='collection']
 
 /* Invisible drag-catcher covering the WHOLE wrap -- position:absolute takes
    it fully out of the page flow, so it can never resize the bar, the wrap,
-   or push anything on any page, on any breakpoint. A drag anywhere in it
-   scrolls the title list (JS); touch-action:pan-x keeps that drag from also
-   scrolling the page, for free, without any JS-side scroll lock. Since it
-   sits ON TOP of the titles and the toggle too, a plain tap is forwarded in
-   JS to whatever real link/button is actually underneath, so nothing loses
-   its tap-ability by being covered. */
+   or push anything on any page, on any breakpoint. A sideways drag in it
+   scrolls the title list (JS). touch-action is pan-y: a vertical swipe that
+   starts on this row is the browser's own native page scroll (was pan-x,
+   which blocked every vertical swipe starting on the WEBRACK row -- the
+   "have to swipe 2-3 times" bug); horizontal drags are left to the JS,
+   which also stands down the moment a gesture turns out to be vertical.
+   Since it sits ON TOP of the titles and the toggle too, a plain tap is
+   forwarded in JS to whatever real link/button is actually underneath, so
+   nothing loses its tap-ability by being covered. */
 .mdr-allbar__touchzone {
   position: absolute;
   inset: 0;
   z-index: 2;
-  touch-action: pan-x;
+  touch-action: pan-y;
   cursor: grab;
   /* this sits on top of the ribbon's own border on every tap (it covers
      the whole wrap) -- without this, that's what was actually flashing
@@ -4161,15 +4164,15 @@ main[data-template='collection'] [id$='__product_list_fa6P9H'] .resource-list__i
   background: var(--mdr-paper) !important;
 }
 
-/* The grid closes itself with its own bottom hairline (needed on desktop,
-   where it's a centred block ending well above the footer). Where it ends
-   flush on the footer (phones), that line and the footer's own top border
-   used to sit side by side as a heavier 2px rule -- the -1px margin lets
-   them land on the same pixel row instead, so it reads as one line. */
+/* No horizontal bottom line of the grid's own: the footer's top border is
+   the one authoritative rule under the products. The grid's background
+   (the 1px column gap = the centre divider) runs to the grid's very bottom
+   edge, which sits flush on the footer, so that divider ends exactly on the
+   footer line as a T-junction -- the real grid gap and the real footer
+   border, nothing positioned on top. (border: 0 on this grid lives in the
+   "supreme-style" rule further up.) */
 main[data-template='collection'] [id$='__product_list_fa6P9H'] .resource-list--grid {
   background: var(--mdr-border-faint, rgba(4, 0, 97, 0.08)) !important;
-  border-bottom: 1px solid var(--mdr-border-faint, rgba(4, 0, 97, 0.08)) !important;
-  margin-bottom: -1px !important;
 }
 
 /* card = a plain column, a touch of breathing room below the price so it

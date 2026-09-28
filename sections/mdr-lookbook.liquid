@@ -180,6 +180,7 @@
       function openAt(i) {
         sizeFigure();
         viewer.hidden = false;
+        void viewer.offsetWidth; // commit the un-hidden, closed state so the open transition runs
         document.documentElement.classList.add('mdr-lb-lock');
         requestAnimationFrame(function () { viewer.classList.add('is-open'); });
         isOpen = true;
@@ -403,6 +404,12 @@
   .mdr-lb-viewer.is-open {
     opacity: 1;
     pointer-events: auto;
+  }
+
+  /* display:flex above outranks the browser's own [hidden] rule, which left
+     a closed viewer as an invisible full-screen fixed layer over the page */
+  .mdr-lb-viewer[hidden] {
+    display: none;
   }
 
   .mdr-lb-viewer__backdrop {
