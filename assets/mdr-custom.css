@@ -166,25 +166,34 @@ product-price *,
      now neutral instead of blue-tinted (declared above, with --mdr-border). */
   --mdr-border-faint: var(--mdr-border);
 
-  /* ---- Overscroll canvas -- one flat value per PAGE, read by html/body/
-     .page-wrapper for the rubber-band bounce region (beyond real content,
-     header already scrolled away by the time this is visible) and as the
-     base under any genuine short-page gap. The homepage/lockscreen
-     override further down this file switches it to --mdr-primary for
-     just that template.
-     Was a separate pure white, on the theory that this layer never sits
-     behind real content so it should stay a colourless "device edge"
-     tone. Direct reversal: .page-wrapper's own genuine short-page gap
-     (e.g. the breathing room above the footer on a normal-height page,
-     footer's margin-top:auto pushing it down) is NOT overscroll-only --
-     it's a real, often-visible strip sitting directly between the page's
-     own off-white content and the footer, so a separate white read as a
-     visible rectangular seam ("off-white page -> white block -> footer")
-     instead of one continuous surface. Same paper as everything else now;
-     still flat/colourless in the sense that matters (one solid value, no
-     gradient/blur), just no longer a DIFFERENT solid value from the page
-     it's adjacent to. */
-  --mdr-edge-color: var(--mdr-paper);
+  /* ---- Backing canvas -- read by html/body/.page-wrapper for the
+     rubber-band bounce region (beyond real content, header already
+     scrolled away by the time this is visible) and as the base under any
+     genuine short-page gap. The homepage/lockscreen override further
+     down this file switches it to --mdr-landing-bg for just that
+     template (no header/footer there at all, nothing to bleed into).
+     Third pass on this token: was pure white (a colourless "device edge"
+     tone, on the theory this layer never sits behind real content) ->
+     was --mdr-paper (matching main's own content colour exactly, to fix
+     a visible seam on short pages, "off-white page -> white block ->
+     footer") -> now --mdr-glass-tint. The --mdr-paper version fixed that
+     one seam but created a bigger-picture problem: --mdr-paper was
+     ITSELF deliberately tuned earlier to sit very close to the glass
+     tint's own tone (see that token's own comment), so matching content
+     to backing meant the ENTIRE page -- chrome and content both -- read
+     as one undifferentiated off-white field, "bleeding" everywhere
+     instead of just at the header/footer. The actual fix is the other
+     direction: this backing layer (never real content, always either a
+     safe-area strip, an overscroll bounce, or genuine empty page-wrapper
+     space) reads as the SAME material the header/footer glass panels
+     are made of, bleeding continuously from the very top of the screen
+     through the header, and from the footer through to the very bottom
+     -- while <main>'s own explicit --mdr-paper background (still
+     unchanged, see main:not([data-template='index']) further down)
+     stays a visibly distinct, flat, matte surface for actual content.
+     Two materials now, deliberately: glass at the edges/chrome, matte
+     paper wherever there's real page content. */
+  --mdr-edge-color: var(--mdr-glass-tint);
 
   /* ---- Safe-area strips (body::before/::after) -- a DIFFERENT case from
      --mdr-edge-color above: these sit permanently over the header/footer
@@ -1719,12 +1728,14 @@ main[data-template='collection'] [id$='__product_list_fa6P9H'] .section-resource
 }
 
 body {
-  /* --mdr-edge-color (:root above), a flat colourless neutral -- matches
-     html above. Real page content still reads as cream because <main>
-     itself carries an explicit cream background (main:not([data-template=
-     'index']) further down), so this is only ever visible in genuine
-     gaps: the safe-area strips, the rubber-band overscroll, and any
-     short-page trailing space. */
+  /* --mdr-edge-color (:root above) -- now the same glass tint the header/
+     footer panels are made of, matching html above. Real page content
+     still reads as flat matte paper because <main> itself carries an
+     explicit --mdr-paper background of its own (main:not([data-template=
+     'index']) further down), so this glass tone is only ever visible in
+     genuine gaps: the safe-area strips, the rubber-band overscroll, and
+     any short-page trailing space -- exactly where it should read as
+     "more of the same chrome", not as page content. */
   background-color: var(--mdr-edge-color) !important;
   background-image: none !important;
 }
