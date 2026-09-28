@@ -419,7 +419,7 @@
     font-family: var(--mt-sans);
     font-weight: 400;
     font-size: 2.2rem;
-    font-size: min(11.2cqi, 9.4rem);
+    font-size: min(10.7cqi, 9rem);
     line-height: 0.86;
     letter-spacing: -0.018em;
     text-transform: uppercase;
@@ -432,7 +432,6 @@
     font-size: clamp(0.82rem, 2.3cqi, 1.12rem);
     line-height: 1.3;
     letter-spacing: 0.005em;
-    text-transform: none;
     color: var(--mt-gray);
   }
 
@@ -555,6 +554,26 @@
   }
 
   /* ---- Type ---------------------------------------------------------------- */
+  /* Sentence case for the reading levels, this page only. The site sets
+     every element uppercase (`body * { text-transform: uppercase
+     !important }`, base.css + mdr-custom.css); masthead, section labels,
+     metadata and the big headlines stay uppercase, the text you actually
+     read opts out here. */
+  .mdr-mt .mdr-mt-masthead__tagline,
+  .mdr-mt .mdr-mt-hed--standard,
+  .mdr-mt .mdr-mt-hed--brief,
+  .mdr-mt .mdr-mt-deck,
+  .mdr-mt .mdr-mt-body,
+  .mdr-mt .mdr-mt-body *,
+  .mdr-mt .mdr-mt-cap__text,
+  .mdr-mt .mdr-mt-quote__text,
+  .mdr-mt .mdr-mt-quote__line,
+  .mdr-mt .mdr-mt-manifesto__lines li,
+  .mdr-mt .mdr-mt-index li,
+  .mdr-mt .mdr-mt-note__body p {
+    text-transform: none !important;
+  }
+
   .mdr-mt .mdr-mt-kicker {
     margin-bottom: 12px;
     font-family: var(--mt-mono);
@@ -596,14 +615,12 @@
     font-size: clamp(1.08rem, 5.4cqi, 1.5rem);
     line-height: 1.12;
     letter-spacing: -0.004em;
-    text-transform: none;
   }
 
   .mdr-mt .mdr-mt-hed--brief {
     font-size: 1rem;
     font-size: clamp(0.95rem, 5cqi, 1.15rem);
     line-height: 1.2;
-    text-transform: none;
   }
 
   .mdr-mt .mdr-mt-deck {
@@ -612,7 +629,6 @@
     font-size: clamp(0.88rem, 4.4cqi, 1.12rem);
     line-height: 1.34;
     letter-spacing: 0.002em;
-    text-transform: none;
     text-wrap: pretty;
     color: var(--mt-gray);
   }
@@ -632,7 +648,6 @@
     font-size: 0.82rem;
     line-height: 1.58;
     letter-spacing: 0.004em;
-    text-transform: none;
     text-wrap: pretty;
     overflow-wrap: break-word;
     hyphens: manual;
@@ -734,7 +749,6 @@
     font-size: 0.68rem;
     line-height: 1.4;
     letter-spacing: 0.005em;
-    text-transform: none;
     color: var(--mt-gray);
   }
 
@@ -785,7 +799,6 @@
     font-size: clamp(1.02rem, 8.6cqi, 1.7rem);
     line-height: 1.16;
     letter-spacing: -0.005em;
-    text-transform: none;
     text-wrap: balance;
     color: var(--mt-ink);
   }
@@ -794,7 +807,6 @@
     margin-top: 0.8em;
     font-size: 0.8rem;
     line-height: 1.45;
-    text-transform: none;
     color: var(--mt-gray);
   }
 
@@ -858,7 +870,6 @@
     gap: 8px;
     font-size: 0.84rem;
     line-height: 1.42;
-    text-transform: none;
     color: var(--mt-ink);
   }
 
@@ -918,7 +929,6 @@
   .mdr-mt .mdr-mt-note__body p {
     font-size: 0.8rem;
     line-height: 1.5;
-    text-transform: none;
     color: var(--mt-ink);
   }
 
@@ -940,7 +950,6 @@
     padding-block: 8px;
     font-size: 0.84rem;
     line-height: 1.3;
-    text-transform: none;
     color: var(--mt-ink);
   }
 
