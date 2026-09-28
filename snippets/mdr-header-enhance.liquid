@@ -785,20 +785,24 @@
            while its products land */
         markCurrent(url);
 
+        var REDUCE = window.matchMedia &&
+          window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+        /* quick/"zappy" -- was 220ms out, 340ms in; a snappier flick
+           reads faster and more responsive than a smooth glide */
+        var outMs = REDUCE ? 0 : 110;
+
+        /* the old grid starts leaving on the tap itself, not once the new
+           one has downloaded -- the network wait now overlaps the swipe-out
+           instead of sitting in front of it as a dead pause */
+        var outStart = Date.now();
+        frame.classList.add('mdr-swiping-out');
+
         fetchHtml(url)
           .then(function (html) {
             var doc = new DOMParser().parseFromString(html, 'text/html');
             var newCards = extractCards(doc);
             var empty = newCards ? null : emptyState(doc);
             if (!newCards && !empty) throw new Error('mdr: no products found');
-
-            var REDUCE = window.matchMedia &&
-              window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-            /* quick/"zappy" -- was 220ms out, 340ms in; a snappier flick
-               reads faster and more responsive than a smooth glide */
-            var outMs = REDUCE ? 0 : 110;
-
-            frame.classList.add('mdr-swiping-out');
 
             setTimeout(function () {
               grid.innerHTML = '';
@@ -827,7 +831,7 @@
                 frame.classList.remove('mdr-swiping-in');
                 window.__mdrSwitching = false;
               }, REDUCE ? 0 : 200);
-            }, outMs);
+            }, Math.max(0, outMs - (Date.now() - outStart)));
           })
           .catch(function () {
             window.__mdrSwitching = false;
