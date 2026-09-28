@@ -122,12 +122,27 @@
       window.dispatchEvent(new Event('resize'));
     }
 
+    /* a row put away keeps whatever it was doing when it left -- RETURN's
+       tap leaves its line zipped away, an open WEBRACK stays open -- so it
+       goes back to rest first (detached, so nothing animates) */
+    function resetRow(row) {
+      row.classList.remove('mdr-allbar-wrap--zap', 'mdr-allbar--instant');
+      var bar = row.querySelector('.mdr-allbar');
+      if (bar && bar.classList.contains('is-open')) {
+        bar.classList.remove('is-open');
+        var toggle = row.querySelector('.mdr-allbar__toggle');
+        if (toggle) toggle.setAttribute('aria-expanded', 'false');
+      }
+      D.documentElement.classList.remove('mdr-webrack-open');
+    }
+
     function swapRow(to) {
       var from = to === 'back' ? 'home' : 'back';
       var current = D.querySelector('.mdr-allbar-wrap');
       if (current) {
         navRows[from] = current;
         current.remove();
+        resetRow(current);
       }
       if (navRows[to]) {
         placeRow(navRows[to]);
