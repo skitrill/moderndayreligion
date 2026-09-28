@@ -415,10 +415,100 @@ html {
     padding-inline: 0 !important;
   }
 
-  /* product page: deliberate breathing room under the RETURN row */
-  .mdr-frame > main[data-template='product'] {
-    padding-top: 34px !important;
+  /* The frame's edges come from the window width alone -- but a page that
+     scrolls shows a classic scrollbar (Windows, macOS with a mouse) and a
+     short page doesn't, and that width difference moved the frame a few
+     pixels between pages. A permanently reserved gutter keeps every page
+     at the same usable width (overlay scrollbars reserve nothing). */
+  html {
+    scrollbar-gutter: stable;
   }
+
+  /* ---- Product page: image column ~44%, information column the rest,
+     placed in the upper-middle of the stage with real air above it. The
+     media column holds the theme's own gallery list, so later front/back/
+     detail/fit shots simply stack in it -- one column, same width. */
+  .mdr-frame > main[data-template='product'] {
+    padding: 56px 32px 64px !important;
+  }
+
+  .mdr-frame > main[data-template='product'] .product-information__grid.product-information--media-left {
+    grid-template-columns: minmax(0, 44fr) minmax(0, 56fr) !important;
+    column-gap: 56px !important;
+    align-items: start !important;
+  }
+
+  .mdr-frame > main[data-template='product'] .product-information__grid .product-information__media {
+    width: 100% !important;
+    margin-top: 0 !important;
+  }
+
+  .mdr-frame > main[data-template='product'] .product-information__media .media-gallery__grid {
+    grid-template-columns: minmax(0, 1fr) !important;
+    gap: 12px !important;
+  }
+
+  /* ---- Cart: a two-column composition filling the stage -- merchandise
+     ~63%, order summary ~37%, one divider between them running from the
+     RETURN line to the footer line. The summary starts at the top and
+     stays in view while a long cart scrolls (sticky -- the page is the only
+     scroller). Column widths are fractions of the fixed frame, so no
+     number of lines or quantities can move them. */
+  .mdr-frame > main[data-template='cart'] {
+    display: flex;
+    flex-direction: column;
+    padding: 0 !important;
+  }
+
+  .mdr-frame > main[data-template='cart'] > .shopify-section:has(cart-items-component),
+  .mdr-frame > main[data-template='cart'] cart-items-component.cart-items-component,
+  .mdr-frame > main[data-template='cart'] cart-items-component > .section {
+    display: flex !important;
+    flex-direction: column;
+    flex: 1 0 auto;
+  }
+
+  .mdr-frame > main[data-template='cart'] .cart-page:not(.cart-page--empty) {
+    flex: 1 0 auto;
+    grid-template-columns: minmax(0, 63fr) minmax(0, 37fr) !important;
+    grid-template-rows: auto 1fr !important;
+    column-gap: 0 !important;
+    padding-top: 0 !important;
+    width: 100%;
+  }
+
+  .mdr-frame > main[data-template='cart'] .cart-page:not(.cart-page--empty) .cart-page__items {
+    grid-column: 1;
+    grid-row: 1;
+    padding: 32px 32px 40px 24px;
+  }
+
+  .mdr-frame > main[data-template='cart'] .cart-page:not(.cart-page--empty) .cart-page__more-blocks {
+    grid-column: 1;
+    grid-row: 2;
+  }
+
+  .mdr-frame > main[data-template='cart'] .cart-page:not(.cart-page--empty) .cart-page__summary {
+    grid-column: 2 !important;
+    grid-row: 1 / -1 !important;
+    display: block !important;
+    height: auto !important;
+    align-self: stretch !important;
+    padding: 32px 24px 40px 32px !important;
+    border-left: 1px solid var(--mdr-border-faint);
+  }
+
+  .mdr-frame > main[data-template='cart'] .cart-page__summary .cart-summary {
+    position: sticky;
+    top: 32px;
+    width: auto !important;
+    max-width: none !important;
+    height: auto !important;
+    padding-top: 0 !important;
+  }
+}
+
+@media screen and (min-width: 990px) {
 
   /* nav row inside the frame: same glass as the header, its own bottom
      line (the header group's bottom line is now the one above it) */
