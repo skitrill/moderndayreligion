@@ -82,7 +82,9 @@
 
     function slowConnection() {
       var c = navigator.connection;
-      return !!(c && (c.saveData || /(^|-)2g|3g/.test(c.effectiveType || '')));
+      /* only data saver / 2g -- on 3g the preload matters most, and the
+         budget below is small */
+      return !!(c && (c.saveData || /2g/.test(c.effectiveType || '')));
     }
 
     function prefetchVisible() {
