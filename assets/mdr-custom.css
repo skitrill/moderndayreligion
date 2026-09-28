@@ -1854,6 +1854,11 @@ main:not([data-template='index']) {
   /* small breathing room between the header/RETURN-WEBRACK bar and the
      frame's own top edge -- was flush (0 gap) against it. */
   margin-top: 14px !important;
+  /* Frame fill = the footer's own on-screen colour: the footer paints the
+     glass tint over the page backing (--mdr-edge-color), so the same two
+     layers are stacked here rather than a hand-picked hex -- it keeps
+     matching the footer if either token changes. */
+  background: linear-gradient(var(--mdr-glass-tint), var(--mdr-glass-tint)), var(--mdr-edge-color) !important;
 }
 
 /* Inner field behind the garment photo -- base theme's slideshow-container
@@ -1868,7 +1873,10 @@ main:not([data-template='index']) {
    with an intentionally different color scheme is untouched. Frame
    border/size/padding above is unrelated and unchanged. */
 .product-information__media slideshow-container {
-  background-color: var(--mdr-paper) !important;
+  /* was --mdr-paper; now clear so the frame's own footer-matched fill
+     (.product-information__media, above) reads as one surface edge to edge
+     instead of a paper square inside it */
+  background-color: transparent !important;
 }
 
 /* There was a SECOND, separate layer painting that same stale cream --
