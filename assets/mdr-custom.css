@@ -4154,11 +4154,15 @@ main[data-template='collection'] [id$='__product_list_fa6P9H'] .resource-list__i
   background: var(--mdr-paper) !important;
 }
 
-/* No bottom border of its own: the grid ends flush on the footer, whose
-   top border already draws that line -- a second 1px here stacked the two
-   into a visibly heavier 2px rule at the footer boundary. */
+/* The grid closes itself with its own bottom hairline (needed on desktop,
+   where it's a centred block ending well above the footer). Where it ends
+   flush on the footer (phones), that line and the footer's own top border
+   used to sit side by side as a heavier 2px rule -- the -1px margin lets
+   them land on the same pixel row instead, so it reads as one line. */
 main[data-template='collection'] [id$='__product_list_fa6P9H'] .resource-list--grid {
   background: var(--mdr-border-faint, rgba(4, 0, 97, 0.08)) !important;
+  border-bottom: 1px solid var(--mdr-border-faint, rgba(4, 0, 97, 0.08)) !important;
+  margin-bottom: -1px !important;
 }
 
 /* card = a plain column, a touch of breathing room below the price so it
