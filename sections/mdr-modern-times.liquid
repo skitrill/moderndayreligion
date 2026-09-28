@@ -54,7 +54,7 @@
 </style>
 
 <section id="mdr-mt-{{ section.id }}" class="mdr-mtimes mdr-mt">
-  <header class="mdr-mt-masthead">
+  <div class="mdr-mt-masthead">
     <div class="mdr-mt-masthead__top">
       {%- if s.publisher != blank -%}
         <p class="mdr-mt-masthead__publisher">{{ s.publisher }}</p>
@@ -76,7 +76,7 @@
         {%- if s.year != blank -%}<span>{{ s.year }}</span>{%- endif -%}
       </div>
     {%- endif -%}
-  </header>
+  </div>
 
   <div class="mdr-mt-grid">
     {%- for block in section.blocks -%}
@@ -325,12 +325,12 @@
 
         {%- when 'colophon' -%}
           {%- assign colophon_lines = b.content | split: newline -%}
-          <footer class="{{ cls }}" style="--d: 12; --t: 6; --r: 1;" {{ block.shopify_attributes }}>
+          <div class="{{ cls }}" role="contentinfo" style="--d: 12; --t: 6; --r: 1;" {{ block.shopify_attributes }}>
             {%- for line in colophon_lines -%}
               {%- assign trimmed = line | strip -%}
               {%- if trimmed != blank -%}<span>{{ trimmed }}</span>{%- endif -%}
             {%- endfor -%}
-          </footer>
+          </div>
       {%- endcase -%}
     {%- endfor -%}
   </div>
@@ -626,7 +626,7 @@
   .mdr-mt .mdr-mt-deck {
     margin-top: 0.7em;
     font-size: 0.9rem;
-    font-size: clamp(0.88rem, 4.4cqi, 1.12rem);
+    font-size: clamp(0.86rem, 3.9cqi, 1.05rem);
     line-height: 1.34;
     letter-spacing: 0.002em;
     text-wrap: pretty;
@@ -796,7 +796,7 @@
   /* ---- Quotes ---------------------------------------------------------------- */
   .mdr-mt .mdr-mt-quote__text {
     font-size: 1.05rem;
-    font-size: clamp(1.02rem, 8.6cqi, 1.7rem);
+    font-size: clamp(1rem, 7.2cqi, 1.5rem);
     line-height: 1.16;
     letter-spacing: -0.005em;
     text-wrap: balance;
