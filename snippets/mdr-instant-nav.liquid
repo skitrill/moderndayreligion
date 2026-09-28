@@ -211,9 +211,11 @@
 
       var outgoing = currentMain();
       if (onGrid()) {
+        /* on Forward the address bar already shows the product, so the
+           grid keeps the address it was saved under */
         grid = {
           main: outgoing,
-          url: location.pathname + location.search,
+          url: push || !grid ? location.pathname + location.search : grid.url,
           title: D.title,
           meta: window.ShopifyAnalytics && window.ShopifyAnalytics.meta,
           scrollY: window.scrollY
@@ -281,6 +283,9 @@
       e.preventDefault();
       go(url, true);
     });
+
+    /* testing aid: which product pages are already in memory */
+    window.__mdrInstantNavCached = function () { return Object.keys(cache); };
 
     window.addEventListener('popstate', function () {
       var here = location.pathname + location.search;
