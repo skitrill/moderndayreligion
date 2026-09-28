@@ -234,6 +234,11 @@
           const nativeReplace = history.replaceState.bind(history);
           const nativePush = history.pushState.bind(history);
           history.replaceState = function (state, title, url) {
+            /* keep the "swapped-in page" marker (mdr-instant-nav) when a page
+               rewrites its own entry, e.g. the variant picker's ?variant= */
+            if (history.state && history.state.mdrSwap) {
+              state = Object.assign({}, state && typeof state === 'object' ? state : {}, { mdrSwap: true });
+            }
             return nativeReplace(stamp(state), title, url);
           };
           history.pushState = function (state, title, url) {
