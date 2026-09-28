@@ -183,10 +183,18 @@
       updateVisibility();
     }
 
-    /* Catch scrolling regardless of which node emits the event */
-    window.addEventListener('scroll', updateVisibility, { passive: true });
-    D.addEventListener('scroll', updateVisibility, { passive: true, capture: true });
-    window.addEventListener('resize', updateVisibility, { passive: true });
+    /* at most once per frame -- scroll fires far more often than frames
+       paint on fast flicks, and each run reads layout (scrollHeight) */
+    var visRAF = null;
+    function queueVisibility() {
+      if (visRAF) return;
+      visRAF = requestAnimationFrame(function () {
+        visRAF = null;
+        updateVisibility();
+      });
+    }
+    window.addEventListener('scroll', queueVisibility, { passive: true });
+    window.addEventListener('resize', queueVisibility, { passive: true });
 
     if (D.readyState !== 'loading') init();
     D.addEventListener('DOMContentLoaded', init);
@@ -200,33 +208,89 @@
   })();
 
   /* =====================================================================
-     Header / WEBRACK glass state: flat black (no tint, no blur) by
-     default -- matching <meta name="theme-color"> exactly so it blends
-     into the iPhone status bar with zero seam -- and only switches to
-     the translucent blurred glass look once the page has actually
-     scrolled. Toggles one class (.mdr-scrolled on <html>); the CSS swap
-     itself lives in mdr-custom.css as --mdr-glass-tint/--mdr-glass-blur,
-     so header and WEBRACK change together, not two separate switches.
+     Smooth, light wheel/trackpad scrolling (mouse + trackpad devices only).
+     Each wheel tick moves a target 1.35x further than native, and the page
+     eases toward it over ~150ms -- quick to respond, no stepped jumps.
+     Touch screens keep the browser's own native momentum untouched: on
+     iPhone that physics can't be improved from a web page, only broken.
+     Anything that scrolls on its own (cart drawer, dialogs, WEBRACK rail,
+     lookbook viewer) keeps its native wheel behaviour.
      ===================================================================== */
   (function () {
-    if (window.__mdrScrollGlass) return;
-    window.__mdrScrollGlass = true;
-    var D = document;
-    var html = D.documentElement;
-    var on = null;
+    if (window.__mdrSmoothWheel) return;
+    window.__mdrSmoothWheel = true;
+    if (!window.matchMedia || !window.matchMedia('(hover: hover) and (pointer: fine)').matches) return;
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
 
-    function sync() {
-      var y = window.scrollY || window.pageYOffset || D.documentElement.scrollTop || 0;
-      var should = y > 0;
-      if (should !== on) {
-        html.classList.toggle('mdr-scrolled', should);
-        on = should;
+    var D = document;
+    var MULTIPLIER = 1.35;
+    var EASE_PER_FRAME = 0.24;
+    var target = 0;
+    var current = 0;
+    var raf = null;
+    var lastTs = 0;
+
+    function maxY() {
+      return Math.max(0, D.documentElement.scrollHeight - window.innerHeight);
+    }
+
+    function locked() {
+      var h = getComputedStyle(D.documentElement).overflowY;
+      var b = getComputedStyle(D.body).overflowY;
+      return h === 'hidden' || b === 'hidden' || D.documentElement.classList.contains('mdr-lb-lock');
+    }
+
+    /* an element between the pointer and the page that can itself still
+       scroll in this direction gets the wheel, not the page */
+    function innerScroller(el, dy) {
+      while (el && el !== D.body && el !== D.documentElement) {
+        if (el.nodeType === 1) {
+          var oy = getComputedStyle(el).overflowY;
+          if ((oy === 'auto' || oy === 'scroll' || oy === 'overlay') && el.scrollHeight > el.clientHeight + 1) {
+            if (dy < 0 ? el.scrollTop > 0 : el.scrollTop + el.clientHeight < el.scrollHeight - 1) return true;
+          }
+          if (el.tagName === 'DIALOG' && el.open) return true;
+        }
+        el = el.parentNode;
+      }
+      return false;
+    }
+
+    function step(ts) {
+      var dt = lastTs ? Math.min(64, ts - lastTs) : 16.7;
+      lastTs = ts;
+      var k = 1 - Math.pow(1 - EASE_PER_FRAME, dt / 16.7);
+      current += (target - current) * k;
+      if (Math.abs(target - current) < 0.5) current = target;
+      window.scrollTo({ top: current, behavior: 'instant' });
+      if (current !== target) {
+        raf = requestAnimationFrame(step);
+      } else {
+        raf = null;
+        lastTs = 0;
       }
     }
 
-    sync();
-    window.addEventListener('scroll', sync, { passive: true });
-    window.addEventListener('load', sync);
+    window.addEventListener('wheel', function (e) {
+      if (e.defaultPrevented || e.ctrlKey || e.metaKey) return;
+      if (Math.abs(e.deltaX) > Math.abs(e.deltaY)) return;
+      if (locked() || innerScroller(e.target, e.deltaY)) return;
+
+      var dy = e.deltaMode === 1 ? e.deltaY * 16 : e.deltaMode === 2 ? e.deltaY * window.innerHeight : e.deltaY;
+      e.preventDefault();
+      /* start from wherever the page really is -- a scrollbar drag, key
+         press or [top] glide may have moved it since the last wheel */
+      if (!raf) target = current = window.scrollY;
+      target = Math.max(0, Math.min(maxY(), target + dy * MULTIPLIER));
+      if (!raf) raf = requestAnimationFrame(step);
+    }, { passive: false });
+
+    /* anything else that grabs the page (keys, scrollbar) wins immediately */
+    ['keydown', 'mousedown'].forEach(function (type) {
+      window.addEventListener(type, function () {
+        if (raf) { cancelAnimationFrame(raf); raf = null; lastTs = 0; }
+      }, { passive: true });
+    });
   })();
 
   /* =====================================================================
