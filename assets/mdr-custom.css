@@ -2890,6 +2890,20 @@ body:has(main[data-template='index']) .page-wrapper {
   opacity: 0.85 !important;
 }
 
+/* Rectangle around the logo -- brought back to test the look. Thin
+   hairline, same weight/tone as the site's own grid/divider lines
+   (--mdr-border-faint), snug around just the wordmark image itself (not
+   the wider clickable link area, which also carries the back-arrow and
+   its own tap-target padding). box-sizing: content-box keeps the image's
+   own height exactly what the rest of the header math expects (desktop
+   media query above, mobile size in blocks/_header-logo.liquid) -- the
+   border/padding add on top of that rather than squeezing it. */
+#header-component .mdr-logo-image {
+  border: 1px solid var(--mdr-border-faint, rgba(4, 0, 97, 0.08));
+  padding: 4px;
+  box-sizing: content-box;
+}
+
 /* ---- Safe-area (notch/status-bar strip) fill -------------------------
    <meta name="theme-color"> alone (meta-tags.liquid) turned out not to be
    enough on a real iPhone: confirmed via screenshot, Safari was still
