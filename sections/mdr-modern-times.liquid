@@ -1,544 +1,1229 @@
 {%- doc -%}
-  THE MODERN TIMES -- editorial archive page: a masthead (imprint / title /
-  descriptor), a hairline rule, then a stream of blocks (Text / Pull Quote /
-  Image / Signature / Entry header), editable in the theme editor -- nothing
-  here is hardcoded copy. Image blocks with no image selected fall back to
-  a fixed set of editorial photography (assets/mdr-mtimes-editorial-1.jpg
-  through -5.jpg -- plain theme assets, not Shopify Files, so they're read
-  via asset_url rather than the image_picker/image_url pipeline the rest
-  of this block uses), cycling one per block via fallback_index. Was a
-  product-photography fallback (same one mdr-lookbook.liquid still uses)
-  until real editorial photography replaced it here; a merchant picking a
-  real image in any block's own Image setting still overrides this
-  fallback for that block, same as before.
+  THE MODERN TIMES -- MODARE's publication. One issue per page: a masthead
+  (publisher / title / tagline / volume strip) over an editorial grid that
+  every block places itself on.
 
-  "Entry header" is the reusable unit future editions accumulate around:
-  an issue label (e.g. "Vol. 001 / Issue 001"), a title, and a date/
-  category line, closed off with a hairline divider baked into the block
-  itself. Drop one in, followed by whatever Text/Quote/Image blocks make up
-  that entry's body, then another Entry header to start the next one --
-  the page is built to read as an ongoing archive, not a single one-off
-  manifesto.
+  Grid: 12 columns on desktop (4 editorial columns of 3), 6 on tablet, 2 on
+  phones. Each block picks its desktop width (Span); tablet width follows
+  from it, and phones choose full or half width. Blocks flow in order, so a
+  composition is just block order + widths: a two-thirds lead story spanning
+  two rows next to two one-third blocks, a full-width manifesto, a five/seven
+  split, and so on.
+
+  Rules: every block can own a rule above it and/or a column rule on its
+  left; each line belongs to exactly one block, so rows never double up.
+  On phones a column rule turns into the row's top rule unless the block
+  sits beside another half-width block.
+
+  Block types (reusable for every future volume): Story (lead / feature /
+  standard / brief), Photograph (standard, small archival, or a full-bleed
+  interruption between grid sections), Two-image spread (heights matched,
+  original ratios kept), Quote (inset pull quote or full manifesto), Note
+  (side note or numbered index), Section divider, Colophon.
+
+  Photography: a picked image always wins; with none picked, a block can
+  show one of the five placeholder photos in assets/ (see
+  snippets/mdr-mt-image.liquid). Original aspect ratios by default.
 {%- enddoc -%}
 
 {%- liquid
   assign s = section.settings
+  assign fb_ratios = '1.2005|0.7493|1.2005|1.4993|1.4006' | split: '|'
 -%}
 
-{%- comment -%}
-  A literal newline character, for `| split: newline` below. Shopify
-  Liquid has no built-in `newline` global -- this is the standard idiom:
-  capturing the raw template source between these two tags (an actual
-  line break lives there, in the file itself) gives a one-character
-  string containing just "\n". Get this wrong and `split: newline`
-  silently becomes `split: nil` (or `split: ""`), which Liquid's split
-  filter treats as "split into individual characters" -- the exact bug
-  that was collapsing every paragraph on this page into one character
-  per line.
-  The trim dashes matter here: `{%- capture newline -%}` (dash on BOTH
-  sides) trims away the very newline sitting between the two tags before
-  it can ever be captured, leaving `newline` as an empty string --
-  `split: ""` still splits into individual characters, same bug, just
-  from a different undefined-ish value. No dash on the sides FACING the
-  blank line in between (only on the outer sides) is what actually
-  preserves it.
-{%- endcomment -%}
+{%- comment -%} A literal newline, for `| split: newline` (no built-in newline global). {%- endcomment -%}
 {%- capture newline %}
 {% endcapture -%}
 
-<section
-  id="mdr-modern-times-{{ section.id }}"
-  class="mdr-mtimes"
->
-  <header class="mdr-mtimes__intro">
-    {%- if s.eyebrow != blank -%}
-      <p class="mdr-mtimes__eyebrow">{{ s.eyebrow }}</p>
-    {%- endif -%}
-    {%- if s.heading != blank -%}
-      <h1 class="mdr-mtimes__heading">{{ s.heading }}</h1>
+{%- comment -%}
+  PGF Qualta (demo build) draws a "DEMO" mark instead of ! " # $ % & ' ( ) * + - / 4 < = > @ [ \ ] ^ _ ` { | } ~.
+  This page-only alias of the same file covers every character it renders
+  properly; the excluded ones fall through to a neutral sans (--mt-sans),
+  so an ampersand, hyphen, date or apostrophe in editorial copy stays legible.
+{%- endcomment -%}
+<style>
+  @font-face {
+    font-family: 'MDR MT Qualta';
+    src: url('{{ 'pgf-qualta-regular.otf' | asset_url }}') format('opentype');
+    font-weight: 400;
+    font-style: normal;
+    font-display: swap;
+    unicode-range: U+0020, U+002C, U+002E, U+0030-0033, U+0035-003B, U+003F, U+0041-005A, U+0061-007A,
+      U+00A0-00FF, U+2013-2014, U+2018-201D, U+2022, U+2026, U+2122;
+  }
+</style>
+
+<section id="mdr-mt-{{ section.id }}" class="mdr-mtimes mdr-mt">
+  <header class="mdr-mt-masthead">
+    <div class="mdr-mt-masthead__top">
+      {%- if s.publisher != blank -%}
+        <p class="mdr-mt-masthead__publisher">{{ s.publisher }}</p>
+      {%- endif -%}
+      {%- if s.edition != blank -%}
+        <p class="mdr-mt-masthead__edition">{{ s.edition }}</p>
+      {%- endif -%}
+    </div>
+    {%- if s.title != blank -%}
+      <h1 class="mdr-mt-masthead__title">{{ s.title }}</h1>
     {%- endif -%}
     {%- if s.tagline != blank -%}
-      <p class="mdr-mtimes__tagline">{{ s.tagline }}</p>
+      <p class="mdr-mt-masthead__tagline">{{ s.tagline }}</p>
+    {%- endif -%}
+    {%- if s.volume != blank or s.year != blank -%}
+      <div class="mdr-mt-masthead__meta">
+        {%- if s.volume != blank -%}<span>{{ s.volume }}</span>{%- endif -%}
+        {%- if s.publisher != blank -%}<span>{{ s.publisher }}</span>{%- endif -%}
+        {%- if s.year != blank -%}<span>{{ s.year }}</span>{%- endif -%}
+      </div>
     {%- endif -%}
   </header>
 
-  <div class="mdr-mtimes__rule" aria-hidden="true"></div>
-
-  <div class="mdr-mtimes__stream">
-    {%- assign fallback_index = 0 -%}
+  <div class="mdr-mt-grid">
     {%- for block in section.blocks -%}
+      {%- liquid
+        assign b = block.settings
+        assign d = b.span | default: '12' | plus: 0
+        case d
+          when 12
+            assign t = 6
+          when 9, 8
+            assign t = 4
+          when 7, 6, 5
+            assign t = 3
+          else
+            assign t = 2
+        endcase
+        assign r = b.rows | default: '1' | plus: 0
+        assign m_half = false
+        if b.mobile == 'half'
+          assign m_half = true
+        endif
+
+        assign cls = 'mdr-mt-item mdr-mt-' | append: block.type
+        if m_half
+          assign cls = cls | append: ' mdr-mt-item--m-half'
+        endif
+        if block.type == 'story' or block.type == 'note' or block.type == 'quote'
+          assign cls = cls | append: ' mdr-mt-item--text'
+        endif
+        if b.rule_top or block.type == 'divider'
+          assign cls = cls | append: ' mdr-mt-rule-t'
+        endif
+        if b.rule_left
+          assign cls = cls | append: ' mdr-mt-rule-l'
+        endif
+
+        assign px = d | times: 104
+        assign tvw = t | times: 100 | divided_by: 6
+        assign mvw = '100vw'
+        if m_half
+          assign mvw = '50vw'
+        endif
+        assign sizes = '(min-width: 990px) ' | append: px | append: 'px, (min-width: 600px) ' | append: tvw | append: 'vw, ' | append: mvw
+
+        assign eager = false
+        if forloop.index <= 2
+          assign eager = true
+        endif
+        assign item_style = '--d: ' | append: d | append: '; --t: ' | append: t | append: '; --r: ' | append: r | append: ';'
+      -%}
+
       {%- case block.type -%}
-        {%- when 'entry' -%}
-          <header class="mdr-mtimes__entry" {{ block.shopify_attributes }}>
-            {%- if block.settings.issue != blank -%}
-              <p class="mdr-mtimes__entry-issue">{{ block.settings.issue }}</p>
-            {%- endif -%}
-            {%- if block.settings.title != blank -%}
-              <h2 class="mdr-mtimes__entry-title">{{ block.settings.title }}</h2>
-            {%- endif -%}
-            {%- if block.settings.meta != blank -%}
-              <p class="mdr-mtimes__entry-meta">{{ block.settings.meta }}</p>
-            {%- endif -%}
-          </header>
-
-        {%- when 'text' -%}
-          {%- assign lines = block.settings.content | split: newline -%}
-          <div class="mdr-mtimes__text" {{ block.shopify_attributes }}>
-            {%- for line in lines -%}
-              {%- assign trimmed = line | strip -%}
-              {%- if trimmed != blank -%}
-                <p>{{ trimmed }}</p>
-              {%- endif -%}
-            {%- endfor -%}
-          </div>
-
-        {%- when 'quote' -%}
-          <p class="mdr-mtimes__quote" {{ block.shopify_attributes }}>{{ block.settings.content }}</p>
-
-        {%- when 'signature' -%}
-          {%- assign sig_lines = block.settings.content | split: newline -%}
-          <div class="mdr-mtimes__signature" {{ block.shopify_attributes }}>
-            {%- for line in sig_lines -%}
-              {%- assign trimmed = line | strip -%}
-              {%- if trimmed != blank -%}
-                <span>{{ trimmed }}</span>
-              {%- endif -%}
-            {%- endfor -%}
-          </div>
-
-        {%- when 'image' -%}
-          {%- liquid
-            assign img_sizes = '94vw'
-            if block.settings.layout == 'half'
-              assign img_sizes = '(max-width: 749px) 94vw, 46vw'
-            endif
-          -%}
-          {%- capture tile -%}
-            {%- if block.settings.image != blank -%}
-              {{
-                block.settings.image
-                | image_url: width: 1600
-                | image_tag:
-                  loading: 'lazy',
-                  widths: '400, 600, 800, 1000, 1400, 1600',
-                  sizes: img_sizes,
-                  class: 'mdr-mtimes__img'
-              }}
-            {%- else -%}
-              {%- liquid
-                assign fallback_assets = 'mdr-mtimes-editorial-1.jpg|mdr-mtimes-editorial-2.jpg|mdr-mtimes-editorial-3.jpg|mdr-mtimes-editorial-4.jpg|mdr-mtimes-editorial-5.jpg' | split: '|'
-                assign fallback_count = fallback_assets.size
-                assign fallback_pick = fallback_index | modulo: fallback_count
-                assign fallback_asset = fallback_assets[fallback_pick]
-                assign fallback_index = fallback_index | plus: 1
-              -%}
-              <img
-                src="{{ fallback_asset | asset_url }}"
-                alt=""
-                loading="lazy"
-                class="mdr-mtimes__img"
-              >
+        {%- when 'story' -%}
+          {%- capture story_img -%}
+            {%- render 'mdr-mt-image',
+              image: b.image,
+              fallback: b.fallback,
+              ratio: b.ratio,
+              sizes: sizes,
+              eager: eager,
+              alt: b.caption
+            -%}
+          {%- endcapture -%}
+          {%- capture story_fig -%}
+            {%- if story_img != blank -%}
+              <figure class="mdr-mt-fig">
+                {{ story_img }}
+                {%- if b.caption != blank or b.credit != blank -%}
+                  <figcaption class="mdr-mt-cap">
+                    {%- if b.caption != blank -%}<span class="mdr-mt-cap__text">{{ b.caption }}</span>{%- endif -%}
+                    {%- if b.credit != blank -%}<span class="mdr-mt-cap__credit">{{ b.credit }}</span>{%- endif -%}
+                  </figcaption>
+                {%- endif -%}
+              </figure>
             {%- endif -%}
           {%- endcapture -%}
-          <figure
-            class="mdr-mtimes__figure mdr-mtimes__figure--{{ block.settings.layout }}"
-            {{ block.shopify_attributes }}
-          >
-            {{ tile }}
-            {%- if block.settings.caption != blank -%}
-              <figcaption class="mdr-mtimes__caption">{{ block.settings.caption }}</figcaption>
+          {%- liquid
+            assign hed_tag = 'h3'
+            if b.size == 'lead'
+              assign hed_tag = 'h2'
+            endif
+            assign body_cls = 'mdr-mt-body mdr-mt-body--cols-' | append: b.columns
+            if b.mobile_two_columns
+              assign body_cls = body_cls | append: ' mdr-mt-body--m2'
+            endif
+          -%}
+          <article class="{{ cls }} mdr-mt-story--{{ b.size }}" style="{{ item_style }}" {{ block.shopify_attributes }}>
+            {%- if b.image_position == 'above' -%}{{ story_fig }}{%- endif -%}
+            {%- if b.kicker != blank -%}<p class="mdr-mt-kicker">{{ b.kicker }}</p>{%- endif -%}
+            {%- if b.headline != blank -%}
+              <{{ hed_tag }} class="mdr-mt-hed mdr-mt-hed--{{ b.size }}">{{ b.headline }}</{{ hed_tag }}>
+            {%- endif -%}
+            {%- if b.deck != blank -%}<p class="mdr-mt-deck">{{ b.deck }}</p>{%- endif -%}
+            {%- if b.byline != blank -%}<p class="mdr-mt-byline">{{ b.byline }}</p>{%- endif -%}
+            {%- if b.image_position != 'above' -%}{{ story_fig }}{%- endif -%}
+            {%- if b.body != blank -%}
+              {%- assign paras = b.body | split: newline -%}
+              <div class="{{ body_cls }}">
+                {%- for line in paras -%}
+                  {%- assign trimmed = line | strip -%}
+                  {%- if trimmed != blank -%}<p>{{ trimmed }}</p>{%- endif -%}
+                {%- endfor -%}
+              </div>
+            {%- endif -%}
+          </article>
+
+        {%- when 'figure' -%}
+          {%- if b.treatment == 'bleed' -%}
+            {%- capture bleed_img -%}
+              {%- render 'mdr-mt-image',
+                image: b.image,
+                fallback: b.fallback,
+                ratio: b.ratio,
+                sizes: '100vw',
+                eager: eager,
+                alt: b.caption
+              -%}
+            {%- endcapture -%}
+            </div>
+            <figure class="mdr-mt-bleed" {{ block.shopify_attributes }}>
+              {{ bleed_img }}
+              {%- if b.caption != blank or b.credit != blank -%}
+                <figcaption class="mdr-mt-cap">
+                  {%- if b.caption != blank -%}<span class="mdr-mt-cap__text">{{ b.caption }}</span>{%- endif -%}
+                  {%- if b.credit != blank -%}<span class="mdr-mt-cap__credit">{{ b.credit }}</span>{%- endif -%}
+                </figcaption>
+              {%- endif -%}
+            </figure>
+            <div class="mdr-mt-grid">
+          {%- else -%}
+            <figure class="{{ cls }} mdr-mt-figure--{{ b.treatment }}" style="{{ item_style }}" {{ block.shopify_attributes }}>
+              <div class="mdr-mt-fig">
+                {%- render 'mdr-mt-image',
+                  image: b.image,
+                  fallback: b.fallback,
+                  ratio: b.ratio,
+                  sizes: sizes,
+                  eager: eager,
+                  alt: b.caption
+                -%}
+                {%- if b.caption != blank or b.credit != blank -%}
+                  <figcaption class="mdr-mt-cap">
+                    {%- if b.caption != blank -%}<span class="mdr-mt-cap__text">{{ b.caption }}</span>{%- endif -%}
+                    {%- if b.credit != blank -%}<span class="mdr-mt-cap__credit">{{ b.credit }}</span>{%- endif -%}
+                  </figcaption>
+                {%- endif -%}
+              </div>
+            </figure>
+          {%- endif -%}
+
+        {%- when 'spread' -%}
+          {%- liquid
+            assign ar_a = 1
+            if b.image_a != blank
+              assign ar_a = b.image_a.aspect_ratio
+            elsif b.fallback_a != 'none'
+              assign ia = b.fallback_a | plus: 0 | minus: 1
+              assign ar_a = fb_ratios[ia]
+            endif
+            assign ar_b = 1
+            if b.image_b != blank
+              assign ar_b = b.image_b.aspect_ratio
+            elsif b.fallback_b != 'none'
+              assign ib = b.fallback_b | plus: 0 | minus: 1
+              assign ar_b = fb_ratios[ib]
+            endif
+            assign half_px = px | divided_by: 2
+            assign half_tvw = tvw | divided_by: 2
+            assign spread_sizes = '(min-width: 990px) ' | append: half_px | append: 'px, (min-width: 600px) ' | append: half_tvw | append: 'vw, 50vw'
+          -%}
+          <figure class="{{ cls }}" style="{{ item_style }}" {{ block.shopify_attributes }}>
+            <div class="mdr-mt-spread__pair">
+              <div style="--ar: {{ ar_a }};">
+                {%- render 'mdr-mt-image', image: b.image_a, fallback: b.fallback_a, sizes: spread_sizes, eager: eager, alt: b.caption -%}
+              </div>
+              <div style="--ar: {{ ar_b }};">
+                {%- render 'mdr-mt-image', image: b.image_b, fallback: b.fallback_b, sizes: spread_sizes, eager: eager, alt: b.caption -%}
+              </div>
+            </div>
+            {%- if b.caption != blank or b.credit != blank -%}
+              <figcaption class="mdr-mt-cap">
+                {%- if b.caption != blank -%}<span class="mdr-mt-cap__text">{{ b.caption }}</span>{%- endif -%}
+                {%- if b.credit != blank -%}<span class="mdr-mt-cap__credit">{{ b.credit }}</span>{%- endif -%}
+              </figcaption>
             {%- endif -%}
           </figure>
+
+        {%- when 'quote' -%}
+          {%- assign quote_lines = b.lines | split: newline -%}
+          {%- if b.style == 'manifesto' -%}
+            <section class="{{ cls }} mdr-mt-manifesto" style="{{ item_style }}" {{ block.shopify_attributes }}>
+              <div class="mdr-mt-manifesto__inner">
+                {%- if b.label != blank -%}<p class="mdr-mt-manifesto__label">{{ b.label }}</p>{%- endif -%}
+                <p class="mdr-mt-manifesto__statement">{{ b.statement }}</p>
+                {%- if b.lines != blank -%}
+                  <ol class="mdr-mt-manifesto__lines">
+                    {%- for line in quote_lines -%}
+                      {%- assign trimmed = line | strip -%}
+                      {%- if trimmed != blank -%}<li>{{ trimmed }}</li>{%- endif -%}
+                    {%- endfor -%}
+                  </ol>
+                {%- endif -%}
+                {%- if b.attribution != blank -%}<p class="mdr-mt-manifesto__sign">{{ b.attribution }}</p>{%- endif -%}
+              </div>
+            </section>
+          {%- else -%}
+            <figure class="{{ cls }} mdr-mt-quote--inset" style="{{ item_style }}" {{ block.shopify_attributes }}>
+              {%- if b.label != blank -%}<p class="mdr-mt-kicker">{{ b.label }}</p>{%- endif -%}
+              <blockquote class="mdr-mt-quote__block">
+                <p class="mdr-mt-quote__text">{{ b.statement }}</p>
+                {%- for line in quote_lines -%}
+                  {%- assign trimmed = line | strip -%}
+                  {%- if trimmed != blank -%}<p class="mdr-mt-quote__line">{{ trimmed }}</p>{%- endif -%}
+                {%- endfor -%}
+              </blockquote>
+              {%- if b.attribution != blank -%}<figcaption class="mdr-mt-quote__by">{{ b.attribution }}</figcaption>{%- endif -%}
+            </figure>
+          {%- endif -%}
+
+        {%- when 'note' -%}
+          {%- assign note_lines = b.content | split: newline -%}
+          <aside class="{{ cls }} mdr-mt-note--{{ b.style }}" style="{{ item_style }}" {{ block.shopify_attributes }}>
+            {%- if b.label != blank -%}<p class="mdr-mt-kicker">{{ b.label }}</p>{%- endif -%}
+            {%- if b.style == 'index' -%}
+              <ol class="mdr-mt-index">
+                {%- for line in note_lines -%}
+                  {%- assign trimmed = line | strip -%}
+                  {%- if trimmed != blank -%}<li>{{ trimmed }}</li>{%- endif -%}
+                {%- endfor -%}
+              </ol>
+            {%- else -%}
+              <div class="mdr-mt-note__body">
+                {%- for line in note_lines -%}
+                  {%- assign trimmed = line | strip -%}
+                  {%- if trimmed != blank -%}<p>{{ trimmed }}</p>{%- endif -%}
+                {%- endfor -%}
+              </div>
+            {%- endif -%}
+          </aside>
+
+        {%- when 'divider' -%}
+          <div class="{{ cls }}" style="--d: 12; --t: 6; --r: 1;" role="separator" {{ block.shopify_attributes }}>
+            {%- if b.label != blank -%}<span class="mdr-mt-divider__label">{{ b.label }}</span>{%- endif -%}
+            {%- if b.meta != blank -%}<span class="mdr-mt-divider__meta">{{ b.meta }}</span>{%- endif -%}
+          </div>
+
+        {%- when 'colophon' -%}
+          {%- assign colophon_lines = b.content | split: newline -%}
+          <footer class="{{ cls }}" style="--d: 12; --t: 6; --r: 1;" {{ block.shopify_attributes }}>
+            {%- for line in colophon_lines -%}
+              {%- assign trimmed = line | strip -%}
+              {%- if trimmed != blank -%}<span>{{ trimmed }}</span>{%- endif -%}
+            {%- endfor -%}
+          </footer>
       {%- endcase -%}
     {%- endfor -%}
   </div>
 </section>
 
 {% stylesheet %}
-  /* Neutral MDR system: was a cream background (#f6f3e7) + the old
-     --mdr-primary blue for every accent colour on this page (eyebrow,
-     heading, quote, image border, signature) -- both retired site-wide by
-     the mineral-neutral pass everywhere else; this section had been
-     rendering blue/cream this whole time regardless, since it reads its
-     own literal values here rather than the shared tokens. Ported onto
-     --mdr-paper/--mdr-ink/--mdr-graphite/--mdr-muted/--mdr-border like
-     every other page. */
-  .mdr-mtimes {
+  /* ==========================================================================
+     THE MODERN TIMES -- every rule here is scoped to .mdr-mt (this section
+     only). Colours are the site's own tokens; the only type families are
+     the site's own PGF Qualta (page alias, see the <style> above) and
+     Anonymous Pro, the monospace the site already loads, used for issue
+     data, bylines, credits and section labels.
+     ========================================================================== */
+  .mdr-mt {
+    --mt-ink: var(--mdr-ink, #202020);
+    --mt-gray: var(--mdr-graphite, #858581);
+    --mt-rule: var(--mdr-border, #dededa);
+    --mt-sans: 'MDR MT Qualta', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+    --mt-mono: 'Anonymous Pro', ui-monospace, Menlo, monospace;
+    --mt-pad: clamp(16px, 4.2vw, 48px);
+    --mt-gutter: clamp(16px, 2.6vw, 32px);
+    --mt-vpad: clamp(18px, 2.8vw, 30px);
+    --mt-measure: min(100% - 2 * var(--mt-pad), 1280px);
+
     background: var(--mdr-paper, #f8f8f5);
-    padding-block: clamp(28px, 6vw, 64px) clamp(40px, 8vw, 88px);
-  }
-
-  /* Editorial masthead hierarchy: MODARE reads as a small publisher/
-     imprint mark, THE MODERN TIMES is the dominant title, the descriptor
-     is quieter and smaller still -- three distinct steps, not three
-     centered lines set close to the same size. */
-  .mdr-mtimes__intro {
-    max-width: 620px;
-    margin-inline: auto;
-    padding-inline: clamp(24px, 6vw, 32px);
-    text-align: center;
-  }
-
-  .mdr-mtimes__eyebrow {
-    margin: 0 0 10px;
-    font-size: 0.6rem;
+    color: var(--mt-ink);
+    font-family: var(--mt-sans);
     font-weight: 400;
-    letter-spacing: 0.14em;
-    text-transform: uppercase;
-    /* imprint mark, not the headline -- graphite, not ink */
-    color: var(--mdr-graphite, #858581);
-  }
-
-  .mdr-mtimes__heading {
-    margin: 0 0 12px;
-    /* bigger relative to the eyebrow above it than before (was clamp(1.5,
-       6vw, 2.4rem)) -- "THE MODERN TIMES should be the dominant title",
-       not one step up from a small imprint mark. */
-    font-size: clamp(1.9rem, 9vw, 3.2rem);
-    font-weight: 400;
-    line-height: 1;
     letter-spacing: 0;
-    text-transform: uppercase;
-    color: var(--mdr-ink, #202020);
+    padding-bottom: clamp(40px, 8vw, 96px);
+    overflow-x: clip;
   }
 
-  .mdr-mtimes__tagline {
-    margin: 0;
-    /* smaller and lighter than before (was 0.72rem / --mdr-text-gray) --
-       "lighter gray and smaller" than the title, not competing with it. */
-    font-size: 0.6rem;
-    font-weight: 400;
-    letter-spacing: 0.03em;
-    text-transform: uppercase;
-    color: var(--mdr-muted, #b7b7b1);
-  }
-
-  /* "Remove the random short underline... use the same hairline divider
-     language already established throughout the website" -- was a short
-     (120px/30vw) centered stub tinted with the old blue. Now a plain
-     full-measure hairline, same colour/weight as every other structural
-     line on the site (--mdr-border, 1px) -- a section break, not a
-     decorative flourish under the masthead. */
-  .mdr-mtimes__rule {
-    max-width: 620px;
-    margin-inline: auto;
-    margin-block: clamp(24px, 5vw, 40px);
-    height: 1px;
-    background: var(--mdr-border, #dededa);
-  }
-
-  .mdr-mtimes__stream {
-    display: flex;
-    flex-direction: column;
-    /* stretch, not center -- text/entry blocks manage their own alignment
-       now (left-aligned body copy), so the stream itself shouldn't force
-       everything to a centered column the way a single flat --align:center
-       used to. */
-    align-items: stretch;
-    gap: clamp(20px, 4vw, 32px);
-  }
-
-  /* ---- Entry header -- the reusable unit future editions accumulate
-     around: issue label, title, date/category, closed with a hairline
-     divider baked into the block itself so authors don't add one
-     separately for every new entry. ---------------------------------- */
-  .mdr-mtimes__entry {
-    max-width: 620px;
-    width: 100%;
-    margin-inline: auto;
-    padding-inline: clamp(24px, 6vw, 32px);
-    padding-bottom: clamp(16px, 3vw, 24px);
-    border-bottom: 1px solid var(--mdr-border, #dededa);
-    text-align: left;
-  }
-
-  .mdr-mtimes__entry-issue {
-    margin: 0 0 6px;
-    font-size: 0.56rem;
-    font-weight: 400;
-    letter-spacing: 0.12em;
-    text-transform: uppercase;
-    color: var(--mdr-muted, #b7b7b1);
-  }
-
-  .mdr-mtimes__entry-title {
-    margin: 0 0 6px;
-    font-size: clamp(1rem, 4vw, 1.4rem);
-    font-weight: 400;
-    line-height: 1.15;
-    letter-spacing: 0;
-    text-transform: uppercase;
-    color: var(--mdr-ink, #202020);
-  }
-
-  .mdr-mtimes__entry-meta {
-    margin: 0;
-    font-size: 0.56rem;
-    font-weight: 400;
-    letter-spacing: 0.04em;
-    text-transform: uppercase;
-    color: var(--mdr-graphite, #858581);
-  }
-
-  /* ---- Body copy -- left-aligned editorial column, comfortable page
-     gutters (24-32px, not the old 20px/centered-block treatment), same
-     scale/colour the rest of the site's own body copy (policy pages, PDP
-     description) already uses. ---------------------------------------- */
-  .mdr-mtimes__text {
-    max-width: 620px;
-    width: 100%;
-    margin-inline: auto;
-    padding-inline: clamp(24px, 6vw, 32px);
-    text-align: left;
-  }
-
-  .mdr-mtimes__text p {
-    margin: 0;
-    font-size: 0.625rem;
-    font-weight: 400;
-    line-height: 1.6;
-    letter-spacing: 0.01em;
-    color: var(--mdr-graphite, #858581);
-  }
-
-  .mdr-mtimes__text p + p {
-    margin-top: 10px;
-  }
-
-  /* large editorial statement line -- "PROGRESSION IS RITUAL." etc. Kept
-     centered/uppercase/larger on purpose: a pull-quote is a deliberate
-     visual break from the body column, the print-editorial equivalent of
-     changing register mid-page -- "prefer left-aligned body copy" is
-     about paragraphs, not about flattening this into just another line
-     of body text. */
-  .mdr-mtimes__quote {
-    max-width: 720px;
-    width: 100%;
-    margin: 0 auto;
-    padding-inline: clamp(24px, 6vw, 32px);
-    text-align: center;
-    font-size: clamp(1.1rem, 4.2vw, 1.7rem);
-    font-weight: 400;
-    line-height: 1.2;
-    letter-spacing: 0.01em;
-    text-transform: uppercase;
-    color: var(--mdr-ink, #202020);
-  }
-
-  .mdr-mtimes__signature {
-    max-width: 620px;
-    width: 100%;
-    margin-inline: auto;
-    padding-inline: clamp(24px, 6vw, 32px);
-    display: flex;
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 4px;
-    padding-block-start: 8px;
-  }
-
-  .mdr-mtimes__signature span {
-    font-size: 0.6rem;
-    font-weight: 400;
-    letter-spacing: 0.1em;
-    text-transform: uppercase;
-    color: var(--mdr-graphite, #858581);
-  }
-
-  .mdr-mtimes__signature span:first-child {
-    color: var(--mdr-ink, #202020);
-  }
-
-  /* ---- Editorial image spreads -------------------------------------- */
-  .mdr-mtimes__figure {
-    margin: 0;
-    width: 100%;
-    max-width: 620px;
-    margin-inline: auto;
-    padding-inline: clamp(24px, 6vw, 32px);
+  .mdr-mt *,
+  .mdr-mt *::before,
+  .mdr-mt *::after {
     box-sizing: border-box;
   }
 
-  .mdr-mtimes__figure--full {
-    max-width: 900px;
+  .mdr-mt p,
+  .mdr-mt ol,
+  .mdr-mt figure,
+  .mdr-mt blockquote {
+    margin: 0;
   }
 
-  .mdr-mtimes__figure--half {
-    max-width: 900px;
+  /* ---- Masthead ----------------------------------------------------------- */
+  .mdr-mt-masthead {
+    width: var(--mt-measure);
+    margin-inline: auto;
+    padding-top: clamp(22px, 4.5vw, 52px);
+    container-type: inline-size;
   }
 
-  /* a "half" figure pairs with the very next "half" figure into one
-     two-up spread, same rhythm as the reference gallery -- CSS-only,
-     no JS grouping needed: two flex children with basis just under 50%
-     wrap onto the same row and share it. */
-  .mdr-mtimes__stream:has(.mdr-mtimes__figure--half) {
-    flex-wrap: wrap;
-    flex-direction: row;
-    justify-content: center;
+  .mdr-mt-masthead__top {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    gap: 12px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid var(--mt-rule);
   }
 
-  @media (min-width: 640px) {
-    .mdr-mtimes__figure--half {
-      /* flex-grow: 0 (was 1) -- with grow enabled, both figures grew past
-         their own 50%-based flex-basis all the way to the 450px max-width
-         cap regardless of how wide the stream itself actually was,
-         confirmed live: at an 800px stream, two 450px figures (900px
-         total) don't fit on one row and wrap onto separate ones instead
-         of pairing -- exactly the "half" layout failing to do the one
-         thing it's for. Grow: 0 keeps each figure at its own share of the
-         real container width (calc(50% - 10px)), so two of them always
-         add up to fit their row, at any stream width; 450px stays only as
-         a ceiling for unusually wide containers, not a target both
-         figures get pushed toward. */
-      /* -16px, not -10px: half of .mdr-mtimes__stream's own gap (clamp
-         (20px, 4vw, 32px), so up to 32px at wide-ish desktop widths, not
-         the 10px this was originally tuned for) -- two items at exactly
-         "50% - half the gap" plus the real gap between them always sums
-         to precisely 100%, whatever the gap's own clamped value actually
-         is. -10px undercounted that gap, which at 800px stream width put
-         two 390px figures + a 32px gap at 812px total, 12px over -- just
-         enough to force the second one onto its own row instead of
-         pairing (confirmed live). */
-      flex: 0 1 calc(50% - 16px);
-      max-width: calc(450px);
+  .mdr-mt .mdr-mt-masthead__publisher {
+    font-size: 0.74rem;
+    line-height: 1;
+    letter-spacing: 0.34em;
+    text-transform: uppercase;
+    color: var(--mt-ink);
+  }
+
+  .mdr-mt .mdr-mt-masthead__edition {
+    font-family: var(--mt-mono);
+    font-size: 0.58rem;
+    line-height: 1;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--mt-gray);
+    text-align: right;
+  }
+
+  /* sized to the masthead's own width (cqi), so the title always runs the
+     full measure on one line, phone to desktop */
+  .mdr-mt .mdr-mt-masthead__title {
+    margin: clamp(12px, 2.4cqi, 28px) 0 clamp(8px, 1.4cqi, 16px);
+    font-family: var(--mt-sans);
+    font-weight: 400;
+    font-size: 2.2rem;
+    font-size: min(11.2cqi, 9.4rem);
+    line-height: 0.86;
+    letter-spacing: -0.018em;
+    text-transform: uppercase;
+    white-space: nowrap;
+    color: var(--mt-ink);
+  }
+
+  .mdr-mt .mdr-mt-masthead__tagline {
+    margin-bottom: clamp(14px, 2.6cqi, 28px);
+    font-size: clamp(0.82rem, 2.3cqi, 1.12rem);
+    line-height: 1.3;
+    letter-spacing: 0.005em;
+    text-transform: none;
+    color: var(--mt-gray);
+  }
+
+  .mdr-mt-masthead__meta {
+    display: flex;
+    justify-content: space-between;
+    gap: 12px;
+    padding-block: 9px;
+    border-block: 1px solid var(--mt-rule);
+    font-family: var(--mt-mono);
+    font-size: 0.58rem;
+    line-height: 1;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--mt-ink);
+  }
+
+  /* ---- Editorial grid ------------------------------------------------------
+     2 / 6 / 12 columns. No row gap: blocks carry their own vertical padding
+     and touch, so column rules and row rules meet cleanly. overflow-x: clip
+     trims the rules' half-gutter reach exactly at the grid's outer edges. */
+  .mdr-mt-grid {
+    width: var(--mt-measure);
+    margin-inline: auto;
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    column-gap: var(--mt-gutter);
+    overflow-x: clip;
+  }
+
+  .mdr-mt-item {
+    position: relative;
+    grid-column: span 2;
+    min-width: 0;
+    padding-block: var(--mt-vpad);
+    container-type: inline-size;
+  }
+
+  .mdr-mt-item--m-half {
+    grid-column: span 1;
+  }
+
+  /* too narrow for two text columns side by side -- recompose to full width */
+  @media (max-width: 359px) {
+    .mdr-mt-item--m-half.mdr-mt-item--text {
+      grid-column: span 2;
     }
   }
 
-  .mdr-mtimes__img {
+  @media (min-width: 600px) {
+    .mdr-mt-grid {
+      grid-template-columns: repeat(6, minmax(0, 1fr));
+    }
+
+    .mdr-mt-item,
+    .mdr-mt-item--m-half {
+      grid-column: span var(--t, 6);
+      grid-row: span var(--r, 1);
+    }
+  }
+
+  @media (min-width: 990px) {
+    .mdr-mt-grid {
+      grid-template-columns: repeat(12, minmax(0, 1fr));
+    }
+
+    .mdr-mt-item,
+    .mdr-mt-item--m-half {
+      grid-column: span var(--d, 12);
+    }
+  }
+
+  /* ---- Rules (the site's hairline, 1px --mdr-border) ---------------------- */
+  .mdr-mt-rule-t::after,
+  .mdr-mt-rule-l::before {
+    content: '';
+    position: absolute;
+    background: var(--mt-rule);
+    pointer-events: none;
+  }
+
+  .mdr-mt-rule-t::after {
+    top: 0;
+    height: 1px;
+    left: calc(var(--mt-gutter) / -2);
+    right: calc(var(--mt-gutter) / -2);
+  }
+
+  .mdr-mt-rule-l::before {
+    top: 0;
+    bottom: 0;
+    width: 1px;
+    left: calc(var(--mt-gutter) / -2);
+  }
+
+  /* phones: a full-width block's column rule becomes its top rule; a half-
+     width block keeps its column rule (visible when it's the right-hand one)
+     and also takes the row's top rule */
+  @media (max-width: 599px) {
+    .mdr-mt-rule-l::after {
+      content: '';
+      position: absolute;
+      top: 0;
+      height: 1px;
+      left: calc(var(--mt-gutter) / -2);
+      right: calc(var(--mt-gutter) / -2);
+      background: var(--mt-rule);
+      pointer-events: none;
+    }
+
+    .mdr-mt-rule-l:not(.mdr-mt-item--m-half)::before {
+      display: none;
+    }
+  }
+
+  @media (max-width: 359px) {
+    .mdr-mt-rule-l.mdr-mt-item--m-half.mdr-mt-item--text::before {
+      display: none;
+    }
+  }
+
+  /* ---- Type ---------------------------------------------------------------- */
+  .mdr-mt .mdr-mt-kicker {
+    margin-bottom: 12px;
+    font-family: var(--mt-mono);
+    font-size: 0.58rem;
+    line-height: 1.2;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--mt-ink);
+  }
+
+  .mdr-mt .mdr-mt-hed {
+    margin: 0;
+    font-family: var(--mt-sans);
+    font-weight: 400;
+    color: var(--mt-ink);
+    text-wrap: balance;
+    overflow-wrap: normal;
+    word-break: normal;
+  }
+
+  .mdr-mt .mdr-mt-hed--lead {
+    font-size: 1.8rem;
+    font-size: clamp(1.7rem, 8.4cqi, 3.9rem);
+    line-height: 0.94;
+    letter-spacing: -0.015em;
+    text-transform: uppercase;
+  }
+
+  .mdr-mt .mdr-mt-hed--feature {
+    font-size: 1.4rem;
+    font-size: clamp(1.35rem, 6.2cqi, 2.4rem);
+    line-height: 0.98;
+    letter-spacing: -0.01em;
+    text-transform: uppercase;
+  }
+
+  .mdr-mt .mdr-mt-hed--standard {
+    font-size: 1.1rem;
+    font-size: clamp(1.08rem, 5.4cqi, 1.5rem);
+    line-height: 1.12;
+    letter-spacing: -0.004em;
+    text-transform: none;
+  }
+
+  .mdr-mt .mdr-mt-hed--brief {
+    font-size: 1rem;
+    font-size: clamp(0.95rem, 5cqi, 1.15rem);
+    line-height: 1.2;
+    text-transform: none;
+  }
+
+  .mdr-mt .mdr-mt-deck {
+    margin-top: 0.7em;
+    font-size: 0.9rem;
+    font-size: clamp(0.88rem, 4.4cqi, 1.12rem);
+    line-height: 1.34;
+    letter-spacing: 0.002em;
+    text-transform: none;
+    text-wrap: pretty;
+    color: var(--mt-gray);
+  }
+
+  .mdr-mt .mdr-mt-byline {
+    margin-top: 1.1em;
+    font-family: var(--mt-mono);
+    font-size: 0.56rem;
+    line-height: 1.3;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--mt-gray);
+  }
+
+  .mdr-mt .mdr-mt-body {
+    margin-top: 1.1em;
+    font-size: 0.82rem;
+    line-height: 1.58;
+    letter-spacing: 0.004em;
+    text-transform: none;
+    text-wrap: pretty;
+    overflow-wrap: break-word;
+    hyphens: manual;
+    color: var(--mt-ink);
+  }
+
+  .mdr-mt-story > .mdr-mt-body:first-child {
+    margin-top: 0;
+  }
+
+  .mdr-mt .mdr-mt-body p + p {
+    margin-top: 0.75em;
+  }
+
+  @media (min-width: 990px) {
+    .mdr-mt .mdr-mt-body {
+      font-size: 0.86rem;
+    }
+  }
+
+  @container (min-width: 540px) {
+    .mdr-mt .mdr-mt-body--cols-2,
+    .mdr-mt .mdr-mt-body--cols-3 {
+      columns: 2;
+      column-gap: var(--mt-gutter);
+      column-rule: 1px solid var(--mt-rule);
+    }
+  }
+
+  @container (min-width: 820px) {
+    .mdr-mt .mdr-mt-body--cols-3 {
+      columns: 3;
+    }
+  }
+
+  /* short passages only: two narrow columns on a phone-width block */
+  @container (min-width: 330px) and (max-width: 539px) {
+    .mdr-mt .mdr-mt-body--m2 {
+      columns: 2;
+      column-gap: 16px;
+      column-rule: 1px solid var(--mt-rule);
+      font-size: 0.76rem;
+    }
+  }
+
+  /* ---- Photographs ---------------------------------------------------------- */
+  .mdr-mt .mdr-mt-fig {
+    margin-block: 1.1em;
+  }
+
+  .mdr-mt .mdr-mt-fig:first-child,
+  .mdr-mt-figure .mdr-mt-fig {
+    margin-top: 0;
+  }
+
+  .mdr-mt-figure .mdr-mt-fig {
+    margin-bottom: 0;
+  }
+
+  .mdr-mt .mdr-mt-img {
     display: block;
     width: 100%;
     height: auto;
+    max-width: none;
+    border: 0;
+    border-radius: 0;
+    background: var(--mdr-selected, #ecece7);
+  }
+
+  .mdr-mt .mdr-mt-img--landscape {
+    aspect-ratio: 3 / 2;
+    object-fit: cover;
+  }
+
+  .mdr-mt .mdr-mt-img--portrait {
     aspect-ratio: 4 / 5;
     object-fit: cover;
-    background: var(--mdr-selected, #ecece7);
-    border: 1px solid var(--mdr-border, #dededa);
-    box-sizing: border-box;
   }
 
-  .mdr-mtimes__figure--full .mdr-mtimes__img {
-    aspect-ratio: 16 / 9;
+  .mdr-mt .mdr-mt-img--square {
+    aspect-ratio: 1;
+    object-fit: cover;
   }
 
-  .mdr-mtimes__caption {
-    margin-top: 6px;
-    font-size: 0.56rem;
-    letter-spacing: 0.03em;
+  .mdr-mt-figure--archival .mdr-mt-fig {
+    max-width: 82%;
+  }
+
+  .mdr-mt-cap {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    align-items: baseline;
+    gap: 4px 14px;
+    margin-top: 8px;
+  }
+
+  .mdr-mt .mdr-mt-cap__text {
+    font-size: 0.68rem;
+    line-height: 1.4;
+    letter-spacing: 0.005em;
+    text-transform: none;
+    color: var(--mt-gray);
+  }
+
+  .mdr-mt .mdr-mt-cap__credit {
+    font-family: var(--mt-mono);
+    font-size: 0.54rem;
+    line-height: 1.4;
+    letter-spacing: 0.12em;
     text-transform: uppercase;
-    text-align: center;
-    color: var(--mdr-graphite, #858581);
+    color: var(--mt-gray);
+  }
+
+  /* two photos at one shared height, each at its own original ratio:
+     widths are proportional to the ratios, so nothing is cropped */
+  .mdr-mt-spread__pair {
+    display: flex;
+    align-items: flex-start;
+    gap: calc(var(--mt-gutter) / 2);
+  }
+
+  .mdr-mt-spread__pair > div {
+    flex: var(--ar, 1) 1 0%;
+    min-width: 0;
+  }
+
+  /* full-bleed interruption between two grid sections */
+  .mdr-mt-bleed {
+    margin: 0;
+    padding-block: var(--mt-vpad);
+  }
+
+  .mdr-mt-bleed .mdr-mt-cap {
+    width: var(--mt-measure);
+    margin-inline: auto;
+  }
+
+  @media (min-width: 750px) {
+    .mdr-mt .mdr-mt-bleed .mdr-mt-img {
+      max-height: 86vh;
+      object-fit: cover;
+      object-position: 50% 42%;
+    }
+  }
+
+  /* ---- Quotes ---------------------------------------------------------------- */
+  .mdr-mt .mdr-mt-quote__text {
+    font-size: 1.05rem;
+    font-size: clamp(1.02rem, 8.6cqi, 1.7rem);
+    line-height: 1.16;
+    letter-spacing: -0.005em;
+    text-transform: none;
+    text-wrap: balance;
+    color: var(--mt-ink);
+  }
+
+  .mdr-mt .mdr-mt-quote__line {
+    margin-top: 0.8em;
+    font-size: 0.8rem;
+    line-height: 1.45;
+    text-transform: none;
+    color: var(--mt-gray);
+  }
+
+  .mdr-mt .mdr-mt-quote__by {
+    margin-top: 1em;
+    font-family: var(--mt-mono);
+    font-size: 0.56rem;
+    line-height: 1.3;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--mt-gray);
+  }
+
+  /* manifesto: a full-width interruption -- label / statement / the lines
+     that carry it, set as a numbered sequence */
+  .mdr-mt-manifesto {
+    padding-block: calc(var(--mt-vpad) * 1.5);
+  }
+
+  .mdr-mt-manifesto__inner {
+    display: grid;
+    gap: 14px;
+  }
+
+  .mdr-mt .mdr-mt-manifesto__label,
+  .mdr-mt .mdr-mt-manifesto__sign {
+    font-family: var(--mt-mono);
+    font-size: 0.58rem;
+    line-height: 1.2;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--mt-ink);
+  }
+
+  .mdr-mt .mdr-mt-manifesto__sign {
+    color: var(--mt-gray);
+  }
+
+  .mdr-mt .mdr-mt-manifesto__statement {
+    font-size: 2rem;
+    font-size: clamp(1.9rem, 10cqi, 5.4rem);
+    line-height: 0.9;
+    letter-spacing: -0.02em;
+    text-transform: uppercase;
+    text-wrap: balance;
+    color: var(--mt-ink);
+  }
+
+  .mdr-mt-manifesto__lines {
+    list-style: none;
+    padding: 0;
+    counter-reset: mdr-mt-line;
+    display: grid;
+    gap: 10px;
+  }
+
+  .mdr-mt .mdr-mt-manifesto__lines li {
+    counter-increment: mdr-mt-line;
+    display: grid;
+    grid-template-columns: 2.4em minmax(0, 1fr);
+    gap: 8px;
+    font-size: 0.84rem;
+    line-height: 1.42;
+    text-transform: none;
+    color: var(--mt-ink);
+  }
+
+  .mdr-mt-manifesto__lines li::before {
+    content: counter(mdr-mt-line, decimal-leading-zero);
+    padding-top: 0.3em;
+    font-family: var(--mt-mono);
+    font-size: 0.56rem;
+    letter-spacing: 0.1em;
+    color: var(--mt-gray);
+  }
+
+  @container (min-width: 700px) {
+    .mdr-mt-manifesto__inner {
+      grid-template-columns: minmax(0, 3fr) minmax(0, 6fr) minmax(0, 3fr);
+      grid-template-rows: auto 1fr;
+      column-gap: var(--mt-gutter);
+      row-gap: 0;
+    }
+
+    .mdr-mt-manifesto__label {
+      grid-column: 1;
+      grid-row: 1;
+    }
+
+    .mdr-mt-manifesto__sign {
+      grid-column: 1;
+      grid-row: 2;
+      align-self: end;
+    }
+
+    .mdr-mt .mdr-mt-manifesto__statement {
+      grid-column: 2;
+      grid-row: 1 / span 2;
+      font-size: clamp(2.2rem, 6.2cqi, 5.4rem);
+    }
+
+    .mdr-mt-manifesto__lines {
+      position: relative;
+      grid-column: 3;
+      grid-row: 1 / span 2;
+      align-self: end;
+    }
+
+    .mdr-mt-manifesto__lines::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      bottom: 0;
+      left: calc(var(--mt-gutter) / -2);
+      width: 1px;
+      background: var(--mt-rule);
+    }
+  }
+
+  /* ---- Notes / index ----------------------------------------------------------- */
+  .mdr-mt .mdr-mt-note__body p {
+    font-size: 0.8rem;
+    line-height: 1.5;
+    text-transform: none;
+    color: var(--mt-ink);
+  }
+
+  .mdr-mt .mdr-mt-note__body p + p {
+    margin-top: 0.5em;
+  }
+
+  .mdr-mt-index {
+    list-style: none;
+    padding: 0;
+    counter-reset: mdr-mt-index;
+  }
+
+  .mdr-mt .mdr-mt-index li {
+    counter-increment: mdr-mt-index;
+    display: grid;
+    grid-template-columns: 2.2em minmax(0, 1fr);
+    gap: 6px;
+    padding-block: 8px;
+    font-size: 0.84rem;
+    line-height: 1.3;
+    text-transform: none;
+    color: var(--mt-ink);
+  }
+
+  .mdr-mt-index li:first-child {
+    padding-top: 0;
+  }
+
+  .mdr-mt-index li + li {
+    border-top: 1px solid var(--mt-rule);
+  }
+
+  .mdr-mt-index li::before {
+    content: counter(mdr-mt-index, decimal-leading-zero);
+    padding-top: 0.25em;
+    font-family: var(--mt-mono);
+    font-size: 0.56rem;
+    letter-spacing: 0.1em;
+    color: var(--mt-gray);
+  }
+
+  /* ---- Section divider / colophon -------------------------------------------------- */
+  .mdr-mt-divider {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    gap: 12px;
+    padding-block: 11px;
+  }
+
+  .mdr-mt-divider__label,
+  .mdr-mt-divider__meta {
+    font-family: var(--mt-mono);
+    font-size: 0.6rem;
+    line-height: 1.2;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--mt-ink);
+  }
+
+  .mdr-mt-divider__meta {
+    font-size: 0.56rem;
+    letter-spacing: 0.12em;
+    color: var(--mt-gray);
+    text-align: right;
+  }
+
+  .mdr-mt-colophon {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: 8px 22px;
+  }
+
+  .mdr-mt-colophon span {
+    font-family: var(--mt-mono);
+    font-size: 0.56rem;
+    line-height: 1.3;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--mt-gray);
+  }
+
+  .mdr-mt-colophon span:first-child {
+    flex-basis: 100%;
+    font-family: var(--mt-sans);
+    font-size: 1rem;
+    letter-spacing: 0.04em;
+    color: var(--mt-ink);
   }
 {% endstylesheet %}
 
 {% schema %}
 {
   "name": "MDR Modern Times",
-  "tag": "section",
+  "tag": "div",
   "class": "mdr-modern-times-section",
   "settings": [
-    {
-      "type": "text",
-      "id": "eyebrow",
-      "label": "Eyebrow",
-      "default": "MODARE"
-    },
-    {
-      "type": "text",
-      "id": "heading",
-      "label": "Heading",
-      "default": "The Modern Times"
-    },
-    {
-      "type": "text",
-      "id": "tagline",
-      "label": "Tagline",
-      "default": "Progression, culture & the world we live in."
-    }
+    { "type": "header", "content": "Masthead" },
+    { "type": "text", "id": "publisher", "label": "Publisher", "default": "MODARE" },
+    { "type": "text", "id": "title", "label": "Publication title", "default": "The Modern Times" },
+    { "type": "text", "id": "tagline", "label": "Tagline", "default": "Progression, culture & the world we live in." },
+    { "type": "text", "id": "edition", "label": "Edition note", "info": "Top right of the masthead, e.g. Issue 001" },
+    { "type": "text", "id": "volume", "label": "Volume", "default": "Vol. 001" },
+    { "type": "text", "id": "year", "label": "Year", "default": "2026" }
   ],
   "blocks": [
     {
-      "type": "entry",
-      "name": "Entry header",
+      "type": "story",
+      "name": "Story",
       "settings": [
-        {
-          "type": "text",
-          "id": "issue",
-          "label": "Issue label",
-          "info": "e.g. Vol. 001 / Issue 001",
-          "default": "Vol. 001 / Issue 001"
-        },
-        {
-          "type": "text",
-          "id": "title",
-          "label": "Title",
-          "info": "Article or drop title"
-        },
-        {
-          "type": "text",
-          "id": "meta",
-          "label": "Date / category"
-        }
+        { "type": "select", "id": "size", "label": "Hierarchy", "options": [
+          { "value": "lead", "label": "Lead story" },
+          { "value": "feature", "label": "Feature" },
+          { "value": "standard", "label": "Standard" },
+          { "value": "brief", "label": "Brief" }
+        ], "default": "standard" },
+        { "type": "text", "id": "kicker", "label": "Section label" },
+        { "type": "text", "id": "headline", "label": "Headline" },
+        { "type": "textarea", "id": "deck", "label": "Deck" },
+        { "type": "text", "id": "byline", "label": "Byline / date" },
+        { "type": "textarea", "id": "body", "label": "Body", "info": "One paragraph per line." },
+        { "type": "select", "id": "columns", "label": "Text columns (wide screens)", "options": [
+          { "value": "1", "label": "1" },
+          { "value": "2", "label": "2" },
+          { "value": "3", "label": "3" }
+        ], "default": "1" },
+        { "type": "checkbox", "id": "mobile_two_columns", "label": "Two text columns on phones", "info": "Short passages only.", "default": false },
+        { "type": "header", "content": "Photograph" },
+        { "type": "image_picker", "id": "image", "label": "Image" },
+        { "type": "select", "id": "fallback", "label": "Placeholder photo", "options": [
+          { "value": "none", "label": "None" },
+          { "value": "1", "label": "1" }, { "value": "2", "label": "2" }, { "value": "3", "label": "3" },
+          { "value": "4", "label": "4" }, { "value": "5", "label": "5" }
+        ], "default": "none" },
+        { "type": "select", "id": "ratio", "label": "Ratio", "options": [
+          { "value": "original", "label": "Original" },
+          { "value": "landscape", "label": "Landscape 3:2" },
+          { "value": "portrait", "label": "Portrait 4:5" },
+          { "value": "square", "label": "Square" }
+        ], "default": "original" },
+        { "type": "select", "id": "image_position", "label": "Photo position", "options": [
+          { "value": "above", "label": "Above headline" },
+          { "value": "below", "label": "Below headline" }
+        ], "default": "below" },
+        { "type": "text", "id": "caption", "label": "Caption" },
+        { "type": "text", "id": "credit", "label": "Credit" },
+        { "type": "header", "content": "Placement" },
+        { "type": "select", "id": "span", "label": "Width (desktop, of 12)", "options": [
+          { "value": "12", "label": "12 Full" }, { "value": "9", "label": "9" }, { "value": "8", "label": "8 Two thirds" },
+          { "value": "7", "label": "7" }, { "value": "6", "label": "6 Half" }, { "value": "5", "label": "5" },
+          { "value": "4", "label": "4 One third" }, { "value": "3", "label": "3 One quarter" }
+        ], "default": "4" },
+        { "type": "select", "id": "rows", "label": "Rows spanned (tablet/desktop)", "options": [
+          { "value": "1", "label": "1" }, { "value": "2", "label": "2" }, { "value": "3", "label": "3" }
+        ], "default": "1" },
+        { "type": "select", "id": "mobile", "label": "Phone width", "options": [
+          { "value": "full", "label": "Full" }, { "value": "half", "label": "Half" }
+        ], "default": "full" },
+        { "type": "checkbox", "id": "rule_top", "label": "Rule above", "default": false },
+        { "type": "checkbox", "id": "rule_left", "label": "Column rule on the left", "default": false }
       ]
     },
     {
-      "type": "text",
-      "name": "Text",
+      "type": "figure",
+      "name": "Photograph",
       "settings": [
-        {
-          "type": "textarea",
-          "id": "content",
-          "label": "Paragraph(s)",
-          "info": "One paragraph per line."
-        }
+        { "type": "image_picker", "id": "image", "label": "Image" },
+        { "type": "select", "id": "fallback", "label": "Placeholder photo", "options": [
+          { "value": "none", "label": "None" },
+          { "value": "1", "label": "1" }, { "value": "2", "label": "2" }, { "value": "3", "label": "3" },
+          { "value": "4", "label": "4" }, { "value": "5", "label": "5" }
+        ], "default": "1" },
+        { "type": "select", "id": "treatment", "label": "Treatment", "options": [
+          { "value": "standard", "label": "Standard" },
+          { "value": "archival", "label": "Small / archival" },
+          { "value": "bleed", "label": "Full-bleed interruption" }
+        ], "default": "standard" },
+        { "type": "select", "id": "ratio", "label": "Ratio", "options": [
+          { "value": "original", "label": "Original" },
+          { "value": "landscape", "label": "Landscape 3:2" },
+          { "value": "portrait", "label": "Portrait 4:5" },
+          { "value": "square", "label": "Square" }
+        ], "default": "original" },
+        { "type": "text", "id": "caption", "label": "Caption" },
+        { "type": "text", "id": "credit", "label": "Credit" },
+        { "type": "header", "content": "Placement", "info": "Ignored for full-bleed." },
+        { "type": "select", "id": "span", "label": "Width (desktop, of 12)", "options": [
+          { "value": "12", "label": "12 Full" }, { "value": "9", "label": "9" }, { "value": "8", "label": "8 Two thirds" },
+          { "value": "7", "label": "7" }, { "value": "6", "label": "6 Half" }, { "value": "5", "label": "5" },
+          { "value": "4", "label": "4 One third" }, { "value": "3", "label": "3 One quarter" }
+        ], "default": "6" },
+        { "type": "select", "id": "rows", "label": "Rows spanned (tablet/desktop)", "options": [
+          { "value": "1", "label": "1" }, { "value": "2", "label": "2" }, { "value": "3", "label": "3" }
+        ], "default": "1" },
+        { "type": "select", "id": "mobile", "label": "Phone width", "options": [
+          { "value": "full", "label": "Full" }, { "value": "half", "label": "Half" }
+        ], "default": "full" },
+        { "type": "checkbox", "id": "rule_top", "label": "Rule above", "default": false },
+        { "type": "checkbox", "id": "rule_left", "label": "Column rule on the left", "default": false }
+      ]
+    },
+    {
+      "type": "spread",
+      "name": "Two-image spread",
+      "settings": [
+        { "type": "image_picker", "id": "image_a", "label": "First image" },
+        { "type": "select", "id": "fallback_a", "label": "First placeholder", "options": [
+          { "value": "none", "label": "None" },
+          { "value": "1", "label": "1" }, { "value": "2", "label": "2" }, { "value": "3", "label": "3" },
+          { "value": "4", "label": "4" }, { "value": "5", "label": "5" }
+        ], "default": "4" },
+        { "type": "image_picker", "id": "image_b", "label": "Second image" },
+        { "type": "select", "id": "fallback_b", "label": "Second placeholder", "options": [
+          { "value": "none", "label": "None" },
+          { "value": "1", "label": "1" }, { "value": "2", "label": "2" }, { "value": "3", "label": "3" },
+          { "value": "4", "label": "4" }, { "value": "5", "label": "5" }
+        ], "default": "5" },
+        { "type": "text", "id": "caption", "label": "Caption" },
+        { "type": "text", "id": "credit", "label": "Credit" },
+        { "type": "header", "content": "Placement" },
+        { "type": "select", "id": "span", "label": "Width (desktop, of 12)", "options": [
+          { "value": "12", "label": "12 Full" }, { "value": "9", "label": "9" }, { "value": "8", "label": "8 Two thirds" },
+          { "value": "7", "label": "7" }, { "value": "6", "label": "6 Half" }, { "value": "5", "label": "5" },
+          { "value": "4", "label": "4 One third" }, { "value": "3", "label": "3 One quarter" }
+        ], "default": "8" },
+        { "type": "select", "id": "rows", "label": "Rows spanned (tablet/desktop)", "options": [
+          { "value": "1", "label": "1" }, { "value": "2", "label": "2" }, { "value": "3", "label": "3" }
+        ], "default": "1" },
+        { "type": "select", "id": "mobile", "label": "Phone width", "options": [
+          { "value": "full", "label": "Full" }, { "value": "half", "label": "Half" }
+        ], "default": "full" },
+        { "type": "checkbox", "id": "rule_top", "label": "Rule above", "default": false },
+        { "type": "checkbox", "id": "rule_left", "label": "Column rule on the left", "default": false }
       ]
     },
     {
       "type": "quote",
-      "name": "Pull Quote",
+      "name": "Quote",
       "settings": [
-        {
-          "type": "text",
-          "id": "content",
-          "label": "Line"
-        }
+        { "type": "select", "id": "style", "label": "Style", "options": [
+          { "value": "inset", "label": "Inset pull quote" },
+          { "value": "manifesto", "label": "Manifesto (full width)" }
+        ], "default": "inset" },
+        { "type": "text", "id": "label", "label": "Label" },
+        { "type": "textarea", "id": "statement", "label": "Statement" },
+        { "type": "textarea", "id": "lines", "label": "Supporting lines", "info": "One per line." },
+        { "type": "text", "id": "attribution", "label": "Attribution" },
+        { "type": "header", "content": "Placement" },
+        { "type": "select", "id": "span", "label": "Width (desktop, of 12)", "options": [
+          { "value": "12", "label": "12 Full" }, { "value": "9", "label": "9" }, { "value": "8", "label": "8 Two thirds" },
+          { "value": "7", "label": "7" }, { "value": "6", "label": "6 Half" }, { "value": "5", "label": "5" },
+          { "value": "4", "label": "4 One third" }, { "value": "3", "label": "3 One quarter" }
+        ], "default": "4" },
+        { "type": "select", "id": "rows", "label": "Rows spanned (tablet/desktop)", "options": [
+          { "value": "1", "label": "1" }, { "value": "2", "label": "2" }, { "value": "3", "label": "3" }
+        ], "default": "1" },
+        { "type": "select", "id": "mobile", "label": "Phone width", "options": [
+          { "value": "full", "label": "Full" }, { "value": "half", "label": "Half" }
+        ], "default": "full" },
+        { "type": "checkbox", "id": "rule_top", "label": "Rule above", "default": false },
+        { "type": "checkbox", "id": "rule_left", "label": "Column rule on the left", "default": false }
       ]
     },
     {
-      "type": "image",
-      "name": "Image",
+      "type": "note",
+      "name": "Note",
       "settings": [
-        {
-          "type": "image_picker",
-          "id": "image",
-          "label": "Image",
-          "info": "Leave blank to show product photography as a placeholder."
-        },
-        {
-          "type": "select",
-          "id": "layout",
-          "label": "Layout",
-          "options": [
-            { "value": "full", "label": "Full width" },
-            { "value": "half", "label": "Half (pairs with the next half image)" }
-          ],
-          "default": "full"
-        },
-        {
-          "type": "text",
-          "id": "caption",
-          "label": "Caption (optional)"
-        }
+        { "type": "select", "id": "style", "label": "Style", "options": [
+          { "value": "plain", "label": "Side note" },
+          { "value": "index", "label": "Numbered index" }
+        ], "default": "plain" },
+        { "type": "text", "id": "label", "label": "Label" },
+        { "type": "textarea", "id": "content", "label": "Lines", "info": "One per line." },
+        { "type": "header", "content": "Placement" },
+        { "type": "select", "id": "span", "label": "Width (desktop, of 12)", "options": [
+          { "value": "12", "label": "12 Full" }, { "value": "9", "label": "9" }, { "value": "8", "label": "8 Two thirds" },
+          { "value": "7", "label": "7" }, { "value": "6", "label": "6 Half" }, { "value": "5", "label": "5" },
+          { "value": "4", "label": "4 One third" }, { "value": "3", "label": "3 One quarter" }
+        ], "default": "4" },
+        { "type": "select", "id": "rows", "label": "Rows spanned (tablet/desktop)", "options": [
+          { "value": "1", "label": "1" }, { "value": "2", "label": "2" }, { "value": "3", "label": "3" }
+        ], "default": "1" },
+        { "type": "select", "id": "mobile", "label": "Phone width", "options": [
+          { "value": "full", "label": "Full" }, { "value": "half", "label": "Half" }
+        ], "default": "full" },
+        { "type": "checkbox", "id": "rule_top", "label": "Rule above", "default": false },
+        { "type": "checkbox", "id": "rule_left", "label": "Column rule on the left", "default": false }
       ]
     },
     {
-      "type": "signature",
-      "name": "Signature block",
+      "type": "divider",
+      "name": "Section divider",
       "settings": [
-        {
-          "type": "textarea",
-          "id": "content",
-          "label": "Lines",
-          "info": "One line per row."
-        }
+        { "type": "text", "id": "label", "label": "Section title" },
+        { "type": "text", "id": "meta", "label": "Right-hand note" }
+      ]
+    },
+    {
+      "type": "colophon",
+      "name": "Colophon",
+      "settings": [
+        { "type": "textarea", "id": "content", "label": "Lines", "info": "One per line. The first line is set larger." },
+        { "type": "checkbox", "id": "rule_top", "label": "Rule above", "default": true }
       ]
     }
   ],

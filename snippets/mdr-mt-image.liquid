@@ -1,0 +1,56 @@
+{%- doc -%}
+  One editorial photograph for The Modern Times (sections/mdr-modern-times.liquid).
+  Renders the merchant's image if one is picked, otherwise one of the five
+  placeholder editorial photos in assets/ (mdr-mtimes-editorial-1..5.jpg).
+  Nothing is rendered when there is neither.
+
+  @param {image} [image] - Picked image
+  @param {string} [fallback] - Placeholder number '1'-'5', or 'none'
+  @param {string} [ratio] - 'original' (default), 'landscape', 'portrait' or 'square'
+  @param {string} [sizes] - sizes attribute for responsive images
+  @param {boolean} [eager] - Load immediately (first photo on the page)
+  @param {string} [alt] - Alt text when the image has none of its own
+{%- enddoc -%}
+
+{%- liquid
+  assign ratio = ratio | default: 'original'
+  assign img_class = 'mdr-mt-img mdr-mt-img--' | append: ratio
+  assign loading = 'lazy'
+  assign priority = 'auto'
+  if eager
+    assign loading = 'eager'
+    assign priority = 'high'
+  endif
+  assign sizes = sizes | default: '100vw'
+-%}
+
+{%- if image != blank -%}
+  {{
+    image
+    | image_url: width: 2400
+    | image_tag:
+      loading: loading,
+      fetchpriority: priority,
+      widths: '480, 720, 960, 1280, 1600, 2000, 2400',
+      sizes: sizes,
+      class: img_class,
+      alt: image.alt | default: alt
+  }}
+{%- elsif fallback != blank and fallback != 'none' -%}
+  {%- liquid
+    assign files = 'mdr-mtimes-editorial-1.jpg|mdr-mtimes-editorial-2.jpg|mdr-mtimes-editorial-3.jpg|mdr-mtimes-editorial-4.jpg|mdr-mtimes-editorial-5.jpg' | split: '|'
+    assign widths = '2000|1124|2000|2000|2000' | split: '|'
+    assign heights = '1666|1500|1666|1334|1428' | split: '|'
+    assign i = fallback | plus: 0 | minus: 1 | at_least: 0 | at_most: 4
+  -%}
+  <img
+    src="{{ files[i] | asset_url }}"
+    width="{{ widths[i] }}"
+    height="{{ heights[i] }}"
+    alt="{{ alt | escape }}"
+    loading="{{ loading }}"
+    fetchpriority="{{ priority }}"
+    decoding="async"
+    class="{{ img_class }}"
+  >
+{%- endif -%}
