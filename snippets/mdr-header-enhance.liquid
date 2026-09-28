@@ -1214,13 +1214,15 @@
           return gestureAxis; /* null while still undecided */
         }
 
+        /* wrap the target BEFORE assigning it: the browser clamps a negative
+           scrollLeft to 0 on assignment, so checking "< 0" afterwards never
+           fired and scrolling backwards stopped dead at the start instead
+           of looping round */
         function scrollListBy(dx) {
           if (!dx || !bar.classList.contains('is-open')) return;
-          list.scrollLeft += dx;
-          if (loopWidth > 0) {
-            if (list.scrollLeft >= loopWidth) list.scrollLeft -= loopWidth;
-            else if (list.scrollLeft < 0) list.scrollLeft += loopWidth;
-          }
+          var next = list.scrollLeft + dx;
+          if (loopWidth > 0) next = ((next % loopWidth) + loopWidth) % loopWidth;
+          list.scrollLeft = next;
         }
 
         /* the whole row (WEBRACK label included, not only the list area):
