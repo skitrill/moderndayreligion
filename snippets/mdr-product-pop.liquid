@@ -82,8 +82,17 @@
         var w = Math.round(vw * 0.632);
         return { x: (vw - w) / 2, y: headerH + 19, w: w, h: w * ratio };
       }
-      /* desktop product page: image column starts 58px inside the page
-         frame, 19px under the header, 184px wide (measured at 1024-1440) */
+      /* PC (desktop frame): image 83px inside the frame's left edge (1px
+         line + 24px inset + 58px), 53px under the WEBRACK/RETURN line,
+         184px wide -- measured at 1440 */
+      var frame = D.querySelector('.mdr-frame');
+      var fr = frame && frame.getBoundingClientRect();
+      if (fr && fr.width) {
+        var nav = D.querySelector('.mdr-allbar-wrap');
+        var navBottom = nav ? nav.getBoundingClientRect().bottom + window.scrollY : headerH;
+        return { x: fr.left + 83, y: navBottom + 53, w: 184, h: 184 * ratio };
+      }
+      /* tablet: image column 58px inside the page frame, 19px under the header */
       var main = D.querySelector('main');
       if (!main) return null;
       var frameLeft = main.getBoundingClientRect().left + (parseFloat(getComputedStyle(main).paddingLeft) || 0);
