@@ -34,7 +34,9 @@
     {%- comment -%}
       Prerender internal pages on intent (finger down / ~200ms hover) so the tap
       lands on an already-rendered page. Cart/checkout/account stay live-only;
-      WEBRACK's own category pills are fetched in place, not navigated.
+      WEBRACK's own category pills are fetched in place, not navigated, and
+      the shop grid's product links are opened in place by
+      snippets/mdr-instant-nav (in every browser), so they're left out here.
     {%- endcomment -%}
     {%- unless request.design_mode -%}
       <script type="speculationrules">
@@ -46,7 +48,7 @@
                 "and": [
                   { "href_matches": "/*" },
                   { "not": { "href_matches": ["/cart", "/cart/*", "/checkout*", "/checkouts/*", "/account", "/account/*", "/password*"] } },
-                  { "not": { "selector_matches": ".mdr-allbar__list a, [target=_blank], [download], [data-no-prerender]" } }
+                  { "not": { "selector_matches": ".mdr-allbar__list a, [id$=__product_list_fa6P9H] a, [target=_blank], [download], [data-no-prerender]" } }
                 ]
               },
               "eagerness": "moderate"
@@ -59,7 +61,7 @@
                 "and": [
                   { "href_matches": "/*" },
                   { "not": { "href_matches": ["/cart", "/cart/*", "/checkout*", "/checkouts/*", "/account", "/account/*", "/password*"] } },
-                  { "not": { "selector_matches": ".mdr-allbar__list a, [target=_blank], [download], [data-no-prerender]" } }
+                  { "not": { "selector_matches": ".mdr-allbar__list a, [id$=__product_list_fa6P9H] a, [target=_blank], [download], [data-no-prerender]" } }
                 ]
               },
               "eagerness": "conservative"
@@ -79,7 +81,7 @@
             and: [
               { href_matches: '/*' },
               { not: { href_matches: ['/cart', '/cart/*', '/checkout*', '/checkouts/*', '/account', '/account/*', '/password*'] } },
-              { not: { selector_matches: '.mdr-allbar__list a, [target=_blank], [download], [data-no-prerender]' } }
+              { not: { selector_matches: '.mdr-allbar__list a, [id$=__product_list_fa6P9H] a, [target=_blank], [download], [data-no-prerender]' } }
             ]
           };
           var rules = document.createElement('script');

@@ -24,7 +24,7 @@
     /* bumped whenever the desktop product layout moves the image -- older saved spots are stale */
     var KEY = 'mdrPdpMedia3';
     var EASE = 'cubic-bezier(0.32, 0.72, 0, 1)';
-    var DURATION = 380;
+    var DURATION = 260;
 
     function load() {
       try {
@@ -167,7 +167,7 @@
       var end = { left: to.x + 'px', top: to.y + 'px', width: to.w + 'px', height: to.h + 'px' };
       Object.keys(end).forEach(function (k) { media.style[k] = end[k]; });
       media.animate([start, end], { duration: DURATION, easing: EASE });
-      backdrop.animate([{ opacity: 0 }, { opacity: 1 }], { duration: 200, easing: 'ease-out', fill: 'both' });
+      backdrop.animate([{ opacity: 0 }, { opacity: 1 }], { duration: 150, easing: 'ease-out', fill: 'both' });
 
       /* navigation never happened (blocked, offline) -- put the grid back */
       active = { layer: layer, media: media, img: img, timer: setTimeout(cleanup, 8000) };
@@ -208,7 +208,7 @@
         if (!active) return;
         var done = active;
         clearTimeout(done.timer);
-        var anim = done.layer.animate([{ opacity: 1 }, { opacity: 0 }], { duration: 160, easing: 'ease-out', fill: 'forwards' });
+        var anim = done.layer.animate([{ opacity: 1 }, { opacity: 0 }], { duration: 120, easing: 'ease-out', fill: 'forwards' });
         anim.onfinish = function () {
           done.layer.remove();
           if (active === done) {

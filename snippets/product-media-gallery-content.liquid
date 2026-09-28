@@ -153,6 +153,14 @@
   endcapture
   assign sizes = sizes | strip
 
+  # MDR product page layout (mdr-custom.css): the image is ~63% of a phone's
+  # width, ~24% on tablets, and the 47% column of the ~800px desktop frame
+  # (wider frames past 2000px) -- not full width
+  assign sizes = '(min-width: 990px) max(320px, 17vw), (min-width: 750px) 30vw, 64vw'
+  if needs_both_sizes
+    assign sizes_single = sizes
+  endif
+
   assign product_media_container_class = 'product-media-container'
   if block_settings.constrain_to_viewport
     assign product_media_container_class = product_media_container_class | append: ' constrain-height'

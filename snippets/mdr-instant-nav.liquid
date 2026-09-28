@@ -1,13 +1,17 @@
 {%- doc -%}
-  In-page navigation for the shop path (grid -> product -> RETURN -> grid) on
-  browsers without speculation rules (Safari, Firefox). Chrome/Edge already
-  prerender pages (layout/theme.liquid), so this does nothing there.
+  In-page navigation for the shop path (grid -> product -> RETURN -> grid),
+  in every browser. (Chromium's speculation rules can't be relied on for
+  this: embedded/in-app Chromium browsers report support and then never
+  prerender, and on phones Chrome only starts at finger-down anyway. The
+  grid's product links are left out of those rules, layout/theme.liquid.)
 
   - A product page's HTML starts downloading on hover / finger-down, and the
-    visible product cards are fetched once the page is idle (skipped with
-    data saver or a slow connection).
+    visible product cards are fetched as soon as the page is idle (skipped
+    with data saver or a slow connection). Hover / finger-down also warms
+    the product's main image.
   - A tap on a product card swaps that product page into the frame in place
-    of the grid (the product "pop" plays over it, snippets/mdr-product-pop),
+    of the grid (the product "pop" plays over it, snippets/mdr-product-pop,
+    and holds until the page's own image is decoded underneath),
     runs the page's own scripts, reports the page view to Shopify, and swaps
     the WEBRACK row for RETURN.
   - RETURN / browser Back puts the very same grid back (kept in memory, so
@@ -20,20 +24,21 @@
   (function () {
     if (window.__mdrInstantNav) return;
     window.__mdrInstantNav = true;
-    /* testing only: localStorage mdrInstantNav = 'force' runs it in Chrome too */
-    var force = false;
-    try { force = localStorage.getItem('mdrInstantNav') === 'force'; } catch (e) {}
-    if (!force && HTMLScriptElement.supports && HTMLScriptElement.supports('speculationrules')) return;
+    /* debugging: localStorage mdrInstantNav = 'off' turns it off */
+    try { if (localStorage.getItem('mdrInstantNav') === 'off') return; } catch (e) {}
     if (!window.fetch || !window.DOMParser || !window.__mdrPushPage) return;
 
     var D = document;
     var TTL = 120000;
     var cache = {};
 
-    function get(url) {
+    /* high: a hover / finger-down / tap -- ahead of everything else on the
+       wire (Shopify's own analytics and checkout prefetches can crowd a
+       slow mobile connection for many seconds). low: idle prefetch. */
+    function get(url, priority) {
       var hit = cache[url];
       if (hit && Date.now() - hit.t < TTL) return hit.p;
-      var p = fetch(url, { credentials: 'same-origin' }).then(function (res) {
+      var p = fetch(url, { credentials: 'same-origin', priority: priority || 'high' }).then(function (res) {
         if (!res.ok) throw new Error('mdr: bad response');
         return res.text();
       });
@@ -42,13 +47,36 @@
       return p;
     }
 
+    /* the product page's main image, fetched exactly as that page will ask
+       for it (same srcset and sizes -> same file), so it's in the browser's
+       cache by the time the page is swapped in */
+    var warmed = {};
+    function mainImage(root) {
+      return root.querySelector('.product-information__media .product-media-container img');
+    }
+    function warmImage(url) {
+      if (warmed[url]) return;
+      warmed[url] = true;
+      get(url).then(function (html) {
+        var src = mainImage(new DOMParser().parseFromString(html, 'text/html'));
+        if (!src) return;
+        var img = new Image();
+        img.decoding = 'async';
+        if (src.getAttribute('sizes')) img.sizes = src.getAttribute('sizes');
+        if (src.getAttribute('srcset')) img.srcset = src.getAttribute('srcset');
+        img.src = src.getAttribute('src');
+        warmed[url] = img;
+      }).catch(function () { delete warmed[url]; });
+    }
+
     function currentMain() {
       return D.querySelector('main#MainContent');
     }
 
+    /* the shop grid: /collections/* and /pages/shop */
     function onGrid() {
       var m = currentMain();
-      return !!(m && m.dataset.template === 'collection' && m.querySelector('[id$="__product_list_fa6P9H"]'));
+      return !!(m && m.querySelector('[id$="__product_list_fa6P9H"]'));
     }
 
     /* the product page a grid card leads to, or null */
@@ -71,13 +99,13 @@
       if (!t) return;
       if (e.pointerType === 'mouse') {
         clearTimeout(hoverTimer);
-        hoverTimer = setTimeout(function () { get(t.url); }, 65);
+        hoverTimer = setTimeout(function () { get(t.url); warmImage(t.url); }, 65);
       }
     }, { passive: true });
     D.addEventListener('pointerout', function () { clearTimeout(hoverTimer); }, { passive: true });
     D.addEventListener('pointerdown', function (e) {
       var t = cardTarget(e.target);
-      if (t) get(t.url);
+      if (t) { get(t.url); warmImage(t.url); }
     }, { passive: true });
 
     function slowConnection() {
@@ -95,15 +123,21 @@
           if (!en.isIntersecting || budget <= 0) return;
           var t = cardTarget(en.target);
           io.unobserve(en.target);
-          if (t && !cache[t.url]) { budget -= 1; get(t.url); }
+          if (t && !cache[t.url]) { budget -= 1; get(t.url, 'low'); }
         });
       });
       D.querySelectorAll('[id$="__product_list_fa6P9H"] product-card').forEach(function (c) {
         if (!c.closest('[data-mdr-clone]')) io.observe(c);
       });
     }
-    var idle = window.requestIdleCallback || function (fn) { return setTimeout(fn, 1200); };
-    window.addEventListener('load', function () { idle(prefetchVisible); });
+    /* not on window load: slow third-party requests can hold that back by
+       20s+ on a mobile connection */
+    function whenIdle(fn) {
+      if (window.requestIdleCallback) requestIdleCallback(fn, { timeout: 1500 });
+      else setTimeout(fn, 400);
+    }
+    if (D.readyState === 'loading') D.addEventListener('DOMContentLoaded', function () { whenIdle(prefetchVisible); });
+    else whenIdle(prefetchVisible);
 
     /* ---- the swap ------------------------------------------------------ */
     var grid = null;      /* { main, url, title, meta, scrollY } -- the grid kept in memory */
@@ -237,6 +271,13 @@
           meta: window.ShopifyAnalytics && window.ShopifyAnalytics.meta,
           scrollY: window.scrollY
         };
+        /* the tapped card's "morph me into the product page" tag (theme
+           product-card.js) -- that page change never happened, and left on,
+           the next real page change would morph this card instead */
+        outgoing.querySelectorAll('[data-view-transition-triggered]').forEach(function (el) {
+          el.removeAttribute('data-view-transition-triggered');
+          el.removeAttribute('data-view-transition-type');
+        });
       }
       addHeadAssets(doc);
       var main = D.importNode(incoming, true);
@@ -248,8 +289,17 @@
       swapRow('back');
       if (window.__mdrPop) {
         window.__mdrPop.measure();
-        if (window.__mdrPop.isActive()) window.__mdrPop.finish();
-        else main.animate([{ opacity: 0 }, { opacity: 1 }], { duration: 180, easing: 'ease-out' });
+        if (window.__mdrPop.isActive()) {
+          /* the popped image stays over the page until the page's own image
+             is ready under it -- never a blank frame -- capped so a slow
+             image never holds the page back */
+          var img = mainImage(main);
+          var ready = img && !img.complete && img.decode ? img.decode() : Promise.resolve();
+          var cap = new Promise(function (res) { setTimeout(res, 900); });
+          Promise.race([ready.catch(function () {}), cap]).then(function () { window.__mdrPop.finish(); });
+        } else {
+          main.animate([{ opacity: 0 }, { opacity: 1 }], { duration: 140, easing: 'ease-out' });
+        }
       }
       reportPageView(html);
     }
