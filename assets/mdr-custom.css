@@ -2401,6 +2401,60 @@ product-card:active .product-media-container {
   }
 }
 
+/* ---- Product card -> product page pop (snippets/mdr-product-pop.liquid) ---
+   The tapped image lifts out and expands to the product page's own image
+   spot over a paper backdrop; the backdrop stops at the header so the
+   header never flickers across the page change. */
+.mdr-pop {
+  position: fixed;
+  inset: 0;
+  z-index: 2147481000;
+  pointer-events: none;
+}
+
+.mdr-pop__backdrop {
+  position: absolute;
+  inset: 0;
+  background: var(--mdr-paper);
+  pointer-events: auto;
+}
+
+.mdr-pop__media {
+  position: fixed;
+  overflow: hidden;
+  will-change: left, top, width, height;
+}
+
+.mdr-pop__media img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+/* The product page's side of the same hand-off: the image finishes its
+   flight with the pop's own curve (not the page-wide 0.18s blip), and the
+   page reveals around it -- old page out fast, new page and details in
+   just behind the image. */
+@media (prefers-reduced-motion: no-preference) {
+  ::view-transition-group(product-image-transition) {
+    animation-duration: 0.34s;
+    animation-timing-function: cubic-bezier(0.32, 0.72, 0, 1);
+  }
+
+  html:active-view-transition-type(product-image-transition)::view-transition-old(root-custom) {
+    animation-duration: 0.12s;
+  }
+
+  html:active-view-transition-type(product-image-transition)::view-transition-new(root-custom) {
+    animation-duration: 0.26s;
+  }
+
+  html:active-view-transition-type(product-image-transition)::view-transition-new(product-details) {
+    animation-delay: 0.06s;
+  }
+}
+
 /* Cart line removed / added: Horizon waits one full --animation-speed
    before collapsing the row and then runs for twice that (0.54s total
    here). Collapse straight away, in one short beat. */

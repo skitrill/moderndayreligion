@@ -1,0 +1,165 @@
+{%- doc -%}
+  Product card -> product page "pop" (iOS Photos style).
+
+  On tap, the card's own image lifts out of the grid and expands to the exact
+  spot the product page draws its main image, while the rest of the page
+  clears to paper. The navigation runs underneath at the same time, so the
+  network wait is spent inside the animation instead of on a frozen grid.
+  When the product page arrives, the theme's cross-document view transition
+  (assets/view-transitions.js, "product-image-transition") picks up from this
+  overlay -- it carries the transition name instead of the card -- and the
+  page reveals around an image that's already in place.
+
+  Target position: measured on every product page visit (per viewport width,
+  and per product) and kept in localStorage; before the first visit on a
+  phone-width screen it falls back to the measured mobile layout.
+{%- enddoc -%}
+
+<script>
+  (function () {
+    if (window.__mdrProductPop) return;
+    window.__mdrProductPop = true;
+
+    var D = document;
+    var KEY = 'mdrPdpMedia';
+    var EASE = 'cubic-bezier(0.32, 0.72, 0, 1)';
+    var DURATION = 380;
+
+    function load() {
+      try {
+        var d = JSON.parse(localStorage.getItem(KEY));
+        if (d && d.w && d.p) return d;
+      } catch (e) {}
+      return { w: {}, p: {} };
+    }
+
+    function save(d) {
+      try { localStorage.setItem(KEY, JSON.stringify(d)); } catch (e) {}
+    }
+
+    /* ---- product page: remember where the main image sits ---- */
+    function measure() {
+      var slide = D.querySelector('main[data-template*="product"] .product-information__media slideshow-slide');
+      if (!slide) return;
+      var b = slide.getBoundingClientRect();
+      if (!b.width || !b.height) return;
+      var r = { vw: window.innerWidth, x: b.left, y: b.top + window.scrollY, w: b.width, h: b.height };
+      var d = load();
+      d.w[r.vw] = r;
+      delete d.p[location.pathname];
+      d.p[location.pathname] = r;
+      var keys = Object.keys(d.p);
+      while (keys.length > 60) delete d.p[keys.shift()];
+      save(d);
+    }
+
+    if (D.readyState === 'loading') D.addEventListener('DOMContentLoaded', measure);
+    else measure();
+    window.addEventListener('load', measure);
+
+    /* ---- grid: pop the tapped image toward that spot ---- */
+    function targetFor(path, img) {
+      var vw = window.innerWidth;
+      var d = load();
+      var p = d.p[path];
+      if (p && p.vw === vw) return p;
+      var ratio = img.naturalWidth && img.naturalHeight ? img.naturalHeight / img.naturalWidth : 1;
+      var g = d.w[vw];
+      if (g) return { x: g.x, y: g.y, w: g.w, h: g.w * ratio };
+      if (vw < 750) {
+        var header = D.getElementById('header-group');
+        var w = Math.round(vw * 0.632);
+        return { x: (vw - w) / 2, y: (header ? header.offsetHeight : 112) + 19, w: w, h: w * ratio };
+      }
+      return null;
+    }
+
+    function visibleImage(card) {
+      var imgs = card.querySelectorAll('.card-gallery img');
+      for (var i = 0; i < imgs.length; i++) {
+        var slide = imgs[i].closest('slideshow-slide');
+        if (!slide || slide.getAttribute('aria-hidden') !== 'true') return imgs[i];
+      }
+      return imgs[0] || null;
+    }
+
+    var active = null;
+
+    function cleanup() {
+      if (!active) return;
+      active.layer.remove();
+      active.img.style.visibility = '';
+      clearTimeout(active.timer);
+      active = null;
+    }
+
+    function pop(card, img, to) {
+      cleanup();
+      var from = img.getBoundingClientRect();
+      if (!from.width || !from.height) return;
+
+      var header = D.getElementById('header-group');
+      var top = header ? Math.max(0, header.getBoundingClientRect().bottom) : 0;
+
+      var layer = D.createElement('div');
+      layer.className = 'mdr-pop';
+      layer.setAttribute('aria-hidden', 'true');
+      layer.innerHTML = '<div class="mdr-pop__backdrop"></div><div class="mdr-pop__media"><img alt=""></div>';
+      var backdrop = layer.firstChild;
+      var media = layer.lastChild;
+      var clone = media.firstChild;
+      backdrop.style.top = top + 'px';
+      clone.src = img.currentSrc || img.src;
+
+      /* the overlay, not the card, carries the product-image transition name
+         into the next page -- the morph continues from wherever it is. Done
+         after this click finishes dispatching: the theme's own handler
+         (a later document listener) tags the card gallery with that name,
+         and two elements sharing it would cancel the transition outright. */
+      setTimeout(function () {
+        if (!active || active.media !== media) return;
+        D.querySelectorAll('[data-view-transition-triggered], [data-view-transition-type="product-image-transition"]').forEach(function (el) {
+          el.removeAttribute('data-view-transition-triggered');
+          el.removeAttribute('data-view-transition-type');
+        });
+        media.setAttribute('data-view-transition-type', 'product-image-transition');
+        media.setAttribute('data-view-transition-triggered', 'true');
+      }, 0);
+
+      D.body.appendChild(layer);
+      img.style.visibility = 'hidden';
+
+      var start = { left: from.left + 'px', top: from.top + 'px', width: from.width + 'px', height: from.height + 'px' };
+      var end = { left: to.x + 'px', top: to.y + 'px', width: to.w + 'px', height: to.h + 'px' };
+      Object.keys(end).forEach(function (k) { media.style[k] = end[k]; });
+      media.animate([start, end], { duration: DURATION, easing: EASE });
+      backdrop.animate([{ opacity: 0 }, { opacity: 1 }], { duration: 200, easing: 'ease-out', fill: 'both' });
+
+      /* navigation never happened (blocked, offline) -- put the grid back */
+      active = { layer: layer, media: media, img: img, timer: setTimeout(cleanup, 8000) };
+    }
+
+    D.addEventListener('click', function (e) {
+      if (e.defaultPrevented || e.button !== 0 || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;
+      if (!(e.target instanceof Element)) return;
+      var card = e.target.closest('product-card');
+      if (!card || card.hasAttribute('data-no-navigation')) return;
+      if (e.target.closest('button, input, label, select, [tabindex="1"]')) return;
+      var link = card.querySelector('[ref="productCardLink"]') || card.querySelector('a[href*="/products/"]');
+      if (!link || !link.href || (link.target && link.target !== '_self')) return;
+      var url = new URL(link.href, location.href);
+      if (url.origin !== location.origin) return;
+      if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+      var img = visibleImage(card);
+      if (!img || !img.complete) return;
+      var to = targetFor(url.pathname, img);
+      if (!to) return;
+      pop(card, img, to);
+    });
+
+    /* coming back (RETURN / browser back restores this page from cache) */
+    window.addEventListener('pageshow', function (e) {
+      if (e.persisted) cleanup();
+    });
+  })();
+</script>
