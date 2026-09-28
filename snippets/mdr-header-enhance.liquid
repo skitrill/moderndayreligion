@@ -34,6 +34,9 @@
     window.__mdrHeaderEnhance = true;
 
     var D = document;
+    /* iOS Safari only applies :active (the instant press states in
+       mdr-custom.css) when some touchstart listener exists on the page */
+    D.addEventListener('touchstart', function () {}, { passive: true });
     var topBtn = null;
     var REDUCE = window.matchMedia &&
       window.matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -78,7 +81,7 @@
       }
 
       D.documentElement.style.scrollBehavior = 'auto';
-      var dur = Math.max(560, Math.min(1150, 360 + Math.abs(dist) * 0.2));
+      var dur = Math.max(380, Math.min(760, 280 + Math.abs(dist) * 0.14));
       var t0 = null;
       var stopped = false;
 
@@ -649,15 +652,16 @@
              un-delayed history.back() would swap the page out the same
              tick the class gets added -- the browser never gets a chance
              to paint a single animated frame before the transition target
-             page starts loading. 160ms: close to the ~180-220ms the zip
-             itself runs, short enough that the page still feels
-             instant-responsive, not delayed for its own sake. */
+             page starts loading. 90ms: enough for the zip's first
+             frames to visibly start, without holding the navigation
+             itself back -- the rest of the zip plays out while the
+             previous page is already coming back. */
           wrap.classList.add('mdr-allbar-wrap--zap');
           setTimeout(function () {
             if (typeof window.mdrGoBack === 'function') window.mdrGoBack();
             else if (history.length > 1) history.back();
             else location.href = '/';
-          }, 160);
+          }, 90);
         });
         return;
       }
@@ -709,6 +713,21 @@
          slide the new ones in from the right -- in place, on "/".
          --------------------------------------------------------------- */
       var currentUrl = location.pathname + location.search;
+
+      /* Shared by the tap itself and the finger-down prefetch below, so a
+         fetch started on touch-down is the same one the tap then awaits. */
+      var htmlCache = {};
+      function fetchHtml(url) {
+        var hit = htmlCache[url];
+        if (hit && Date.now() - hit.t < 30000) return hit.p;
+        var p = fetch(url, { credentials: 'same-origin' }).then(function (res) {
+          if (!res.ok) throw new Error('mdr: bad response');
+          return res.text();
+        });
+        htmlCache[url] = { p: p, t: Date.now() };
+        p.catch(function () { delete htmlCache[url]; });
+        return p;
+      }
 
       function markCurrent(url) {
         var links = list.querySelectorAll('a');
@@ -766,11 +785,7 @@
            while its products land */
         markCurrent(url);
 
-        fetch(url, { credentials: 'same-origin' })
-          .then(function (res) {
-            if (!res.ok) throw new Error('mdr: bad response');
-            return res.text();
-          })
+        fetchHtml(url)
           .then(function (html) {
             var doc = new DOMParser().parseFromString(html, 'text/html');
             var newCards = extractCards(doc);
@@ -896,6 +911,19 @@
           lastX = p.x;
           lastT = e.timeStamp || Date.now();
           velocity = 0;
+          /* start loading the pill under the finger now, not on release --
+             the server round-trip is most of the wait. The short hold-off
+             skips drags (moved by then) so scrolling the rail doesn't
+             fetch every pill it passes over. */
+          setTimeout(function () {
+            if (!dragging || moved) return;
+            touchzone.style.pointerEvents = 'none';
+            var under = D.elementFromPoint(p.x, p.y);
+            touchzone.style.pointerEvents = '';
+            var la = under && under.closest ? under.closest('.mdr-allbar__list a[href]') : null;
+            var href = la && la.getAttribute('href');
+            if (href && href !== currentUrl) fetchHtml(href);
+          }, 50);
         }
         function dragMove(e) {
           if (!dragging) return;

@@ -848,7 +848,7 @@ footer .footer-utilities__group-copyright {
 }
 
 .mdr-scrolltop.mdr-visible.mdr-zap {
-  animation: mdr-zap 0.42s cubic-bezier(0.22, 1, 0.36, 1);
+  animation: mdr-zap 0.3s cubic-bezier(0.22, 1, 0.36, 1);
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -2334,12 +2334,83 @@ button.link,
    still quick, just long enough to actually be seen as smooth easing.
    --animation-easing wasn't overridden before (stock plain "ease-out") --
    using the same cubic curve as Horizon's own --animation-timing-fade-in
-   here makes the two consistent instead of two different motion "feels". */
+   here makes the two consistent instead of two different motion "feels".
+   "Snappier, like air" pass: trimmed again (0.14/0.22/0.32 -> 0.12/0.18/
+   0.26). Same expo-out curve, which front-loads the movement -- most of
+   the change lands in the first third, so these still read as motion,
+   just lighter and quicker to settle. */
 :root {
-  --animation-speed-fast: 0.14s;
-  --animation-speed: 0.22s;
-  --animation-speed-slow: 0.32s;
+  --animation-speed-fast: 0.12s;
+  --animation-speed: 0.18s;
+  --animation-speed-slow: 0.26s;
   --animation-easing: cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* ---- Instant press feedback ---------------------------------------------
+   A tap should answer the finger immediately, even while the next page or
+   the cart is still on its way. Press = no transition (the state lands on
+   the very first frame); release = the element's normal eased transition
+   carries it back. The OS tap flash is off everywhere so only these
+   deliberate states show. */
+html {
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
+}
+
+a:active,
+button:active,
+label:active,
+summary:active {
+  transition-duration: 0s !important;
+}
+
+/* product cards: a quick dip on the image while the finger is down */
+product-card .card-gallery,
+product-card .product-media-container {
+  transition: opacity var(--animation-speed) var(--animation-easing),
+    transform var(--animation-speed) var(--animation-easing);
+}
+
+product-card:active .card-gallery,
+product-card:active .product-media-container {
+  opacity: 0.78;
+  transform: scale(0.985);
+  transition-duration: 0s;
+}
+
+/* landing / footer nav words and size/colour pills: full-strength on press */
+.mdr-home-nav a:active,
+.mdr-fnav a:active,
+.mdr-allbar__list a:active {
+  opacity: 1 !important;
+}
+
+.variant-option__button-label:active {
+  opacity: 0.7;
+}
+
+.add-to-cart-button:active,
+.shopify-payment-button__button:active {
+  opacity: 0.85;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  product-card:active .card-gallery,
+  product-card:active .product-media-container {
+    transform: none;
+  }
+}
+
+/* Cart line removed / added: Horizon waits one full --animation-speed
+   before collapsing the row and then runs for twice that (0.54s total
+   here). Collapse straight away, in one short beat. */
+.cart-items__table-row.removing {
+  animation-delay: 0s !important;
+  animation-duration: 0.26s !important;
+}
+
+.cart-items__table-row.adding {
+  animation-duration: 0.26s !important;
 }
 
 /* A blanket transition-duration:0.14s !important on every element (mobile
@@ -3563,7 +3634,7 @@ main[data-template='collection']
      constant, line-matched colour instead -- see .mdr-allbar__chev svg) */
   /* 0.26s, tightened from 0.34s -- snappier open/close, still using the
      same ease-out curve so it settles smoothly rather than just stopping */
-  transition: width 0.26s cubic-bezier(0.16, 1, 0.3, 1);
+  transition: width 0.22s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 /* set right before an instant close (tapping a real link elsewhere on the
@@ -3840,7 +3911,7 @@ main[data-template='collection']
   scrollbar-width: none;
   -ms-overflow-style: none;
   opacity: 0;
-  transition: opacity 0.3s ease 0.05s;
+  transition: opacity 0.18s cubic-bezier(0.16, 1, 0.3, 1) 0.02s;
 }
 
 .mdr-allbar__list::-webkit-scrollbar {
@@ -3938,13 +4009,13 @@ main[data-template='collection'] [id$='__product_list_fa6P9H'] .resource-list--g
    plain CSS animation on the grid itself needs no JS at all: it just
    plays on first paint. */
 main[data-template='collection'] [id$='__product_list_fa6P9H'] .resource-list--grid {
-  animation: mdr-page-slide-up 0.32s cubic-bezier(0.16, 1, 0.3, 1) both;
+  animation: mdr-page-slide-up 0.26s cubic-bezier(0.16, 1, 0.3, 1) both;
 }
 
 @keyframes mdr-page-slide-up {
   from {
     opacity: 0;
-    transform: translateY(22px);
+    transform: translateY(14px);
   }
   to {
     opacity: 1;

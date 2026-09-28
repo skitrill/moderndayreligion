@@ -55,13 +55,27 @@ class CartIcon extends Component {
    * @param {CartLinesUpdateEvent} event - The cart update event.
    */
   onCartUpdate = (event) => {
+    // Optimistic: show an add in the count right away instead of after the
+    // add + cart refetch round-trips; the resolved cart below is authoritative.
+    const previousCount = this.currentCartCount;
+    let optimisticCount = null;
+    if (event.action === 'add' && Array.isArray(event.lines)) {
+      const added = event.lines.reduce((sum, line) => sum + (Number(line.quantity) || 0), 0);
+      if (added > 0) {
+        optimisticCount = previousCount + added;
+        this.renderCartBubble(optimisticCount);
+      }
+    }
+
     event.promise
       ?.then(({ cart, detail }) => {
         const itemCount = cart?.totalQuantity ?? detail?.itemCount ?? 0;
 
+        if (itemCount === optimisticCount) return;
         this.renderCartBubble(itemCount);
       })
       .catch((error) => {
+        if (optimisticCount !== null) this.renderCartBubble(previousCount, false);
         if (error?.name !== 'AbortError') console.warn('[cart-icon] Event promise rejected:', error);
       });
   };

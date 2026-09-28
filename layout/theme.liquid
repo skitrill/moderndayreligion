@@ -30,6 +30,44 @@
     {% endif %}
 
     {{ content_for_header }}
+
+    {%- comment -%}
+      Prerender internal pages on intent (finger down / ~200ms hover) so the tap
+      lands on an already-rendered page. Cart/checkout/account stay live-only;
+      WEBRACK's own category pills are fetched in place, not navigated.
+    {%- endcomment -%}
+    {%- unless request.design_mode -%}
+      <script type="speculationrules">
+        {
+          "prefetch": [
+            {
+              "source": "document",
+              "where": {
+                "and": [
+                  { "href_matches": "/*" },
+                  { "not": { "href_matches": ["/cart", "/cart/*", "/checkout*", "/checkouts/*", "/account", "/account/*", "/password*"] } },
+                  { "not": { "selector_matches": ".mdr-allbar__list a, [target=_blank], [download], [data-no-prerender]" } }
+                ]
+              },
+              "eagerness": "moderate"
+            }
+          ],
+          "prerender": [
+            {
+              "source": "document",
+              "where": {
+                "and": [
+                  { "href_matches": "/*" },
+                  { "not": { "href_matches": ["/cart", "/cart/*", "/checkout*", "/checkouts/*", "/account", "/account/*", "/password*"] } },
+                  { "not": { "selector_matches": ".mdr-allbar__list a, [target=_blank], [download], [data-no-prerender]" } }
+                ]
+              },
+              "eagerness": "conservative"
+            }
+          ]
+        }
+      </script>
+    {%- endunless -%}
   </head>
 
   <body class="page-width-{{ settings.page_width }} card-hover-effect-{{ settings.card_hover_effect }}">
@@ -164,14 +202,24 @@
           const KEY = 'mdrNavStack';
           const BACK_FLAG = 'mdrIsBackNav';
 
-          const stack = JSON.parse(sessionStorage.getItem(KEY) || '[]');
-          const current = window.location.pathname + window.location.search;
-          const isBackNav = sessionStorage.getItem(BACK_FLAG) === '1';
-          sessionStorage.removeItem(BACK_FLAG);
+          function record() {
+            const stack = JSON.parse(sessionStorage.getItem(KEY) || '[]');
+            const current = window.location.pathname + window.location.search;
+            const isBackNav = sessionStorage.getItem(BACK_FLAG) === '1';
+            sessionStorage.removeItem(BACK_FLAG);
 
-          if (!isBackNav && stack[stack.length - 1] !== current) {
-            stack.push(current);
-            sessionStorage.setItem(KEY, JSON.stringify(stack));
+            if (!isBackNav && stack[stack.length - 1] !== current) {
+              stack.push(current);
+              sessionStorage.setItem(KEY, JSON.stringify(stack));
+            }
+          }
+
+          /* a prerendered page (speculation rules, <head>) runs this before the
+             visitor has actually opened it -- only record it once it's shown */
+          if (document.prerendering) {
+            document.addEventListener('prerenderingchange', record, { once: true });
+          } else {
+            record();
           }
         })();
 
@@ -181,6 +229,21 @@
           stack.pop();
           const target = stack[stack.length - 1];
           sessionStorage.setItem(KEY, JSON.stringify(stack));
+
+          /* Target is the page we literally just came from: a real history.back()
+             restores it from the back/forward cache (instant, scroll kept)
+             instead of re-downloading it. Only when this page was reached by a
+             plain link click, so the previous history entry is that referrer. */
+          let referrerPath = null;
+          try {
+            const ref = new URL(document.referrer);
+            if (ref.origin === location.origin) referrerPath = ref.pathname + ref.search;
+          } catch (e) {}
+          const navType = (performance.getEntriesByType('navigation')[0] || {}).type;
+          if (target && target === referrerPath && navType === 'navigate' && history.length > 1) {
+            history.back();
+            return;
+          }
 
           if (target) {
             sessionStorage.setItem('mdrIsBackNav', '1');

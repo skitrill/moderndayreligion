@@ -169,6 +169,12 @@
         vImg.alt = items[i].alt;
         if (dir === 1) vImg.classList.add('mdr-lb-in-up');
         else if (dir === -1) vImg.classList.add('mdr-lb-in-down');
+        /* warm the neighbours so the next swipe shows a decoded image
+           instead of sliding in an empty frame while it downloads */
+        [i + 1, i - 1].forEach(function (n) {
+          var it = items[(n + items.length) % items.length];
+          if (it && !it.warm) { it.warm = true; new Image().src = it.full; }
+        });
       }
 
       function openAt(i) {
@@ -185,13 +191,17 @@
         viewer.classList.remove('is-open');
         document.documentElement.classList.remove('mdr-lb-lock');
         items.forEach(function (it) { it.tile.classList.remove('is-selected'); });
-        setTimeout(function () { if (!isOpen) viewer.hidden = true; }, 260);
+        setTimeout(function () { if (!isOpen) viewer.hidden = true; }, 180);
       }
 
       function next() { show(idx + 1, 1); }
       function prev() { show(idx - 1, -1); }
 
       tiles.forEach(function (t, i) {
+        /* start the full-size download on finger down, not on release */
+        t.addEventListener('pointerdown', function () {
+          if (!items[i].warm) { items[i].warm = true; new Image().src = items[i].full; }
+        }, { passive: true });
         t.addEventListener('click', function (e) {
           e.preventDefault();
           openAt(i);
@@ -331,8 +341,8 @@
     aspect-ratio: var(--mdr-lb-ratio, 1 / 1);
     object-fit: cover;
     background: #0a0a0a;
-    transition: transform 0.55s cubic-bezier(0.22, 1, 0.36, 1),
-      filter 0.45s ease, opacity 0.6s ease;
+    transition: transform 0.38s cubic-bezier(0.22, 1, 0.36, 1),
+      filter 0.3s ease, opacity 0.3s ease;
   }
 
   .mdr-lookbook--hover-zoom .mdr-lookbook__item:hover img {
@@ -355,8 +365,8 @@
 
   @media (prefers-reduced-motion: no-preference) {
     .mdr-lookbook__item {
-      animation: mdr-lookbook-in 0.5s both;
-      animation-delay: calc(min(var(--i, 0), 32) * 16ms);
+      animation: mdr-lookbook-in 0.28s cubic-bezier(0.16, 1, 0.3, 1) both;
+      animation-delay: calc(min(var(--i, 0), 16) * 10ms);
     }
   }
 
@@ -387,7 +397,7 @@
     opacity: 0;
     pointer-events: none;
     touch-action: none;
-    transition: opacity 0.2s ease;
+    transition: opacity 0.16s cubic-bezier(0.16, 1, 0.3, 1);
   }
 
   .mdr-lb-viewer.is-open {
@@ -413,8 +423,8 @@
     border: 0;
     box-shadow: 0 24px 70px rgba(0, 0, 0, 0.55);
     overflow: hidden;
-    transform: scale(0.72);
-    transition: transform 0.34s cubic-bezier(0.16, 1, 0.3, 1);
+    transform: scale(0.88);
+    transition: transform 0.26s cubic-bezier(0.16, 1, 0.3, 1);
   }
 
   .mdr-lb-viewer.is-open .mdr-lb-viewer__figure {
