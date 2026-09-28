@@ -351,7 +351,7 @@
     --mt-sans: 'MDR MT Qualta', 'Helvetica Neue', Helvetica, Arial, sans-serif;
     --mt-mono: 'Anonymous Pro', ui-monospace, Menlo, monospace;
     --mt-pad: clamp(16px, 4.2vw, 48px);
-    --mt-gutter: clamp(16px, 2.6vw, 32px);
+    --mt-gutter: clamp(16px, 2.2vw, 24px);
     --mt-vpad: clamp(18px, 2.8vw, 30px);
     --mt-measure: min(100% - 2 * var(--mt-pad), 1280px);
 
@@ -362,6 +362,16 @@
     letter-spacing: 0;
     padding-bottom: clamp(40px, 8vw, 96px);
     overflow-x: clip;
+  }
+
+  /* From 750px the site frames every page to the header's logo..cart span
+     (main's own side padding, mdr-custom.css). Inside that frame the issue
+     uses the full framed width; it only adds side padding of its own while
+     the frame is still narrower than that padding would be (~750-860px). */
+  @media (min-width: 750px) {
+    .mdr-mt {
+      --mt-pad: clamp(0px, calc((864px - 100vw) / 2), 32px);
+    }
   }
 
   .mdr-mt *,
@@ -668,7 +678,7 @@
     }
   }
 
-  @container (min-width: 540px) {
+  @container (min-width: 480px) {
     .mdr-mt .mdr-mt-body--cols-2,
     .mdr-mt .mdr-mt-body--cols-3 {
       columns: 2;
@@ -677,14 +687,14 @@
     }
   }
 
-  @container (min-width: 820px) {
+  @container (min-width: 760px) {
     .mdr-mt .mdr-mt-body--cols-3 {
       columns: 3;
     }
   }
 
   /* short passages only: two narrow columns on a phone-width block */
-  @container (min-width: 330px) and (max-width: 539px) {
+  @container (min-width: 330px) and (max-width: 479px) {
     .mdr-mt .mdr-mt-body--m2 {
       columns: 2;
       column-gap: 16px;
