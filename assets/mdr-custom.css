@@ -1818,6 +1818,29 @@ main:not([data-template='index']) {
   background-color: var(--mdr-paper) !important;
 }
 
+/* There was a SECOND, separate layer painting that same stale cream --
+   not just slideshow-container above. The garment photo itself is a
+   transparent PNG (confirmed by sampling its actual pixels: alpha 0 at
+   every corner), but a base-theme rule for object-fit:contain images
+   (".media-fit-contain :is(img, .deferred-media__poster-image) {
+   background-color: var(--color-background) }", product-media-container-
+   styles.liquid) paints a solid fill DIRECTLY ON THE <img> ELEMENT ITSELF
+   -- showing straight through the transparent pixels -- using the same
+   un-migrated #F6F3E7 the container fix above already had to work around.
+   Two coats of the same wrong cream, one on the container behind the
+   image, one on the image's own transparent pixels, is why matching the
+   container alone to --mdr-paper still left a visible square: this
+   second one was still painting over it.
+   "Remove that square off-white bg" -- not just re-match it, actually
+   drop the fill: transparent here lets the container's own --mdr-paper
+   (set just above) show straight through instead, which is visually
+   identical to the page's own canvas either way, but doesn't leave a
+   second redundant paint layer sitting there for some future edit to
+   accidentally un-sync again. */
+.product-information__media img {
+  background-color: transparent !important;
+}
+
 /* No glow on the product-page hero -- the 20% halo was tracing a faint box
    around the cut-out's edge on mobile. */
 .product-information__media .product-media__image,
