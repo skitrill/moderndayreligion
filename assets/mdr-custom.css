@@ -120,7 +120,14 @@ product-price *,
        size-chart interaction, focus/active indicators, small functional
        details only) -- NOT the header/footer/grid/large buttons, which
        stay neutral. */
-  --mdr-paper: #f7f7f2;
+  /* The ONE main neutral canvas (was #f7f7f2, a touch too warm). Keep in
+     step with the theme's own palette background (config/settings_data.json
+     color_palette.background), which every section-background and
+     base-theme surface reads, and the browser-bar tint in
+     snippets/meta-tags.liquid. --mdr-paper stays as the name every existing
+     rule reads. */
+  --mdr-background: #f8f8f5;
+  --mdr-paper: var(--mdr-background);
   --mdr-ink: #202020;
   --mdr-graphite: #858581;
   --mdr-muted: #b7b7b1;
