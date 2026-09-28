@@ -15,15 +15,16 @@
 >
 {%- comment -%}
   Matches assets/mdr-custom.css's --mdr-paper per template: the
-  homepage and the password/lockscreen page are permanently blue, single-
-  surface screens (#040061); every other template's own dominant surface
+  homepage and the password/lockscreen page are permanently graphite,
+  single-surface screens (--mdr-landing-bg, #171717); every other
+  template's own dominant surface
   is the mineral-neutral paper field (mineral-neutral pass -- was the
   warm cream #f6f3e7), so its edge -- and the browser-chrome tint this
   meta tag governs -- reads as that instead.
 {%- endcomment -%}
 <meta
   name="theme-color"
-  content="{% if request.page_type == 'index' or request.page_type == 'password' %}#040061{% else %}#f8f8f5{% endif %}"
+  content="{% if request.page_type == 'index' or request.page_type == 'password' %}#171717{% else %}#f8f8f5{% endif %}"
 >
 
 {%- liquid
