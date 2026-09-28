@@ -748,6 +748,7 @@
       function setOpen(on) {
         bar.classList.toggle('is-open', on);
         wrap.classList.toggle('mdr-allbar-wrap--zap', on);
+        D.documentElement.classList.toggle('mdr-webrack-open', on);
         toggle.setAttribute('aria-expanded', on ? 'true' : 'false');
         if (typeof positionTouchzone === 'function') requestAnimationFrame(positionTouchzone);
         if (on) warmAll();
@@ -1169,15 +1170,36 @@
         window.addEventListener('touchend', dragEnd);
         window.addEventListener('pointerup', dragEnd);
 
-        /* the zone now sits on top of the list, so forward desktop
-           wheel/trackpad scroll to it too -- otherwise it'd stop dead */
+        /* Wheel/trackpad on the row (the zone sits on top of the list):
+           - vertical movement is the page's -- untouched here, so scrolling
+             over WEBRACK scrolls the page exactly like anywhere else (it used
+             to be turned into sideways list scrolling as well, both at once)
+           - sideways movement scrolls the open list, and is always cancelled
+             so a two-finger trackpad swipe here can never become the
+             browser's Back/Forward gesture */
         touchzone.addEventListener('wheel', function (e) {
-          list.scrollLeft += Math.abs(e.deltaX) > Math.abs(e.deltaY) ? e.deltaX : e.deltaY;
+          if (Math.abs(e.deltaX) <= Math.abs(e.deltaY)) return;
+          e.preventDefault();
+          if (!bar.classList.contains('is-open')) return;
+          list.scrollLeft += e.deltaX;
           if (loopWidth > 0) {
             if (list.scrollLeft >= loopWidth) list.scrollLeft -= loopWidth;
             else if (list.scrollLeft < 0) list.scrollLeft += loopWidth;
           }
-        }, { passive: true });
+        }, { passive: false });
+
+        /* While WEBRACK is open on PC, a sideways trackpad swipe anywhere else
+           on the page has nothing to scroll -- cancel it so it can't page the
+           browser back/forward out from under the open list. Vertical is
+           never touched. */
+        if (window.matchMedia && window.matchMedia('(hover: hover) and (pointer: fine)').matches) {
+          window.addEventListener('wheel', function (e) {
+            if (!bar.classList.contains('is-open')) return;
+            if (Math.abs(e.deltaX) <= Math.abs(e.deltaY)) return;
+            if (e.target instanceof Node && touchzone.contains(e.target)) return;
+            e.preventDefault();
+          }, { passive: false });
+        }
       })();
 
       /* back/forward after an in-place switch: safest correct behaviour is

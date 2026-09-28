@@ -3927,6 +3927,16 @@ main[data-template='collection']
   }
 }
 
+/* PC: while WEBRACK is open, a sideways trackpad swipe past the page's
+   edge must not become the browser's Back/Forward gesture (the script
+   also cancels sideways wheel events while it's open). */
+@media (hover: hover) and (pointer: fine) {
+  html.mdr-webrack-open,
+  html.mdr-webrack-open body {
+    overscroll-behavior-x: none;
+  }
+}
+
 .mdr-allbar.is-open {
   /* claims the full row once open, showing the category list -- the
      trailing line (.mdr-allbar-wrap::before) is hidden in this state
