@@ -573,6 +573,27 @@
       /* sit it directly below the header, on every page */
       header.parentNode.insertBefore(wrap, header.nextSibling);
 
+      /* PC (>=990px): WEBRACK/RETURN is the first row of the desktop frame
+         (.mdr-frame, layout/theme.liquid) so the frame's vertical lines start
+         at the line above it; below that it stays under the header, as
+         before. Moving the node keeps every listener on it. */
+      var headerParent = header.parentNode;
+      var frameQuery = window.matchMedia('(min-width: 990px)');
+      function placeWrap() {
+        var frame = D.querySelector('.mdr-frame');
+        var inFrame = frameQuery.matches && frame && !D.querySelector('main[data-template="index"]');
+        if (inFrame) {
+          if (wrap.parentNode !== frame) frame.insertBefore(wrap, frame.firstChild);
+        } else if (wrap.parentNode !== headerParent) {
+          headerParent.insertBefore(wrap, header.nextSibling);
+        }
+      }
+      placeWrap();
+      frameQuery.addEventListener('change', function () {
+        placeWrap();
+        requestAnimationFrame(buildLinePath);
+      });
+
       /* Builds the line+chevron as ONE path, drawn directly in the wrap's
          own real pixel coordinate space (svg width/height/viewBox all set
          to the wrap's exact measured size, no scaling transform anywhere)

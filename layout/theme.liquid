@@ -296,16 +296,24 @@
         })();
       </script>
 
-      <main
-        id="MainContent"
-        class="content-for-layout"
-        role="main"
-        data-page-transition-enabled="{{ settings.page_transition_enabled }}"
-        data-product-transition="{{ settings.transition_to_main_product }}"
-        data-template="{{ template }}"
-      >
-        {{ content_for_layout }}
-      </main>
+      {%- comment -%}
+        The desktop frame (PC, >=990px): owns the two vertical frame lines and the
+        minimum stage height; WEBRACK/RETURN is moved in as its first row on PC
+        (mdr-header-enhance.liquid). Below 990px it is display: contents -- no box,
+        so phone/tablet layout is exactly as before. See mdr-custom.css.
+      {%- endcomment -%}
+      <div class="mdr-frame">
+        <main
+          id="MainContent"
+          class="content-for-layout"
+          role="main"
+          data-page-transition-enabled="{{ settings.page_transition_enabled }}"
+          data-product-transition="{{ settings.transition_to_main_product }}"
+          data-template="{{ template }}"
+        >
+          {{ content_for_layout }}
+        </main>
+      </div>
 
       <footer>
         {% sections 'footer-group' %}

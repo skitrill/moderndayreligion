@@ -363,6 +363,76 @@ html {
   }
 }
 
+/* ---- Desktop frame (PC, >=990px) -----------------------------------------
+   .mdr-frame (layout/theme.liquid) wraps <main>; on PC mdr-header-enhance.
+   liquid moves the WEBRACK/RETURN row in as its first child, giving:
+     header row  (logo + CART, outside the frame)
+     .mdr-frame  = nav row + page content   <- owns the two vertical lines
+     footer                                   <- owns the bottom line
+   Line ownership, one element per boundary:
+     top      #header-group's border-bottom (the header row is all it holds
+              on PC), full width
+     left/right  .mdr-frame's border-inline, from just under that line down
+              to the footer's top edge
+     nav row  .mdr-allbar-wrap's border-bottom, spanning the frame's inside
+     bottom   footer's border-top
+   Stage height: .mdr-frame is a flex item of .page-wrapper (a column with
+   min-height: 100dvh, base.css) that takes all remaining height -- so on a
+   short page the frame fills the viewport minus the real header and footer
+   heights, and the footer sits at the bottom; on a long page it simply
+   grows. min-height behaviour, no fixed height, no inner scrolling.
+   Below 990px the frame is display: contents -- no box, phones and tablets
+   render exactly as before. */
+.mdr-frame {
+  display: contents;
+}
+
+@media screen and (min-width: 990px) {
+  .mdr-frame {
+    display: flex;
+    flex-direction: column;
+    flex: 1 0 auto;
+    min-width: 0;
+    box-sizing: border-box;
+    margin-inline: var(--mdr-frame-inline);
+    border-inline: 1px solid var(--mdr-border-faint);
+  }
+
+  /* the landing screen ("/") has no header/footer and stays full-screen */
+  body:has(main[data-template='index']) .mdr-frame {
+    display: contents;
+  }
+
+  .mdr-frame > main {
+    flex: 1 0 auto;
+    box-sizing: border-box;
+    /* content sits a little inside the frame lines; the product grid is
+       the exception -- its outer edges ARE the frame lines */
+    padding-inline: 24px !important;
+  }
+
+  .mdr-frame > main[data-template='collection'] {
+    padding-inline: 0 !important;
+  }
+
+  /* product page: deliberate breathing room under the RETURN row */
+  .mdr-frame > main[data-template='product'] {
+    padding-top: 34px !important;
+  }
+
+  /* nav row inside the frame: same glass as the header, its own bottom
+     line (the header group's bottom line is now the one above it) */
+  .mdr-frame > .mdr-allbar-wrap {
+    flex: 0 0 auto;
+    border-top: 0 !important;
+    border-bottom: 1px solid var(--mdr-border-faint);
+    padding-inline: 6px !important;
+    background: var(--mdr-glass-tint);
+    backdrop-filter: var(--mdr-glass-blur);
+    -webkit-backdrop-filter: var(--mdr-glass-blur);
+  }
+}
+
 /* Desktop: a large, deliberately dramatic page border -- the header/
    footer brand bars stay full-width (they're chrome, not content), but
    the actual page content (product grid, PDP, cart, editorial pages)
@@ -379,11 +449,14 @@ html {
    above ~2000px viewport width true 30% already yields more than 800px
    on its own, so this only steps in as a safety floor on ordinary
    laptop/desktop widths, not a cap on the "huge" look on a big monitor. */
-@media screen and (min-width: 750px) {
+@media screen and (min-width: 750px) and (max-width: 989px) {
   main {
     padding-inline: var(--mdr-frame-inline) !important;
     box-sizing: border-box !important;
   }
+}
+
+@media screen and (min-width: 750px) {
 
   /* The product-grid section carries its own page-width gutter on top of
      main's new border (confirmed live on an actual 1200px-wide desktop:
@@ -961,8 +1034,10 @@ product-price *,
    the footer instead of a gap above it. A small fixed margin keeps real
    breathing room between the checkout button and the footer, short of
    the two colliding. */
-main[data-template='cart'] ~ footer {
-  margin-top: 32px !important;
+@media screen and (max-width: 989px) {
+  body:has(main[data-template='cart']) footer {
+    margin-top: 32px !important;
+  }
 }
 
 .cart__ctas {

@@ -21,7 +21,8 @@
     window.__mdrProductPop = true;
 
     var D = document;
-    var KEY = 'mdrPdpMedia';
+    /* v2: the desktop frame moved the product page's image, older saved spots are stale */
+    var KEY = 'mdrPdpMedia2';
     var EASE = 'cubic-bezier(0.32, 0.72, 0, 1)';
     var DURATION = 380;
 
@@ -113,8 +114,13 @@
       var from = img.getBoundingClientRect();
       if (!from.width || !from.height) return;
 
+      /* keep the header and the WEBRACK/RETURN row (on PC it sits in the
+         desktop frame, outside the header group) visible above the backdrop */
       var header = D.getElementById('header-group');
-      var top = header ? Math.max(0, header.getBoundingClientRect().bottom) : 0;
+      var nav = D.querySelector('.mdr-allbar-wrap');
+      var top = Math.max(0,
+        header ? header.getBoundingClientRect().bottom : 0,
+        nav ? nav.getBoundingClientRect().bottom : 0);
 
       var layer = D.createElement('div');
       layer.className = 'mdr-pop';
