@@ -675,6 +675,18 @@ footer .utilities {
   gap: 20px !important;
 }
 
+/* No social links are configured (all placeholder URLs), so this block
+   renders as a genuinely empty div -- but it's still a flex item of
+   footer .utilities and still claims its own wrapped line there (0px
+   tall, but a line all the same), so policy-list-inline -> copyright
+   was paying row-gap TWICE (once above this empty line, once below it)
+   while nav -> policy-list-inline only paid it once. Dropping it from
+   flow when empty restores one uniform row-gap between every visible
+   row instead of a silent double gap wherever this invisible line sits. */
+.social-icons__wrapper:empty {
+  display: none !important;
+}
+
 .footer-utilities__group-copyright {
   flex-basis: 100%;
   text-align: center;
