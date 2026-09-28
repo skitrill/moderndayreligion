@@ -716,16 +716,17 @@
              un-delayed history.back() would swap the page out the same
              tick the class gets added -- the browser never gets a chance
              to paint a single animated frame before the transition target
-             page starts loading. 90ms: enough for the zip's first
+             page starts loading. 60ms: enough for the zip's first
              frames to visibly start, without holding the navigation
-             itself back -- the rest of the zip plays out while the
-             previous page is already coming back. */
+             itself back -- the previous page comes from the browser's
+             cache (see mdrGoBack, layout/theme.liquid), so the rest of
+             the zip plays out while it's already coming back. */
           wrap.classList.add('mdr-allbar-wrap--zap');
           setTimeout(function () {
             if (typeof window.mdrGoBack === 'function') window.mdrGoBack();
             else if (history.length > 1) history.back();
             else location.href = '/';
-          }, 90);
+          }, 60);
         });
         return;
       }

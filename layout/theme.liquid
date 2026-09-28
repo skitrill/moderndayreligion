@@ -189,69 +189,87 @@
 
       <script>
         /**
-         * Tracks the visitor's own in-site page path (sessionStorage, not the browser's real
-         * history stack) so the header's back arrow always lands on the page they actually came
-         * from within this site -- never off-site to an external referrer, and never dependent
-         * on how many redirects or query-string variants the real history stack accumulated.
-         *
-         * mdrGoBack(), called by the header logo's back arrow, pops the current entry and
-         * navigates to whatever is now on top; a page reached that way sets a one-shot flag so
-         * it doesn't re-push itself as a new entry.
+         * RETURN history chain. Every browser history entry is stamped with its depth in the
+         * visitor's in-site chain (1 = first site page this visit) plus how many same-page
+         * entries (WEBRACK category swaps, filters, pagination) sit above that page's own load.
+         * RETURN then always steps back with the browser's own history -- any number of times in
+         * a row -- so each previous page comes straight from the back/forward cache or the HTTP
+         * cache instead of being downloaded again. Depth resets on arrival from another site,
+         * so RETURN never leaves the site; with nothing behind it, it goes home.
          */
         (function () {
-          const KEY = 'mdrNavStack';
-          const BACK_FLAG = 'mdrIsBackNav';
+          const DEPTH_KEY = 'mdrCurDepth';
+          let depth = 1;
+          let sub = 0;
 
-          function record() {
-            const stack = JSON.parse(sessionStorage.getItem(KEY) || '[]');
-            const current = window.location.pathname + window.location.search;
-            const isBackNav = sessionStorage.getItem(BACK_FLAG) === '1';
-            sessionStorage.removeItem(BACK_FLAG);
+          function stamp(state) {
+            const base = state && typeof state === 'object' ? state : {};
+            return Object.assign({}, base, { mdrDepth: depth, mdrSub: sub });
+          }
 
-            if (!isBackNav && stack[stack.length - 1] !== current) {
-              stack.push(current);
-              sessionStorage.setItem(KEY, JSON.stringify(stack));
+          const nativeReplace = history.replaceState.bind(history);
+          const nativePush = history.pushState.bind(history);
+          history.replaceState = function (state, title, url) {
+            return nativeReplace(stamp(state), title, url);
+          };
+          history.pushState = function (state, title, url) {
+            sub += 1;
+            return nativePush(stamp(state), title, url);
+          };
+
+          function readState() {
+            const s = history.state;
+            if (s && typeof s.mdrDepth === 'number') {
+              depth = s.mdrDepth;
+              sub = s.mdrSub || 0;
+              return true;
             }
+            return false;
+          }
+
+          function remember() {
+            try { sessionStorage.setItem(DEPTH_KEY, String(depth)); } catch (e) {}
+          }
+
+          function init() {
+            if (!readState()) {
+              const nav = performance.getEntriesByType('navigation')[0];
+              const type = nav ? nav.type : 'navigate';
+              let fromSite = false;
+              try { fromSite = new URL(document.referrer).origin === location.origin; } catch (e) {}
+              const prev = parseInt(sessionStorage.getItem(DEPTH_KEY) || '', 10);
+              if (type === 'navigate') depth = fromSite && prev > 0 ? prev + 1 : 1;
+              else depth = prev > 0 ? prev : 1;
+              sub = 0;
+              try { nativeReplace(stamp(history.state), ''); } catch (e) {}
+            }
+            remember();
           }
 
           /* a prerendered page (speculation rules, <head>) runs this before the
-             visitor has actually opened it -- only record it once it's shown */
+             visitor has actually opened it -- only place it once it's shown */
           if (document.prerendering) {
-            document.addEventListener('prerenderingchange', record, { once: true });
+            document.addEventListener('prerenderingchange', init, { once: true });
           } else {
-            record();
+            init();
           }
+
+          window.addEventListener('pageshow', function (e) {
+            if (e.persisted) {
+              readState();
+              remember();
+            }
+          });
+          window.addEventListener('popstate', readState);
+
+          window.mdrGoBack = function () {
+            if (depth > 1) {
+              history.go(-(sub + 1));
+            } else {
+              window.location.href = '/';
+            }
+          };
         })();
-
-        window.mdrGoBack = function () {
-          const KEY = 'mdrNavStack';
-          const stack = JSON.parse(sessionStorage.getItem(KEY) || '[]');
-          stack.pop();
-          const target = stack[stack.length - 1];
-          sessionStorage.setItem(KEY, JSON.stringify(stack));
-
-          /* Target is the page we literally just came from: a real history.back()
-             restores it from the back/forward cache (instant, scroll kept)
-             instead of re-downloading it. Only when this page was reached by a
-             plain link click, so the previous history entry is that referrer. */
-          let referrerPath = null;
-          try {
-            const ref = new URL(document.referrer);
-            if (ref.origin === location.origin) referrerPath = ref.pathname + ref.search;
-          } catch (e) {}
-          const navType = (performance.getEntriesByType('navigation')[0] || {}).type;
-          if (target && target === referrerPath && navType === 'navigate' && history.length > 1) {
-            history.back();
-            return;
-          }
-
-          if (target) {
-            sessionStorage.setItem('mdrIsBackNav', '1');
-            window.location.href = target;
-          } else {
-            window.location.href = '/';
-          }
-        };
       </script>
 
       <main
