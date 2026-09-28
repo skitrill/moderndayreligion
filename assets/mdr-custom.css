@@ -2379,15 +2379,23 @@ summary:active {
   transition-duration: 0s !important;
 }
 
-/* product cards: a quick dip on the image while the finger is down */
-product-card .card-gallery,
-product-card .product-media-container {
+/* product cards: a quick dip on the image while the finger/mouse is down.
+   The gallery only -- the media container sits inside it, and dimming both
+   compounded the dip. */
+product-card .card-gallery {
   transition: opacity var(--animation-speed) var(--animation-easing),
     transform var(--animation-speed) var(--animation-easing);
 }
 
-product-card:active .card-gallery,
-product-card:active .product-media-container {
+/* PC: the cursor resting on a card answers straight away too (that same
+   hover is what starts prerendering the product page) */
+@media (hover: hover) and (pointer: fine) {
+  product-card:hover .card-gallery {
+    opacity: 0.9;
+  }
+}
+
+product-card:active .card-gallery {
   opacity: 0.78;
   transform: scale(0.985);
   transition-duration: 0s;
@@ -2410,8 +2418,7 @@ product-card:active .product-media-container {
 }
 
 @media (prefers-reduced-motion: reduce) {
-  product-card:active .card-gallery,
-  product-card:active .product-media-container {
+  product-card:active .card-gallery {
     transform: none;
   }
 }

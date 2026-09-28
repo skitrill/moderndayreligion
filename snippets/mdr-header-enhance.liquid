@@ -729,6 +729,7 @@
         wrap.classList.toggle('mdr-allbar-wrap--zap', on);
         toggle.setAttribute('aria-expanded', on ? 'true' : 'false');
         if (typeof positionTouchzone === 'function') requestAnimationFrame(positionTouchzone);
+        if (on) warmAll();
       }
       window.__mdrAllbarOpen = function () { setOpen(true); };
 
@@ -816,7 +817,7 @@
       var htmlCache = {};
       function fetchHtml(url) {
         var hit = htmlCache[url];
-        if (hit && Date.now() - hit.t < 30000) return hit.p;
+        if (hit && Date.now() - hit.t < 120000) return hit.p;
         var p = fetch(url, { credentials: 'same-origin' }).then(function (res) {
           if (!res.ok) throw new Error('mdr: bad response');
           return res.text();
@@ -825,6 +826,23 @@
         p.catch(function () { delete htmlCache[url]; });
         return p;
       }
+
+      /* PC: fetch every category the moment the pointer reaches the WEBRACK
+         row (or WEBRACK opens), so a category tap swaps from memory instead
+         of waiting on the network. Phones keep loading on finger-down only. */
+      var warmedAll = false;
+      var canWarmAll = !!(window.matchMedia && window.matchMedia('(hover: hover) and (pointer: fine)').matches);
+      function warmAll() {
+        if (warmedAll || !canWarmAll) return;
+        warmedAll = true;
+        var links = list.querySelectorAll('a[href]');
+        for (var i = 0; i < links.length; i++) {
+          var href = links[i].getAttribute('href');
+          if (href && href !== currentUrl) fetchHtml(href);
+        }
+      }
+      if (canWarmAll) wrap.addEventListener('pointerenter', warmAll, { once: true });
+      window.__mdrWarmAllCategories = warmAll;
 
       function markCurrent(url) {
         var links = list.querySelectorAll('a');

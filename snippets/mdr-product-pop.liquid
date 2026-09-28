@@ -38,11 +38,20 @@
     }
 
     /* ---- product page: remember where the main image sits ---- */
+    /* phones show the product image in a slideshow, desktop in a grid list --
+       measure whichever one is actually on screen */
+    function visibleMedia() {
+      var all = D.querySelectorAll('main[data-template*="product"] .product-information__media .product-media-container');
+      for (var i = 0; i < all.length; i++) {
+        var r = all[i].getBoundingClientRect();
+        if (r.width && r.height) return r;
+      }
+      return null;
+    }
+
     function measure() {
-      var slide = D.querySelector('main[data-template*="product"] .product-information__media slideshow-slide');
-      if (!slide) return;
-      var b = slide.getBoundingClientRect();
-      if (!b.width || !b.height) return;
+      var b = visibleMedia();
+      if (!b) return;
       var r = { vw: window.innerWidth, x: b.left, y: b.top + window.scrollY, w: b.width, h: b.height };
       var d = load();
       d.w[r.vw] = r;
@@ -66,12 +75,18 @@
       var ratio = img.naturalWidth && img.naturalHeight ? img.naturalHeight / img.naturalWidth : 1;
       var g = d.w[vw];
       if (g) return { x: g.x, y: g.y, w: g.w, h: g.w * ratio };
+      var header = D.getElementById('header-group');
+      var headerH = header ? header.offsetHeight : 112;
       if (vw < 750) {
-        var header = D.getElementById('header-group');
         var w = Math.round(vw * 0.632);
-        return { x: (vw - w) / 2, y: (header ? header.offsetHeight : 112) + 19, w: w, h: w * ratio };
+        return { x: (vw - w) / 2, y: headerH + 19, w: w, h: w * ratio };
       }
-      return null;
+      /* desktop product page: image column starts 58px inside the page
+         frame, 19px under the header, 184px wide (measured at 1024-1440) */
+      var main = D.querySelector('main');
+      if (!main) return null;
+      var frameLeft = main.getBoundingClientRect().left + (parseFloat(getComputedStyle(main).paddingLeft) || 0);
+      return { x: frameLeft + 58, y: headerH + 19, w: 184, h: 184 * ratio };
     }
 
     function visibleImage(card) {

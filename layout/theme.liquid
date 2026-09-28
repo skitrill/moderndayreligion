@@ -67,6 +67,30 @@
           ]
         }
       </script>
+      <script>
+        /* PC (mouse/trackpad): load ahead like an app -- every internal link on
+           the page is prefetched straight away, and whatever the cursor rests on
+           is fully prerendered, so a click lands on a finished page. Phones keep
+           the lighter rules above (data plans, battery). */
+        (function () {
+          if (!window.matchMedia || !window.matchMedia('(hover: hover) and (pointer: fine)').matches) return;
+          if (!HTMLScriptElement.supports || !HTMLScriptElement.supports('speculationrules')) return;
+          var where = {
+            and: [
+              { href_matches: '/*' },
+              { not: { href_matches: ['/cart', '/cart/*', '/checkout*', '/checkouts/*', '/account', '/account/*', '/password*'] } },
+              { not: { selector_matches: '.mdr-allbar__list a, [target=_blank], [download], [data-no-prerender]' } }
+            ]
+          };
+          var rules = document.createElement('script');
+          rules.type = 'speculationrules';
+          rules.textContent = JSON.stringify({
+            prefetch: [{ source: 'document', where: where, eagerness: 'eager' }],
+            prerender: [{ source: 'document', where: where, eagerness: 'moderate' }]
+          });
+          document.head.appendChild(rules);
+        })();
+      </script>
     {%- endunless -%}
   </head>
 
