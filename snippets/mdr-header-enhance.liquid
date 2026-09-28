@@ -294,7 +294,7 @@
   })();
 
   /* =====================================================================
-     Homepage grid: a fixed 2-col (mobile) / 4-col (desktop) layout, always
+     Homepage grid: 2 columns on phones, 2-3 on desktop (mdr-custom.css)
      -- the old dense/zoom-toggle-by-tapping-the-logo feature is gone. This
      just keeps the "pad the grid with inert clones so it looks full"
      behaviour, since the store only has a few real products right now.
@@ -355,12 +355,45 @@
       grid.appendChild(frag);
     }
 
-    function boot() { padFill(); }
+    /* Desktop: when the real products don't fill the last row, complete it
+       with blank cells (never product copies) so the grid ends on a whole
+       row -- otherwise the grid's own line colour shows through the empty
+       slots as solid blocks. Rerun after WEBRACK swaps in another
+       collection (switchCollection) and on resize (column count changes
+       with the frame width). */
+    function fillRow() {
+      var sec = featured();
+      if (!sec) return;
+      var grid = sec.querySelector('.resource-list--grid');
+      if (!grid) return;
+      var old = grid.querySelectorAll('[data-mdr-fill]');
+      for (var o = old.length - 1; o >= 0; o--) old[o].remove();
+      if (window.innerWidth < 750) return;
+      var count = grid.querySelectorAll(':scope > .resource-list__item').length;
+      var cols = getComputedStyle(grid).gridTemplateColumns.split(' ').filter(Boolean).length;
+      if (!count || cols < 2) return;
+      var missing = (cols - (count % cols)) % cols;
+      for (var i = 0; i < missing; i++) {
+        var cell = D.createElement('div');
+        cell.className = 'resource-list__item';
+        cell.setAttribute('data-mdr-fill', '');
+        cell.setAttribute('aria-hidden', 'true');
+        grid.appendChild(cell);
+      }
+    }
+    window.__mdrGridFillRow = fillRow;
+
+    function boot() { padFill(); fillRow(); }
 
     boot();
     if (D.readyState !== 'loading') boot();
     D.addEventListener('DOMContentLoaded', boot);
     window.addEventListener('load', boot);
+    var fillRAF = null;
+    window.addEventListener('resize', function () {
+      if (fillRAF) return;
+      fillRAF = requestAnimationFrame(function () { fillRAF = null; fillRow(); });
+    }, { passive: true });
   })();
 
   /* =====================================================================
@@ -569,17 +602,10 @@
          same stroke-width/colour/cap the whole way, both subpaths meeting
          at one exact shared point, so nothing visibly "joins" -- it reads
          as one continuous wire because, pixel for pixel, it is one.
-         Desktop bails out (0-size svg, empty path): .mdr-allbar-wrap is
-         width:max-content there (a compact pill beside the logo, see
-         mdr-custom.css) -- no row-spanning line to draw, matching every
-         earlier pass's own mobile-only scope for this same element. */
+         Desktop draws the same line (WEBRACK has its own full row there
+         too); it stops at the page frame's edges, not the viewport's --
+         see lineStart/lineEnd below. */
       function buildLinePath() {
-        if (window.innerWidth >= 750) {
-          lineSvg.setAttribute('width', 0);
-          lineSvg.setAttribute('height', 0);
-          linePath.setAttribute('d', '');
-          return;
-        }
         var label = toggle.querySelector('.mdr-allbar__label');
         if (!label) return;
         var wrapRect = wrap.getBoundingClientRect();
@@ -600,6 +626,17 @@
         var wingDx = 5; // subtle -- "very minimal, not a conventional thick arrow"
         var wingDy = 4;
         var edgeInset = 2; // keeps the vertex just short of the true row edge
+        /* phones: the row's true edges. Desktop: the frame edges -- the
+           wrap's inline padding plus the toggle's own padding (the label
+           sits exactly on the frame edge, mdr-custom.css desktop shell). */
+        var lineStart = edgeInset;
+        var lineEnd = w - edgeInset;
+        if (window.innerWidth >= 750) {
+          var wrapCs = getComputedStyle(wrap);
+          var toggleInset = parseFloat(getComputedStyle(toggle).paddingLeft) || 0;
+          lineStart = (parseFloat(wrapCs.paddingLeft) || 0) + toggleInset;
+          lineEnd = w - (parseFloat(wrapCs.paddingRight) || 0) - toggleInset;
+        }
 
         var d;
         if (isHome) {
@@ -620,7 +657,7 @@
              "as though >> is pulling the line open". */
           var wingBackX = (labelRect.right - wrapRect.left) + gap;
           var vertexX = wingBackX + wingDx;
-          var lineEndX = Math.max(vertexX, w - edgeInset);
+          var lineEndX = Math.max(vertexX, lineEnd);
           d = 'M ' + wingBackX + ' ' + (midY - wingDy) +
             ' L ' + vertexX + ' ' + midY +
             ' L ' + lineEndX + ' ' + midY +
@@ -638,7 +675,7 @@
              right one, "motion travels right -> left when returning". */
           var wingBackX2 = (labelRect.left - wrapRect.left) - gap;
           var vertexX2 = wingBackX2 - wingDx;
-          var lineStartX = Math.min(vertexX2, edgeInset);
+          var lineStartX = Math.min(vertexX2, lineStart);
           d = 'M ' + wingBackX2 + ' ' + (midY - wingDy) +
             ' L ' + vertexX2 + ' ' + midY +
             ' L ' + lineStartX + ' ' + midY +
@@ -883,6 +920,7 @@
                 }
               }
               grid.appendChild(frag);
+              if (window.__mdrGridFillRow) window.__mdrGridFillRow();
 
               currentUrl = url;
               if (!fromPopstate) {
@@ -935,8 +973,11 @@
       touchzone.setAttribute('aria-hidden', 'true');
       wrap.appendChild(touchzone);
 
+      /* starts right after the toggle (not at a fixed toggle-width offset,
+         which assumed the toggle sits at the wrap's own left edge -- on
+         desktop the wrap carries frame padding in front of it) */
       function positionTouchzone() {
-        touchzone.style.left = toggle.getBoundingClientRect().width + 'px';
+        touchzone.style.left = (toggle.getBoundingClientRect().right - wrap.getBoundingClientRect().left) + 'px';
       }
       positionTouchzone();
       window.addEventListener('resize', positionTouchzone, { passive: true });
@@ -1394,46 +1435,6 @@
     D.addEventListener('DOMContentLoaded', fixScrollfadeBleed);
     window.addEventListener('load', fixScrollfadeBleed);
     window.addEventListener('resize', fixScrollfadeBleed, { passive: true });
-  })();
-
-  /* =====================================================================
-     Desktop header merge -- positions WEBRACK/RETURN (.mdr-allbar-wrap)
-     right after the logo on the same row (mdr-custom.css stacks them in
-     one shared grid cell and takes the wrap out of flow with
-     position: absolute so this can place it). A fixed CSS margin-left
-     was tried first and confirmed broken live on an actual 1200px-wide
-     desktop: the logo's own left inset comes from the header's
-     responsive gutter, which grows with viewport width, so the logo's
-     RIGHT edge isn't a constant either -- a fixed offset cleared it at
-     one width and overlapped it at another. This measures the logo's
-     real rendered edge instead, so it's correct at any width. Mobile
-     (<750px) resets the inline style so the normal stacked layout
-     (untouched by any of this) isn't affected by a stale value from a
-     previous wider layout. */
-  (function () {
-    if (window.__mdrAllbarDesktopPosition) return;
-    window.__mdrAllbarDesktopPosition = true;
-    var D = document;
-
-    function positionAllbarDesktop() {
-      var wrap = D.querySelector('.mdr-allbar-wrap');
-      var logo = D.querySelector('.mdr-logo-image') || D.querySelector('.header-logo');
-      var group = D.getElementById('header-group');
-      if (!wrap || !logo || !group) return;
-      if (window.innerWidth < 750) {
-        wrap.style.left = '';
-        return;
-      }
-      var logoRect = logo.getBoundingClientRect();
-      var groupRect = group.getBoundingClientRect();
-      var gap = 24;
-      wrap.style.left = (logoRect.right - groupRect.left + gap) + 'px';
-    }
-
-    if (D.readyState !== 'loading') positionAllbarDesktop();
-    D.addEventListener('DOMContentLoaded', positionAllbarDesktop);
-    window.addEventListener('load', positionAllbarDesktop);
-    window.addEventListener('resize', positionAllbarDesktop, { passive: true });
   })();
 
   /* =====================================================================

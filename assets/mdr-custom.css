@@ -308,81 +308,58 @@ html {
   color-scheme: dark;
 }
 
-/* Desktop: smaller wordmark, and the header collapses to one row instead
-   of two -- WEBRACK/RETURN (.mdr-allbar-wrap, a full-width strip normally
-   stacked BELOW the header on its own row) is pulled up to sit inline
-   with the logo instead. The logo is an <img> (blocks/_header-logo.liquid,
-   mdr-logo.svg), not text -- font-size on it does nothing; its real size
-   comes from .mdr-logo-image's own height (38.4px on desktop already,
-   but beaten by that same rule's base 57.6px !important, since a plain
-   value inside its own nested @media can't out-rank !important from the
-   unconditional rule above it -- so it was rendering at the mobile size
-   on every breakpoint). #header-component adds the specificity needed to
-   reliably win over that !important regardless of stylesheet load order. */
+/* ---- Desktop shell (>=750px) --------------------------------------------
+   One frame for the whole desktop page: the same centred measure main
+   already gives page content (800px, widening to 40% of the viewport on
+   very large monitors). The header row, the WEBRACK/RETURN row, the product
+   grid and the editorial pages all align to it; everything outside it is
+   outer margin. Phones are untouched -- all of this is min-width: 750px.
+
+   Desktop keeps the phone hierarchy: header row (logo left, CART right),
+   then WEBRACK/RETURN on its own full row beneath it, then the products.
+   (Previously WEBRACK was lifted out of flow with position:absolute and
+   parked beside a 20px logo in one shared header cell, and the header row
+   used the theme's own 900px page width -- a different geometry from the
+   800px content below it.)
+
+   --mdr-frame-inline is deliberately left as an expression: each element
+   resolves the % against its own full-width containing block, so main, the
+   header row and the WEBRACK row land on identical edges. */
 @media screen and (min-width: 750px) {
+  :root {
+    --mdr-frame-inline: min(30%, calc((100% - 800px) / 2));
+    --mdr-frame-pad: max(16px, min(30%, calc((100% - 800px) / 2)));
+  }
+
+  #header-component .header__row--top {
+    grid-template-columns: minmax(0, 1fr) !important;
+    padding-inline: var(--mdr-frame-pad) !important;
+    padding-block: 18px !important;
+  }
+
+  #header-component .header__row--top > .header__columns {
+    grid-column: 1 / -1 !important;
+  }
+
+  /* wordmark at a desktop scale (~390px wide), its left edge on the frame
+     edge -- the phone-only -12px nudge (blocks/_header-logo.liquid) and the
+     CART drawer's 7px end padding would each pull it off the frame */
+  #header-component .header-logo {
+    margin-left: 0 !important;
+  }
+
   #header-component .mdr-logo-image {
-    height: 20px !important;
+    height: 38px !important;
   }
 
-  /* .mdr-allbar-wrap (WEBRACK/RETURN) and .header are both direct
-     children of #header-group already (mdr-header-enhance.liquid inserts
-     it as header's own next sibling, not a descendant) -- stacking them
-     in the same single grid cell is what actually merges the two rows,
-     without touching the JS that builds/drives the WEBRACK bar itself. */
-  #header-group {
-    display: grid;
-    /* required so .mdr-allbar-wrap's position: absolute (below) resolves
-       its top/left against THIS box -- confirmed live that display:grid
-       alone does NOT make an element a containing block for an
-       absolutely positioned child (that's only true for the child's
-       grid-area placement, not for resolving its actual offsets); without
-       this, "top: 50%" was computing against the viewport itself (the
-       nearest ACTUALLY positioned ancestor, all the way up the tree),
-       landing 400px down the page on an 800px-tall viewport instead of
-       centered in the header's own ~68px height. */
-    position: relative;
+  #header-component .header__drawer {
+    padding-inline-end: 0 !important;
   }
 
-  #header-group > .header-section,
-  #header-group > .mdr-allbar-wrap {
-    grid-column: 1;
-    grid-row: 1;
-  }
-
+  /* WEBRACK/RETURN row: full-width row like on phones, its label on the
+     frame edge (the toggle carries 8px of its own padding, hence -8px) */
   .mdr-allbar-wrap {
-    /* was width:100%/a full row of its own height -- shrunk to wrap just
-       the WEBRACK pill so it only occupies the small area it actually
-       needs. This matters beyond looks: .mdr-allbar__touchzone (the drag
-       catcher) is `inset: 0` on THIS element, so if it stayed full-size
-       here it would sit on top of the logo/CART/USER across the entire
-       shared row and swallow their clicks -- shrinking the wrap to its
-       content keeps that touch layer confined to the pill alone.
-       !important throughout: this rule and the plain (mobile-targeting)
-       .mdr-allbar-wrap rule further down the file have equal specificity,
-       and that one comes later in source order, so it wins ties without
-       these. */
-    width: max-content !important;
-    height: max-content !important;
-    padding: 0 !important;
-    background: transparent !important;
-    /* Taken out of the grid flow entirely and positioned by JS instead of
-       a fixed margin-left -- confirmed live on an actual 1200px-wide
-       desktop that a fixed pixel offset overlapped the logo: the logo's
-       own left inset comes from the header's responsive --page-margin-
-       style gutter, which grows with viewport width, so its right edge
-       (and therefore where WEBRACK needs to start) isn't a constant. See
-       positionAllbarDesktop() in mdr-header-enhance.liquid, which
-       measures the logo's real rendered edge and sets `left` directly. A
-       grid container is a valid containing block for an absolutely
-       positioned item without needing position:relative on it. */
-    position: absolute !important;
-    top: 50% !important;
-    transform: translateY(-50%) !important;
-    /* the header's own column now shares this exact grid cell (see
-       #header-group above) -- confirmed via elementFromPoint that its
-       column was painting on top of this despite coming first in DOM and
-       having no z-index of its own, so this needs to unambiguously win. */
-    z-index: 2147483000 !important;
+    padding-inline: calc(var(--mdr-frame-pad) - 8px) !important;
   }
 }
 
@@ -404,7 +381,7 @@ html {
    laptop/desktop widths, not a cap on the "huge" look on a big monitor. */
 @media screen and (min-width: 750px) {
   main {
-    padding-inline: min(30%, calc((100% - 800px) / 2)) !important;
+    padding-inline: var(--mdr-frame-inline) !important;
     box-sizing: border-box !important;
   }
 
@@ -1714,10 +1691,31 @@ main[data-template='collection'] [id$='__product_list_fa6P9H'] .resource-list--g
   margin-inline: 0 !important;
 }
 
+/* Desktop columns come from the frame's width, not the viewport's: a cell
+   never drops much below ~400px, so the garment stays the dominant thing
+   on screen. The frame is 800px on ordinary desktops/laptops and tablets
+   (2 columns of ~400px); it only reaches 960px+ (3 columns of 320px+) on
+   monitors 2400px and wider. Four columns never happen -- they would mean
+   ~200px tiles, the "miniature" look this replaces. Phones keep 2 columns
+   (rule above). */
 @media (min-width: 750px) {
   main[data-template='collection'] [id$='__product_list_fa6P9H'] .resource-list--grid {
-    grid-template-columns: repeat(4, 1fr) !important;
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
   }
+}
+
+@media (min-width: 2400px) {
+  main[data-template='collection'] [id$='__product_list_fa6P9H'] .resource-list--grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+  }
+}
+
+/* Blank cells that complete the last row on desktop (added by
+   mdr-header-enhance.liquid when the product count doesn't fill it): plain
+   paper, so the grid's 1px dividers still frame them instead of the grid's
+   line colour showing through as a solid block. */
+main[data-template='collection'] [id$='__product_list_fa6P9H'] .resource-list__item[data-mdr-fill] {
+  pointer-events: none;
 }
 
 /* the grid starts right under the WEBRACK line (no big top gap) and now
@@ -1816,6 +1814,14 @@ body {
    the same way again. */
 footer {
   margin-top: auto;
+}
+
+/* Desktop: the footer follows the content. Pinning it to the bottom of a
+   tall monitor turned every short page into products-then-a-huge-void. */
+@media screen and (min-width: 750px) {
+  footer {
+    margin-top: 0;
+  }
 }
 
 .page-wrapper {
@@ -2992,12 +2998,6 @@ body:has(main[data-template='index']) .page-wrapper {
   border-top: 1px solid var(--mdr-border);
 }
 
-@media screen and (min-width: 750px) {
-  .mdr-allbar-wrap {
-    border-top: 0 !important;
-  }
-}
-
 /* Fallback for browsers without backdrop-filter support (older Android
    WebView, some older Safari versions) -- without blur to soften what's
    behind it, a thin 0.55-alpha wash reads muddy against product photos
@@ -3647,8 +3647,8 @@ main[data-template='collection']
    and this row, on top of the 13px/44px touch-target increase above --
    was 0px, the two rows touching exactly at the header's own bottom
    edge, which is where a mistap could land on the logo instead of
-   WEBRACK. Desktop doesn't need this: .mdr-allbar-wrap sits inline with
-   the logo there (min-width:750px block above), not stacked below it. */
+   WEBRACK. Desktop's header row has its own 18px block padding (desktop
+   shell block near the top of this file), so it doesn't need this. */
 @media screen and (max-width: 749px) {
   .mdr-allbar-wrap {
     margin-top: 6px;
@@ -3813,56 +3813,35 @@ main[data-template='collection']
    class, and now every non-home page gets the right-side treatment too --
    no separate modifier needed once the "leave product unchanged" exception
    was dropped).
-   Mobile-only (max-width: 749px): desktop never had a "full-width row" to
-   mirror against in the first place -- .mdr-allbar-wrap is absolutely
-   positioned directly beside the logo there (see the desktop-merge rules
-   elsewhere in this file), a compact inline tab, not a row with a thumb-
-   reach concern. Left untouched at that breakpoint entirely.
+   Applies at every width: desktop has the same full-width row beneath
+   the header now, so RETURN sits at its right end there too, aligned to
+   the frame edge under CART.
    Same row height/typography/font-size/divider colour/vertical alignment/
    flat appearance as WEBRACK throughout -- nothing here touches any of
    those, only WHICH END of the row the bar and the divider land on. */
-@media screen and (max-width: 749px) {
-  /* Pushes RETURN to the row's own end. Used to be `order: 2` on the bar
-     plus `flex: 1 1 auto` on the (then flex-item) divider pseudo-element
-     eating the leftover space in front of it -- now that the divider is
-     position:absolute (.mdr-allbar__line, above) it's no longer a flex
-     item at all, so it can't do that pushing any more. .mdr-allbar is the
-     only real flex child left in the row now,
-     and a lone flex item's own auto margin still pushes it to whichever
-     end that margin faces -- same visual result, one property instead of
-     two, no `order` needed since there's nothing left to reorder against. */
-  .mdr-allbar--back {
-    margin-inline-start: auto;
-  }
+/* Pushes RETURN to the row's own end -- every width now that desktop has a
+   full WEBRACK/RETURN row too (it used to sit inline beside the logo
+   there). .mdr-allbar is the wrap's only real flex child (the line is
+   position:absolute), so its own auto margin parks it at the row's end. */
+.mdr-allbar--back {
+  margin-inline-start: auto;
+}
 
-  /* Comfortable right padding -- WEBRACK sits flush at the row's true left
-     edge on purpose (.mdr-allbar-wrap has no inline padding at all), but a
-     mirrored RETURN flush against the true right edge would sit right in
-     the curved corner/bezel area on most phones, the opposite of "easier
-     to reach". The site's own standard page gutter (--mdr-page-px, used
-     for margins everywhere else) gives it the same breathing room real
-     page content already gets, not an arbitrary new number. */
+/* The whole 88px RETURN box is the button (RETURN pages have no touchzone
+   to forward taps), content right-justified so the label sits at the
+   row's end. */
+.mdr-allbar--back .mdr-allbar__toggle {
+  width: 100%;
+  justify-content: flex-end;
+}
+
+@media screen and (max-width: 749px) {
+  /* Comfortable right padding on phones -- a mirrored RETURN flush against
+     the true right edge would sit in the curved corner/bezel area. The
+     site's own standard page gutter (--mdr-page-px). Desktop instead uses
+     the frame padding (desktop shell block near the top of this file). */
   .mdr-allbar-wrap:has(.mdr-allbar--back) {
     padding-inline-end: var(--mdr-page-px, 16px);
-  }
-
-  /* "Do not make only the text clickable" -- .mdr-allbar__toggle (base
-     rule, below) sizes itself to its own label+chevron content
-     (inline-flex, flex: 0 0 auto), which is exactly right for WEBRACK
-     (the touchzone drag-catcher covers the rest of the box and forwards
-     taps to it) but WRONG here: RETURN pages never build a touchzone at
-     all (mdr-header-enhance.liquid returns early for every non-home page,
-     before the touchzone is ever created), so anything in .mdr-allbar's
-     box OUTSIDE the toggle's own tight content bounds was dead space --
-     no touchzone to forward the tap, no button under it either. Stretching
-     the toggle to the full width of its 88px box (shared with WEBRACK,
-     "the same and stable") makes the ENTIRE box a real, native, directly-
-     tappable <button> -- a genuinely bigger, more generous touch target,
-     not just a visual repositioning. Content stays right-justified inside
-     it so RETURN still reads flush against the row's own right edge. */
-  .mdr-allbar--back .mdr-allbar__toggle {
-    width: 100%;
-    justify-content: flex-end;
   }
 }
 
