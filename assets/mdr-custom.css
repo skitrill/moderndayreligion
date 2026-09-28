@@ -537,7 +537,9 @@ footer {
   background-color: var(--mdr-glass-tint);
   backdrop-filter: var(--mdr-glass-blur);
   -webkit-backdrop-filter: var(--mdr-glass-blur);
-  border-top: 1px solid var(--mdr-glass-border);
+  /* the footer boundary is part of the grid/WEBRACK hairline system, so it
+     reads the same token those lines do, not the glass one */
+  border-top: 1px solid var(--mdr-border-faint);
   box-shadow: var(--mdr-glass-shadow);
 }
 
@@ -4152,9 +4154,11 @@ main[data-template='collection'] [id$='__product_list_fa6P9H'] .resource-list__i
   background: var(--mdr-paper) !important;
 }
 
+/* No bottom border of its own: the grid ends flush on the footer, whose
+   top border already draws that line -- a second 1px here stacked the two
+   into a visibly heavier 2px rule at the footer boundary. */
 main[data-template='collection'] [id$='__product_list_fa6P9H'] .resource-list--grid {
   background: var(--mdr-border-faint, rgba(4, 0, 97, 0.08)) !important;
-  border-bottom: 1px solid var(--mdr-border-faint, rgba(4, 0, 97, 0.08)) !important;
 }
 
 /* card = a plain column, a touch of breathing room below the price so it
