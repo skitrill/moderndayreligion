@@ -1654,11 +1654,16 @@ main .button[type='submit']:not(.add-to-cart-button):not(.product-form__submit) 
   justify-content: flex-start !important;
 }
 
-/* ---- Whole page framed to the header: logo-start .. cart-end, centered ---- */
+/* ---- Whole page framed to the header: logo-start .. cart-end, centered ----
+   The frame itself is main's own side padding (desktop shell block near
+   the top of this file), shared with the header and WEBRACK rows. Sections
+   fill it exactly -- this used to cap them at a separate 60rem + 80px,
+   which only differed from the frame above ~2450px, where it pulled the
+   content 22px inside the header's edges. */
 main .shopify-section > .section,
 main .shopify-section > .section-wrapper > .section,
 main .section--page-width {
-  max-width: calc(60rem + 2 * var(--page-margin, 40px)) !important;
+  max-width: 100% !important;
   margin-inline: auto !important;
 }
 
