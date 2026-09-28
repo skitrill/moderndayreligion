@@ -583,8 +583,14 @@ footer .utilities {
      exactly rather than picking an arbitrary "small" number: 0px, relying
      on the same line-height: 1 the footer's own type already uses (see
      the shared footer typography rule below) to keep the three lines
-     legibly apart without adding any deliberate space between them. */
-  row-gap: 0px !important;
+     legibly apart without adding any deliberate space between them.
+
+     Since bumped off flush-zero: a later pass asked for "5% more" gap
+     between these three rows specifically. With no existing gap to scale,
+     anchored the new value to this same box's own padding-block below
+     (4px, the one deliberate spacing unit already living here) and
+     applied the 5% to that: 4px * 1.05 = 4.2px. */
+  row-gap: 4.2px !important;
   /* explicit centered content column, not just an incidental result of
      flex justify-content on an already-full-width row -- keeps the nav +
      policy links from ever reading as a wide, sparse spread on a very
