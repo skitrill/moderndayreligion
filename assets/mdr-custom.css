@@ -192,8 +192,20 @@ product-price *,
      unchanged, see main:not([data-template='index']) further down)
      stays a visibly distinct, flat, matte surface for actual content.
      Two materials now, deliberately: glass at the edges/chrome, matte
-     paper wherever there's real page content. */
-  --mdr-edge-color: var(--mdr-glass-tint);
+     paper wherever there's real page content.
+
+     Fourth pass: the raw --mdr-glass-tint value (rgba(255,255,255,.55))
+     looked right when sampled as a CSS value but wrong on screen -- this
+     layer has no backdrop-filter and nothing real ever sits behind it
+     (empty overscroll canvas), so the translucency has nothing to blend
+     with and reads as a duller, slightly grey flat tone instead of the
+     bright frosted-white the header/footer glass panels actually show
+     (their blur+tint sits over real page content, which is what makes
+     them look light). Fix: bake the tint down to the flat, opaque colour
+     it visually produces when composited over the page's own paper --
+     i.e. the SAME appearance the glass panels have in practice -- so
+     this backing strip matches them by eye, not just by variable name. */
+  --mdr-edge-color: color-mix(in srgb, white 55%, var(--mdr-paper) 45%);
 
   /* ---- Safe-area strips (body::before/::after) -- a DIFFERENT case from
      --mdr-edge-color above: these sit permanently over the header/footer
