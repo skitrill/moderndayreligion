@@ -1,5 +1,7 @@
 const PAGE_WRAPPER_SELECTOR = '.page-wrapper';
-const SQUEEZE_QUERY = window.matchMedia('(min-width: 990px)');
+// MODARE: 'not all' never matches -- the page is always one document scroll, never the
+// squeeze layout's inner .page-wrapper scroller (see the matching note in assets/base.css).
+const SQUEEZE_QUERY = window.matchMedia('not all');
 
 /**
  * Returns the current page scroll container.

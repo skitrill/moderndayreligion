@@ -114,13 +114,10 @@ html {
   scroll-behavior: smooth;
 }
 
-@media (min-width: 990px) {
-  html:has(.page-wrapper),
-  html:has(.page-wrapper) body {
-    height: 100dvh;
-    overflow: hidden;
-  }
-}
+/* MODARE: the page always scrolls as one document, desktop included. The
+   theme's "squeeze" layout locked html/body at >=990px and made
+   .page-wrapper an inner scroll box; that mode is switched off here and in
+   assets/scroll-container.js (SQUEEZE_QUERY). */
 
 html[scroll-lock],
 html[scroll-lock] .page-wrapper {
@@ -135,14 +132,6 @@ html[scroll-lock] .page-wrapper {
 }
 
 @media (min-width: 990px) {
-  .page-wrapper {
-    height: 100dvh;
-    overflow-y: auto;
-    scroll-behavior: smooth;
-    scrollbar-width: thin;
-    scrollbar-color: rgb(var(--color-foreground-rgb) / var(--opacity-40)) var(--color-background);
-  }
-
   .page-wrapper--drawer-open shopify-account::part(dialog) {
     translate: calc(-1 * var(--theme-drawer-width, var(--sidebar-width)));
   }

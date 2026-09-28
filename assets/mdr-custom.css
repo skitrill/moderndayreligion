@@ -1696,22 +1696,17 @@ main[data-template='collection'] [id$='__product_list_fa6P9H'] .resource-list--g
   margin-inline: 0 !important;
 }
 
-/* Desktop columns come from the frame's width, not the viewport's: a cell
-   never drops much below ~400px, so the garment stays the dominant thing
-   on screen. The frame is 800px on ordinary desktops/laptops and tablets
-   (2 columns of ~400px); it only reaches 960px+ (3 columns of 320px+) on
-   monitors 2400px and wider. Four columns never happen -- they would mean
-   ~200px tiles, the "miniature" look this replaces. Phones keep 2 columns
-   (rule above). */
+/* Columns: 2 on phones (rule above), 2 on tablets (750-989px), 4 on PC
+   (990px+). */
 @media (min-width: 750px) {
   main[data-template='collection'] [id$='__product_list_fa6P9H'] .resource-list--grid {
     grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
   }
 }
 
-@media (min-width: 2400px) {
+@media (min-width: 990px) {
   main[data-template='collection'] [id$='__product_list_fa6P9H'] .resource-list--grid {
-    grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+    grid-template-columns: repeat(4, minmax(0, 1fr)) !important;
   }
 }
 
