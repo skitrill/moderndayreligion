@@ -166,18 +166,20 @@
       var start = { left: from.left + 'px', top: from.top + 'px', width: from.width + 'px', height: from.height + 'px' };
       var end = { left: to.x + 'px', top: to.y + 'px', width: to.w + 'px', height: to.h + 'px' };
       Object.keys(end).forEach(function (k) { media.style[k] = end[k]; });
-      media.animate([start, end], { duration: DURATION, easing: EASE });
+      var flight = media.animate([start, end], { duration: DURATION, easing: EASE });
       backdrop.animate([{ opacity: 0 }, { opacity: 1 }], { duration: 150, easing: 'ease-out', fill: 'both' });
 
       /* navigation never happened (blocked, offline) -- put the grid back */
-      active = { layer: layer, media: media, img: img, timer: setTimeout(cleanup, 8000) };
+      active = { layer: layer, media: media, img: img, flight: flight, timer: setTimeout(cleanup, 8000) };
     }
 
     D.addEventListener('click', function (e) {
       if (e.defaultPrevented || e.button !== 0 || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;
       if (!(e.target instanceof Element)) return;
       var card = e.target.closest('product-card');
-      if (!card || card.hasAttribute('data-no-navigation')) return;
+      /* data-no-navigation is also set, just for this click, by the in-page
+         navigation (mdr-instant-nav) -- which does want the pop */
+      if (!card || (card.hasAttribute('data-no-navigation') && !card.hasAttribute('data-mdr-instant'))) return;
       if (e.target.closest('button, input, label, select, [tabindex="1"]')) return;
       var link = card.querySelector('[ref="productCardLink"]') || card.querySelector('a[href*="/products/"]');
       if (!link || !link.href || (link.target && link.target !== '_self')) return;
@@ -197,24 +199,31 @@
     });
 
     /* For the in-page navigation (mdr-instant-nav): the product page is now
-       in place under the overlay, with its image exactly where the overlay
-       landed -- fade the overlay out and hand over. The grid's hidden tile
-       stays hidden until cleanup(), called when the grid comes back. */
+       in place under the overlay. Its text comes in straight away (the
+       backdrop clears) while the flying image finishes landing on the
+       page's own image -- hidden meanwhile, so there's never two -- and
+       hands over once that one is decoded (or 900ms at most). The grid's
+       hidden tile stays hidden until cleanup(), when the grid comes back. */
     window.__mdrPop = {
       isActive: function () { return !!active; },
       measure: measure,
       cleanup: cleanup,
-      finish: function () {
+      finish: function (target, ready) {
         if (!active) return;
         var done = active;
         clearTimeout(done.timer);
-        var anim = done.layer.animate([{ opacity: 1 }, { opacity: 0 }], { duration: 120, easing: 'ease-out', fill: 'forwards' });
-        anim.onfinish = function () {
+        done.layer.firstChild.animate([{ opacity: 1 }, { opacity: 0 }], { duration: 120, easing: 'ease-out', fill: 'forwards' });
+        if (target) target.style.visibility = 'hidden';
+        var landed = done.flight && done.flight.finished ? done.flight.finished.catch(function () {}) : Promise.resolve();
+        var cap = new Promise(function (res) { setTimeout(res, 900); });
+        var decoded = Promise.race([Promise.resolve(ready).catch(function () {}), cap]);
+        Promise.all([landed, decoded]).then(function () {
+          if (target) target.style.visibility = '';
           done.layer.remove();
           if (active === done) {
             active = { layer: done.layer, media: done.media, img: done.img, timer: null };
           }
-        };
+        });
       }
     };
   })();

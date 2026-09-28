@@ -54,6 +54,12 @@
     function mainImage(root) {
       return root.querySelector('.product-information__media .product-media-container img');
     }
+    /* phones show the slideshow copy, desktop the grid copy */
+    function visibleMainImage(root) {
+      var all = root.querySelectorAll('.product-information__media .product-media-container img');
+      for (var i = 0; i < all.length; i++) if (all[i].getBoundingClientRect().width) return all[i];
+      return all[0] || null;
+    }
     function warmImage(url) {
       if (warmed[url]) return;
       warmed[url] = true;
@@ -290,13 +296,10 @@
       if (window.__mdrPop) {
         window.__mdrPop.measure();
         if (window.__mdrPop.isActive()) {
-          /* the popped image stays over the page until the page's own image
-             is ready under it -- never a blank frame -- capped so a slow
-             image never holds the page back */
-          var img = mainImage(main);
-          var ready = img && !img.complete && img.decode ? img.decode() : Promise.resolve();
-          var cap = new Promise(function (res) { setTimeout(res, 900); });
-          Promise.race([ready.catch(function () {}), cap]).then(function () { window.__mdrPop.finish(); });
+          /* the popped image lands on the page's own image and only hands
+             over once that one is decoded -- never a blank frame */
+          var img = visibleMainImage(main);
+          window.__mdrPop.finish(img, img && img.decode ? img.decode() : null);
         } else {
           main.animate([{ opacity: 0 }, { opacity: 1 }], { duration: 140, easing: 'ease-out' });
         }
@@ -339,7 +342,11 @@
       if (!t) return;
       pending = { event: e, url: t.url };
       t.card.setAttribute('data-no-navigation', '');
-      setTimeout(function () { t.card.removeAttribute('data-no-navigation'); }, 0);
+      t.card.setAttribute('data-mdr-instant', '');
+      setTimeout(function () {
+        t.card.removeAttribute('data-no-navigation');
+        t.card.removeAttribute('data-mdr-instant');
+      }, 0);
     }, true);
 
     /* bubble, after the product pop has started its animation */
