@@ -326,7 +326,7 @@
       var originals = [];
       var kids = grid.children;
       for (var k = 0; k < kids.length; k++) {
-        if (!kids[k].hasAttribute('data-mdr-clone')) originals.push(kids[k]);
+        if (!kids[k].hasAttribute('data-mdr-clone') && !kids[k].hasAttribute('data-mdr-fill')) originals.push(kids[k]);
       }
       if (!originals.length) return;
 
