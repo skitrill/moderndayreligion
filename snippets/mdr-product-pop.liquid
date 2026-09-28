@@ -21,8 +21,8 @@
     window.__mdrProductPop = true;
 
     var D = document;
-    /* v2: the desktop frame moved the product page's image, older saved spots are stale */
-    var KEY = 'mdrPdpMedia2';
+    /* bumped whenever the desktop product layout moves the image -- older saved spots are stale */
+    var KEY = 'mdrPdpMedia3';
     var EASE = 'cubic-bezier(0.32, 0.72, 0, 1)';
     var DURATION = 380;
 
@@ -82,15 +82,19 @@
         var w = Math.round(vw * 0.632);
         return { x: (vw - w) / 2, y: headerH + 19, w: w, h: w * ratio };
       }
-      /* PC (desktop frame): image 83px inside the frame's left edge (1px
-         line + 24px inset + 58px), 53px under the WEBRACK/RETURN line,
-         184px wide -- measured at 1440 */
+      /* PC (desktop frame, mdr-custom.css): image 46px inside the frame's
+         left edge; its top is the product page's top padding (clamp(56px,
+         10vh, 96px)) + 5px under the WEBRACK/RETURN line; the image column
+         is 47% of the frame's inner width minus 122px (1px lines, 32px
+         insets, 56px gap), less 26px of frame padding/border */
       var frame = D.querySelector('.mdr-frame');
       var fr = frame && frame.getBoundingClientRect();
       if (fr && fr.width) {
         var nav = D.querySelector('.mdr-allbar-wrap');
         var navBottom = nav ? nav.getBoundingClientRect().bottom + window.scrollY : headerH;
-        return { x: fr.left + 83, y: navBottom + 53, w: 184, h: 184 * ratio };
+        var topPad = Math.min(96, Math.max(56, window.innerHeight * 0.1));
+        var iw = (fr.width - 122) * 0.47 - 26;
+        return { x: fr.left + 46, y: navBottom + topPad + 5, w: iw, h: iw * ratio };
       }
       /* tablet: image column 58px inside the page frame, 19px under the header */
       var main = D.querySelector('main');
