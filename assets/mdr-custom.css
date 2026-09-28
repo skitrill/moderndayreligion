@@ -501,10 +501,29 @@ html {
   .mdr-frame > main[data-template='cart'] .cart-page__summary .cart-summary {
     position: sticky;
     top: 32px;
+    display: block !important;
     width: auto !important;
     max-width: none !important;
     height: auto !important;
     padding-top: 0 !important;
+  }
+
+  /* the theme's "extend" summary pins its inner block to a fixed sidebar
+     width with its own gutters and its own sticky -- here it simply fills
+     the column (the summary above is the one sticky piece) */
+  .mdr-frame > main[data-template='cart'] .cart-page__summary .cart-summary__inner {
+    position: static !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    padding: 0 !important;
+    grid-row: auto !important;
+    align-items: stretch !important;
+  }
+
+  /* CHECK OUT spans the summary column, directly under the totals */
+  .mdr-frame > main[data-template='cart'] .cart-page__summary :is(.cart__checkout-button, button[name='checkout']) {
+    width: 100% !important;
+    max-width: 100% !important;
   }
 }
 
