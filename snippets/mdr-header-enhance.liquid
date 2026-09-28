@@ -1177,15 +1177,76 @@
            - sideways movement scrolls the open list, and is always cancelled
              so a two-finger trackpad swipe here can never become the
              browser's Back/Forward gesture */
-        touchzone.addEventListener('wheel', function (e) {
-          if (Math.abs(e.deltaX) <= Math.abs(e.deltaY)) return;
-          e.preventDefault();
-          if (!bar.classList.contains('is-open')) return;
-          list.scrollLeft += e.deltaX;
+        /* One direction per gesture. A Mac two-finger swipe arrives as a
+           stream of small, slightly wobbly deltas followed by momentum
+           events; judging each event alone let a sideways swipe leak a few
+           vertical ticks (a page jiggle) and vice versa. The first ~3px of
+           movement decide the axis, which then holds until the stream stops
+           for 180ms (fingers lifted and momentum finished). */
+        var gestureAxis = null;
+        var gestureSumX = 0;
+        var gestureSumY = 0;
+        var gestureLast = 0;
+        var pendingX = 0;
+        var pendingY = 0;
+        function wheelDelta(e) {
+          var unit = e.deltaMode === 1 ? 16 : e.deltaMode === 2 ? window.innerHeight : 1;
+          var dx = e.deltaX;
+          var dy = e.deltaY;
+          /* shift + mouse wheel means sideways (Safari reports it as deltaY) */
+          if (e.shiftKey && !dx) { dx = dy; dy = 0; }
+          return { x: dx * unit, y: dy * unit };
+        }
+        function wheelAxis(e, d) {
+          var now = e.timeStamp || performance.now();
+          if (now - gestureLast > 180) {
+            gestureAxis = null;
+            gestureSumX = 0;
+            gestureSumY = 0;
+            pendingX = 0;
+            pendingY = 0;
+          }
+          gestureLast = now;
+          if (gestureAxis) return gestureAxis;
+          gestureSumX += Math.abs(d.x);
+          gestureSumY += Math.abs(d.y);
+          if (Math.max(gestureSumX, gestureSumY) >= 4) gestureAxis = gestureSumX > gestureSumY ? 'x' : 'y';
+          return gestureAxis; /* null while still undecided */
+        }
+
+        function scrollListBy(dx) {
+          if (!dx || !bar.classList.contains('is-open')) return;
+          list.scrollLeft += dx;
           if (loopWidth > 0) {
             if (list.scrollLeft >= loopWidth) list.scrollLeft -= loopWidth;
             else if (list.scrollLeft < 0) list.scrollLeft += loopWidth;
           }
+        }
+
+        /* the whole row (WEBRACK label included, not only the list area):
+           sideways scrolls the open list 1:1 with the fingers and is always
+           cancelled, so it can never become Back/Forward; vertical is left
+           to the page. The first few pixels of a gesture, before its
+           direction is known, are held and handed to whichever side wins. */
+        wrap.addEventListener('wheel', function (e) {
+          var d = wheelDelta(e);
+          var axis = wheelAxis(e, d);
+          if (axis === null) {
+            e.preventDefault();
+            pendingX += d.x;
+            pendingY += d.y;
+            return;
+          }
+          if (axis === 'y') {
+            if (pendingY) window.scrollBy({ top: pendingY, behavior: 'instant' });
+            pendingX = 0;
+            pendingY = 0;
+            return;
+          }
+          e.preventDefault();
+          scrollListBy(d.x + pendingX);
+          pendingX = 0;
+          pendingY = 0;
         }, { passive: false });
 
         /* While WEBRACK is open on PC, a sideways trackpad swipe anywhere else
@@ -1195,8 +1256,10 @@
         if (window.matchMedia && window.matchMedia('(hover: hover) and (pointer: fine)').matches) {
           window.addEventListener('wheel', function (e) {
             if (!bar.classList.contains('is-open')) return;
-            if (Math.abs(e.deltaX) <= Math.abs(e.deltaY)) return;
-            if (e.target instanceof Node && touchzone.contains(e.target)) return;
+            if (e.target instanceof Node && wrap.contains(e.target)) return;
+            var d = wheelDelta(e);
+            var axis = wheelAxis(e, d) || (Math.abs(d.x) > Math.abs(d.y) ? 'x' : 'y');
+            if (axis !== 'x') return;
             e.preventDefault();
           }, { passive: false });
         }
