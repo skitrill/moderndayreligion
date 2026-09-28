@@ -739,9 +739,19 @@ footer .footer-utilities__group-copyright {
      dimmer regardless of what that resolves to. Glass experiment: was
      rgba(255,255,255,0.45) (dim white) for the solid blue; now the same
      secondary graphite the rest of the site uses for quiet copy
-     (timestamps, footnotes). */
+     (timestamps, footnotes).
+     Now precisely 30% lighter than that same graphite (the rest of the
+     footer's own text color, var(--mdr-text-gray), what nav/policy links
+     render at) -- color-mix blends 30% of the way toward white rather
+     than reusing --mdr-text-gray-light, which was never tied to that
+     graphite by a fixed ratio. Paired with a single soft white
+     text-shadow dropped 1px below the glyphs -- the classic engraved-
+     into-a-light-surface trick: a bright lip catching light just under
+     each letter, nothing above it, so the mark reads as pressed into the
+     glass rather than sitting on top of it. */
   font-size: 0.44rem !important;
-  color: var(--mdr-text-gray-light) !important;
+  color: color-mix(in srgb, var(--mdr-text-gray) 70%, white 30%) !important;
+  text-shadow: 0 1px 0 rgba(255, 255, 255, 0.8);
 }
 
 /* ---- Product page: details column fills to the cart edge, tight gap ------- */
