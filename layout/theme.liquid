@@ -286,6 +286,16 @@
           });
           window.addEventListener('popstate', readState);
 
+          /* An in-page page change (snippets/mdr-instant-nav.liquid) is a new
+             page in the chain, not a same-page entry: one level deeper, so
+             RETURN steps back to the page it came from. */
+          window.__mdrPushPage = function (url, extraState) {
+            depth += 1;
+            sub = 0;
+            nativePush(stamp(extraState), '', url);
+            remember();
+          };
+
           window.mdrGoBack = function () {
             if (depth > 1) {
               history.go(-(sub + 1));
@@ -321,6 +331,7 @@
     </div>
 
     {% render 'mdr-product-pop' %}
+    {% render 'mdr-instant-nav' %}
 
     {% render 'cart-drawer', render_wrapper: true %}
     {% render 'theme-drawer' %}

@@ -1,0 +1,297 @@
+{%- doc -%}
+  In-page navigation for the shop path (grid -> product -> RETURN -> grid) on
+  browsers without speculation rules (Safari, Firefox). Chrome/Edge already
+  prerender pages (layout/theme.liquid), so this does nothing there.
+
+  - A product page's HTML starts downloading on hover / finger-down, and the
+    visible product cards are fetched once the page is idle (skipped with
+    data saver or a slow connection).
+  - A tap on a product card swaps that product page into the frame in place
+    of the grid (the product "pop" plays over it, snippets/mdr-product-pop),
+    runs the page's own scripts, reports the page view to Shopify, and swaps
+    the WEBRACK row for RETURN.
+  - RETURN / browser Back puts the very same grid back (kept in memory, so
+    its state and scroll position are exactly as left). Forward swaps the
+    product in again.
+  Anything unexpected falls back to a normal page load.
+{%- enddoc -%}
+
+<script>
+  (function () {
+    if (window.__mdrInstantNav) return;
+    window.__mdrInstantNav = true;
+    /* testing only: localStorage mdrInstantNav = 'force' runs it in Chrome too */
+    var force = false;
+    try { force = localStorage.getItem('mdrInstantNav') === 'force'; } catch (e) {}
+    if (!force && HTMLScriptElement.supports && HTMLScriptElement.supports('speculationrules')) return;
+    if (!window.fetch || !window.DOMParser || !window.__mdrPushPage) return;
+
+    var D = document;
+    var TTL = 120000;
+    var cache = {};
+
+    function get(url) {
+      var hit = cache[url];
+      if (hit && Date.now() - hit.t < TTL) return hit.p;
+      var p = fetch(url, { credentials: 'same-origin' }).then(function (res) {
+        if (!res.ok) throw new Error('mdr: bad response');
+        return res.text();
+      });
+      cache[url] = { p: p, t: Date.now() };
+      p.catch(function () { delete cache[url]; });
+      return p;
+    }
+
+    function currentMain() {
+      return D.querySelector('main#MainContent');
+    }
+
+    function onGrid() {
+      var m = currentMain();
+      return !!(m && m.dataset.template === 'collection' && m.querySelector('[id$="__product_list_fa6P9H"]'));
+    }
+
+    /* the product page a grid card leads to, or null */
+    function cardTarget(el) {
+      if (!(el instanceof Element) || !onGrid()) return null;
+      var card = el.closest('product-card');
+      if (!card || card.hasAttribute('data-no-navigation') || card.closest('[data-mdr-clone]')) return null;
+      if (el.closest('button, input, label, select, [tabindex="1"]')) return null;
+      var a = card.querySelector('[ref="productCardLink"]') || card.querySelector('a[href*="/products/"]');
+      if (!a || !a.href || (a.target && a.target !== '_self')) return null;
+      var u = new URL(a.href, location.href);
+      if (u.origin !== location.origin || !/^\/products\//.test(u.pathname)) return null;
+      return { card: card, url: u.pathname + u.search };
+    }
+
+    /* ---- preloading --------------------------------------------------- */
+    var hoverTimer = null;
+    D.addEventListener('pointerover', function (e) {
+      var t = cardTarget(e.target);
+      if (!t) return;
+      if (e.pointerType === 'mouse') {
+        clearTimeout(hoverTimer);
+        hoverTimer = setTimeout(function () { get(t.url); }, 65);
+      }
+    }, { passive: true });
+    D.addEventListener('pointerout', function () { clearTimeout(hoverTimer); }, { passive: true });
+    D.addEventListener('pointerdown', function (e) {
+      var t = cardTarget(e.target);
+      if (t) get(t.url);
+    }, { passive: true });
+
+    function slowConnection() {
+      var c = navigator.connection;
+      return !!(c && (c.saveData || /(^|-)2g|3g/.test(c.effectiveType || '')));
+    }
+
+    function prefetchVisible() {
+      if (!onGrid() || slowConnection() || !window.IntersectionObserver) return;
+      var budget = 8;
+      var io = new IntersectionObserver(function (entries) {
+        entries.forEach(function (en) {
+          if (!en.isIntersecting || budget <= 0) return;
+          var t = cardTarget(en.target);
+          io.unobserve(en.target);
+          if (t && !cache[t.url]) { budget -= 1; get(t.url); }
+        });
+      });
+      D.querySelectorAll('[id$="__product_list_fa6P9H"] product-card').forEach(function (c) {
+        if (!c.closest('[data-mdr-clone]')) io.observe(c);
+      });
+    }
+    var idle = window.requestIdleCallback || function (fn) { return setTimeout(fn, 1200); };
+    window.addEventListener('load', function () { idle(prefetchVisible); });
+
+    /* ---- the swap ------------------------------------------------------ */
+    var grid = null;      /* { main, url, title, meta, scrollY } -- the grid kept in memory */
+    var navRows = {};     /* { home: <WEBRACK row>, back: <RETURN row> } */
+    var busy = false;
+
+    function placeRow(row) {
+      var frame = D.querySelector('.mdr-frame');
+      if (window.matchMedia('(min-width: 990px)').matches && frame) {
+        frame.insertBefore(row, frame.firstChild);
+      } else {
+        var header = D.querySelector('header.shopify-section-group-header-group') || D.querySelector('#header-group > header');
+        if (header && header.parentNode) header.parentNode.insertBefore(row, header.nextSibling);
+      }
+      /* its line and drag zone re-measure for the current layout */
+      window.dispatchEvent(new Event('resize'));
+    }
+
+    function swapRow(to) {
+      var from = to === 'back' ? 'home' : 'back';
+      var current = D.querySelector('.mdr-allbar-wrap');
+      if (current) {
+        navRows[from] = current;
+        current.remove();
+      }
+      if (navRows[to]) {
+        placeRow(navRows[to]);
+      } else if (window.__mdrAllbarBuild) {
+        window.__mdrAllbarBuild();
+        navRows[to] = D.querySelector('.mdr-allbar-wrap');
+      }
+    }
+
+    /* scripts parsed from fetched HTML never run by themselves -- recreate
+       them so they do (module scripts already loaded here run once only,
+       exactly as on a normal page load) */
+    function runScripts(root) {
+      root.querySelectorAll('script').forEach(function (old) {
+        var type = (old.getAttribute('type') || '').toLowerCase();
+        if (type && type !== 'module' && type !== 'text/javascript' && type !== 'application/javascript') return;
+        var s = D.createElement('script');
+        for (var i = 0; i < old.attributes.length; i++) s.setAttribute(old.attributes[i].name, old.attributes[i].value);
+        if (!old.src) s.textContent = old.textContent;
+        old.replaceWith(s);
+      });
+    }
+
+    /* head scripts/styles that page has and this one doesn't (e.g. the
+       product page's sticky add-to-cart module) */
+    function addHeadAssets(doc) {
+      var have = {};
+      D.querySelectorAll('head script[src], head link[rel="stylesheet"], head link[rel="modulepreload"]').forEach(function (el) {
+        have[(el.getAttribute('src') || el.getAttribute('href') || '').split('?')[0]] = true;
+      });
+      doc.querySelectorAll('head script[src], head link[rel="stylesheet"]').forEach(function (el) {
+        var key = (el.getAttribute('src') || el.getAttribute('href') || '').split('?')[0];
+        if (!key || have[key]) return;
+        var n;
+        if (el.tagName === 'SCRIPT') {
+          n = D.createElement('script');
+          for (var i = 0; i < el.attributes.length; i++) n.setAttribute(el.attributes[i].name, el.attributes[i].value);
+        } else {
+          n = D.createElement('link');
+          n.rel = 'stylesheet';
+          n.href = el.getAttribute('href');
+        }
+        D.head.appendChild(n);
+        have[key] = true;
+      });
+    }
+
+    /* Shopify's own analytics: the page's product/page description and the
+       page-view call are both in its HTML -- replay them for the new page */
+    function jsonAfter(html, marker) {
+      var i = html.indexOf(marker);
+      if (i < 0) return null;
+      var start = html.indexOf('{', i);
+      var depth = 0, inStr = false, esc = false;
+      for (var k = start; k < html.length; k++) {
+        var ch = html[k];
+        if (inStr) {
+          if (esc) esc = false;
+          else if (ch === '\\') esc = true;
+          else if (ch === '"') inStr = false;
+        } else if (ch === '"') inStr = true;
+        else if (ch === '{') depth++;
+        else if (ch === '}') { depth--; if (depth === 0) { try { return JSON.parse(html.slice(start, k + 1)); } catch (e) { return null; } } }
+      }
+      return null;
+    }
+
+    function reportPageView(html) {
+      var SA = window.ShopifyAnalytics;
+      if (!SA || !SA.lib || typeof SA.lib.page !== 'function') return;
+      try {
+        var meta = jsonAfter(html, 'var meta = ');
+        if (meta) SA.meta = Object.assign({ currency: SA.meta && SA.meta.currency }, meta);
+        var props = jsonAfter(html, 'lib.page(null,');
+        SA.lib.page(null, props || {});
+      } catch (e) {}
+    }
+
+    function showProduct(url, html, push) {
+      var doc = new DOMParser().parseFromString(html, 'text/html');
+      var incoming = doc.querySelector('main#MainContent');
+      if (!incoming || (incoming.dataset.template || '').indexOf('product') !== 0) throw new Error('mdr: not a product page');
+
+      var outgoing = currentMain();
+      if (onGrid()) {
+        grid = {
+          main: outgoing,
+          url: location.pathname + location.search,
+          title: D.title,
+          meta: window.ShopifyAnalytics && window.ShopifyAnalytics.meta,
+          scrollY: window.scrollY
+        };
+      }
+      addHeadAssets(doc);
+      var main = D.importNode(incoming, true);
+      if (push) window.__mdrPushPage(url, { mdrSwap: true });
+      outgoing.replaceWith(main);
+      runScripts(main);
+      D.title = doc.title;
+      window.scrollTo({ top: 0, behavior: 'instant' });
+      swapRow('back');
+      if (window.__mdrPop) {
+        window.__mdrPop.measure();
+        if (window.__mdrPop.isActive()) window.__mdrPop.finish();
+        else main.animate([{ opacity: 0 }, { opacity: 1 }], { duration: 180, easing: 'ease-out' });
+      }
+      reportPageView(html);
+    }
+
+    function go(url, push) {
+      if (busy) return;
+      busy = true;
+      get(url)
+        .then(function (html) { showProduct(url, html, push); })
+        .catch(function () { location.href = url; })
+        .then(function () { busy = false; });
+    }
+
+    function restoreGrid() {
+      var main = currentMain();
+      if (!grid || !main) return false;
+      main.replaceWith(grid.main);
+      D.title = grid.title;
+      if (window.ShopifyAnalytics && grid.meta) window.ShopifyAnalytics.meta = grid.meta;
+      swapRow('home');
+      if (window.__mdrPop) window.__mdrPop.cleanup();
+      var y = grid.scrollY;
+      window.scrollTo({ top: y, behavior: 'instant' });
+      requestAnimationFrame(function () { window.scrollTo({ top: y, behavior: 'instant' }); });
+      if (window.ShopifyAnalytics && window.ShopifyAnalytics.lib && typeof window.ShopifyAnalytics.lib.page === 'function') {
+        try { window.ShopifyAnalytics.lib.page(null, { pageType: 'collection' }); } catch (e) {}
+      }
+      return true;
+    }
+
+    /* capture: runs before the product card's own handler, which would
+       otherwise start a normal page load for taps outside the link itself */
+    var pending = null;
+    D.addEventListener('click', function (e) {
+      if (e.defaultPrevented || e.button !== 0 || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;
+      var t = cardTarget(e.target);
+      if (!t) return;
+      pending = { event: e, url: t.url };
+      t.card.setAttribute('data-no-navigation', '');
+      setTimeout(function () { t.card.removeAttribute('data-no-navigation'); }, 0);
+    }, true);
+
+    /* bubble, after the product pop has started its animation */
+    D.addEventListener('click', function (e) {
+      if (!pending || pending.event !== e) return;
+      var url = pending.url;
+      pending = null;
+      e.preventDefault();
+      go(url, true);
+    });
+
+    window.addEventListener('popstate', function () {
+      var here = location.pathname + location.search;
+      var main = currentMain();
+      if (!main) return;
+      var onProduct = (main.dataset.template || '').indexOf('product') === 0;
+      if (grid && onProduct && here === grid.url) {
+        restoreGrid();
+      } else if (history.state && history.state.mdrSwap && onGrid()) {
+        go(here, false);
+      }
+    });
+  })();
+</script>

@@ -580,6 +580,8 @@
       var headerParent = header.parentNode;
       var frameQuery = window.matchMedia('(min-width: 990px)');
       function placeWrap() {
+        /* a row the in-page navigation has set aside (mdr-instant-nav) stays aside */
+        if (!wrap.isConnected) return;
         var frame = D.querySelector('.mdr-frame');
         var inFrame = frameQuery.matches && frame && !D.querySelector('main[data-template="index"]');
         if (inFrame) {
@@ -1271,6 +1273,9 @@
          a real reload of whatever URL is now in the bar */
       window.addEventListener('popstate', function () {
         if (window.__mdrSwitching) return;
+        /* entries created by the in-page product navigation are restored by
+           that script (mdr-instant-nav), not by a reload */
+        if (history.state && history.state.mdrSwap) return;
         if (location.pathname + location.search !== currentUrl) location.reload();
       });
 
@@ -1290,6 +1295,10 @@
         currentUrl = location.pathname + location.search;
       });
     }
+
+    /* for the in-page navigation (mdr-instant-nav) to build the right row
+       -- WEBRACK or RETURN -- for the page it has just swapped in */
+    window.__mdrAllbarBuild = build;
 
     if (D.readyState !== 'loading') build();
     D.addEventListener('DOMContentLoaded', build);

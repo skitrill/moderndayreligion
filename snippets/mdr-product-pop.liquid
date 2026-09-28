@@ -195,5 +195,27 @@
     window.addEventListener('pageshow', function (e) {
       if (e.persisted) cleanup();
     });
+
+    /* For the in-page navigation (mdr-instant-nav): the product page is now
+       in place under the overlay, with its image exactly where the overlay
+       landed -- fade the overlay out and hand over. The grid's hidden tile
+       stays hidden until cleanup(), called when the grid comes back. */
+    window.__mdrPop = {
+      isActive: function () { return !!active; },
+      measure: measure,
+      cleanup: cleanup,
+      finish: function () {
+        if (!active) return;
+        var done = active;
+        clearTimeout(done.timer);
+        var anim = done.layer.animate([{ opacity: 1 }, { opacity: 0 }], { duration: 160, easing: 'ease-out', fill: 'forwards' });
+        anim.onfinish = function () {
+          done.layer.remove();
+          if (active === done) {
+            active = { layer: done.layer, media: done.media, img: done.img, timer: null };
+          }
+        };
+      }
+    };
   })();
 </script>
