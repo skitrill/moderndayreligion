@@ -20,9 +20,8 @@
 {% endif %}
 
 {% stylesheet %}
-  /* Same size/tracking/gap as the menu list above them (.mdr-fnav--landing
-     in assets/mdr-custom.css), a step dimmer so the two groups read as
-     menu, then fine print. */
+  /* Same size, tracking, gap and colour as the menu items around them
+     (.mdr-fnav--landing in assets/mdr-custom.css). */
   .mdr-lock-policies {
     list-style: none;
     margin: 0;
@@ -40,10 +39,6 @@
     letter-spacing: 0.04em;
     text-transform: uppercase;
     text-decoration: none;
-    color: rgba(247, 240, 228, 0.5);
-  }
-
-  .mdr-lock-policies a:hover {
-    color: rgba(247, 240, 228, 0.9);
+    color: rgba(247, 240, 228, 0.75);
   }
 {% endstylesheet %}

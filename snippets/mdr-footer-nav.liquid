@@ -19,6 +19,10 @@
     differently from the footer's default row.
   @param {boolean} [hide_shop] - leave out WEBRACK and LOOKBOOK (the lock screen,
     layout/password.liquid, where the shop is closed).
+  @param {string} [extra_items] - markup added as one more list item between ACCOUNT
+    and MAILING (the lock screen's policy links).
+  @param {boolean} [mailing_open] - MAILING is just its sign-up form, always showing:
+    no "Mailing" label, nothing to open (the lock screen).
 {%- enddoc -%}
 
 {% assign mailing_drop_id = 'mdr-mailing-drop-' | append: section.id %}
@@ -39,16 +43,21 @@
         {%- endif -%}
       </a>
     </li>
+    {%- if extra_items != blank -%}
+      <li class="mdr-fnav__extra">{{ extra_items }}</li>
+    {%- endif -%}
     <li class="mdr-fnav__mailing">
-      <button
-        type="button"
-        class="mdr-fnav__toggle"
-        aria-expanded="false"
-        aria-controls="{{ mailing_drop_id }}"
-      >
-        Mailing
-      </button>
-      <div id="{{ mailing_drop_id }}" class="mdr-fnav__drop" hidden>
+      {%- unless mailing_open -%}
+        <button
+          type="button"
+          class="mdr-fnav__toggle"
+          aria-expanded="false"
+          aria-controls="{{ mailing_drop_id }}"
+        >
+          Mailing
+        </button>
+      {%- endunless -%}
+      <div id="{{ mailing_drop_id }}" class="mdr-fnav__drop"{% unless mailing_open %} hidden{% endunless %}>
         {%- form 'customer', class: 'mdr-fnav__form' -%}
           {%- if form.posted_successfully? -%}
             <p class="mdr-fnav__msg">You're on the list.</p>
