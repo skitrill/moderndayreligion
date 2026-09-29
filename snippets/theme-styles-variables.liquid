@@ -651,7 +651,7 @@
   }
 
   .custom-color-quick-add {
-    --quick-add-background: {{ settings.quick_add_background }};
+    --quick-add-background: {% render 'mdr-canvas-color', color: settings.quick_add_background %};
     --quick-add-foreground: {{ settings.quick_add_text }};
   }
 {% endstyle %}

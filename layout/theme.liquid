@@ -348,5 +348,12 @@
     {% if settings.quick_add or settings.mobile_quick_add %}
       {% render 'quick-add-modal' %}
     {% endif %}
+
+    {%- comment -%}
+      The glass the interface sits under -- one fixed, click-through sheet over
+      the whole screen. Look and strength: .mdr-glass-sheet / --mdr-glass-strength
+      in assets/mdr-custom.css.
+    {%- endcomment -%}
+    <div class="mdr-glass-sheet" aria-hidden="true"></div>
   </body>
 </html>

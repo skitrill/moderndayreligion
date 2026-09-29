@@ -126,14 +126,39 @@ product-price *,
      base-theme surface reads, and the browser-bar tint in
      snippets/meta-tags.liquid. --mdr-paper stays as the name every existing
      rule reads. */
-  --mdr-background: #f8f8f5;
+  /* ---- MATERIAL LAYER -- light graphite canvas + interface behind glass.
+     The whole experiment lives in these few lines: change --mdr-canvas
+     (and its rgb triplet beside it, for the theme's rgb() colours) to
+     retune the graphite; --mdr-glass-strength 0 switches the glass sheet
+     off. To go back to the old paper: --mdr-canvas: #f8f8f5 /
+     --mdr-canvas-rgb: 248 248 245 (everything below is relative to it).
+     The theme's own surfaces that used the palette background (sections,
+     drawers, search, inputs, the lookbook) read this through
+     snippets/mdr-canvas-color.liquid; the browser bar colour is in
+     snippets/meta-tags.liquid. */
+  --mdr-canvas: #dadbd9;
+  --mdr-canvas-rgb: 218 219 217;
+  --mdr-glass-strength: 1;
+
+  /* semantic names -- what each colour is FOR, read by new work */
+  --mdr-grid: var(--mdr-border);
+  --mdr-text: var(--mdr-graphite);
+  /* --mdr-ink (below) is the dark/black type, unchanged */
+
+  --mdr-background: var(--mdr-canvas);
   --mdr-paper: var(--mdr-background);
   --mdr-ink: #202020;
   --mdr-graphite: #858581;
   --mdr-muted: #b7b7b1;
-  --mdr-border: #dededa;
-  --mdr-border-strong: #b3b3ad;
-  --mdr-selected: #ecece7;
+  /* Lines and the selected-cell fill are defined BY their relation to the
+     canvas (a hairline is the canvas a step darker), not as fixed values --
+     so they keep exactly the contrast they had on the old paper
+     (#dededa / #b3b3ad / #ecece7 on #f8f8f5) whatever the canvas is. As
+     fixed values they'd be lighter than a graphite canvas and the grid
+     would disappear. */
+  --mdr-border: color-mix(in srgb, var(--mdr-canvas), var(--mdr-ink) 12%);
+  --mdr-border-strong: color-mix(in srgb, var(--mdr-canvas), var(--mdr-ink) 32%);
+  --mdr-selected: color-mix(in srgb, var(--mdr-canvas), var(--mdr-ink) 5.5%);
   --mdr-accent: #5558a6;
   --mdr-glass: var(--mdr-glass-tint, rgba(255, 255, 255, 0.55));
 
@@ -212,7 +237,10 @@ product-price *,
      it visually produces when composited over the page's own paper --
      i.e. the SAME appearance the glass panels have in practice -- so
      this backing strip matches them by eye, not just by variable name. */
-  --mdr-edge-color: color-mix(in srgb, white 55%, var(--mdr-paper) 45%);
+  /* Material pass: the glass is a lightened canvas (--mdr-glass-base,
+     further down), not pure white -- this is the flat colour that glass
+     makes over the canvas. */
+  --mdr-edge-color: color-mix(in srgb, var(--mdr-glass-base) 55%, var(--mdr-canvas) 45%);
 
   /* ---- Safe-area strips (body::before/::after) -- a DIFFERENT case from
      --mdr-edge-color above: these sit permanently over the header/footer
@@ -3121,7 +3149,13 @@ body:has(main[data-template='index']) .page-wrapper {
    tint goes back to a solid colour, safe to leave in place.
    ========================================================================== */
 :root {
-  --mdr-glass-tint: rgba(255, 255, 255, 0.55); /* was: var(--mdr-primary) */
+  /* Material pass: the header/footer/WEBRACK glass is tinted with a
+     lightened CANVAS, not pure white, so on the graphite canvas the bars
+     sit the same small step lighter than the page they did on the old
+     paper (white 55% over #f8f8f5 ~ +4; this over #dadbd9 ~ +4) instead of
+     becoming bright white strips. On the old paper it's ~white again. */
+  --mdr-glass-base: color-mix(in srgb, var(--mdr-canvas) 78%, white);
+  --mdr-glass-tint: color-mix(in srgb, var(--mdr-glass-base) 55%, transparent); /* was: rgba(255, 255, 255, 0.55) */
   --mdr-glass-blur: blur(24px) saturate(1.4); /* was: none */
   /* Header/footer rebuild pass: this used to be its own white highlight
      border (rgba(255,255,255,0.7)) -- a second, different-coloured line
@@ -4589,3 +4623,41 @@ main[data-template='collection'] [id$='__product_list_fa6P9H'] .product-card .pr
   }
 }
 
+
+/* ==========================================================================
+   MATERIAL LAYER -- the interface behind glass.
+   One continuous, fixed sheet over the whole screen (layout/theme.liquid):
+   the grid, type and product images scroll underneath it while it stays
+   still, which is what reads as "behind a polished surface". Deliberately
+   not glassmorphism -- no blur, no boxes, nothing per card or section:
+     1. light from above -- the pane's own luminance, strongest at the top
+        edge, gone by mid-screen;
+     2. one long soft reflection band across the pane;
+     3. depth -- the far (bottom) edge of the pane settles very slightly.
+   Strength: --mdr-glass-strength (:root, top of this file) -- 1 as tested,
+   0 switches it off. It is click-through (pointer-events: none) and sits
+   above the safe-area strips so the status bar area is under the same
+   glass. Modal drawers/dialogs open in the browser's top layer, above it.
+   Not on the dark landing / lock screen (their own graphite surface).
+   ========================================================================== */
+.mdr-glass-sheet {
+  position: fixed;
+  inset: 0;
+  z-index: 2147483002;
+  pointer-events: none;
+  opacity: var(--mdr-glass-strength, 1);
+  background:
+    linear-gradient(180deg, rgb(255 255 255 / 0.1) 0%, rgb(255 255 255 / 0.035) 18%, rgb(255 255 255 / 0) 46%),
+    linear-gradient(108deg, rgb(255 255 255 / 0) 34%, rgb(255 255 255 / 0.035) 47%, rgb(255 255 255 / 0.012) 53%, rgb(255 255 255 / 0) 64%),
+    linear-gradient(0deg, rgb(20 22 22 / 0.035) 0%, rgb(20 22 22 / 0) 24%);
+}
+
+body:has(main[data-template='index']) .mdr-glass-sheet {
+  display: none;
+}
+
+@media print {
+  .mdr-glass-sheet {
+    display: none;
+  }
+}

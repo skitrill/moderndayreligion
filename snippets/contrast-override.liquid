@@ -106,8 +106,8 @@
     .color-custom-{{ section_id }},
     .color-custom-{{ section_id }} .text-block {
       /* Background */
-      --color-background: {{ background_color }};
-      --color-background-rgb: {{ background_color.rgb }};
+      --color-background: {% render 'mdr-canvas-color', color: background_color %};
+      --color-background-rgb: {% render 'mdr-canvas-color', color: background_color, rgb: true %};
 
       /* Opacity values adjusted for background brightness */
       {% render 'brightness-opacities', background: background_color %}

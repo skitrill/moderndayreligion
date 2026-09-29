@@ -165,8 +165,8 @@
 {% style %}
   /* Palette colors */
   :root {
-    --color-background: {{ settings.page_background_color }};
-    --color-background-rgb: {{ settings.page_background_color.rgb }};
+    --color-background: {% render 'mdr-canvas-color', color: settings.page_background_color %};
+    --color-background-rgb: {% render 'mdr-canvas-color', color: settings.page_background_color, rgb: true %};
     --color-foreground: {{ settings.page_text_color }};
     --color-foreground-rgb: {{ settings.page_text_color.rgb }};
     --color-border: {{ settings.page_text_color }};
@@ -192,12 +192,12 @@
     --color-secondary-button-hover-background: {{ effective_secondary_button_hover_background }};
     --color-secondary-button-hover-border: {{ effective_secondary_button_hover_border }};
 
-    --color-input-background: rgb({{ settings.palette_input_background.rgba }});
+    --color-input-background: {% render 'mdr-canvas-color', color: settings.palette_input_background %};
     --color-input-text: rgb({{ settings.palette_input_text.rgba }});
     --color-input-text-rgb: {{ settings.palette_input_text.rgb }};
     --color-input-border: rgb({{ settings.palette_input_border.rgba }});
 
-    --color-variant-background: rgb({{ settings.palette_variant_background.rgba }});
+    --color-variant-background: {% render 'mdr-canvas-color', color: settings.palette_variant_background %};
     --color-variant-border: rgb({{ settings.palette_variant_border.rgba }});
     --color-variant-text: rgb({{ settings.palette_variant_text.rgba }});
     --color-variant-text-rgb: {{ settings.palette_variant_text.rgb }};

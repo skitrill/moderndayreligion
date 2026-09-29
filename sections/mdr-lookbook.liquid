@@ -36,7 +36,7 @@
     --mdr-lb-gap: {{ s.gap }}px;
     --mdr-lb-maxw: {{ s.grid_max_width }}px;
     --mdr-lb-ratio: {{ ratio }};
-    --mdr-lb-bg: {{ s.background_color | default: '#000000' }};
+    --mdr-lb-bg: {% if s.background_color != blank %}{% render 'mdr-canvas-color', color: s.background_color %}{% else %}#000000{% endif %};
   "
 >
   {%- if s.heading != blank -%}

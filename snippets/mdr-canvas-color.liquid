@@ -1,0 +1,30 @@
+{%- doc -%}
+  Outputs a colour for a theme CSS variable, routing "the page canvas" through
+  the one material variable in assets/mdr-custom.css (--mdr-canvas).
+
+  Horizon writes its surface colours straight into the page as literals
+  (color-palette, contrast-override, the lookbook). Every surface whose colour is
+  the theme palette's own background -- the page, sections, drawers, search,
+  popovers, inputs -- is the canvas; those come out as var(--mdr-canvas), with
+  the literal as the fallback, so the canvas is set in one place. Any other
+  colour (a black badge, a dark section) is output unchanged.
+
+  @param {color} color - the colour setting
+  @param {boolean} [rgb] - output the space-separated rgb triplet form
+{%- enddoc -%}
+
+{%- liquid
+  assign mdr_given = color | append: '' | downcase
+  assign mdr_palette_bg = settings.color_palette.background | append: '' | downcase
+  if mdr_given == mdr_palette_bg and mdr_given != ''
+    if rgb
+      echo 'var(--mdr-canvas-rgb, ' | append: color.rgb | append: ')'
+    else
+      echo 'var(--mdr-canvas, ' | append: color | append: ')'
+    endif
+  elsif rgb
+    echo color.rgb
+  else
+    echo color
+  endif
+-%}
