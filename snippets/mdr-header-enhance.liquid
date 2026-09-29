@@ -14,7 +14,7 @@
 {%- comment -%} The [v] jump-to-bottom control under the cart has been removed. {%- endcomment -%}
 
 {%- comment -%} Collection titles for the [ALL >] bar (read by __mdrAllBar). {%- endcomment -%}
-<script type="application/json" id="mdr-allbar-data">
+<script type="application/json" id="mdr-allbar-data" data-all-url="{{ routes.all_products_collection_url }}">
 [
 {%- assign _mdr_n = 0 -%}
 {%- for collection in collections limit: 24 -%}
@@ -326,7 +326,7 @@
       var originals = [];
       var kids = grid.children;
       for (var k = 0; k < kids.length; k++) {
-        if (!kids[k].hasAttribute('data-mdr-clone') && !kids[k].hasAttribute('data-mdr-fill')) originals.push(kids[k]);
+        if (!kids[k].hasAttribute('data-mdr-clone') && !kids[k].hasAttribute('data-mdr-fill') && kids[k].querySelector('product-card')) originals.push(kids[k]);
       }
       if (!originals.length) return;
 
@@ -377,6 +377,9 @@
       }
     }
     window.__mdrGridFillRow = fillRow;
+    /* WEBRACK's in-place swap replaces the whole grid, clones included --
+       it calls this to put them back when the full list (ALL) returns */
+    window.__mdrGridPadFill = padFill;
 
     function boot() { padFill(); fillRow(); }
 
@@ -477,6 +480,9 @@
          the drag handler below can read/adjust it via closure. */
       var loopWidth = 0;
       var realCount = 0;
+      /* the href of the title that reads as selected -- the repeat copies
+         used for the endless scroll follow it too */
+      var currentMark = null;
 
       function appendCopy() {
         for (var j = 0; j < realItems.length; j++) {
@@ -485,6 +491,7 @@
           b.textContent = realItems[j].t;
           b.setAttribute('aria-hidden', 'true');
           b.tabIndex = -1;
+          if (currentMark && realItems[j].u === currentMark) b.setAttribute('aria-current', 'page');
           list.appendChild(b);
         }
       }
@@ -519,25 +526,29 @@
       }
 
       if (isHome) {
-        /* points at "/" itself, not /collections/all -- with the logo no
-           longer doubling as a home button on this page (see
-           blocks/_header-logo.liquid), All is the way back to the true,
-           unfiltered homepage grid after switching to another title
-           in-place. The u!=='/' guard just below already excludes '/'
-           from the auto aria-current match (every path starts with "/"),
-           so this doesn't make it wrongly read as "current" everywhere. */
-        var items = [{ t: 'All', u: '/' }].concat(data);
+        /* ALL is the full product grid -- the All-products page, every
+           product -- NOT "/", which is the no-header landing screen (a tap
+           on it could never swap a grid in, so it fell back to loading the
+           landing page). It starts out selected whenever the grid on screen
+           is the full one: /collections/all, or the /pages/shop copy of it
+           (neither is a specific category). */
+        var dataEl = D.getElementById('mdr-allbar-data');
+        var allUrl = (dataEl && dataEl.getAttribute('data-all-url')) || '/collections/all';
+        var items = [{ t: 'All', u: allUrl }].concat(data);
         var realItems = [];
         for (var i = 0; i < items.length; i++) {
           if (!items[i] || !items[i].u) continue;
           var a = D.createElement('a');
           a.href = items[i].u;
           a.textContent = items[i].t;
-          if (items[i].u !== '/' && location.pathname.indexOf(items[i].u) === 0) {
-            a.setAttribute('aria-current', 'page');
-          }
+          if (i > 0 && location.pathname.indexOf(items[i].u) === 0) currentMark = items[i].u;
           list.appendChild(a);
           realItems.push(items[i]);
+        }
+        if (!currentMark) currentMark = allUrl;
+        var marked = list.querySelectorAll('a');
+        for (var m = 0; m < marked.length; m++) {
+          if (marked[m].getAttribute('href') === currentMark) marked[m].setAttribute('aria-current', 'page');
         }
         realCount = realItems.length;
         /* one duplicate to start -- measureLoop below adds more if this
@@ -869,6 +880,7 @@
       window.__mdrWarmAllCategories = warmAll;
 
       function markCurrent(url) {
+        currentMark = url;
         var links = list.querySelectorAll('a');
         for (var i = 0; i < links.length; i++) {
           var href = links[i].getAttribute('href');
@@ -957,6 +969,9 @@
                 }
               }
               grid.appendChild(frag);
+              /* the full list comes back with its placeholder tiles, as on a
+                 fresh page load (categories stay real products only) */
+              if (!empty && url.split('?')[0] === allUrl && window.__mdrGridPadFill) window.__mdrGridPadFill();
               if (window.__mdrGridFillRow) window.__mdrGridFillRow();
 
               currentUrl = url;
