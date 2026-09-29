@@ -17,14 +17,18 @@
   @param {string} [variant] - optional modifier, added as `mdr-fnav--{{ variant }}`
     on the <nav> so a caller (e.g. the landing section) can lay it out
     differently from the footer's default row.
+  @param {boolean} [hide_shop] - leave out WEBRACK and LOOKBOOK (the lock screen,
+    layout/password.liquid, where the shop is closed).
 {%- enddoc -%}
 
 {% assign mailing_drop_id = 'mdr-mailing-drop-' | append: section.id %}
 
 <nav class="mdr-fnav{% if variant %} mdr-fnav--{{ variant }}{% endif %}" aria-label="Footer">
   <ul>
-    <li><a href="{{ routes.all_products_collection_url }}">Webrack</a></li>
-    <li><a href="/pages/lookbook">Lookbook</a></li>
+    {%- unless hide_shop -%}
+      <li><a href="{{ routes.all_products_collection_url }}">Webrack</a></li>
+      <li><a href="/pages/lookbook">Lookbook</a></li>
+    {%- endunless -%}
     <li><a href="{{ pages['the-modern-times'].url | default: '/pages/the-modern-times' }}">The Modern Times</a></li>
     <li>
       <a href="{{ routes.account_url }}">

@@ -1,6 +1,7 @@
 {%- doc -%}
-  Lock screen policy links -- Privacy Policy, Terms of Service, Refund
-  Policy, Shipping Policy, pulled from shop.policies (Shopify's own
+  Lock screen policy links, stacked vertically under the menu -- Privacy
+  Policy, Terms of Service, Refund Policy, Shipping Policy, pulled from
+  shop.policies (Shopify's own
   Settings > Policies), not hardcoded. shop.policies only ever contains
   the policies the store has actually published, so anything not set up
   in admin is simply absent here rather than a broken link.
@@ -19,34 +20,30 @@
 {% endif %}
 
 {% stylesheet %}
-  /* Same font-size/letter-spacing/gap as the main site's footer nav +
-     policy links (footer .utilities in assets/mdr-custom.css) -- this
-     layout doesn't load that stylesheet at all, so the values are
-     duplicated here rather than shared, but kept in step with it by
-     hand so the lockscreen's own footer-equivalent reads as the same
-     footer typography, not a slightly different one. */
+  /* Same size/tracking/gap as the menu list above them (.mdr-fnav--landing
+     in assets/mdr-custom.css), a step dimmer so the two groups read as
+     menu, then fine print. */
   .mdr-lock-policies {
     list-style: none;
     margin: 0;
     padding: 0;
     display: flex;
-    flex-wrap: wrap;
-    align-items: center;
-    justify-content: center;
-    gap: 5px 18px;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 4px;
   }
 
   .mdr-lock-policies a {
     font-family: var(--font-accent--family, inherit);
-    font-size: 0.58rem;
+    font-size: 0.625rem;
     line-height: 1;
     letter-spacing: 0.04em;
     text-transform: uppercase;
     text-decoration: none;
-    color: rgba(255, 255, 255, 0.6);
+    color: rgba(247, 240, 228, 0.5);
   }
 
   .mdr-lock-policies a:hover {
-    color: rgba(255, 255, 255, 0.9);
+    color: rgba(247, 240, 228, 0.9);
   }
 {% endstylesheet %}
