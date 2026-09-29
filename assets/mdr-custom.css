@@ -4780,7 +4780,9 @@ body:has(main[data-template='index']) .mdr-glass-sheet {
   position: absolute;
   left: 0;
   right: 0;
-  bottom: var(--mdr-underline-drop, -3px);
+  /* the link box is the whole row's height with the word centred in it --
+     half the row, half the type size, then the old 3px-under-baseline gap */
+  top: calc(50% + 0.5em + 1.5px);
   height: 1px;
   background: var(--mdr-border-strong);
   transform: scaleX(0);
