@@ -1,0 +1,238 @@
+{%- doc -%}
+  Liquid-glass motion (looks: the LIQUID GLASS block in assets/mdr-custom.css).
+
+  - Selector lens: the colour/size switches get one glass lens per row that
+    carries the selection. Switching options slides it to the new cell --
+    it stretches toward where it's going, thins as it travels, settles with
+    a small overshoot, and a glint runs across it on the way. With a mouse
+    it leans a little toward the option you're pointing at. The lens lives
+    outside the variant picker (in its parent), because the theme rebuilds
+    the picker's insides on every switch and would cut the animation.
+  - Press glint: buttons (add to cart, buy now, check out, join...) catch a
+    soft glass highlight where they're pressed; with a mouse, a highlight
+    also sweeps across once when the pointer arrives.
+  At rest the selected cell looks as it did (same fill, same ink text, plus
+  a faint glass edge); the movement between states is what's new.
+  Reduced-motion users get the lens without the travel.
+{%- enddoc -%}
+
+<script>
+  (function () {
+    if (window.__mdrLiquid) return;
+    window.__mdrLiquid = true;
+
+    var D = document;
+    var reduce = window.matchMedia('(prefers-reduced-motion: reduce)');
+    var fineHover = window.matchMedia('(hover: hover) and (pointer: fine)');
+
+    /* ---- selector lens ------------------------------------------------ */
+    var ROW = 'fieldset.variant-option--buttons';
+    var lenses = []; /* { fs-key, host, el, glint, last, lean } */
+
+    function hostOf(fs) {
+      var vp = fs.closest('variant-picker');
+      return vp && vp.parentElement;
+    }
+
+    function keyOf(fs) {
+      var lg = fs.querySelector('legend');
+      return lg ? lg.textContent.trim() : String(Array.prototype.indexOf.call(fs.parentNode.children, fs));
+    }
+
+    function checkedCell(fs) {
+      var input = fs.querySelector('input:checked');
+      return input && input.closest('.variant-option__button-label');
+    }
+
+    function boxIn(el, host) {
+      var a = el.getBoundingClientRect();
+      var b = host.getBoundingClientRect();
+      return { x: a.left - b.left - host.clientLeft, y: a.top - b.top - host.clientTop, w: a.width, h: a.height };
+    }
+
+    function entryFor(fs, host) {
+      var key = keyOf(fs);
+      for (var i = 0; i < lenses.length; i++) {
+        if (lenses[i].key === key && lenses[i].host === host && lenses[i].el.isConnected) return lenses[i];
+      }
+      var el = D.createElement('span');
+      el.className = 'mdr-lens';
+      el.setAttribute('aria-hidden', 'true');
+      var glint = D.createElement('span');
+      glint.className = 'mdr-lens__glint';
+      el.appendChild(glint);
+      host.classList.add('mdr-lens-host');
+      host.appendChild(el);
+      var entry = { key: key, host: host, el: el, glint: glint, last: null, lean: null };
+      lenses.push(entry);
+      return entry;
+    }
+
+    function setBox(el, b) {
+      el.style.left = b.x + 'px';
+      el.style.top = b.y + 'px';
+      el.style.width = b.w + 'px';
+      el.style.height = b.h + 'px';
+    }
+
+    function travel(entry, from, to) {
+      var el = entry.el;
+      var dx = from.x - to.x;
+      var dy = from.y - to.y;
+      var dist = Math.sqrt(dx * dx + dy * dy);
+      if (dist < 1 || reduce.matches) return;
+      /* halfway: stretched across part of the path, thinner, like a drop
+         being pulled along; then a small overshoot past the target */
+      var dir = dx < 0 ? 1 : -1; /* +1 moving right */
+      var midW = (from.w + to.w) / 2 + Math.abs(dx) * 0.45;
+      var midX = Math.min(from.x, to.x) + Math.abs(dx) * 0.28;
+      var midY = to.y + dy * 0.4 + to.h * 0.07;
+      var over = Math.min(6, Math.abs(dx) * 0.04 + 1.5) * dir;
+      var k = function (x, y, w, h) {
+        return 'translate(' + (x - to.x) + 'px,' + (y - to.y) + 'px) scale(' + w / to.w + ',' + h / to.h + ')';
+      };
+      el.animate(
+        [
+          { transform: k(from.x, from.y, from.w, from.h), offset: 0 },
+          { transform: k(midX, midY, midW, to.h * 0.86), offset: 0.42 },
+          { transform: k(to.x + over, to.y, to.w * 1.015, to.h * 0.97), offset: 0.78 },
+          { transform: 'none', offset: 1 }
+        ],
+        { duration: Math.min(460, 300 + dist * 0.35), easing: 'cubic-bezier(0.3, 0.7, 0.2, 1)' }
+      );
+      entry.glint.animate(
+        [
+          { transform: 'translateX(' + (dir > 0 ? -120 : 120) + '%)', opacity: 0 },
+          { opacity: 1, offset: 0.35 },
+          { transform: 'translateX(' + (dir > 0 ? 120 : -120) + '%)', opacity: 0 }
+        ],
+        { duration: 520, easing: 'cubic-bezier(0.4, 0, 0.2, 1)' }
+      );
+    }
+
+    function place(fs, animate) {
+      var cell = checkedCell(fs);
+      var host = hostOf(fs);
+      if (!cell || !host) return;
+      var entry = entryFor(fs, host);
+      var to = boxIn(cell, host);
+      if (!to.w) return;
+      if (entry.lean) { entry.lean.cancel(); entry.lean = null; }
+      var from = entry.last;
+      setBox(entry.el, to);
+      if (animate && from) travel(entry, from, to);
+      entry.last = to;
+    }
+
+    function placeAll(animate) {
+      D.querySelectorAll('variant-picker ' + ROW).forEach(function (fs) { place(fs, animate); });
+    }
+
+    D.addEventListener('change', function (e) {
+      var fs = e.target instanceof Element && e.target.closest(ROW);
+      if (fs && fs.closest('variant-picker')) place(fs, true);
+    });
+
+    /* the picker's insides are rebuilt after each switch, and the page can
+       reflow (fonts, images) -- keep the lens on its cell, without motion */
+    var settleTimer = null;
+    function settle() {
+      clearTimeout(settleTimer);
+      settleTimer = setTimeout(function () {
+        lenses = lenses.filter(function (l) { return l.el.isConnected; });
+        placeAll(false);
+      }, 60);
+    }
+    new MutationObserver(function () {
+      if (lenses.length || D.querySelector('variant-picker')) settle();
+    }).observe(D.body || D.documentElement, { childList: true, subtree: true });
+    window.addEventListener('resize', settle, { passive: true });
+    window.addEventListener('load', settle);
+
+    /* mouse: the lens leans toward the option under the pointer */
+    D.addEventListener('pointerover', function (e) {
+      if (e.pointerType !== 'mouse' || reduce.matches) return;
+      var cell = e.target instanceof Element && e.target.closest('.variant-option__button-label');
+      var fs = cell && cell.closest(ROW);
+      if (!fs || !fs.closest('variant-picker')) return;
+      var host = hostOf(fs);
+      var entry = host && entryFor(fs, host);
+      if (!entry || !entry.last) return;
+      var b = boxIn(cell, host);
+      var dx = b.x - entry.last.x;
+      if (Math.abs(dx) < 1) { if (entry.lean) { entry.lean.reverse(); entry.lean = null; } return; }
+      var lean = Math.max(-9, Math.min(9, dx * 0.1));
+      if (entry.lean) entry.lean.cancel();
+      entry.lean = entry.el.animate(
+        [{ transform: 'none' }, { transform: 'translateX(' + lean + 'px) scaleX(1.04)' }],
+        { duration: 260, easing: 'cubic-bezier(0.3, 0.7, 0.2, 1)', fill: 'forwards' }
+      );
+    });
+    D.addEventListener('pointerout', function (e) {
+      if (e.pointerType !== 'mouse') return;
+      var fs = e.target instanceof Element && e.target.closest(ROW);
+      if (!fs || (e.relatedTarget instanceof Node && fs.contains(e.relatedTarget))) return;
+      for (var i = 0; i < lenses.length; i++) {
+        var l = lenses[i];
+        if (l.lean && l.key === keyOf(fs)) { l.lean.reverse(); l.lean = null; }
+      }
+    });
+
+    /* ---- press glint ---------------------------------------------------- */
+    var PRESSABLE = '.add-to-cart-button, .shopify-payment-button__button, [name="checkout"], .mdr-fnav__submit, .button:not(.quick-add__button)';
+
+    function glint(btn, x, y, sweep) {
+      if (reduce.matches) return;
+      /* only a static button is made the glint's positioning box -- never
+         override one that's positioned on purpose */
+      if (!btn.classList.contains('mdr-glint-host')) {
+        btn.classList.add('mdr-glint-host');
+        if (getComputedStyle(btn).position === 'static') btn.classList.add('mdr-glint-host--pos');
+      }
+      var r = btn.getBoundingClientRect();
+      var s = D.createElement('span');
+      s.className = sweep ? 'mdr-glint mdr-glint--sweep' : 'mdr-glint';
+      s.setAttribute('aria-hidden', 'true');
+      btn.appendChild(s);
+      var anim;
+      if (sweep) {
+        anim = s.animate(
+          [{ transform: 'translateX(-110%) skewX(-18deg)', opacity: 0 }, { opacity: 1, offset: 0.3 }, { transform: 'translateX(210%) skewX(-18deg)', opacity: 0 }],
+          { duration: 620, easing: 'cubic-bezier(0.4, 0, 0.2, 1)' }
+        );
+      } else {
+        var size = Math.max(r.width, r.height) * 2.2;
+        s.style.width = s.style.height = size + 'px';
+        s.style.left = x - r.left - size / 2 + 'px';
+        s.style.top = y - r.top - size / 2 + 'px';
+        anim = s.animate(
+          [{ transform: 'scale(0.12)', opacity: 0.9 }, { transform: 'scale(1)', opacity: 0 }],
+          { duration: 560, easing: 'cubic-bezier(0.2, 0.7, 0.2, 1)' }
+        );
+      }
+      anim.onfinish = anim.oncancel = function () { s.remove(); };
+    }
+
+    D.addEventListener('pointerdown', function (e) {
+      var btn = e.target instanceof Element && e.target.closest(PRESSABLE);
+      if (btn && !btn.disabled) glint(btn, e.clientX, e.clientY, false);
+    }, { passive: true });
+
+    D.addEventListener('pointerover', function (e) {
+      if (e.pointerType !== 'mouse' || !fineHover.matches) return;
+      var btn = e.target instanceof Element && e.target.closest(PRESSABLE);
+      if (!btn || btn.disabled) return;
+      if (e.relatedTarget instanceof Node && btn.contains(e.relatedTarget)) return;
+      glint(btn, 0, 0, true);
+    }, { passive: true });
+
+    /* for the in-page navigation (mdr-instant-nav) after it swaps a page in */
+    window.__mdrLiquidRefresh = function () {
+      lenses = lenses.filter(function (l) { return l.el.isConnected; });
+      placeAll(false);
+    };
+
+    if (D.readyState === 'loading') D.addEventListener('DOMContentLoaded', function () { placeAll(false); });
+    else placeAll(false);
+  })();
+</script>

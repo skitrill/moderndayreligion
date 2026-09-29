@@ -129,16 +129,22 @@ product-price *,
   /* ---- MATERIAL LAYER -- light graphite canvas + interface behind glass.
      The whole experiment lives in these few lines: change --mdr-canvas
      (and its rgb triplet beside it, for the theme's rgb() colours) to
-     retune the graphite; --mdr-glass-strength 0 switches the glass sheet
-     off. To go back to the old paper: --mdr-canvas: #f8f8f5 /
-     --mdr-canvas-rgb: 248 248 245 (everything below is relative to it).
+     retune; --mdr-glass-strength 0 switches the glass sheet off. Now back
+     on the original paper (#f8f8f5) with the glass sheet over it; every
+     line/fill below is relative to the canvas, so it reproduces the
+     original values exactly here.
      The theme's own surfaces that used the palette background (sections,
      drawers, search, inputs, the lookbook) read this through
      snippets/mdr-canvas-color.liquid; the browser bar colour is in
      snippets/meta-tags.liquid. */
-  --mdr-canvas: #dadbd9;
-  --mdr-canvas-rgb: 218 219 217;
+  --mdr-canvas: #f8f8f5;
+  --mdr-canvas-rgb: 248 248 245;
   --mdr-glass-strength: 1;
+  /* how light the header/footer/WEBRACK glass is: 100% = white glass (the
+     original look on the paper canvas); ~22% = a lightened canvas, which is
+     what keeps the bars a small step above a darker canvas (graphite test:
+     --mdr-canvas #dadbd9 / 218 219 217 with this at 22%) */
+  --mdr-glass-lift: 100%;
 
   /* semantic names -- what each colour is FOR, read by new work */
   --mdr-grid: var(--mdr-border);
@@ -3157,7 +3163,7 @@ body:has(main[data-template='index']) .page-wrapper {
      sit the same small step lighter than the page they did on the old
      paper (white 55% over #f8f8f5 ~ +4; this over #dadbd9 ~ +4) instead of
      becoming bright white strips. On the old paper it's ~white again. */
-  --mdr-glass-base: color-mix(in srgb, var(--mdr-canvas) 78%, white);
+  --mdr-glass-base: color-mix(in srgb, var(--mdr-canvas), white var(--mdr-glass-lift));
   --mdr-glass-tint: color-mix(in srgb, var(--mdr-glass-base) 55%, transparent); /* was: rgba(255, 255, 255, 0.55) */
   --mdr-glass-blur: blur(24px) saturate(1.4); /* was: none */
   /* Header/footer rebuild pass: this used to be its own white highlight
@@ -4249,9 +4255,10 @@ main[data-template='collection']
 .mdr-allbar__list a[aria-current='page'] {
   opacity: 1;
   color: var(--mdr-ink);
-  text-decoration: underline;
-  text-decoration-color: var(--mdr-border-strong);
-  text-underline-offset: 3px;
+  /* the underline is the animated line (::after, LIQUID GLASS block at the
+     end of this file) -- was text-decoration underline, same colour,
+     offset 3px */
+  text-decoration: none;
 }
 
 /* Invisible drag-catcher covering the WHOLE wrap -- position:absolute takes
@@ -4631,28 +4638,52 @@ main[data-template='collection'] [id$='__product_list_fa6P9H'] .product-card .pr
    MATERIAL LAYER -- the interface behind glass.
    One continuous, fixed sheet over the whole screen (layout/theme.liquid):
    the grid, type and product images scroll underneath it while it stays
-   still, which is what reads as "behind a polished surface". Deliberately
+   put, which is what reads as "behind a polished surface". Deliberately
    not glassmorphism -- no blur, no boxes, nothing per card or section:
-     1. light from above -- the pane's own luminance, strongest at the top
-        edge, gone by mid-screen;
-     2. one long soft reflection band across the pane;
-     3. depth -- the far (bottom) edge of the pane settles very slightly.
+     1. the pane's edges -- the far left/right of the screen settle a
+        fraction darker, the way a sheet of glass gathers depth toward its
+        edges. Horizontal only, so the header and footer (top and bottom)
+        always sit under exactly the same glass and match;
+     2. one long, soft reflection, kept out of the header band so the black
+        masthead stays black. It drifts slowly as the page scrolls (where
+        the browser supports scroll-linked animation) -- on the light
+        paper it's only really seen passing over dark things: the
+        garments, the black buttons.
    Strength: --mdr-glass-strength (:root, top of this file) -- 1 as tested,
-   0 switches it off. It is click-through (pointer-events: none) and sits
-   above the safe-area strips so the status bar area is under the same
-   glass. Modal drawers/dialogs open in the browser's top layer, above it.
-   Not on the dark landing / lock screen (their own graphite surface).
+   0 switches it off. Click-through, above the safe-area strips; modal
+   drawers/dialogs open in the browser's top layer, above it. Not on the
+   dark landing / lock screen.
    ========================================================================== */
 .mdr-glass-sheet {
   position: fixed;
   inset: 0;
   z-index: 2147483002;
   pointer-events: none;
+  overflow: hidden;
   opacity: var(--mdr-glass-strength, 1);
-  background:
-    linear-gradient(180deg, rgb(255 255 255 / 0.045) 0%, rgb(255 255 255 / 0.015) 18%, rgb(255 255 255 / 0) 42%),
-    linear-gradient(108deg, rgb(255 255 255 / 0) 34%, rgb(255 255 255 / 0.035) 47%, rgb(255 255 255 / 0.012) 53%, rgb(255 255 255 / 0) 64%),
-    linear-gradient(0deg, rgb(20 22 22 / 0.035) 0%, rgb(20 22 22 / 0) 24%);
+  background: linear-gradient(90deg, rgb(0 0 0 / 0.022) 0%, rgb(0 0 0 / 0) 16%, rgb(0 0 0 / 0) 84%, rgb(0 0 0 / 0.022) 100%);
+}
+
+.mdr-glass-sheet__sheen {
+  position: absolute;
+  inset: 0 -40%;
+  background: linear-gradient(104deg, rgb(255 255 255 / 0) 38%, rgb(255 255 255 / 0.075) 48%, rgb(255 255 255 / 0.025) 53%, rgb(255 255 255 / 0) 62%);
+  -webkit-mask-image: linear-gradient(180deg, transparent 0, transparent 120px, #000 220px);
+  mask-image: linear-gradient(180deg, transparent 0, transparent 120px, #000 220px);
+}
+
+@supports (animation-timeline: scroll()) {
+  @media (prefers-reduced-motion: no-preference) {
+    .mdr-glass-sheet__sheen {
+      animation: mdr-sheen-drift linear both;
+      animation-timeline: scroll(root block);
+    }
+  }
+}
+
+@keyframes mdr-sheen-drift {
+  from { transform: translate3d(-14%, 0, 0); }
+  to { transform: translate3d(14%, 0, 0); }
 }
 
 body:has(main[data-template='index']) .mdr-glass-sheet {
@@ -4662,5 +4693,109 @@ body:has(main[data-template='index']) .mdr-glass-sheet {
 @media print {
   .mdr-glass-sheet {
     display: none;
+  }
+}
+
+/* ==========================================================================
+   LIQUID GLASS -- motion between states (snippets/mdr-liquid-glass.liquid).
+   ========================================================================== */
+
+/* Selector lens: one glass lens per colour/size row carries the selected
+   state. Its fill is the SAME selected tone as before (ink at 5.5% over the
+   canvas = --mdr-selected), laid over the cell instead of painted by it, so
+   at rest the selected cell looks as it did -- plus a faint glass edge. It
+   travels between cells; the glint only shows while it moves. Square, like
+   every other cell on the site. */
+.mdr-lens-host {
+  position: relative;
+}
+
+.mdr-lens {
+  position: absolute;
+  z-index: 2;
+  pointer-events: none;
+  overflow: hidden;
+  transform-origin: 0 0;
+  background: color-mix(in srgb, var(--mdr-ink) 5.5%, transparent);
+  box-shadow:
+    inset 0 1px 0 rgb(255 255 255 / 0.55),
+    inset 0 -1px 0 color-mix(in srgb, var(--mdr-ink) 6%, transparent);
+  will-change: transform;
+}
+
+.mdr-lens__glint {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  background: linear-gradient(100deg, rgb(255 255 255 / 0) 20%, rgb(255 255 255 / 0.7) 50%, rgb(255 255 255 / 0) 80%);
+}
+
+/* the cell's own selected fill steps aside while the lens is there, so it
+   isn't painted twice (text stays ink) */
+.mdr-lens-host .variant-option--buttons .variant-option__button-label:has(:checked) {
+  background-color: var(--mdr-paper) !important;
+}
+
+.mdr-lens-host .variant-option--buttons .variant-option__button-label__pill {
+  background: transparent !important;
+}
+
+/* Press glint: a soft glass highlight where a button is pressed, and one
+   sweep across it when a mouse arrives. Transient only -- button colours
+   are unchanged. */
+.mdr-glint-host {
+  overflow: hidden;
+}
+
+.mdr-glint-host--pos {
+  position: relative;
+}
+
+.mdr-glint {
+  position: absolute;
+  pointer-events: none;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgb(255 255 255 / 0.3) 0%, rgb(255 255 255 / 0.1) 34%, rgb(255 255 255 / 0) 64%);
+}
+
+.mdr-glint--sweep {
+  top: 0;
+  bottom: 0;
+  left: 0;
+  width: 42%;
+  border-radius: 0;
+  background: linear-gradient(90deg, rgb(255 255 255 / 0), rgb(255 255 255 / 0.2), rgb(255 255 255 / 0));
+}
+
+/* WEBRACK categories: the selected title's underline is a liquid line --
+   it springs out from the middle of the newly selected title (a little
+   past full width, then settles) while the old one draws back in. Same
+   line colour and position as the old text underline. */
+.mdr-allbar__list a {
+  position: relative;
+}
+
+.mdr-allbar__list a::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: var(--mdr-underline-drop, -3px);
+  height: 1px;
+  background: var(--mdr-border-strong);
+  transform: scaleX(0);
+  transition: transform 0.24s cubic-bezier(0.4, 0, 0.2, 1);
+  pointer-events: none;
+}
+
+.mdr-allbar__list a[aria-current='page']::after {
+  transform: scaleX(1);
+  transition: transform 0.46s cubic-bezier(0.3, 1.45, 0.45, 1);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .mdr-allbar__list a::after,
+  .mdr-allbar__list a[aria-current='page']::after {
+    transition: none;
   }
 }

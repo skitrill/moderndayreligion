@@ -293,6 +293,7 @@
       D.title = doc.title;
       window.scrollTo({ top: 0, behavior: 'instant' });
       swapRow('back');
+      if (window.__mdrLiquidRefresh) window.__mdrLiquidRefresh();
       if (window.__mdrPop) {
         window.__mdrPop.measure();
         if (window.__mdrPop.isActive()) {
