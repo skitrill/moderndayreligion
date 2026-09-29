@@ -149,7 +149,10 @@ product-price *,
   --mdr-paper: var(--mdr-background);
   --mdr-ink: #202020;
   --mdr-graphite: #858581;
-  --mdr-muted: #b7b7b1;
+  /* one step quieter than graphite: graphite tinted toward the canvas (as
+     documented above) -- #b7b7b1 on the old paper. Relative, so it stays
+     the same step quieter on the graphite canvas instead of fading out. */
+  --mdr-muted: color-mix(in srgb, var(--mdr-graphite), var(--mdr-canvas) 43%);
   /* Lines and the selected-cell fill are defined BY their relation to the
      canvas (a hairline is the canvas a step darker), not as fixed values --
      so they keep exactly the contrast they had on the old paper
@@ -4647,7 +4650,7 @@ main[data-template='collection'] [id$='__product_list_fa6P9H'] .product-card .pr
   pointer-events: none;
   opacity: var(--mdr-glass-strength, 1);
   background:
-    linear-gradient(180deg, rgb(255 255 255 / 0.1) 0%, rgb(255 255 255 / 0.035) 18%, rgb(255 255 255 / 0) 46%),
+    linear-gradient(180deg, rgb(255 255 255 / 0.045) 0%, rgb(255 255 255 / 0.015) 18%, rgb(255 255 255 / 0) 42%),
     linear-gradient(108deg, rgb(255 255 255 / 0) 34%, rgb(255 255 255 / 0.035) 47%, rgb(255 255 255 / 0.012) 53%, rgb(255 255 255 / 0) 64%),
     linear-gradient(0deg, rgb(20 22 22 / 0.035) 0%, rgb(20 22 22 / 0) 24%);
 }
