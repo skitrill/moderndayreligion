@@ -4255,9 +4255,8 @@ main[data-template='collection']
 .mdr-allbar__list a[aria-current='page'] {
   opacity: 1;
   color: var(--mdr-ink);
-  /* the underline is the animated line (::after, LIQUID GLASS block at the
-     end of this file) -- was text-decoration underline, same colour,
-     offset 3px */
+  /* no underline -- the selected title is marked by ink + full opacity
+     alone (was a text-decoration underline, then an animated line) */
   text-decoration: none;
 }
 
@@ -4767,37 +4766,3 @@ body:has(main[data-template='index']) .mdr-glass-sheet {
   background: linear-gradient(90deg, rgb(255 255 255 / 0), rgb(255 255 255 / 0.2), rgb(255 255 255 / 0));
 }
 
-/* WEBRACK categories: the selected title's underline is a liquid line --
-   it springs out from the middle of the newly selected title (a little
-   past full width, then settles) while the old one draws back in. Same
-   line colour and position as the old text underline. */
-.mdr-allbar__list a {
-  position: relative;
-}
-
-.mdr-allbar__list a::after {
-  content: '';
-  position: absolute;
-  left: 0;
-  right: 0;
-  /* the link box is the whole row's height with the word centred in it --
-     half the row, half the type size, then the old 3px-under-baseline gap */
-  top: calc(50% + 0.5em + 1.5px);
-  height: 1px;
-  background: var(--mdr-border-strong);
-  transform: scaleX(0);
-  transition: transform 0.24s cubic-bezier(0.4, 0, 0.2, 1);
-  pointer-events: none;
-}
-
-.mdr-allbar__list a[aria-current='page']::after {
-  transform: scaleX(1);
-  transition: transform 0.46s cubic-bezier(0.3, 1.45, 0.45, 1);
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .mdr-allbar__list a::after,
-  .mdr-allbar__list a[aria-current='page']::after {
-    transition: none;
-  }
-}
