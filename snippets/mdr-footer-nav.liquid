@@ -19,6 +19,10 @@
     differently from the footer's default row.
   @param {boolean} [hide_shop] - leave out WEBRACK and LOOKBOOK (the lock screen,
     layout/password.liquid, where the shop is closed).
+  @param {string} [account_label] - the ACCOUNT link's text when nobody is signed in
+    (default "Account"; the lock screen says "User").
+  @param {boolean} [account_first] - put the account link at the top of the list
+    instead of after THE MODERN TIMES (the lock screen).
   @param {string} [extra_items] - markup added as one more list item between ACCOUNT
     and MAILING (the lock screen's policy links).
   @param {boolean} [mailing_open] - MAILING is just its sign-up form, always showing:
@@ -27,22 +31,31 @@
 
 {% assign mailing_drop_id = 'mdr-mailing-drop-' | append: section.id %}
 
+{%- capture account_item -%}
+  <li>
+    <a href="{{ routes.account_url }}">
+      {%- if customer -%}
+        {{- customer.first_name -}}
+      {%- else -%}
+        {{- account_label | default: 'Account' -}}
+      {%- endif -%}
+    </a>
+  </li>
+{%- endcapture -%}
+
 <nav class="mdr-fnav{% if variant %} mdr-fnav--{{ variant }}{% endif %}" aria-label="Footer">
   <ul>
+    {%- if account_first -%}
+      {{ account_item }}
+    {%- endif -%}
     {%- unless hide_shop -%}
       <li><a href="{{ routes.all_products_collection_url }}">Webrack</a></li>
       <li><a href="/pages/lookbook">Lookbook</a></li>
     {%- endunless -%}
     <li><a href="{{ pages['the-modern-times'].url | default: '/pages/the-modern-times' }}">The Modern Times</a></li>
-    <li>
-      <a href="{{ routes.account_url }}">
-        {%- if customer -%}
-          {{- customer.first_name -}}
-        {%- else -%}
-          Account
-        {%- endif -%}
-      </a>
-    </li>
+    {%- unless account_first -%}
+      {{ account_item }}
+    {%- endunless -%}
     {%- if extra_items != blank -%}
       <li class="mdr-fnav__extra">{{ extra_items }}</li>
     {%- endif -%}
