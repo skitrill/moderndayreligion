@@ -11,8 +11,9 @@
   - Press glint: buttons (add to cart, buy now, check out, join...) catch a
     soft glass highlight where they're pressed; with a mouse, a highlight
     also sweeps across once when the pointer arrives.
-  At rest the selected cell looks as it did (same fill, same ink text, plus
-  a faint glass edge); the movement between states is what's new.
+  At rest the selected cell is flat, exactly as it was (same fill, same ink
+  text); the glass -- edge and glint -- only appears while the lens moves,
+  a quick ~0.2s switch.
   Reduced-motion users get the lens without the travel.
 {%- enddoc -%}
 
@@ -91,14 +92,17 @@
       var k = function (x, y, w, h) {
         return 'translate(' + (x - to.x) + 'px,' + (y - to.y) + 'px) scale(' + w / to.w + ',' + h / to.h + ')';
       };
+      /* glass edge while moving, flat again as it lands */
+      var edge = 'inset 0 1px 0 rgb(255 255 255 / 0.6), inset 0 -1px 0 rgb(32 32 32 / 0.07)';
+      var ms = Math.min(270, 170 + dist * 0.2);
       el.animate(
         [
-          { transform: k(from.x, from.y, from.w, from.h), offset: 0 },
-          { transform: k(midX, midY, midW, to.h * 0.86), offset: 0.42 },
-          { transform: k(to.x + over, to.y, to.w * 1.015, to.h * 0.97), offset: 0.78 },
-          { transform: 'none', offset: 1 }
+          { transform: k(from.x, from.y, from.w, from.h), boxShadow: edge, offset: 0 },
+          { transform: k(midX, midY, midW, to.h * 0.86), boxShadow: edge, offset: 0.45 },
+          { transform: k(to.x + over, to.y, to.w * 1.015, to.h * 0.97), boxShadow: edge, offset: 0.8 },
+          { transform: 'none', boxShadow: 'inset 0 0 0 transparent, inset 0 0 0 transparent', offset: 1 }
         ],
-        { duration: Math.min(460, 300 + dist * 0.35), easing: 'cubic-bezier(0.3, 0.7, 0.2, 1)' }
+        { duration: ms, easing: 'cubic-bezier(0.25, 0.8, 0.25, 1)' }
       );
       entry.glint.animate(
         [
@@ -106,7 +110,7 @@
           { opacity: 1, offset: 0.35 },
           { transform: 'translateX(' + (dir > 0 ? 120 : -120) + '%)', opacity: 0 }
         ],
-        { duration: 520, easing: 'cubic-bezier(0.4, 0, 0.2, 1)' }
+        { duration: ms + 40, easing: 'cubic-bezier(0.4, 0, 0.2, 1)' }
       );
     }
 
@@ -165,7 +169,7 @@
       if (entry.lean) entry.lean.cancel();
       entry.lean = entry.el.animate(
         [{ transform: 'none' }, { transform: 'translateX(' + lean + 'px) scaleX(1.04)' }],
-        { duration: 260, easing: 'cubic-bezier(0.3, 0.7, 0.2, 1)', fill: 'forwards' }
+        { duration: 150, easing: 'cubic-bezier(0.25, 0.8, 0.25, 1)', fill: 'forwards' }
       );
     });
     D.addEventListener('pointerout', function (e) {
