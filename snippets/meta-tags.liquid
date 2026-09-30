@@ -14,9 +14,9 @@
   content="width=device-width,initial-scale=1,viewport-fit=cover"
 >
 {%- comment -%}
-  Material pass: keep in step with --mdr-canvas in assets/mdr-custom.css
-  (the canvas is back on the paper, #f8f8f5; the graphite test used
-  #E0E1DF here).
+  Material: the light graphite surface (--mdr-surface, #dedfdd, in
+  assets/mdr-custom.css) as it looks at the top of the screen, under the
+  header's glass tint -- retune with the surface. (Old paper: #f8f8f5.)
   Matches assets/mdr-custom.css's --mdr-paper per template: the
   homepage and the password/lockscreen page are permanently graphite,
   single-surface screens (--mdr-landing-bg, #171717); every other
@@ -27,7 +27,7 @@
 {%- endcomment -%}
 <meta
   name="theme-color"
-  content="{% if request.page_type == 'index' or request.page_type == 'password' %}#171717{% else %}#f8f8f5{% endif %}"
+  content="{% if request.page_type == 'index' or request.page_type == 'password' %}#171717{% else %}#E2E3E1{% endif %}"
 >
 
 {%- liquid
