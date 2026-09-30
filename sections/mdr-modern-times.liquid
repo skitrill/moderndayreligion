@@ -322,24 +322,31 @@
 {% stylesheet %}
   /* ==========================================================================
      THE MODERN TIMES -- every rule here is scoped to .mdr-mt (this section
-     only). Colours are the site's own tokens; the only type families are
-     the site's own PGF Qualta (licensed; loaded site-wide) and
-     Anonymous Pro, the monospace the site already loads, used for issue
-     data, bylines, credits and section labels.
+     only). Colours are the site's own tokens, in graphite steps rather
+     than deep black (--mt-ink / --mt-text / --mt-gray). One typeface
+     throughout: the site's licensed PGF Qualta -- display sizes for the
+     title and headlines, the site's own smallest size (--mt-small, the
+     WEBRACK grid's product-title size) for labels, issue data, bylines,
+     credits and numbering.
      ========================================================================== */
   .mdr-mt {
-    --mt-ink: var(--mdr-ink, #202020);
+    /* graphite, not deep black: three steps between the site's ink and its
+       graphite -- headlines/title (--mt-ink), reading text (--mt-text),
+       labels/captions/meta (--mt-gray, the site's own graphite) */
+    --mt-ink: color-mix(in srgb, var(--mdr-ink, #202020), var(--mdr-graphite, #858581) 35%);
+    --mt-text: color-mix(in srgb, var(--mdr-ink, #202020), var(--mdr-graphite, #858581) 65%);
     --mt-gray: var(--mdr-graphite, #858581);
+    /* the site's smallest text size -- the WEBRACK grid's product titles */
+    --mt-small: var(--mdr-fs-xs, 0.56rem);
     --mt-rule: var(--mdr-border, #dededa);
     --mt-sans: 'PGF Qualta', 'Helvetica Neue', Helvetica, Arial, sans-serif;
-    --mt-mono: 'Anonymous Pro', ui-monospace, Menlo, monospace;
     --mt-pad: clamp(16px, 4.2vw, 48px);
     --mt-gutter: clamp(16px, 2.2vw, 24px);
     --mt-vpad: clamp(18px, 2.8vw, 30px);
     --mt-measure: min(100% - 2 * var(--mt-pad), 1280px);
 
     background: var(--mdr-paper, #f8f8f5);
-    color: var(--mt-ink);
+    color: var(--mt-text);
     font-family: var(--mt-sans);
     font-weight: 400;
     letter-spacing: 0;
@@ -388,18 +395,18 @@
   }
 
   .mdr-mt .mdr-mt-masthead__publisher {
-    font-size: 0.74rem;
+    font-size: var(--mdr-fs-sm, 0.62rem);
     line-height: 1;
     letter-spacing: 0.34em;
     text-transform: uppercase;
-    color: var(--mt-ink);
+    color: var(--mt-gray);
   }
 
   .mdr-mt .mdr-mt-masthead__edition {
-    font-family: var(--mt-mono);
-    font-size: 0.58rem;
+    font-family: var(--mt-sans);
+    font-size: var(--mt-small);
     line-height: 1;
-    letter-spacing: 0.12em;
+    letter-spacing: 0.04em;
     text-transform: uppercase;
     color: var(--mt-gray);
     text-align: right;
@@ -422,7 +429,7 @@
 
   .mdr-mt .mdr-mt-masthead__tagline {
     margin-bottom: clamp(14px, 2.6cqi, 28px);
-    font-size: clamp(0.82rem, 2.3cqi, 1.12rem);
+    font-size: clamp(0.72rem, 2cqi, 0.96rem);
     line-height: 1.3;
     letter-spacing: 0.005em;
     color: var(--mt-gray);
@@ -434,12 +441,12 @@
     gap: 12px;
     padding-block: 9px;
     border-block: 1px solid var(--mt-rule);
-    font-family: var(--mt-mono);
-    font-size: 0.58rem;
+    font-family: var(--mt-sans);
+    font-size: var(--mt-small);
     line-height: 1;
-    letter-spacing: 0.16em;
+    letter-spacing: 0.04em;
     text-transform: uppercase;
-    color: var(--mt-ink);
+    color: var(--mt-gray);
   }
 
   /* ---- Editorial grid ------------------------------------------------------
@@ -569,12 +576,12 @@
 
   .mdr-mt .mdr-mt-kicker {
     margin-bottom: 12px;
-    font-family: var(--mt-mono);
-    font-size: 0.58rem;
+    font-family: var(--mt-sans);
+    font-size: var(--mt-small);
     line-height: 1.2;
-    letter-spacing: 0.16em;
+    letter-spacing: 0.04em;
     text-transform: uppercase;
-    color: var(--mt-ink);
+    color: var(--mt-gray);
   }
 
   .mdr-mt .mdr-mt-hed {
@@ -618,9 +625,9 @@
 
   .mdr-mt .mdr-mt-deck {
     margin-top: 0.7em;
-    font-size: 0.9rem;
-    font-size: clamp(0.86rem, 3.9cqi, 1.05rem);
-    line-height: 1.34;
+    font-size: 0.8rem;
+    font-size: clamp(0.76rem, 3.4cqi, 0.92rem);
+    line-height: 1.36;
     letter-spacing: 0.002em;
     text-wrap: pretty;
     color: var(--mt-gray);
@@ -628,23 +635,23 @@
 
   .mdr-mt .mdr-mt-byline {
     margin-top: 1.1em;
-    font-family: var(--mt-mono);
-    font-size: 0.56rem;
+    font-family: var(--mt-sans);
+    font-size: var(--mt-small);
     line-height: 1.3;
-    letter-spacing: 0.14em;
+    letter-spacing: 0.04em;
     text-transform: uppercase;
     color: var(--mt-gray);
   }
 
   .mdr-mt .mdr-mt-body {
     margin-top: 1.1em;
-    font-size: 0.82rem;
-    line-height: 1.58;
-    letter-spacing: 0.004em;
+    font-size: var(--mdr-fs-md, 0.72rem);
+    line-height: 1.6;
+    letter-spacing: 0.006em;
     text-wrap: pretty;
     overflow-wrap: break-word;
     hyphens: manual;
-    color: var(--mt-ink);
+    color: var(--mt-text);
   }
 
   .mdr-mt-story > .mdr-mt-body:first-child {
@@ -657,7 +664,7 @@
 
   @media (min-width: 990px) {
     .mdr-mt .mdr-mt-body {
-      font-size: 0.86rem;
+      font-size: 0.76rem;
     }
   }
 
@@ -682,7 +689,7 @@
       columns: 2;
       column-gap: 16px;
       column-rule: 1px solid var(--mt-rule);
-      font-size: 0.76rem;
+      font-size: 0.68rem;
     }
   }
 
@@ -739,17 +746,17 @@
   }
 
   .mdr-mt .mdr-mt-cap__text {
-    font-size: 0.68rem;
+    font-size: var(--mdr-fs-sm, 0.62rem);
     line-height: 1.4;
     letter-spacing: 0.005em;
     color: var(--mt-gray);
   }
 
   .mdr-mt .mdr-mt-cap__credit {
-    font-family: var(--mt-mono);
-    font-size: 0.54rem;
+    font-family: var(--mt-sans);
+    font-size: var(--mt-small);
     line-height: 1.4;
-    letter-spacing: 0.12em;
+    letter-spacing: 0.04em;
     text-transform: uppercase;
     color: var(--mt-gray);
   }
@@ -798,17 +805,17 @@
 
   .mdr-mt .mdr-mt-quote__line {
     margin-top: 0.8em;
-    font-size: 0.8rem;
+    font-size: var(--mdr-fs-md, 0.72rem);
     line-height: 1.45;
     color: var(--mt-gray);
   }
 
   .mdr-mt .mdr-mt-quote__by {
     margin-top: 1em;
-    font-family: var(--mt-mono);
-    font-size: 0.56rem;
+    font-family: var(--mt-sans);
+    font-size: var(--mt-small);
     line-height: 1.3;
-    letter-spacing: 0.14em;
+    letter-spacing: 0.04em;
     text-transform: uppercase;
     color: var(--mt-gray);
   }
@@ -826,12 +833,12 @@
 
   .mdr-mt .mdr-mt-manifesto__label,
   .mdr-mt .mdr-mt-manifesto__sign {
-    font-family: var(--mt-mono);
-    font-size: 0.58rem;
+    font-family: var(--mt-sans);
+    font-size: var(--mt-small);
     line-height: 1.2;
-    letter-spacing: 0.16em;
+    letter-spacing: 0.04em;
     text-transform: uppercase;
-    color: var(--mt-ink);
+    color: var(--mt-gray);
   }
 
   .mdr-mt .mdr-mt-manifesto__sign {
@@ -861,17 +868,17 @@
     display: grid;
     grid-template-columns: 2.4em minmax(0, 1fr);
     gap: 8px;
-    font-size: 0.84rem;
-    line-height: 1.42;
-    color: var(--mt-ink);
+    font-size: 0.74rem;
+    line-height: 1.46;
+    color: var(--mt-text);
   }
 
   .mdr-mt-manifesto__lines li::before {
     content: counter(mdr-mt-line, decimal-leading-zero);
     padding-top: 0.3em;
-    font-family: var(--mt-mono);
-    font-size: 0.56rem;
-    letter-spacing: 0.1em;
+    font-family: var(--mt-sans);
+    font-size: var(--mt-small);
+    letter-spacing: 0.04em;
     color: var(--mt-gray);
   }
 
@@ -920,9 +927,9 @@
 
   /* ---- Notes / index ----------------------------------------------------------- */
   .mdr-mt .mdr-mt-note__body p {
-    font-size: 0.8rem;
+    font-size: var(--mdr-fs-md, 0.72rem);
     line-height: 1.5;
-    color: var(--mt-ink);
+    color: var(--mt-text);
   }
 
   .mdr-mt .mdr-mt-note__body p + p {
@@ -941,9 +948,9 @@
     grid-template-columns: 2.2em minmax(0, 1fr);
     gap: 6px;
     padding-block: 8px;
-    font-size: 0.84rem;
+    font-size: 0.74rem;
     line-height: 1.3;
-    color: var(--mt-ink);
+    color: var(--mt-text);
   }
 
   .mdr-mt-index li:first-child {
@@ -957,9 +964,9 @@
   .mdr-mt-index li::before {
     content: counter(mdr-mt-index, decimal-leading-zero);
     padding-top: 0.25em;
-    font-family: var(--mt-mono);
-    font-size: 0.56rem;
-    letter-spacing: 0.1em;
+    font-family: var(--mt-sans);
+    font-size: var(--mt-small);
+    letter-spacing: 0.04em;
     color: var(--mt-gray);
   }
 
@@ -974,17 +981,15 @@
 
   .mdr-mt-divider__label,
   .mdr-mt-divider__meta {
-    font-family: var(--mt-mono);
-    font-size: 0.6rem;
+    font-family: var(--mt-sans);
+    font-size: var(--mt-small);
     line-height: 1.2;
-    letter-spacing: 0.16em;
+    letter-spacing: 0.04em;
     text-transform: uppercase;
-    color: var(--mt-ink);
+    color: var(--mt-gray);
   }
 
   .mdr-mt-divider__meta {
-    font-size: 0.56rem;
-    letter-spacing: 0.12em;
     color: var(--mt-gray);
     text-align: right;
   }
@@ -997,10 +1002,10 @@
   }
 
   .mdr-mt-colophon span {
-    font-family: var(--mt-mono);
-    font-size: 0.56rem;
+    font-family: var(--mt-sans);
+    font-size: var(--mt-small);
     line-height: 1.3;
-    letter-spacing: 0.14em;
+    letter-spacing: 0.04em;
     text-transform: uppercase;
     color: var(--mt-gray);
   }
