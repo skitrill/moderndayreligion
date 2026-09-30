@@ -549,8 +549,8 @@ html {
 @media screen and (min-width: 990px) {
 
   /* nav row inside the frame: its own bottom line (the header group's
-     bottom line is the one above it); its material is the white glass
-     (WHITE GLASS RAIL block) */
+     bottom line is the one above it); its material is the same white glass
+     as the header (GLASS CHROME block) */
   .mdr-frame > .mdr-allbar-wrap {
     flex: 0 0 auto;
     border-top: 0 !important;
@@ -3030,7 +3030,6 @@ product-card:active .card-gallery {
    so :has() on their shared parent (<body>) is what reaches them from a
    main[data-template] selector. */
 body:has(main[data-template='index']) #header-group,
-body:has(main[data-template='index']) .mdr-allbar-wrap,
 body:has(main[data-template='index']) footer {
   display: none !important;
 }
@@ -3265,7 +3264,9 @@ body:has(main[data-template='index']) .page-wrapper {
      paper (white 55% over #f8f8f5 ~ +4; this over #dadbd9 ~ +4) instead of
      becoming bright white strips. On the old paper it's ~white again. */
   --mdr-glass-base: var(--mdr-highlight);
-  --mdr-glass-tint: color-mix(in srgb, var(--mdr-glass-base) 55%, transparent); /* was: rgba(255, 255, 255, 0.55) */
+  /* white glass -- the header, the WEBRACK rail and the footer are all this
+     one material (GLASS CHROME block, end of file) */
+  --mdr-glass-tint: color-mix(in srgb, white 62%, transparent);
   --mdr-glass-blur: blur(24px) saturate(1.4); /* was: none */
   /* Header/footer rebuild pass: this used to be its own white highlight
      border (rgba(255,255,255,0.7)) -- a second, different-coloured line
@@ -3306,11 +3307,13 @@ body:has(main[data-template='index']) .page-wrapper {
 }
 
 /* .header__underlay-closed (the header row's own paint layer,
-   sections/header.liquid) and the WEBRACK/RETURN pill: transparent,
-   letting the surface behind them show through instead of layering their
-   own panels on top. (The rail row itself is white glass -- WHITE GLASS
-   RAIL block.) */
+   sections/header.liquid) and the WEBRACK/RETURN wrap + pill: all
+   transparent, letting #header-group's one glass surface show through
+   instead of layering their own panels on top of it. (On desktop the rail
+   row sits in the frame and carries the same glass itself -- GLASS CHROME
+   block.) */
 [data-header-rows='single'] .header__underlay-closed,
+.mdr-allbar-wrap,
 .mdr-allbar {
   background: transparent !important;
   backdrop-filter: none !important;
@@ -3330,8 +3333,7 @@ body:has(main[data-template='index']) .page-wrapper {
    inline with the logo (see the min-width:750px block above) with no row
    of its own to divide, so this border naturally doesn't apply there. */
 .mdr-allbar-wrap {
-  border-top: 0;
-  border-bottom: 1px solid var(--mdr-border);
+  border-top: 1px solid var(--mdr-border);
 }
 
 /* Fallback for browsers without backdrop-filter support (older Android
@@ -3959,15 +3961,12 @@ main[data-template='collection']
   align-items: center;
   width: 100%;
   box-sizing: border-box;
-  /* Pinned: the header row scrolls away, this rail stays at the top of
-     the screen (under the status bar on a notched phone) and the page
-     scrolls behind its white glass. Sticky, not fixed: it keeps its place
-     in the flow (nothing jumps) and is still the containing block for the
-     drag-catcher touchzone below. On phones/tablets it's the next sibling
-     of #header-group (mdr-header-enhance.liquid), so it sticks for the
-     whole page; on desktop it's the first row of .mdr-frame. */
-  position: sticky;
-  top: env(safe-area-inset-top, 0px);
+  /* relative: the containing block for the drag-catcher touchzone below.
+     The rail is pinned to the top of the screen, but by its container:
+     below desktop width it's part of #header-group, which is the one
+     sticky element; on desktop it's the frame's first row, sticky itself
+     (GLASS CHROME block, end of file). */
+  position: relative;
   z-index: 15;
   margin: 0;
   /* flush at the true left edge now, not lined up under the logo. No
@@ -3993,8 +3992,8 @@ main[data-template='collection']
    WEBRACK. Desktop's header row has its own 18px block padding (desktop
    shell block near the top of this file), so it doesn't need this. */
 @media screen and (max-width: 749px) {
-  #header-group {
-    padding-bottom: 6px;
+  .mdr-allbar-wrap {
+    margin-top: 6px;
   }
 }
 
@@ -5019,80 +5018,99 @@ main[data-template='collection'] [id$='__product_list_fa6P9H'] .product-card .pr
 }
 
 /* ==========================================================================
-   WHITE GLASS RAIL -- the WEBRACK / MENU / RETURN rail's material.
-   A band of white glass pinned at the top of the screen that the page and
-   its black products scroll behind, softened by the blur. Nothing else is
-   added: no gloss, gradient, highlight, rounded corners or border of its
-   own. Its top and bottom edges are the existing grid lines (#header-
-   group's bottom border above, its own bottom border below); the glass
-   fills the row edge to edge while the labels keep their gutters. The
-   rail's drawing (line, > / < arrows, MENU rake) and words keep their
-   normal grid-line and ink tones.
-   Phones only: the whole header (logo + CART) is pinned too, in the same
-   white glass, with the rail directly under it -- one continuous glass
-   surface split only by the grid line between them. Tablet and desktop pin
-   the rail alone.
-   Static layers: the blur never animates, and in-page navigation swaps
-   only the rail's contents (same material either side), so the glass
-   doesn't flicker or fade between WEBRACK and RETURN.
+   GLASS CHROME -- the header, the WEBRACK / MENU / RETURN rail and the
+   footer are one material: white glass (--mdr-glass-tint, white 62% +
+   --mdr-glass-blur). Nothing added on top: no gloss, gradient, highlight,
+   rounded corners or borders beyond the existing grid lines.
+
+   Pinned, as ONE surface: below desktop width the rail lives inside
+   #header-group (mdr-header-enhance.liquid), and #header-group is the one
+   sticky, blurred element -- header and rail can't drift apart or lag each
+   other while scrolling, because they're a single layer.
+     phones:   the whole group (logo + CART + rail) pinned at the top
+     tablets:  the same group, pinned with only its rail part on screen
+               (the logo row scrolls away above it)
+     desktop:  the rail is the frame's first row, pinned there on its own
+               in the same glass (the header row scrolls away)
+
+   Edge to edge: on phones the glass runs to the very top and bottom of the
+   screen. The header's box already reaches under the status bar (its row
+   carries the safe-area padding) and the footer's now reaches under the
+   home indicator, so the two fixed safe-area strips (body::before/::after)
+   step aside instead of laying a flat colour over them; and the canvas
+   beyond the page (overscroll, what Safari's own chrome samples) is the
+   colour the glass shows over the page (--mdr-chrome-color) instead of the
+   plain page tone.
    ========================================================================== */
 :root {
-  --mdr-glass-white: color-mix(in srgb, white 62%, transparent);
+  --mdr-chrome-color: color-mix(in srgb, white 62%, var(--mdr-edge-color));
 }
 
-body .mdr-allbar-wrap {
-  background: var(--mdr-glass-white) !important;
-  -webkit-backdrop-filter: var(--mdr-glass-blur) !important;
-  backdrop-filter: var(--mdr-glass-blur) !important;
+html {
+  background-color: var(--mdr-chrome-color);
+}
+
+/* desktop: the rail row carries the glass itself, pinned in the frame */
+@media screen and (min-width: 990px) {
+  body .mdr-frame > .mdr-allbar-wrap {
+    position: sticky;
+    top: 0;
+    background: var(--mdr-glass-tint) !important;
+    -webkit-backdrop-filter: var(--mdr-glass-blur) !important;
+    backdrop-filter: var(--mdr-glass-blur) !important;
+  }
 }
 
 /* the theme's own sticky pieces (PDP photo and details, desktop cart
-   summary) stop just under the pinned rail instead of sliding beneath it
-   (--mdr-rail-h is the rail's measured height, mdr-header-enhance.liquid;
-   phones add the pinned header, below) */
+   summary) stop just under the pinned glass instead of sliding beneath it
+   (heights measured in mdr-header-enhance.liquid) */
 body {
   --sticky-header-offset: var(--mdr-rail-h, 0px);
 }
 
-@media screen and (max-width: 749px) {
-  /* the header pinned at the very top (its box already reaches under the
-     status bar -- its row carries the safe-area padding), the rail pinned
-     right under it (--mdr-header-h: the header's measured height,
-     mdr-header-enhance.liquid) */
+@media screen and (max-width: 989px) {
   #header-group {
     position: sticky !important;
-    top: 0;
     z-index: 16;
-    background: var(--mdr-glass-white) !important;
+  }
+}
+
+@media screen and (max-width: 749px) {
+  #header-group {
+    top: 0;
   }
 
-  body .mdr-allbar-wrap {
-    top: var(--mdr-header-h, 0px);
+  footer {
+    padding-bottom: env(safe-area-inset-bottom, 0px);
   }
 
-  /* the pinned header now covers the status-bar area itself, so the
-     separate safe-area strip over it (body::before) steps aside rather
-     than laying a second glass on top */
   :root {
     --mdr-edge-top: transparent;
+    --mdr-edge-bottom: transparent;
     --mdr-edge-blur: none;
   }
 
   body {
-    --sticky-header-offset: calc(var(--mdr-header-h, 0px) + var(--mdr-rail-h, 0px));
+    --sticky-header-offset: var(--mdr-header-h, 0px);
+  }
+}
+
+@media screen and (min-width: 750px) and (max-width: 989px) {
+  #header-group {
+    top: calc(-1 * var(--mdr-rail-top, 0px));
+  }
+
+  body {
+    --sticky-header-offset: calc(var(--mdr-header-h, 0px) - var(--mdr-rail-top, 0px));
   }
 }
 
 /* no backdrop blur (older WebViews): the same white, nearly solid, so what
    passes behind never reads as muddy */
 @supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
-  body .mdr-allbar-wrap {
+  #header-group,
+  footer,
+  body .mdr-frame > .mdr-allbar-wrap {
     background: color-mix(in srgb, white 92%, transparent) !important;
-  }
-
-  @media screen and (max-width: 749px) {
-    #header-group {
-      background: color-mix(in srgb, white 92%, transparent) !important;
-    }
   }
 }

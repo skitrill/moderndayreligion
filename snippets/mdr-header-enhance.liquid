@@ -641,20 +641,17 @@
       lineSvg.appendChild(capPath);
       wrap.appendChild(lineSvg);
 
-      /* sit it directly below the header, on every page -- as the next
-         sibling of #header-group, not inside it: the rail is pinned to the
-         top of the screen (position: sticky, mdr-custom.css) and is smoked
-         glass, so it has to live in the page itself -- inside #header-group
-         it could only stick within that short box, and the group's own
-         backdrop blur would hide the page from the rail's glass */
-      var railAfter = D.getElementById('header-group');
-      if (!railAfter || !railAfter.contains(header)) railAfter = header;
-      railAfter.parentNode.insertBefore(wrap, railAfter.nextSibling);
+      /* sit it directly below the header, on every page -- inside
+         #header-group, so below desktop width the header and the rail are
+         ONE pinned glass surface (mdr-custom.css, GLASS CHROME): one sticky
+         element, one blur, nothing to drift apart while scrolling */
+      header.parentNode.insertBefore(wrap, header.nextSibling);
 
       /* PC (>=990px): WEBRACK/RETURN is the first row of the desktop frame
          (.mdr-frame, layout/theme.liquid) so the frame's vertical lines start
          at the line above it; below that it stays under the header, as
          before. Moving the node keeps every listener on it. */
+      var headerParent = header.parentNode;
       var frameQuery = window.matchMedia('(min-width: 990px)');
       function placeWrap() {
         /* a row the in-page navigation has set aside (mdr-instant-nav) stays aside */
@@ -663,8 +660,8 @@
         var inFrame = frameQuery.matches && frame && !D.querySelector('main[data-template="index"]');
         if (inFrame) {
           if (wrap.parentNode !== frame) frame.insertBefore(wrap, frame.firstChild);
-        } else if (wrap.previousElementSibling !== railAfter) {
-          railAfter.parentNode.insertBefore(wrap, railAfter.nextSibling);
+        } else if (wrap.parentNode !== headerParent) {
+          headerParent.insertBefore(wrap, header.nextSibling);
         }
       }
       placeWrap();
@@ -730,9 +727,13 @@
         /* the pinned rail's height: the theme's sticky pieces (PDP photo and
            details, desktop cart summary) stop just under it */
         D.documentElement.style.setProperty('--mdr-rail-h', wrap.offsetHeight + 'px');
-        /* phones pin the header too, with the rail right under it */
+        /* the pinned header group's height, and where the rail starts inside
+           it (tablets pin the group with only its rail part on screen) */
         var headerGroup = D.getElementById('header-group');
-        if (headerGroup) D.documentElement.style.setProperty('--mdr-header-h', headerGroup.offsetHeight + 'px');
+        if (headerGroup) {
+          D.documentElement.style.setProperty('--mdr-header-h', headerGroup.offsetHeight + 'px');
+          if (headerGroup.contains(wrap)) D.documentElement.style.setProperty('--mdr-rail-top', wrap.offsetTop + 'px');
+        }
         lineSvg.setAttribute('width', w);
         lineSvg.setAttribute('height', h);
         lineSvg.setAttribute('viewBox', '0 0 ' + w + ' ' + h);
