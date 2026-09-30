@@ -4742,3 +4742,71 @@ body:has(main[data-template='index']) .mdr-glass-sheet {
   background: linear-gradient(90deg, rgb(255 255 255 / 0), rgb(255 255 255 / 0.2), rgb(255 255 255 / 0));
 }
 
+
+/* ==========================================================================
+   WEBRACK / RETURN -- SMOKED GRAPHITE GLASS (test).
+   Only the navigation rail: a thin piece of smoked graphite glass sitting
+   over the light interface -- not a dark nav bar, not glassmorphism. The
+   label, the >> and the continuous line become soft silver, so the zip
+   animation reads as a silver zipper opening through dark glass. RETURN is
+   the same rail, the same material. Colour, backdrop and paint only: no
+   size, spacing, SVG geometry, animation or behaviour changes.
+   TUNE: the --mdr-rail-* values right below. REVERT: delete this block.
+   ========================================================================== */
+:root {
+  --mdr-rail-surface: rgba(35, 36, 34, 0.9);
+  --mdr-rail-blur: blur(8px) saturate(1.05);
+  /* the rail's own hairlines (they keep their width) -- a faint glass edge */
+  --mdr-rail-edge: rgba(255, 255, 255, 0.07);
+  /* silver, never pure white */
+  --mdr-rail-silver: #dcddd9; /* WEBRACK / RETURN */
+  --mdr-rail-line: #b8b9b5; /* the >> and its line */
+  --mdr-rail-text: #c2c3bf; /* category titles */
+  --mdr-rail-text-current: #e6e7e3; /* the selected title */
+  /* WEBRACK's dim-while-closed label: a touch less dim on the dark glass so
+     it stays readable (still dimmer than when open) -- was 0.5 */
+  --mdr-rail-label-idle: 0.72;
+}
+
+html .mdr-allbar-wrap {
+  background: var(--mdr-rail-surface) !important;
+  backdrop-filter: var(--mdr-rail-blur) !important;
+  -webkit-backdrop-filter: var(--mdr-rail-blur) !important;
+  border-color: var(--mdr-rail-edge);
+}
+
+/* the open category list painted the paper colour behind itself -- on the
+   glass it lets the rail show through instead */
+html .mdr-allbar.is-open .mdr-allbar__list {
+  background-color: transparent;
+}
+
+html .mdr-allbar__toggle {
+  color: var(--mdr-rail-silver);
+}
+
+html .mdr-allbar__label {
+  opacity: var(--mdr-rail-label-idle);
+}
+
+html .mdr-allbar.is-open .mdr-allbar__label {
+  opacity: 1;
+}
+
+html .mdr-allbar__line-path {
+  stroke: var(--mdr-rail-line);
+}
+
+/* the faintest glint on the silver line, so the zipper reads as metal on
+   glass -- no glow, no gloss */
+html .mdr-allbar__line {
+  filter: drop-shadow(0 0 1.5px rgb(220 222 218 / 0.22));
+}
+
+html .mdr-allbar__list a {
+  color: var(--mdr-rail-text);
+}
+
+html .mdr-allbar__list a[aria-current='page'] {
+  color: var(--mdr-rail-text-current);
+}
