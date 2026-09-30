@@ -1160,9 +1160,8 @@ product-price *,
    footer instead of the two sitting near each other. Let the footer
    follow the cart's own content directly on this template specifically;
    any leftover viewport height just becomes ordinary scroll space below
-   the footer instead of a gap above it. A small fixed margin keeps real
-   breathing room between the checkout button and the footer, short of
-   the two colliding. */
+   the footer instead of a gap above it. The breathing room under the
+   checkout button is the page's own bottom padding (below). */
 @media screen and (max-width: 989px) {
   body:has(main[data-template='cart']) footer {
     margin-top: 0 !important;
@@ -1231,6 +1230,8 @@ product-price *,
   cursor: pointer;
   touch-action: manipulation;
   -webkit-tap-highlight-color: transparent;
+  /* .button clips its overflow -- that would clip the tap area below */
+  overflow: visible !important;
   transition: background-color var(--animation-speed-fast) var(--animation-easing);
 }
 
