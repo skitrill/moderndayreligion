@@ -1151,7 +1151,7 @@
         function settle(from, to, v0) {
           stopMomentum();
           var dist = to - from;
-          if (Math.abs(dist) < 0.5 || reduceMotion.matches) { setListPos(to); return; }
+          if (Math.abs(dist) < 0.5 || reduceMotion.matches) { setListPos(to); atRest(to); return; }
           var v = v0 * dist > 0 ? v0 : 0;
           var T = Math.abs(v) > 0.05 ? 2 * Math.abs(dist) / Math.abs(v) : 170 + Math.sqrt(Math.abs(dist)) * 9;
           T = Math.max(160, Math.min(620, T));
@@ -1165,9 +1165,24 @@
             /* cubic Hermite: start at `from` with speed v, end at `to` at rest */
             setListPos((2 * t3 - 3 * t2 + 1) * from + (t3 - 2 * t2 + t) * m0 + (3 * t2 - 2 * t3) * to);
             if (t < 1) momentumRAF = requestAnimationFrame(frame);
-            else momentumRAF = null;
+            else { momentumRAF = null; atRest(to); }
           }
           momentumRAF = requestAnimationFrame(frame);
+        }
+
+        /* the rack has come to rest on a title: start loading that
+           collection, so tapping it switches without a wait */
+        function atRest(pos) {
+          if (!snaps) return;
+          var at = loopWidth > 0 ? ((pos % loopWidth) + loopWidth) % loopWidth : pos;
+          var links = list.querySelectorAll('a');
+          for (var i = 0; i < snaps.length && i < links.length; i++) {
+            if (Math.abs(snaps[i] - at) < 1) {
+              var href = links[i].getAttribute('href');
+              if (href && href !== currentUrl) fetchHtml(href);
+              return;
+            }
+          }
         }
 
         function settleFrom(v, intent) {
@@ -1182,17 +1197,84 @@
             : e;
           return { x: t.clientX, y: t.clientY };
         }
+        /* ---- One gesture, one axis -------------------------------------
+           While WEBRACK is open the rail's touch area is touch-action: none
+           (mdr-custom.css), so the browser never pans the page by itself:
+           a sideways swipe with a little up/down wobble used to nudge the
+           whole page. Each gesture is read for its first 10px and then
+           locked: clearly vertical (1.6x more vertical than sideways) =
+           the page scrolls, following the finger and gliding on after it
+           lifts; anything else = the rack, and the page stays perfectly
+           still. Closed, the rail is left to the browser (pan-y) as
+           before. */
+        var AXIS_AFTER = 10;
+        var VERTICAL_RATIO = 1.6;
+        var axis = null;        /* null until decided, then 'x' or 'y' */
+        var owned = false;      /* rack open at touch-down: this script owns both axes */
+        var startPageY = 0;
+        var samples = [];       /* recent {t, x, y} -- release speed over the last ~50ms */
+        var pageRAF = null;
+
+        function stopPageGlide() {
+          if (pageRAF) { cancelAnimationFrame(pageRAF); pageRAF = null; }
+        }
+        /* any new touch or wheel anywhere catches a gliding page, like native */
+        window.addEventListener('touchstart', stopPageGlide, { passive: true });
+        window.addEventListener('wheel', stopPageGlide, { passive: true });
+
+        function sample(t, x, y) {
+          samples.push({ t: t, x: x, y: y });
+          while (samples.length > 2 && t - samples[0].t > 100) samples.shift();
+        }
+        /* px/ms over the last ~50ms, 0 if the finger stopped before lifting */
+        function releaseSpeed(now, key) {
+          if (samples.length < 2) return 0;
+          var last = samples[samples.length - 1];
+          if (now - last.t > 90) return 0;
+          var ref = samples[0];
+          for (var i = samples.length - 2; i >= 0; i--) {
+            ref = samples[i];
+            if (last.t - samples[i].t >= 45) break;
+          }
+          var dt = last.t - ref.t;
+          return dt > 0 ? (last[key] - ref[key]) / dt : 0;
+        }
+
+        /* the page carrying on after a vertical swipe on the rail --
+           exponential decay, close to native momentum */
+        function pageGlide(v) {
+          stopPageGlide();
+          if (Math.abs(v) < 0.05 || reduceMotion.matches) return;
+          var y0 = window.scrollY;
+          var k = 0.0027;
+          var t0 = null;
+          function frame(ts) {
+            if (t0 === null) t0 = ts;
+            var t = ts - t0;
+            window.scrollTo(0, y0 + (v / k) * (1 - Math.exp(-k * t)));
+            if (Math.abs(v * Math.exp(-k * t)) > 0.02) pageRAF = requestAnimationFrame(frame);
+            else pageRAF = null;
+          }
+          pageRAF = requestAnimationFrame(frame);
+        }
+
         function dragStart(e) {
           stopMomentum();
+          stopPageGlide();
           dragging = true;
           moved = false;
+          axis = null;
+          owned = bar.classList.contains('is-open');
           var p = point(e);
           startX = p.x;
           startY = p.y;
           startScroll = list.scrollLeft;
+          startPageY = window.scrollY;
           lastX = p.x;
           lastT = e.timeStamp || Date.now();
           velocity = 0;
+          samples = [];
+          sample(lastT, p.x, p.y);
           /* start loading the pill under the finger now, not on release --
              the server round-trip is most of the wait. The short hold-off
              skips drags (moved by then) so scrolling the rail doesn't
@@ -1211,40 +1293,49 @@
           if (!dragging) return;
           var p = point(e);
           var dx = p.x - startX;
-          if (!moved && (Math.abs(dx) > THRESHOLD || Math.abs(p.y - startY) > THRESHOLD)) {
-            /* mostly vertical: that's the page scrolling natively (the zone
-               is touch-action: pan-y) -- stand down entirely, no list drag
-               and no tap forwarded on release */
-            if (Math.abs(p.y - startY) > Math.abs(dx)) {
-              dragging = false;
-              return;
+          var dy = p.y - startY;
+          var now = e.timeStamp || Date.now();
+          if (!axis) {
+            if (owned) {
+              if (Math.max(Math.abs(dx), Math.abs(dy)) < AXIS_AFTER) return;
+              axis = Math.abs(dy) > Math.abs(dx) * VERTICAL_RATIO ? 'y' : 'x';
+            } else {
+              if (Math.abs(dx) <= THRESHOLD && Math.abs(dy) <= THRESHOLD) return;
+              /* closed: vertical is the browser's own native scroll (pan-y)
+                 -- stand down entirely, no drag and no tap on release */
+              if (Math.abs(dy) > Math.abs(dx)) { dragging = false; return; }
+              axis = 'x';
             }
             moved = true;
+            /* start from here, so the lock itself causes no jump */
+            startX = p.x;
+            startY = p.y;
+            startScroll = list.scrollLeft;
+            startPageY = window.scrollY;
+            dx = 0;
+            dy = 0;
+            samples = [];
           }
-          if (moved) {
-            list.scrollLeft = startScroll - dx;
-            /* keep the drag's own baseline in sync with the jump, or the
-               very next move event would compute against the pre-wrap
-               position and yank the list straight back */
-            if (loopWidth > 0) {
-              if (list.scrollLeft >= loopWidth) {
-                list.scrollLeft -= loopWidth;
-                startScroll -= loopWidth;
-              } else if (list.scrollLeft < 0) {
-                list.scrollLeft += loopWidth;
-                startScroll += loopWidth;
-              }
-            }
-            var now = e.timeStamp || Date.now();
-            var dt = now - lastT;
-            /* skip near-zero dt samples (event coalescing jitter) so one
-               noisy sample can't dominate the release velocity */
-            if (dt > 4) {
-              velocity = (p.x - lastX) / dt;
-              lastX = p.x;
-              lastT = now;
+          sample(now, p.x, p.y);
+          if (axis === 'y') {
+            window.scrollTo(0, startPageY - dy);
+            return;
+          }
+          list.scrollLeft = startScroll - dx;
+          /* keep the drag's own baseline in sync with the jump, or the very
+             next move event would compute against the pre-wrap position and
+             yank the list straight back */
+          if (loopWidth > 0) {
+            if (list.scrollLeft >= loopWidth) {
+              list.scrollLeft -= loopWidth;
+              startScroll -= loopWidth;
+            } else if (list.scrollLeft < 0) {
+              list.scrollLeft += loopWidth;
+              startScroll += loopWidth;
             }
           }
+          lastX = p.x;
+          lastT = now;
         }
         function dragEnd(e) {
           if (!dragging) return;
@@ -1267,11 +1358,15 @@
             }
             return;
           }
+          var now = e.timeStamp || Date.now();
+          if (axis === 'y') {
+            pageGlide(-releaseSpeed(now, 'y'));
+            return;
+          }
           /* release: the flick's own speed and direction choose the title,
              settle() carries the rack onto it. A finger that stopped before
              lifting has no speed left. */
-          var now = e.timeStamp || Date.now();
-          var v = now - lastT > 90 ? 0 : -velocity;
+          var v = -releaseSpeed(now, 'x');
           var travelled = Math.abs(list.scrollLeft - startScroll);
           settleFrom(v, Math.abs(v) > DIRECTIONAL || (travelled > 12 && v !== 0));
         }
@@ -1323,7 +1418,11 @@
           if (gestureAxis) return gestureAxis;
           gestureSumX += Math.abs(d.x);
           gestureSumY += Math.abs(d.y);
-          if (Math.max(gestureSumX, gestureSumY) >= 4) gestureAxis = gestureSumX > gestureSumY ? 'x' : 'y';
+          if (Math.max(gestureSumX, gestureSumY) >= 4) {
+            /* on the open rack, only a clearly vertical gesture is the page's */
+            var yRatio = bar.classList.contains('is-open') ? VERTICAL_RATIO : 1;
+            gestureAxis = gestureSumY > gestureSumX * yRatio ? 'y' : 'x';
+          }
           return gestureAxis; /* null while still undecided */
         }
 

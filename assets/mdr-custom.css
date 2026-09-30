@@ -4259,6 +4259,14 @@ main[data-template='collection']
   -webkit-tap-highlight-color: transparent;
 }
 
+/* WEBRACK open: the rail is the script's alone (mdr-header-enhance.liquid
+   locks each gesture to one axis) -- with pan-y the browser panned the page
+   by any up/down wobble in a sideways swipe. A clearly vertical swipe still
+   scrolls the page, via the script. Closed, the rail stays pan-y above. */
+html.mdr-webrack-open .mdr-allbar__touchzone {
+  touch-action: none;
+}
+
 /* supreme-style: the grid just flows down the page, no inner scroll window */
 main[data-template='collection'] [id$='__product_list_fa6P9H'] .resource-list--grid {
   max-height: none !important;
