@@ -186,6 +186,8 @@
       }
       if (navRows[to]) {
         placeRow(navRows[to]);
+        /* back on the grid after a RETURN: MENU slides back onto the rail */
+        if (to === 'home' && window.__mdrMenuEnterPending && window.__mdrMenuEnterPending()) window.__mdrMenuEnter(navRows[to]);
       } else if (window.__mdrAllbarBuild) {
         window.__mdrAllbarBuild();
         navRows[to] = D.querySelector('.mdr-allbar-wrap');

@@ -4688,3 +4688,93 @@ main[data-template='collection'] [id$='__product_list_fa6P9H'] .product-card .pr
 }
 
 
+
+/* ==========================================================================
+   WEBRACK / RETURN rail -- MENU and its end-cap.
+     grid:          WEBRACK >------------------------------| MENU
+     other pages:   MENU |------------------------------< RETURN
+   MENU (snippets/mdr-header-enhance.liquid) is a link to the landing screen
+   at the rail's far end: the toggle's own row box, type and dim, so it
+   reads as the same control. The cap is the rail's terminal stroke,
+   exactly the chevron's height, drawn in the same SVG with the same stroke
+   (.mdr-allbar__line-path) -- one drawing. On the zap (WEBRACK opening /
+   RETURN leaving) MENU and its cap are carried off the edge together on the
+   zap's own 0.2s curve while the rail zips; closing reverses it; after a
+   RETURN they arrive back and click onto the rail.
+   ========================================================================== */
+.mdr-allbar-wrap {
+  /* MENU travels past the row's edge -- never a sideways page scroll */
+  overflow-x: clip;
+}
+
+.mdr-allbar__menu {
+  position: absolute;
+  z-index: 4;
+  display: inline-flex;
+  align-items: center;
+  padding: 0 8px;
+  box-sizing: border-box;
+  color: var(--mdr-ink);
+  font-size: 0.72rem;
+  line-height: 1;
+  text-decoration: none;
+  white-space: nowrap;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.mdr-allbar__menu-label {
+  opacity: 0.5;
+  transition: opacity var(--animation-speed) var(--animation-easing);
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .mdr-allbar__menu:hover .mdr-allbar__menu-label {
+    opacity: 1;
+  }
+}
+
+.mdr-allbar__menu:active .mdr-allbar__menu-label {
+  opacity: 1;
+  transition-duration: 0s;
+}
+
+.mdr-allbar__menu,
+.mdr-allbar__cap {
+  transform: translateX(0);
+  transition:
+    transform 0.2s cubic-bezier(0.65, 0, 0.35, 1),
+    visibility 0s linear 0s;
+}
+
+/* carried out with the zap */
+.mdr-allbar-wrap--zap .mdr-allbar__menu,
+.mdr-allbar-wrap--zap .mdr-allbar__cap {
+  transform: translateX(var(--mdr-menu-out, 0px));
+  visibility: hidden;
+  pointer-events: none;
+  transition:
+    transform 0.2s cubic-bezier(0.65, 0, 0.35, 1),
+    visibility 0s linear 0.2s;
+}
+
+/* arriving after a RETURN: starts out at the edge (no transition), then
+   the base rule above brings it home -- a touch longer and settling hard,
+   so it reads as snapping back onto the rail */
+.mdr-allbar-wrap--menu-enter .mdr-allbar__menu,
+.mdr-allbar-wrap--menu-enter .mdr-allbar__cap {
+  transform: translateX(var(--mdr-menu-out, 0px));
+  transition: none;
+}
+
+.mdr-allbar-wrap:not(.mdr-allbar-wrap--zap):not(.mdr-allbar-wrap--menu-enter) .mdr-allbar__menu,
+.mdr-allbar-wrap:not(.mdr-allbar-wrap--zap):not(.mdr-allbar-wrap--menu-enter) .mdr-allbar__cap {
+  transition-duration: 0.24s, 0s;
+  transition-timing-function: cubic-bezier(0.2, 0.9, 0.25, 1), linear;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .mdr-allbar__menu,
+  .mdr-allbar__cap {
+    transition: none !important;
+  }
+}

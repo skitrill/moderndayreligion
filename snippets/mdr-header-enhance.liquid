@@ -432,6 +432,41 @@
       try { return JSON.parse(el.textContent) || []; } catch (e) { return []; }
     }
 
+    /* MENU arrival after a RETURN (full load, back-forward cache, or the
+       in-page navigation putting the grid's row back -- mdr-instant-nav):
+       start carried out at the edge, then transition home */
+    window.__mdrMenuEnterPending = function () {
+      var t = 0;
+      try { t = +sessionStorage.getItem('mdrMenuEnter') || 0; sessionStorage.removeItem('mdrMenuEnter'); } catch (e) {}
+      return t && Date.now() - t < 6000;
+    };
+    window.__mdrMenuEnter = function (row) {
+      if (!row || !row.querySelector('.mdr-allbar__menu')) return;
+      row.classList.add('mdr-allbar-wrap--menu-enter');
+      void row.offsetWidth;
+      requestAnimationFrame(function () { row.classList.remove('mdr-allbar-wrap--menu-enter'); });
+    };
+    window.addEventListener('pageshow', function (e) {
+      if (!e.persisted || !window.__mdrMenuEnterPending()) return;
+      var row = D.querySelector('.mdr-allbar-wrap');
+      if (row && !row.querySelector('.mdr-allbar--back')) window.__mdrMenuEnter(row);
+    });
+
+    /* MENU's destination, warmed once the page is idle -- browsers that
+       prerender links already do it themselves; this covers the others */
+    (function () {
+      var go = function () {
+        if (location.pathname === '/' || D.querySelector('link[data-mdr-menu-prefetch]')) return;
+        var l = D.createElement('link');
+        l.rel = 'prefetch';
+        l.href = '/';
+        l.setAttribute('data-mdr-menu-prefetch', '');
+        D.head.appendChild(l);
+      };
+      if (window.requestIdleCallback) requestIdleCallback(go, { timeout: 3000 });
+      else setTimeout(go, 1500);
+    })();
+
     function build() {
       if (D.querySelector('.mdr-allbar-wrap')) return;
       /* mount right under the site header so it shows on EVERY page, sitting
@@ -571,6 +606,18 @@
       bar.appendChild(list);
       wrap.appendChild(bar);
 
+      /* MENU: the far end of the rail -- right of WEBRACK's line on the grid,
+         left of RETURN's everywhere else -- a real link to the landing screen
+         (the site menu, "/"). A real <a> so the browser's own prerender /
+         prefetch (layout/theme.liquid speculation rules) and the idle
+         prefetch below make it land instantly. Sits above the rack's drag
+         catcher so it takes its own hover / tap directly. */
+      var menu = D.createElement('a');
+      menu.className = 'mdr-allbar__menu' + (isHome ? '' : ' mdr-allbar__menu--start');
+      menu.href = '/';
+      menu.innerHTML = '<span class="mdr-allbar__menu-label">Menu</span>';
+      wrap.appendChild(menu);
+
       /* The line-as-icon redesign: WEBRACK/RETURN's arrow is no longer a
          separate glyph, SVG icon, or CSS-clipped shape sitting beside the
          connecting rule -- it's cut directly into the SAME stroke as the
@@ -587,6 +634,11 @@
       var linePath = D.createElementNS(SVG_NS, 'path');
       linePath.setAttribute('class', 'mdr-allbar__line-path');
       lineSvg.appendChild(linePath);
+      /* MENU's end-cap: the rail's terminal stroke -- its own path (same
+         stroke class) so it can travel with MENU while the rail zips */
+      var capPath = D.createElementNS(SVG_NS, 'path');
+      capPath.setAttribute('class', 'mdr-allbar__line-path mdr-allbar__cap');
+      lineSvg.appendChild(capPath);
       wrap.appendChild(lineSvg);
 
       /* sit it directly below the header, on every page */
@@ -675,6 +727,28 @@
           lineEnd = w - (parseFloat(wrapCs.paddingRight) || 0) - toggleInset;
         }
 
+        /* MENU: the same row box as the toggle (so its label centres on the
+           rail exactly like WEBRACK/RETURN), at the row's content edge
+           opposite the toggle */
+        var wrapCs2 = getComputedStyle(wrap);
+        menu.style.top = toggle.offsetTop + 'px';
+        menu.style.height = toggle.offsetHeight + 'px';
+        if (isHome) menu.style.right = (parseFloat(wrapCs2.paddingRight) || 0) + 'px';
+        else menu.style.left = (parseFloat(wrapCs2.paddingLeft) || 0) + 'px';
+        var menuLabel = menu.querySelector('.mdr-allbar__menu-label');
+        var menuRect = menuLabel.getBoundingClientRect();
+        /* the end-cap: exactly the chevron's height (2 x wingDy), on a
+           half pixel so the 1px vertical renders crisp; the rail ends on its
+           exact centre -- one shared coordinate, so there is no gap */
+        var capX = isHome
+          ? Math.round(menuRect.left - wrapRect.left - gap) + 0.5
+          : Math.round(menuRect.right - wrapRect.left + gap) - 0.5;
+        capPath.setAttribute('d', 'M ' + capX + ' ' + (midY - wingDy) + ' L ' + capX + ' ' + (midY + wingDy));
+        /* how far MENU + cap travel to leave the row, for the zap */
+        wrap.style.setProperty('--mdr-menu-out', isHome
+          ? (w - (menuRect.left - wrapRect.left) + gap + 12) + 'px'
+          : (-(menuRect.right - wrapRect.left) - gap - 12) + 'px');
+
         var d;
         if (isHome) {
           /* WEBRACK: reversed from the first version of this -- the
@@ -694,7 +768,7 @@
              "as though >> is pulling the line open". */
           var wingBackX = (labelRect.right - wrapRect.left) + gap;
           var vertexX = wingBackX + wingDx;
-          var lineEndX = Math.max(vertexX, lineEnd);
+          var lineEndX = Math.max(vertexX, capX);
           d = 'M ' + wingBackX + ' ' + (midY - wingDy) +
             ' L ' + vertexX + ' ' + midY +
             ' L ' + lineEndX + ' ' + midY +
@@ -712,7 +786,7 @@
              right one, "motion travels right -> left when returning". */
           var wingBackX2 = (labelRect.left - wrapRect.left) - gap;
           var vertexX2 = wingBackX2 - wingDx;
-          var lineStartX = Math.min(vertexX2, lineStart);
+          var lineStartX = Math.min(vertexX2, capX);
           d = 'M ' + wingBackX2 + ' ' + (midY - wingDy) +
             ' L ' + vertexX2 + ' ' + midY +
             ' L ' + lineStartX + ' ' + midY +
@@ -734,6 +808,10 @@
       buildLinePath();
       window.addEventListener('resize', buildLinePath, { passive: true });
       window.addEventListener('load', buildLinePath);
+
+      /* back on the grid after a RETURN: MENU and its cap arrive from the
+         edge they were carried out to, and click back onto the rail */
+      if (isHome && window.__mdrMenuEnterPending && window.__mdrMenuEnterPending()) window.__mdrMenuEnter(wrap);
 
       /* line its label up under the logo, at every breakpoint (the header
          centres its own content on desktop, so a fixed gutter won't do) */
@@ -798,6 +876,7 @@
              cache (see mdrGoBack, layout/theme.liquid), so the rest of
              the zip plays out while it's already coming back. */
           wrap.classList.add('mdr-allbar-wrap--zap');
+          try { sessionStorage.setItem('mdrMenuEnter', String(Date.now())); } catch (err) {}
           setTimeout(function () {
             if (typeof window.mdrGoBack === 'function') window.mdrGoBack();
             else if (history.length > 1) history.back();
