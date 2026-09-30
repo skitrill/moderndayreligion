@@ -4842,7 +4842,12 @@ main[data-template='collection'] [id$='__product_list_fa6P9H'] .product-card .pr
 }
 
 .mdr-allbar__menu,
+/* the MENU rake (snippets/mdr-header-enhance.liquid): square ends and
+   corners, so the spine and its top/bottom teeth meet as clean right
+   angles and the teeth end flat */
 .mdr-allbar__cap {
+  stroke-linecap: square;
+  stroke-linejoin: miter;
   transform: translateX(0);
   transition:
     transform 0.2s cubic-bezier(0.65, 0, 0.35, 1),

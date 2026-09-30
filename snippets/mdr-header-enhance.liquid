@@ -769,11 +769,26 @@
         else menu.style.left = (parseFloat(wrapCs2.paddingLeft) || 0) + 'px';
         var menuLabel = menu.querySelector('.mdr-allbar__menu-label');
         var menuRect = menuLabel.getBoundingClientRect();
-        /* the end-cap: exactly the chevron's height (2 x wingDy), on a
-           half pixel so the 1px vertical renders crisp; the rail ends on its
-           exact centre -- one shared coordinate, so there is no gap */
-        var capX = snap(isHome ? menuRect.left - wrapRect.left - gap : menuRect.right - wrapRect.left + gap);
-        capPath.setAttribute('d', 'M ' + capX + ' ' + (midY - wingDy) + ' L ' + capX + ' ' + (midY + wingDy));
+        /* MENU's symbol, permanent (never swapped or morphed): a four-tooth
+           rake seen side-on -- a short vertical spine the rail runs into at
+           its centre, with four equal teeth pointing toward MENU. About the
+           chevron's height. Tooth tips sit `gap` from the label, mirroring
+           the chevron's gap from WEBRACK / RETURN.
+           Teeth are placed in device pixels: equal spacing (~3px), each on a
+           pixel row so all four render crisp at any screen density; the set
+           is centred on the rail to within half a device pixel. */
+        var toothLen = 3;
+        var dir = isHome ? 1 : -1; /* teeth point toward MENU */
+        var capX = snap(isHome ? menuRect.left - wrapRect.left - gap - toothLen : menuRect.right - wrapRect.left + gap + toothLen);
+        var tipX = capX + dir * toothLen;
+        var step = Math.max(2, Math.round(3 * dpr)); /* device px between teeth */
+        var firstRow = Math.floor(midY * dpr - 1.5 * step) + 0.5;
+        var teeth = [0, 1, 2, 3].map(function (i) { return (firstRow + i * step) / dpr; });
+        capPath.setAttribute('d',
+          'M ' + tipX + ' ' + teeth[0] + ' L ' + capX + ' ' + teeth[0] +
+          ' L ' + capX + ' ' + teeth[3] + ' L ' + tipX + ' ' + teeth[3] +
+          ' M ' + capX + ' ' + teeth[1] + ' L ' + tipX + ' ' + teeth[1] +
+          ' M ' + capX + ' ' + teeth[2] + ' L ' + tipX + ' ' + teeth[2]);
         /* how far MENU + cap travel to leave the row, for the zap */
         wrap.style.setProperty('--mdr-menu-out', isHome
           ? (w - (menuRect.left - wrapRect.left) + gap + 12) + 'px'
