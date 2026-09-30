@@ -730,6 +730,9 @@
         /* the pinned rail's height: the theme's sticky pieces (PDP photo and
            details, desktop cart summary) stop just under it */
         D.documentElement.style.setProperty('--mdr-rail-h', wrap.offsetHeight + 'px');
+        /* phones pin the header too, with the rail right under it */
+        var headerGroup = D.getElementById('header-group');
+        if (headerGroup) D.documentElement.style.setProperty('--mdr-header-h', headerGroup.offsetHeight + 'px');
         lineSvg.setAttribute('width', w);
         lineSvg.setAttribute('height', h);
         lineSvg.setAttribute('viewBox', '0 0 ' + w + ' ' + h);

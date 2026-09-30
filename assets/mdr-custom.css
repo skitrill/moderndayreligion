@@ -549,8 +549,8 @@ html {
 @media screen and (min-width: 990px) {
 
   /* nav row inside the frame: its own bottom line (the header group's
-     bottom line is the one above it); its material is the smoked glass
-     (SMOKED GLASS RAIL block) */
+     bottom line is the one above it); its material is the white glass
+     (WHITE GLASS RAIL block) */
   .mdr-frame > .mdr-allbar-wrap {
     flex: 0 0 auto;
     border-top: 0 !important;
@@ -3308,7 +3308,7 @@ body:has(main[data-template='index']) .page-wrapper {
 /* .header__underlay-closed (the header row's own paint layer,
    sections/header.liquid) and the WEBRACK/RETURN pill: transparent,
    letting the surface behind them show through instead of layering their
-   own panels on top. (The rail row itself is smoked glass -- SMOKED GLASS
+   own panels on top. (The rail row itself is white glass -- WHITE GLASS
    RAIL block.) */
 [data-header-rows='single'] .header__underlay-closed,
 .mdr-allbar {
@@ -3961,7 +3961,7 @@ main[data-template='collection']
   box-sizing: border-box;
   /* Pinned: the header row scrolls away, this rail stays at the top of
      the screen (under the status bar on a notched phone) and the page
-     scrolls behind its smoked glass. Sticky, not fixed: it keeps its place
+     scrolls behind its white glass. Sticky, not fixed: it keeps its place
      in the flow (nothing jumps) and is still the containing block for the
      drag-catcher touchzone below. On phones/tablets it's the next sibling
      of #header-group (mdr-header-enhance.liquid), so it sticks for the
@@ -4099,9 +4099,8 @@ main[data-template='collection']
      should therefore be extremely minimal... use the exact same subtle
      hairline weight/color as the existing MDR grid/divider lines", not a
      conventional thicker navigation arrow. */
-  /* etched into the smoked glass: a soft light stroke (SMOKED GLASS RAIL
-     block), same 1px weight as the grid */
-  stroke: var(--mdr-etch);
+  /* the grid's own line colour and 1px weight, on the rail's white glass */
+  stroke: var(--mdr-border-faint);
   stroke-width: 1;
   stroke-linecap: round;
   stroke-linejoin: round;
@@ -4241,9 +4240,9 @@ main[data-template='collection']
   padding: 12px 8px;
   border: 0;
   background: none;
-  /* the label's colour on the smoked glass (see .mdr-allbar__label for its
-     own idle/open opacity) */
-  color: var(--mdr-etch-ink);
+  /* ink is what the LABEL renders in (see .mdr-allbar__label for its own
+     idle/open opacity) */
+  color: var(--mdr-ink);
   font: inherit;
   /* WEBRACK / RETURN, same ~10% bump over .mdr-allbar's own (now smaller)
      0.66rem, so it's still harder to miss / mistap next to the logo */
@@ -4262,7 +4261,7 @@ main[data-template='collection']
    own constant hairline colour, and its own separate open/close signal
    (.mdr-allbar-wrap--zap) drives its stroke-dashoffset wipe instead. */
 .mdr-allbar__label {
-  opacity: 0.72;
+  opacity: 0.5;
   transition: opacity var(--animation-speed) var(--animation-easing);
 }
 
@@ -4332,11 +4331,10 @@ main[data-template='collection']
      labels read as the site's existing secondary gray typography instead,
      so WEBRACK stays the slightly-darker anchor and the categories beside
      it read as one notch quieter, same relationship body copy/selectors
-     already use elsewhere. On the glass: the same light ink, a notch
-     dimmer than WEBRACK. */
-  color: var(--mdr-etch-ink);
+     already use elsewhere. */
+  color: var(--mdr-graphite);
   text-decoration: none;
-  opacity: 0.6;
+  opacity: 0.72;
   white-space: nowrap;
   flex: 0 0 auto;
   padding-inline: 0;
@@ -4362,7 +4360,7 @@ main[data-template='collection']
    here can affect the row's height between states. */
 .mdr-allbar__list a[aria-current='page'] {
   opacity: 1;
-  color: var(--mdr-etch-ink);
+  color: var(--mdr-ink);
   /* no underline -- the selected title is marked by ink + full opacity
      alone (was a text-decoration underline, then an animated line) */
   text-decoration: none;
@@ -4933,7 +4931,7 @@ main[data-template='collection'] [id$='__product_list_fa6P9H'] .product-card .pr
   align-items: center;
   padding: 0 8px;
   box-sizing: border-box;
-  color: var(--mdr-etch-ink);
+  color: var(--mdr-ink);
   font-size: 0.72rem;
   /* the toggle's own line box, so MENU's text centres on the rail exactly
      where WEBRACK / RETURN do */
@@ -4944,7 +4942,7 @@ main[data-template='collection'] [id$='__product_list_fa6P9H'] .product-card .pr
 }
 
 .mdr-allbar__menu-label {
-  opacity: 0.72;
+  opacity: 0.5;
   transition: opacity var(--animation-speed) var(--animation-easing);
 }
 
@@ -5021,61 +5019,80 @@ main[data-template='collection'] [id$='__product_list_fa6P9H'] .product-card .pr
 }
 
 /* ==========================================================================
-   SMOKED GLASS RAIL -- the WEBRACK / MENU / RETURN rail's material.
-   The one functional layer of the site: a band of dense smoked graphite
-   glass, pinned at the top of the screen, that the light page and its
-   black products scroll behind. Graphite first, glass second, page third:
-   the smoke is mostly opaque, the blur keeps what passes behind it to a
-   soft shadow, and nothing else is added -- no gloss, gradient, highlight,
-   rounded corners or border of its own. Its top and bottom edges are the
-   existing grid lines (#header-group's bottom border above it, its own
-   bottom border below), and the glass fills the row edge to edge while
-   the labels keep the 8px gutters.
-   On the glass, the rail's drawing -- the line, the > / < arrows and the
-   MENU rake, all one SVG (mdr-header-enhance.liquid) -- is a soft light
-   stroke, as if etched into it (--mdr-etch), and the words are a light
-   graphite-white (--mdr-etch-ink), never pure white.
-   One static layer: the blur never animates, and in-page navigation swaps
+   WHITE GLASS RAIL -- the WEBRACK / MENU / RETURN rail's material.
+   A band of white glass pinned at the top of the screen that the page and
+   its black products scroll behind, softened by the blur. Nothing else is
+   added: no gloss, gradient, highlight, rounded corners or border of its
+   own. Its top and bottom edges are the existing grid lines (#header-
+   group's bottom border above, its own bottom border below); the glass
+   fills the row edge to edge while the labels keep their gutters. The
+   rail's drawing (line, > / < arrows, MENU rake) and words keep their
+   normal grid-line and ink tones.
+   Phones only: the whole header (logo + CART) is pinned too, in the same
+   white glass, with the rail directly under it -- one continuous glass
+   surface split only by the grid line between them. Tablet and desktop pin
+   the rail alone.
+   Static layers: the blur never animates, and in-page navigation swaps
    only the rail's contents (same material either side), so the glass
-   itself doesn't flicker or fade between WEBRACK and RETURN.
+   doesn't flicker or fade between WEBRACK and RETURN.
    ========================================================================== */
 :root {
-  /* the smoke: the landing graphite lifted a touch toward the text graphite
-     (both existing tokens), mostly opaque */
-  --mdr-smoke: color-mix(in srgb, var(--mdr-landing-bg) 85%, var(--mdr-graphite));
-  --mdr-smoke-glass: color-mix(in srgb, var(--mdr-smoke) 86%, transparent);
-  --mdr-smoke-blur: blur(12px) saturate(80%);
-  /* the etched line / arrows / rake, and the words */
-  --mdr-etch: color-mix(in srgb, var(--mdr-surface) 40%, transparent);
-  --mdr-etch-ink: var(--mdr-surface);
+  --mdr-glass-white: color-mix(in srgb, white 62%, transparent);
 }
 
 body .mdr-allbar-wrap {
-  background: var(--mdr-smoke-glass) !important;
-  -webkit-backdrop-filter: var(--mdr-smoke-blur) !important;
-  backdrop-filter: var(--mdr-smoke-blur) !important;
+  background: var(--mdr-glass-white) !important;
+  -webkit-backdrop-filter: var(--mdr-glass-blur) !important;
+  backdrop-filter: var(--mdr-glass-blur) !important;
 }
 
-/* no backdrop blur (older WebViews): the same smoke, nearly solid, so
-   what passes behind never reads as muddy */
-@supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
-  body .mdr-allbar-wrap {
-    background: color-mix(in srgb, var(--mdr-smoke) 96%, transparent) !important;
-  }
-}
-
-/* the theme's own sticky pieces (PDP photo and details) stop just under
-   the pinned rail instead of sliding beneath it (--mdr-rail-h is the
-   rail's measured height, mdr-header-enhance.liquid) */
+/* the theme's own sticky pieces (PDP photo and details, desktop cart
+   summary) stop just under the pinned rail instead of sliding beneath it
+   (--mdr-rail-h is the rail's measured height, mdr-header-enhance.liquid;
+   phones add the pinned header, below) */
 body {
   --sticky-header-offset: var(--mdr-rail-h, 0px);
 }
 
-/* keyboard focus on the glass: a light ring, no light chip */
-.mdr-allbar-wrap a:focus-visible,
-.mdr-allbar-wrap button:focus-visible {
-  background-color: transparent !important;
-  color: var(--mdr-etch-ink) !important;
-  outline: 1px solid var(--mdr-etch-ink) !important;
-  outline-offset: -2px !important;
+@media screen and (max-width: 749px) {
+  /* the header pinned at the very top (its box already reaches under the
+     status bar -- its row carries the safe-area padding), the rail pinned
+     right under it (--mdr-header-h: the header's measured height,
+     mdr-header-enhance.liquid) */
+  #header-group {
+    position: sticky !important;
+    top: 0;
+    z-index: 16;
+    background: var(--mdr-glass-white) !important;
+  }
+
+  body .mdr-allbar-wrap {
+    top: var(--mdr-header-h, 0px);
+  }
+
+  /* the pinned header now covers the status-bar area itself, so the
+     separate safe-area strip over it (body::before) steps aside rather
+     than laying a second glass on top */
+  :root {
+    --mdr-edge-top: transparent;
+    --mdr-edge-blur: none;
+  }
+
+  body {
+    --sticky-header-offset: calc(var(--mdr-header-h, 0px) + var(--mdr-rail-h, 0px));
+  }
+}
+
+/* no backdrop blur (older WebViews): the same white, nearly solid, so what
+   passes behind never reads as muddy */
+@supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+  body .mdr-allbar-wrap {
+    background: color-mix(in srgb, white 92%, transparent) !important;
+  }
+
+  @media screen and (max-width: 749px) {
+    #header-group {
+      background: color-mix(in srgb, white 92%, transparent) !important;
+    }
+  }
 }
