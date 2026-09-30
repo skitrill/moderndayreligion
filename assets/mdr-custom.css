@@ -1162,6 +1162,12 @@ product-price *,
     grid-template-columns: minmax(0, 1fr) !important;
   }
 
+  /* back inside the section's page gutters, like the phone layout (the
+     full-bleed span above is for the 990px+ two-column cart) */
+  main[data-template='cart'] .cart-page {
+    grid-column: 2 / 3 !important;
+  }
+
   .cart-page__summary {
     grid-column: 1 !important;
     grid-row: auto !important;
@@ -1420,10 +1426,11 @@ product-price *,
   -webkit-tap-highlight-color: transparent;
 }
 
+/* reach up, down and inward -- never past the row's right edge */
 .cart-items__remove::before {
   content: '';
   position: absolute;
-  inset: -9px -4px -9px -8px;
+  inset: -9px 0 -9px -8px;
 }
 
 .cart-items__remove:focus-visible {
