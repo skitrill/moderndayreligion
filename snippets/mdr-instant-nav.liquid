@@ -155,8 +155,11 @@
       if (window.matchMedia('(min-width: 990px)').matches && frame) {
         frame.insertBefore(row, frame.firstChild);
       } else {
-        var header = D.querySelector('header.shopify-section-group-header-group') || D.querySelector('#header-group > header');
-        if (header && header.parentNode) header.parentNode.insertBefore(row, header.nextSibling);
+        /* right after #header-group (not inside it) -- see the build in
+           mdr-header-enhance.liquid: the pinned glass rail lives in the page */
+        var after = D.getElementById('header-group') ||
+          D.querySelector('header.shopify-section-group-header-group');
+        if (after && after.parentNode) after.parentNode.insertBefore(row, after.nextSibling);
       }
       /* its line and drag zone re-measure for the current layout */
       window.dispatchEvent(new Event('resize'));
