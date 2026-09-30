@@ -4553,36 +4553,90 @@ main[data-template='collection'] [id$='__product_list_fa6P9H'] .product-card .pr
   padding: 3% !important;
 }
 
-/* "new" tag -- back to a small, plain bordered box, top-right corner of
-   every card, same as it was originally before several shape experiments
-   (bordered box, flag-on-a-stem, hexagon on the grid line, WEBRACK-
-   upside-down merged at the corner). Reference was Supreme's own site:
-   theirs is exactly this -- a small rectangle, thin muted border, quiet
-   text, tucked in the corner, identical on every card, no attempt to
-   merge with the grid. Kept the site's own all-caps convention (Supreme's
-   reads lowercase) rather than switch just this one label. */
-main[data-template='collection'] [id$='__product_list_fa6P9H'] .card-gallery::after {
-  content: 'new';
+/* ---- NEW: a tab cut into the grid ----------------------------------------
+   A product is NEW when snippets/product-card.liquid marks its card
+   data-mdr-new (tagged "new", or published in the last 30 days). Its cell
+   then carries a short tab hanging from the cell's top grid line, against
+   the vertical divider it shares with its neighbour:
+
+        NEW | NEW          left of a pair: tab at the cell's right edge
+     |\_____|_____/|        right of a pair: tab at its left edge
+
+   Cells pair up across a divider -- 1|2, 3|4 in every row, on the phone's
+   2 columns and the desktop's 4 alike -- so two NEW neighbours meet on
+   their shared divider as one symmetrical mark, with the divider (the
+   grid's own 1px gap) running straight through. A cell that isn't NEW
+   draws nothing; its neighbour's tab stands alone.
+   The outline is the grid's own line colour and 1px weight: a mask (the
+   drawing) filled with --mdr-border-faint -- the outer edge, the bottom,
+   and the angled cut from the top corner. The tab's top and inner side are
+   the real grid lines. Fixed size at every width: the tab doesn't grow with
+   the cell. The mask drawings are at exactly --mdr-new-w x --mdr-new-h
+   (44 x 13) and the cut is --mdr-new-cut (7) -- change them together. */
+:root {
+  --mdr-new-w: 44px;
+  --mdr-new-h: 13px;
+  --mdr-new-cut: 7px;
+  --mdr-new-mask-left: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='44' height='13'%3E%3Cpath d='M.5 0V13M0 12.5H44M.5 0 7 13' fill='none' stroke='%23000'/%3E%3C/svg%3E");
+  --mdr-new-mask-right: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='44' height='13'%3E%3Cpath d='M43.5 0V13M0 12.5H44M43.5 0 37 13' fill='none' stroke='%23000'/%3E%3C/svg%3E");
+}
+
+main[data-template='collection'] [id$='__product_list_fa6P9H'] .resource-list__item {
+  position: relative;
+}
+
+main[data-template='collection'] [id$='__product_list_fa6P9H'] .resource-list__item:has(product-card[data-mdr-new])::before,
+main[data-template='collection'] [id$='__product_list_fa6P9H'] .resource-list__item:has(product-card[data-mdr-new])::after {
   position: absolute;
-  top: 8px;
-  right: 8px;
-  z-index: 2;
-  font: inherit;
-  font-size: 0.6rem;
-  letter-spacing: 0.04em;
-  line-height: 1;
-  text-transform: uppercase;
-  font-weight: 400;
-  /* matches the PDP's own secondary/faded graphite tier (description,
-     metadata) -- was a darker 0.55 alpha with a 0.3-alpha border, both
-     stronger than the product name/price right below it, letting NEW
-     compete with the actual product information instead of sitting
-     quietly beside it. */
-  color: var(--mdr-text-gray-light, rgba(0, 0, 0, 0.35));
-  background: transparent;
-  padding: 2px 7px;
-  border: 1px solid var(--mdr-border-faint, rgba(4, 0, 97, 0.08));
+  top: 0;
+  z-index: 3;
+  width: var(--mdr-new-w);
+  height: var(--mdr-new-h);
   pointer-events: none;
+}
+
+/* the outline */
+main[data-template='collection'] [id$='__product_list_fa6P9H'] .resource-list__item:has(product-card[data-mdr-new])::before {
+  content: '';
+  background: var(--mdr-border-faint);
+  -webkit-mask: var(--mdr-new-mask-left) no-repeat 0 0 / 100% 100%;
+  mask: var(--mdr-new-mask-left) no-repeat 0 0 / 100% 100%;
+}
+
+/* the word, centred in the part of the tab past the cut */
+main[data-template='collection'] [id$='__product_list_fa6P9H'] .resource-list__item:has(product-card[data-mdr-new])::after {
+  content: 'new';
+  box-sizing: border-box;
+  padding-inline-start: calc(var(--mdr-new-cut) / 2);
+  font: inherit;
+  font-size: 0.5rem;
+  font-weight: 400;
+  line-height: var(--mdr-new-h);
+  letter-spacing: 0.06em;
+  text-align: center;
+  text-transform: uppercase;
+  color: var(--mdr-text-gray-light);
+}
+
+/* left of a pair: against the right-hand divider, cut on its left */
+main[data-template='collection'] [id$='__product_list_fa6P9H'] .resource-list__item:nth-child(odd):has(product-card[data-mdr-new])::before,
+main[data-template='collection'] [id$='__product_list_fa6P9H'] .resource-list__item:nth-child(odd):has(product-card[data-mdr-new])::after {
+  right: 0;
+}
+
+/* right of a pair: mirrored */
+main[data-template='collection'] [id$='__product_list_fa6P9H'] .resource-list__item:nth-child(even):has(product-card[data-mdr-new])::before,
+main[data-template='collection'] [id$='__product_list_fa6P9H'] .resource-list__item:nth-child(even):has(product-card[data-mdr-new])::after {
+  left: 0;
+}
+
+main[data-template='collection'] [id$='__product_list_fa6P9H'] .resource-list__item:nth-child(even):has(product-card[data-mdr-new])::before {
+  -webkit-mask-image: var(--mdr-new-mask-right);
+  mask-image: var(--mdr-new-mask-right);
+}
+
+main[data-template='collection'] [id$='__product_list_fa6P9H'] .resource-list__item:nth-child(even):has(product-card[data-mdr-new])::after {
+  padding-inline: 0 calc(var(--mdr-new-cut) / 2);
 }
 
 /* hide the quick-add / choose overlay button -- supreme cards are just tap-through */
