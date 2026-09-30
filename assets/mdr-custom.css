@@ -5,55 +5,11 @@
    ========================================================================== */
 
 /* ---- Global typeface: PGF Qualta, site-wide ------------------------------
-   Licensed webfonts (Fontspring web font EULA 2.0): WOFF2 with WOFF
-   fallback, embedded with @font-face only, as the license requires -- no
-   .otf/.ttf on the site. The files sit in the theme's assets and are kept
-   out of the git repo (.gitignore): the license forbids redistributing
-   them with the site's source. The license also caps monthly pageviews
-   (on the order receipt).
-   Only the cuts the site actually uses: Regular (everything), Medium (cart
-   prices), Bold (product page price), Italic (editorial emphasis). A face
-   is only downloaded when a page shows text in it. The whole family
-   (Thin -> ExtraBold, with italics) is in the Fontspring order if a
-   design ever needs another weight. Overrides all four of the theme's
-   own font variables (body/subheading/heading/accent) so every text role
-   on the site uses it uniformly, not just body copy. */
-@font-face {
-  font-family: 'PGF Qualta';
-  src: url('pgf-qualta-regular-webfont.woff2') format('woff2'),
-    url('pgf-qualta-regular-webfont.woff') format('woff');
-  font-weight: 400;
-  font-style: normal;
-  font-display: swap;
-}
-
-@font-face {
-  font-family: 'PGF Qualta';
-  src: url('pgf-qualta-italic-webfont.woff2') format('woff2'),
-    url('pgf-qualta-italic-webfont.woff') format('woff');
-  font-weight: 400;
-  font-style: italic;
-  font-display: swap;
-}
-
-@font-face {
-  font-family: 'PGF Qualta';
-  src: url('pgf-qualta-medium-webfont.woff2') format('woff2'),
-    url('pgf-qualta-medium-webfont.woff') format('woff');
-  font-weight: 500;
-  font-style: normal;
-  font-display: swap;
-}
-
-@font-face {
-  font-family: 'PGF Qualta';
-  src: url('pgf-qualta-bold-webfont.woff2') format('woff2'),
-    url('pgf-qualta-bold-webfont.woff') format('woff');
-  font-weight: 700;
-  font-style: normal;
-  font-display: swap;
-}
-
+   The licensed webfont's @font-face rules (and the preload) are in
+   snippets/mdr-fonts.liquid, rendered in the <head> of both layouts, so they
+   use Shopify's versioned asset URLs. This overrides all four of the
+   theme's own font variables (body/subheading/heading/accent) so every text
+   role on the site uses it uniformly, not just body copy. */
 :root {
   --font-body--family: 'PGF Qualta', 'Anonymous Pro', monospace !important;
   --font-subheading--family: 'PGF Qualta', 'Anonymous Pro', monospace !important;

@@ -23,13 +23,7 @@
     {%- render 'scripts' -%}
     {%- render 'theme-styles-variables' -%}
     {%- render 'color-palette' -%}
-    <link
-      rel="preload"
-      href="{{ 'pgf-qualta-regular-webfont.woff2' | asset_url }}"
-      as="font"
-      type="font/woff2"
-      crossorigin
-    >
+    {%- render 'mdr-fonts' -%}
     {{ 'mdr-custom.css' | asset_url | stylesheet_tag }}
 
     {% if request.design_mode %}

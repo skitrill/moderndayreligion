@@ -1,0 +1,64 @@
+{%- doc -%}
+  PGF Qualta -- the site typeface. Licensed webfonts (Fontspring web font
+  EULA 2.0): WOFF2 with WOFF fallback, embedded with @font-face only, as the
+  license requires -- no .otf/.ttf on the site. The files sit in the theme's
+  assets and are kept out of the git repo (.gitignore): the license forbids
+  redistributing them with the site's source. The license also caps monthly
+  pageviews (see the order receipt).
+
+  Only the cuts the site uses: Regular (everything), Medium (cart prices),
+  Bold (product page price), Italic (editorial emphasis). A face is only
+  downloaded when a page shows text in it; Regular is preloaded so the first
+  paint is already in the right face. The rest of the family (Thin ->
+  ExtraBold, with italics) is in the Fontspring order.
+
+  Here rather than in assets/mdr-custom.css so the preload and the
+  @font-face rules use the same versioned asset URL -- a relative url() in
+  the stylesheet has no ?v= and the browser fetched the file a second time.
+  Rendered in the <head> of layout/theme.liquid and layout/password.liquid.
+{%- enddoc -%}
+
+<link
+  rel="preload"
+  href="{{ 'pgf-qualta-regular-webfont.woff2' | asset_url }}"
+  as="font"
+  type="font/woff2"
+  crossorigin
+>
+<style>
+  @font-face {
+    font-family: 'PGF Qualta';
+    src: url('{{ 'pgf-qualta-regular-webfont.woff2' | asset_url }}') format('woff2'),
+      url('{{ 'pgf-qualta-regular-webfont.woff' | asset_url }}') format('woff');
+    font-weight: 400;
+    font-style: normal;
+    font-display: swap;
+  }
+
+  @font-face {
+    font-family: 'PGF Qualta';
+    src: url('{{ 'pgf-qualta-italic-webfont.woff2' | asset_url }}') format('woff2'),
+      url('{{ 'pgf-qualta-italic-webfont.woff' | asset_url }}') format('woff');
+    font-weight: 400;
+    font-style: italic;
+    font-display: swap;
+  }
+
+  @font-face {
+    font-family: 'PGF Qualta';
+    src: url('{{ 'pgf-qualta-medium-webfont.woff2' | asset_url }}') format('woff2'),
+      url('{{ 'pgf-qualta-medium-webfont.woff' | asset_url }}') format('woff');
+    font-weight: 500;
+    font-style: normal;
+    font-display: swap;
+  }
+
+  @font-face {
+    font-family: 'PGF Qualta';
+    src: url('{{ 'pgf-qualta-bold-webfont.woff2' | asset_url }}') format('woff2'),
+      url('{{ 'pgf-qualta-bold-webfont.woff' | asset_url }}') format('woff');
+    font-weight: 700;
+    font-style: normal;
+    font-display: swap;
+  }
+</style>
