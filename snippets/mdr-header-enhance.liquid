@@ -1075,7 +1075,13 @@
            cached -- again only after a resize or once fonts load. */
         var reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
         var snaps = null;
-        var PROJECT = 250; /* how far a release speed carries (px per px/ms) */
+        /* how far a release speed carries: grows faster than the speed
+           itself, so a gentle swipe goes to the next title while a hard
+           flick runs across several (px, for v in px/ms) */
+        function carry(v) {
+          var a = Math.abs(v);
+          return (v < 0 ? -1 : 1) * (120 * a + 100 * a * a);
+        }
         var DIRECTIONAL = 0.12; /* px/ms: a release faster than this is "going somewhere" */
 
         function measureSnaps() {
@@ -1111,7 +1117,7 @@
 
         /* v: px/ms in the scroll direction (+ = further along the list) */
         function pickDetent(pos, v, intent) {
-          var projected = pos + v * PROJECT;
+          var projected = pos + carry(v);
           var all = detentsBetween(Math.min(pos, projected), Math.max(pos, projected));
           var best = all[0];
           for (var i = 1; i < all.length; i++) {
