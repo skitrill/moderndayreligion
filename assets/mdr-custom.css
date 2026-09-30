@@ -1973,8 +1973,12 @@ main[data-template='collection'] .resource-list--grid,
 main[data-template='collection'] [id$='__product_list_fa6P9H'] .resource-list--grid {
   display: grid !important;
   grid-template-columns: repeat(2, 1fr) !important;
+  /* vertical dividers: the 1px column gap (the grid's line-colour
+     background showing through). Horizontal lines: drawn by each cell along
+     its own top edge (the cell rule below), so a line can stop short where
+     a NEW notch cuts it -- hence no row gap. */
   column-gap: 1px !important;
-  row-gap: 1px !important;
+  row-gap: 0 !important;
   /* full width of .mdr-scrollfade (below), which is itself made full-bleed
      to the true viewport edges -- NOT another 100vw trick applied here
      too: .mdr-scrollfade has overflow-x: hidden (needed for the WEBRACK
@@ -4484,10 +4488,32 @@ main[data-template='collection']
    pattern, name + price stacked below, ghost "new" tag, hairline seams.
    ========================================================================== */
 
-/* 1px grid gaps read as hairlines: the grid paints a faint line colour and
-   every card fills its cell with solid black on top. */
+/* Grid lines. Vertical: the 1px column gap, the grid's line colour showing
+   through. Horizontal: every cell draws the line along its own top edge, in
+   a 1px band of top padding -- the same 1px, same colour, same place the
+   old 1px row gap drew it, so rows sit exactly where they did. Drawn this
+   way (not as a gap) a cell can end its line early: a NEW cell's line stops
+   where its notch begins (--mdr-cell-line, set in the NEW block below).
+   The first row's cells draw the top line of the grid too, so the line
+   directly above the grid (the header's on a phone, the rail's on desktop)
+   is dropped on this page -- see just below. */
 main[data-template='collection'] [id$='__product_list_fa6P9H'] .resource-list__item {
-  background: var(--mdr-paper) !important;
+  padding-top: 1px !important;
+  background:
+    linear-gradient(var(--mdr-border-faint), var(--mdr-border-faint)) no-repeat var(--mdr-cell-line-at, left) top / var(--mdr-cell-line, 100%) 1px,
+    var(--mdr-paper) !important;
+}
+
+@media screen and (max-width: 989px) {
+  body:has(main[data-template='collection'] [id$='__product_list_fa6P9H']) #header-group {
+    border-bottom: 0 !important;
+  }
+}
+
+@media screen and (min-width: 990px) {
+  body:has(main[data-template='collection'] [id$='__product_list_fa6P9H']) .mdr-frame > .mdr-allbar-wrap {
+    border-bottom: 0 !important;
+  }
 }
 
 /* No horizontal bottom line of the grid's own: the footer's top border is
@@ -4568,32 +4594,42 @@ main[data-template='collection'] [id$='__product_list_fa6P9H'] .product-card .pr
   padding: 3% !important;
 }
 
-/* ---- NEW: an open notch in the grid line ----------------------------------
+/* ---- NEW: an open notch cut into the grid line ----------------------------
    A product is NEW when snippets/product-card.liquid marks its card
-   data-mdr-new (tagged "new", or published in the last 30 days). Nothing
-   is drawn around the word: the cell's own top grid line runs on over it,
-   the vertical divider beside it is the real grid gap, and the only added
-   stroke is one short diagonal dropping from the grid line at the outer
-   end of the word -- the line looks notched to take NEW:
+   data-mdr-new (tagged "new", or published in the last 30 days). The cell's
+   own top grid line (cell rule above) stops short of the divider; from
+   where it stops, one short diagonal drops into the cell; NEW sits in the
+   open space that leaves, just under the line's level. Nothing underneath,
+   nothing around the word -- the notch is open:
 
-     ────╲ NEW | NEW ╱────     two NEW neighbours
-     ────╲ NEW |──────────     left one only
-     ──────────| NEW ╱────     right one only
+     ────╲       |       ╱────
+           NEW   |   NEW          two NEW neighbours
+     ────╲       |────────        left one only
+     ────────────|       ╱────    right one only
 
    Cells pair up across a divider -- 1|2, 3|4 in every row, on the phone's
-   2 columns and the desktop's 4 alike -- so NEW always sits against the
-   divider it shares with its neighbour, which runs on unbroken down the
-   grid. A cell that isn't NEW adds nothing.
-   The diagonal is the grid's own colour and 1px weight (a mask drawing
-   filled with --mdr-border-faint). Fixed size at every width. The mask
-   drawings are exactly --mdr-new-w x --mdr-new-h (30 x 9) with a
-   --mdr-new-cut (4) run -- change them together. */
+   2 columns and the desktop's 4 alike -- so the notch always sits against
+   the divider the pair shares, and that divider (the column gap) runs on
+   unbroken. A cell that isn't NEW keeps its full line.
+   The diagonal is the grid's colour and 1px weight (a mask drawing filled
+   with --mdr-border-faint): visible by its length, not by contrast. Fixed
+   size at every width. The mask drawings are exactly --mdr-new-w x
+   --mdr-new-h (40 x 11) with a --mdr-new-cut (6) run -- change together. */
 :root {
-  --mdr-new-w: 30px;
-  --mdr-new-h: 9px;
-  --mdr-new-cut: 4px;
-  --mdr-new-mask-left: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='30' height='9'%3E%3Cpath d='M.5 0 4.5 9' fill='none' stroke='%23000'/%3E%3C/svg%3E");
-  --mdr-new-mask-right: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='30' height='9'%3E%3Cpath d='M29.5 0 25.5 9' fill='none' stroke='%23000'/%3E%3C/svg%3E");
+  --mdr-new-w: 40px;
+  --mdr-new-h: 11px;
+  --mdr-new-cut: 6px;
+  --mdr-new-mask-left: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='40' height='11'%3E%3Cpath d='M.5 .5 6 11' fill='none' stroke='%23000'/%3E%3C/svg%3E");
+  --mdr-new-mask-right: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='40' height='11'%3E%3Cpath d='M39.5 .5 34 11' fill='none' stroke='%23000'/%3E%3C/svg%3E");
+}
+
+/* the cell's top line ends where the notch begins */
+main[data-template='collection'] [id$='__product_list_fa6P9H'] .resource-list__item:has(product-card[data-mdr-new]) {
+  --mdr-cell-line: calc(100% - var(--mdr-new-w));
+}
+
+main[data-template='collection'] [id$='__product_list_fa6P9H'] .resource-list__item:nth-child(even):has(product-card[data-mdr-new]) {
+  --mdr-cell-line-at: right;
 }
 
 main[data-template='collection'] [id$='__product_list_fa6P9H'] .resource-list__item {
@@ -4623,14 +4659,17 @@ main[data-template='collection'] [id$='__product_list_fa6P9H'] .resource-list__i
 main[data-template='collection'] [id$='__product_list_fa6P9H'] .resource-list__item:has(product-card[data-mdr-new])::after {
   content: 'new';
   box-sizing: border-box;
+  /* a little air under the line's level; clear of the diagonal */
+  top: 3px;
+  height: auto;
   padding-inline-start: var(--mdr-new-cut);
   border: 0;
   outline: 0;
   background: transparent;
   font: inherit;
-  font-size: 0.44rem;
+  font-size: 0.53rem;
   font-weight: 400;
-  line-height: var(--mdr-new-h);
+  line-height: 1;
   letter-spacing: 0.06em;
   text-align: center;
   text-transform: uppercase;
