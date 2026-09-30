@@ -14,6 +14,22 @@
   content="width=device-width,initial-scale=1,viewport-fit=cover"
 >
 {%- comment -%}
+  iOS zooms the page in when a text field smaller than 16px gets focus (the
+  cart quantity, discount code, mailing, search) and leaves it zoomed --
+  the page then looks cropped and slid sideways, and the in-page navigation
+  carries the zoom to the next page. maximum-scale=1 stops that auto-zoom;
+  iOS ignores it for the user's own pinch-zoom, so zooming stays available.
+  iOS only: on Android maximum-scale would really block pinch-zoom.
+{%- endcomment -%}
+<script>
+  (function () {
+    var n = navigator;
+    if (!/iP(hone|od|ad)/.test(n.platform) && !(n.platform === 'MacIntel' && n.maxTouchPoints > 1)) return;
+    var m = document.querySelector('meta[name="viewport"]');
+    if (m) m.setAttribute('content', m.getAttribute('content') + ',maximum-scale=1');
+  })();
+</script>
+{%- comment -%}
   Material: the light graphite surface (--mdr-surface, #dedfdd, in
   assets/mdr-custom.css) as it looks at the top of the screen, under the
   header's glass tint -- retune with the surface. (Old paper: #f8f8f5.)

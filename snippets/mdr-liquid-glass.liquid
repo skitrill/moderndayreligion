@@ -183,7 +183,10 @@
     });
 
     /* ---- press glint ---------------------------------------------------- */
-    var PRESSABLE = '.add-to-cart-button, .shopify-payment-button__button, [name="checkout"], .mdr-fnav__submit, .button:not(.quick-add__button)';
+    /* not the quantity − / + or the cart's delete: small controls whose
+       touch area reaches past their box (assets/mdr-custom.css, MDR
+       QUANTITY) -- the glint's overflow clip would cut that area off */
+    var PRESSABLE = '.add-to-cart-button, .shopify-payment-button__button, [name="checkout"], .mdr-fnav__submit, .button:not(.quick-add__button, .quantity-minus, .quantity-plus, .cart-items__remove)';
 
     function glint(btn, x, y, sweep) {
       if (reduce.matches) return;

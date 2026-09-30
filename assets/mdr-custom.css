@@ -1111,30 +1111,31 @@ product-price *,
   background: transparent !important;
 }
 
-.cart-summary,
-.cart-summary__inner {
-  /* last cart item -> DISCOUNT: one consistent section gap (--mdr-
-     section-gap), not the base theme's own --padding-xl (main-cart.liquid),
-     which reads as excessive dead air on a long cart. */
-  padding-top: var(--mdr-section-gap) !important;
+/* ---- Cart summary: tight, in plain flow --------------------------------
+   The summary sits in three nested wrappers (cart-page__summary >
+   cart-summary > cart-summary__inner), and the theme pads the top of
+   each -- stacked, that was the dead band between the last item and
+   DISCOUNT. One owner now: the inner wrapper, the same 12px the rows
+   use above and below their rules. Its children follow one gap
+   (DISCOUNT / ESTIMATED TOTAL / taxes note / CHECK OUT). Desktop's
+   side-column summary (min-width 750px block above) sets its own
+   padding and is unaffected. */
+.cart-page__summary,
+.cart-summary {
+  padding-top: 0 !important;
 }
 
-/* .cart-page__summary is the OUTERMOST of these three nested wrappers
-   (cart-page__summary > cart-summary > cart-summary__inner), each of
-   which independently carries its own top-only padding -- so its value
-   stacks with the other two's --mdr-section-gap instead of replacing it.
-   Tightened just this one, "a bit closer" to the last item row, without
-   touching --mdr-section-gap itself (shared token, still governs the
-   other two, and anything else using it later) or the summary card's own
-   internal framing (.cart-summary/.cart-summary__inner keep their full
-   gap). A second, identically-worded rule for this same selector used to
-   sit BEFORE this block instead of splitting it out -- same specificity,
-   !important, but earlier in the file, so it silently lost to this one
-   every time; removed rather than left as a second, contradictory source
-   of truth (same lesson as the cart-items__table-row duplicate from
-   earlier this session). */
-.cart-page__summary {
-  padding-top: 4px !important;
+.cart-summary__inner {
+  padding-top: 12px !important;
+  row-gap: 12px !important;
+}
+
+.cart-totals {
+  row-gap: 8px !important;
+}
+
+.cart__ctas {
+  margin-block: 8px 0 !important;
 }
 
 @media screen and (max-width: 749px) {
@@ -1161,153 +1162,39 @@ product-price *,
   }
 }
 
-.cart__ctas {
-  margin-block: 20px !important;
-}
-
-/* ---- Cart rows: compact the per-item vertical rhythm ---------------------
-   .cart-items__remove (the delete icon) reserves the base theme's default
-   44x44px tap target -- much taller than the quantity pill sitting right
-   next to it (~17px), and since they're flex row siblings that 44px was
-   setting the whole quantity area's height, reading as a big blank gap
-   before the next row's divider even though almost none of it is visibly
-   ink. Shrinking it (still comfortably tappable) plus trimming the row's
-   own padding/margin and the gap above the quantity control tightens each
-   line without losing the divider between items.
-   Repositioned pass: moved out of the quantity row entirely and into the
-   empty space under the price instead -- .cart-items__table-row is
-   already position:relative (base theme), and neither of this button's
-   own ancestors (.cart-items__quantity, .cart-items__quantity-controls)
-   set their own position, so the row itself is the real containing block
-   here; right:0 lines it up with the price column's own right edge
-   (.cart-items__price is text-align:end against that same row edge), and
-   bottom mirrors the row's own padding-bottom so it reads as sitting on
-   the row's own baseline, not floating at an arbitrary height. Taking it
-   out of flow like this also means .cart-items__quantity-controls no
-   longer needs to reserve any room for it next to the quantity selector.
-   26px -> 18.2px (~18px): "30% smaller" against the previous 26px box. */
-.cart-items__remove {
-  position: absolute;
-  right: 0;
-  bottom: 8px;
-  width: 18px !important;
-  height: 18px !important;
-}
-
-/* SVG glyph itself, 30% down from the base theme's own 20px -- the button
-   box above already shrank to match, so the icon isn't left stranded in
-   now-oversized empty padding. */
-.cart-items__remove svg {
-  width: 14px !important;
-  height: 14px !important;
-}
-
-/* "square edges, not rounded" -- the base icon (assets/icon-delete.svg)
-   draws every stroke end/join round. Overridden here rather than editing
-   that shared asset file directly: it's also used by quick-order-list.liquid
-   elsewhere in the theme, out of scope for a cart-page-only request.
-   stroke-linecap/-linejoin are real CSS properties (not just SVG
-   presentation attributes), so a plain rule on the <path>s is enough --
-   no JS runtime workaround needed here the way the icon's colour needed
-   (that was a color-scheme/currentColor-specific browser quirk, not a
-   general limit on styling SVG children of a button). square (not butt):
-   square extends each open stroke end a half-stroke-width past its own
-   endpoint with a flat cut, which is what "sharp/geometric" actually
-   looks like on a glyph this small -- butt would read as slightly
-   truncated/short on the open strokes (the top bar, the two vertical
-   ticks) instead. */
-.cart-items__remove path {
-  stroke-linecap: square !important;
-  stroke-linejoin: miter !important;
-}
-
-/* Was invisible -- and genuinely not a normal specificity problem: setting
-   `color` on the <button> itself, or on its <svg> wrapper, both visibly
-   took effect (confirmed live) but the icon stayed the same near-invisible
-   tone regardless, because neither is where the paint colour actually
-   comes from. body has color-scheme: dark set globally, intentionally,
-   further up this file ("tells Safari to treat the whole page as a dark
-   surface" for the rubber-band overscroll fill), and color-scheme inherits
-   onto every element by default -- including these two <path> elements.
-   Chromium resolves an inherited color-scheme: dark into its own UA
-   default `color` for SVG children of a native <button> that never had
-   `color` set directly ON THEM, which turned out to NOT be simple
-   inheritance from the button/svg despite every indication it should be
-   (confirmed live: setting `color` directly on the two <path> elements --
-   not the button, not the <svg> -- is the one thing that actually changed
-   the rendered stroke, since stroke="currentColor" resolves against each
-   path's own `color`, not its ancestors', once the UA has supplied one).
-   Every OTHER icon button on the site sits on its own solid background
-   (ADD TO CART, quantity selector, etc.) or isn't a <button> at all, which
-   is apparently why this transparent-background <button><svg><path> chain
-   is the one place on the whole site that actually exposed it.
-   Same light-graphite token the unit price already uses -- "like the
-   product price in cart list". */
-.cart-items__remove path {
-  color: var(--mdr-text-gray, #858581) !important;
-}
-
-.cart-items__quantity {
-  margin-block-start: 4px !important;
-}
-
-/* Cart-only quantity control, shorter -- "the black quantity boxes
-   currently attract almost as much attention as the product itself...
-   the hierarchy should be product -> variant/price -> quantity, not
-   product -> giant black rectangle." Scoped to .cart-items__quantity
-   specifically (not .quantity-selector directly) so the PDP's own
-   purchase-row quantity control -- the exact same shared component --
-   is completely untouched; this only reaches the cart context.
-   Width also trimmed (column-balance pass): relative to the now-narrower
-   190px info column, 90px (the PDP's own width, tuned for a much wider
-   purchase row) read as the strongest, most dominant shape in the row.
-   Height/tap-comfort above is untouched -- width only.
-
-   The custom properties alone (--minimum-touch-target/
-   --quantity-selector-width) don't actually move anything: the PDP pass
-   further down this file (.quantity-selector :is(.quantity-minus,
-   .quantity-plus) and input[type='number']) hardcodes literal 29px/32px
-   widths that never read those variables, so setting them here was a
-   silent no-op (confirmed live -- computed width stayed ~92px). Overriding
-   the same literal properties, scoped to the cart, is what actually
-   narrows it. 24px buttons + 24px input + 2px border = ~74px, down from
-   ~92px, without touching the shared PDP sizing at all. */
-.cart-items__quantity .quantity-selector {
-  --minimum-touch-target: 24px !important;
-  --quantity-selector-width: 76px !important;
-}
-
-.cart-items__quantity .quantity-selector :is(.quantity-minus, .quantity-plus) {
-  width: 24px !important;
-}
-
-.cart-items__quantity .quantity-selector input[type='number'] {
-  width: 24px !important;
-}
-
-/* NOTE: the real row padding/margin/divider live in ONE place further
-   down this file (cart rhythm pass, "one repeatable row height/padding
-   system") -- a duplicate .cart-items__table-row rule used to exist here
-   too (padding-bottom: 6px, margin-bottom: 4px), silently dead the whole
-   time (the later rule's !important values always won on source order),
-   removed rather than left as a second, contradictory source of truth. */
-
-/* ---- Quantity selector: bordered segmented box, matches the SIZE box's
-   hairline-divided look instead of a plain white slab -------------------- */
+/* ---- MDR QUANTITY: the site's one quantity control, [ − | 1 | + ] ------
+   Every place that renders Horizon's quantity selector (product page,
+   cart, cart drawer, quick add, quick order list) gets this same piece;
+   only its size changes per context, through the --mdr-qty-* variables.
+   Surface: graphite, a quarter of the way from the landing graphite
+   (--mdr-landing-bg) toward the text graphite (--mdr-graphite) -- softer
+   than pure black, and made of the two existing graphites, not a new
+   grey. − and + are typed characters, with a thin divider either side of
+   the number. The box stays compact; each − / + reaches further than it
+   draws (::before, --mdr-qty-reach) so it's still a comfortable tap.
+   Behaviour is all Horizon's (buttons, input, AJAX update, min/max,
+   disabled state, keyboard) -- this only restyles it. */
 .quantity-selector {
-  --quantity-selector-width: 90px !important;
-  --minimum-touch-target: 30px !important;
+  --mdr-qty-bg: color-mix(in srgb, var(--mdr-landing-bg) 75%, var(--mdr-graphite));
+  --mdr-qty-ink: rgb(255 255 255 / 0.86);
+  --mdr-qty-rule: rgb(255 255 255 / 0.14);
+  --mdr-qty-h: 30px;
+  --mdr-qty-cell: 30px;
+  --mdr-qty-num: 32px;
+  --mdr-qty-reach: 7px;
   flex: 0 0 auto !important;
   align-self: center !important;
   display: flex !important;
   align-items: stretch !important;
-  /* uniform black across the whole buy-buttons row (quantity -> ADD TO
-     CART), matching ADD TO CART's own solid black fill -- so text/icons
-     need to flip to white here too, not the page's usual black-on-light. */
-  background: #000000 !important;
-  color: rgba(255, 255, 255, 0.85) !important;
-  border: 1px solid rgba(255, 255, 255, 0.3) !important;
-  overflow: hidden !important;
+  width: auto !important;
+  height: var(--mdr-qty-h) !important;
+  padding: 0 !important;
+  background: var(--mdr-qty-bg) !important;
+  color: var(--mdr-qty-ink) !important;
+  border: 0 !important;
+  border-radius: 0 !important;
+  /* visible, so the − / + touch areas below can reach past the box */
+  overflow: visible !important;
 }
 
 .quantity-selector :is(.quantity-minus, .quantity-plus) .svg-wrapper {
@@ -1316,66 +1203,210 @@ product-price *,
 
 .quantity-selector :is(.quantity-minus, .quantity-plus) {
   position: relative;
-  width: 29px !important;
-  height: 100% !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  width: var(--mdr-qty-cell) !important;
+  height: auto !important;
+  min-height: 0 !important;
+  padding: 0 !important;
   background: transparent !important;
   color: inherit !important;
   box-shadow: none !important;
   border: 0 !important;
-  transition: background-color var(--animation-speed) var(--animation-easing);
+  border-radius: 0 !important;
+  cursor: pointer;
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+  transition: background-color var(--animation-speed-fast) var(--animation-easing);
 }
 
 .quantity-selector .quantity-minus {
-  border-right: 1px solid rgba(255, 255, 255, 0.2) !important;
+  border-right: 1px solid var(--mdr-qty-rule) !important;
 }
 
 .quantity-selector .quantity-plus {
-  border-left: 1px solid rgba(255, 255, 255, 0.2) !important;
+  border-left: 1px solid var(--mdr-qty-rule) !important;
 }
 
-.quantity-selector input[type='number'] {
-  width: 32px !important;
-  min-width: 0 !important;
-  height: 100% !important;
-  background: transparent !important;
-  color: rgba(255, 255, 255, 0.95) !important;
-  text-align: center !important;
-  /* very small -- matches the PDP product title (0.625rem) */
-  font-size: 0.625rem !important;
+/* tap area: the box's height plus --mdr-qty-reach above and below, and
+   out past the outer edge -- never over the number in the middle */
+.quantity-selector :is(.quantity-minus, .quantity-plus)::before {
+  content: '';
+  position: absolute;
+  inset: calc(-1 * var(--mdr-qty-reach)) 0;
+}
+
+.quantity-selector .quantity-minus::before {
+  left: calc(-1 * var(--mdr-qty-reach));
+}
+
+.quantity-selector .quantity-plus::before {
+  right: calc(-1 * var(--mdr-qty-reach));
 }
 
 .quantity-selector :is(.quantity-minus, .quantity-plus)::after {
-  content: '';
-  position: absolute;
-  left: 50%;
-  top: 50%;
-  width: 8px;
-  height: 8px;
-  border: solid currentColor;
-  border-width: 0 1.2px 1.2px 0;
+  font-size: 0.8125rem;
+  font-weight: 400;
+  line-height: 1;
   transition: opacity var(--animation-speed-fast) var(--animation-easing);
 }
 
-/* plus = increase = chevron pointing up */
-.quantity-selector .quantity-plus::after {
-  transform: translate(-50%, -25%) rotate(-135deg);
-}
-
-/* minus = decrease = chevron pointing down */
 .quantity-selector .quantity-minus::after {
-  transform: translate(-50%, -75%) rotate(45deg);
+  content: '\2212';
 }
 
-.quantity-selector :is(.quantity-minus, .quantity-plus):active {
-  background: rgba(255, 255, 255, 0.14) !important;
+.quantity-selector .quantity-plus::after {
+  content: '+';
 }
 
-.quantity-selector :is(.quantity-minus, .quantity-plus):active::after {
-  opacity: 0.7;
+.quantity-selector input[type='number'] {
+  width: var(--mdr-qty-num) !important;
+  min-width: 0 !important;
+  height: auto !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  border: 0 !important;
+  border-radius: 0 !important;
+  background: transparent !important;
+  color: var(--mdr-qty-ink) !important;
+  text-align: center !important;
+  font-variant-numeric: tabular-nums;
+  /* very small -- matches the PDP product title (0.625rem) */
+  font-size: 0.625rem !important;
+  -webkit-tap-highlight-color: transparent;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .quantity-selector :is(.quantity-minus, .quantity-plus):not([disabled]):hover {
+    background: rgb(255 255 255 / 0.06) !important;
+  }
+}
+
+.quantity-selector :is(.quantity-minus, .quantity-plus):not([disabled]):active {
+  background: rgb(255 255 255 / 0.12) !important;
 }
 
 .quantity-selector :is(.quantity-minus, .quantity-plus)[disabled] {
+  cursor: default;
+}
+
+.quantity-selector :is(.quantity-minus, .quantity-plus)[disabled]::after {
   opacity: 0.35;
+}
+
+/* keyboard focus drawn inside the box, in its own ink */
+.quantity-selector :is(.quantity-minus, .quantity-plus, input[type='number']):focus-visible {
+  outline: 1px solid var(--mdr-qty-ink) !important;
+  outline-offset: -3px !important;
+  box-shadow: none !important;
+}
+
+.quantity-selector input[type='number']:focus:not(:focus-visible) {
+  outline: none !important;
+}
+
+/* cart line: smaller box, longer reach -- 26px drawn, 44px to the touch */
+.cart-items__quantity .quantity-selector {
+  --mdr-qty-h: 26px;
+  --mdr-qty-cell: 26px;
+  --mdr-qty-num: 28px;
+  --mdr-qty-reach: 9px;
+}
+
+/* ---- Cart line: one structured module --------------------------------
+     [ image ] [ name / colour, size / unit price ]        [ line total ]
+     [       ] [ − | 1 | + ]                                     [ delete ]
+   Horizon's own areas (cart-products.liquid) put the quantity under the
+   name only, with the price column running down beside it; here the
+   action row takes the full width after the image, so quantity and
+   delete sit on one line with delete at the price's right edge. The
+   empty row between absorbs a tall image, keeping the action row on the
+   image's bottom edge. Same module at every width -- the base theme's
+   wide-cart layout (@container >= 720px) resets these areas, hence the
+   explicit grid-area on each cell. The cart drawer's own row variant
+   (--full-width-variants) already has a full-width quantity row and is
+   left to it. */
+.cart-items__table-row:not(.cart-items__table-row--full-width-variants) {
+  grid-template-areas:
+    'media details price'
+    'media . .'
+    'media quantity quantity'
+    'media error error' !important;
+  grid-template-rows: auto 1fr auto auto !important;
+  row-gap: 8px !important;
+  align-items: start !important;
+}
+
+.cart-items__table-row:not(.cart-items__table-row--full-width-variants) .cart-items__details {
+  grid-area: details !important;
+}
+
+.cart-items__table-row:not(.cart-items__table-row--full-width-variants) .cart-items__price {
+  grid-area: price !important;
+  min-height: 0 !important;
+}
+
+.cart-items__table-row .cart-items__quantity {
+  grid-area: quantity !important;
+  align-self: end !important;
+  justify-self: stretch !important;
+  width: auto !important;
+  margin: 0 !important;
+}
+
+.cart-items__quantity-controls {
+  width: 100% !important;
+  align-items: center !important;
+  justify-content: flex-start !important;
+}
+
+/* delete: in the row's flow, on the quantity's own centre line, at the
+   right edge (same edge as the line total above it). The icon is drawn
+   at the button's right edge; the button itself is as tall as the
+   quantity box and reaches past it like the − / + do. */
+.cart-items__remove:not([hidden]) {
+  position: relative;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: flex-end !important;
+  width: 32px !important;
+  height: 26px !important;
+  min-height: 0 !important;
+  margin-inline-start: auto !important;
+  padding: 0 !important;
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.cart-items__remove::before {
+  content: '';
+  position: absolute;
+  inset: -9px -4px -9px -8px;
+}
+
+.cart-items__remove:focus-visible {
+  outline: 1px solid var(--mdr-ink) !important;
+  outline-offset: 2px !important;
+}
+
+.cart-items__remove svg {
+  width: 14px !important;
+  height: 14px !important;
+}
+
+/* square stroke ends -- the shared icon (assets/icon-delete.svg, also used
+   by the quick order list) draws them round */
+.cart-items__remove path {
+  stroke-linecap: square !important;
+  stroke-linejoin: miter !important;
+}
+
+/* colour set on the <path>s themselves: with the page's color-scheme:
+   dark, Chromium gives SVG children of a native <button> its own UA
+   colour, so colour on the button or <svg> never reached the stroke */
+.cart-items__remove path {
+  color: var(--mdr-text-gray, #858581) !important;
 }
 
 /* ---- Product-page header: title centered on top, price centered below it.
@@ -2192,8 +2223,10 @@ main:not([data-template='index']) {
    smaller (further up this file), so the row's total height drops on
    both fronts instead of just one. */
 .cart-items__table-row {
-  padding-bottom: 8px !important;
-  margin-bottom: 4px !important;
+  /* same space above and below each line, so the rule between rows sits
+     at the true midpoint */
+  padding-block: 12px !important;
+  margin-bottom: 0 !important;
   position: relative;
 }
 
@@ -2205,7 +2238,9 @@ main:not([data-template='index']) {
    inset:0 on this row's own box IS that width already (--mdr-border,
    the one shared structural-line token every divider on the site reads
    from -- product grid, WEBRACK, footer, this). */
-.cart-items__table-row:not(:last-child)::after {
+/* every row, the last one included: its rule is the one line between the
+   list and the summary (the summary draws none of its own). */
+.cart-items__table-row::after {
   content: '';
   position: absolute;
   left: 0;
