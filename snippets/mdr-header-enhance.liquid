@@ -522,7 +522,14 @@
           copies = list.children.length / realCount;
           guard++;
         }
-        loopWidth = list.scrollWidth / copies;
+        /* the exact distance one set repeats at: the first title of the
+           second copy minus the first title of the first. (Total width /
+           copies came out a fraction of the gap short, so every wrap
+           shifted the titles a few pixels -- and every title has to come to
+           rest at exactly the same place, wrap or no wrap.) */
+        var first = list.children[0];
+        var again = list.children[realCount];
+        loopWidth = again ? again.offsetLeft - first.offsetLeft : list.scrollWidth / copies;
       }
 
       if (isHome) {
@@ -1056,6 +1063,109 @@
           if (momentumRAF) { cancelAnimationFrame(momentumRAF); momentumRAF = null; }
         }
 
+        /* ---- Detents ------------------------------------------------------
+           Every title has one resting point: its left edge on the list's own
+           start edge (where ALL sits when the rack opens) -- one rule for
+           every title, whatever its length, the viewport or the device.
+           While a finger/trackpad/mouse is moving the rack it follows 1:1;
+           on release the gesture's position + velocity choose the title and
+           settle() carries the rack onto it. This engine is the only thing
+           that ever sets the list's position (no CSS scroll-snap, which
+           fought the loop's own wrapping). Positions are measured once and
+           cached -- again only after a resize or once fonts load. */
+        var reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
+        var snaps = null;
+        var PROJECT = 250; /* how far a release speed carries (px per px/ms) */
+        var DIRECTIONAL = 0.12; /* px/ms: a release faster than this is "going somewhere" */
+
+        function measureSnaps() {
+          var links = list.querySelectorAll('a');
+          var n = loopWidth > 0 && realCount ? realCount : links.length;
+          var lr = list.getBoundingClientRect();
+          var origin = list.scrollLeft - lr.left - list.clientLeft;
+          var out = [];
+          for (var i = 0; i < n && i < links.length; i++) {
+            out.push(links[i].getBoundingClientRect().left + origin);
+          }
+          snaps = out;
+        }
+        window.addEventListener('resize', function () { snaps = null; }, { passive: true });
+        if (D.fonts && D.fonts.ready) D.fonts.ready.then(function () { snaps = null; });
+
+        /* every resting point between a and b (a <= b), in unwrapped
+           coordinates -- the loop repeats them every loopWidth */
+        function detentsBetween(a, b) {
+          if (!snaps) measureSnaps();
+          var out = [];
+          if (loopWidth > 0) {
+            for (var m = Math.floor(a / loopWidth) - 1; m <= Math.floor(b / loopWidth) + 1; m++) {
+              for (var i = 0; i < snaps.length; i++) out.push(snaps[i] + m * loopWidth);
+            }
+          } else {
+            var max = Math.max(0, list.scrollWidth - list.clientWidth);
+            for (var j = 0; j < snaps.length; j++) if (snaps[j] < max - 1) out.push(snaps[j]);
+            out.push(max);
+          }
+          return out.sort(function (x, y) { return x - y; });
+        }
+
+        /* v: px/ms in the scroll direction (+ = further along the list) */
+        function pickDetent(pos, v, intent) {
+          var projected = pos + v * PROJECT;
+          var all = detentsBetween(Math.min(pos, projected), Math.max(pos, projected));
+          var best = all[0];
+          for (var i = 1; i < all.length; i++) {
+            if (Math.abs(all[i] - projected) < Math.abs(best - projected)) best = all[i];
+          }
+          /* a deliberate swipe always lands at least one title on, in its
+             own direction -- never slides back to where it started */
+          if (intent && v > 0 && best <= pos + 1) {
+            for (var a = 0; a < all.length; a++) if (all[a] > pos + 1) { best = all[a]; break; }
+          } else if (intent && v < 0 && best >= pos - 1) {
+            for (var b = all.length - 1; b >= 0; b--) if (all[b] < pos - 1) { best = all[b]; break; }
+          }
+          return best;
+        }
+
+        function setListPos(p) {
+          if (loopWidth > 0) p = ((p % loopWidth) + loopWidth) % loopWidth;
+          list.scrollLeft = p;
+        }
+
+        /* One short curve from the release to the detent: it leaves at the
+           gesture's own speed (no jolt when the finger lifts) and arrives at
+           exactly zero speed on the resting point -- a quick glide, then a
+           firm, precise stop. Speed is capped so it can never run past the
+           title and come back: no bounce, no overshoot. Reduced motion: it
+           simply lands. */
+        function settle(from, to, v0) {
+          stopMomentum();
+          var dist = to - from;
+          if (Math.abs(dist) < 0.5 || reduceMotion.matches) { setListPos(to); return; }
+          var v = v0 * dist > 0 ? v0 : 0;
+          var T = Math.abs(v) > 0.05 ? 2 * Math.abs(dist) / Math.abs(v) : 170 + Math.sqrt(Math.abs(dist)) * 9;
+          T = Math.max(160, Math.min(620, T));
+          if (Math.abs(v) * T > 2.6 * Math.abs(dist)) v = (v > 0 ? 1 : -1) * 2.6 * Math.abs(dist) / T;
+          var m0 = v * T;
+          var t0 = null;
+          function frame(ts) {
+            if (t0 === null) t0 = ts;
+            var t = Math.min(1, (ts - t0) / T);
+            var t2 = t * t, t3 = t2 * t;
+            /* cubic Hermite: start at `from` with speed v, end at `to` at rest */
+            setListPos((2 * t3 - 3 * t2 + 1) * from + (t3 - 2 * t2 + t) * m0 + (3 * t2 - 2 * t3) * to);
+            if (t < 1) momentumRAF = requestAnimationFrame(frame);
+            else momentumRAF = null;
+          }
+          momentumRAF = requestAnimationFrame(frame);
+        }
+
+        function settleFrom(v, intent) {
+          if (!bar.classList.contains('is-open')) return;
+          var pos = list.scrollLeft;
+          settle(pos, pickDetent(pos, v, intent), v);
+        }
+
         function point(e) {
           var t = (e.changedTouches && e.changedTouches.length) ? e.changedTouches[0]
             : (e.touches && e.touches.length) ? e.touches[0]
@@ -1147,37 +1257,13 @@
             }
             return;
           }
-          /* release: glide the list on at the flick's own speed, decaying
-             to a stop instead of snapping to zero. Computes an ABSOLUTE
-             target position analytically each frame (exponential-decay
-             kinematics, position = start + v0/k*(1-e^-kt)) rather than
-             repeatedly reading scrollLeft back and adding to it -- reading
-             it back turned out to be unreliable here (something about this
-             list's scroll-snap intercepts/rewrites relative `+=` writes
-             made outside a live pointer-event handler, silently discarding
-             them), so this keeps its own running position instead. */
-          var v0 = -velocity;
-          if (Math.abs(v0) > 0.03) {
-            var startPos = list.scrollLeft;
-            var startTs = null;
-            var k = 0.004;
-            function glide(ts) {
-              if (startTs === null) startTs = ts;
-              var t = ts - startTs;
-              var pos = startPos + (v0 / k) * (1 - Math.exp(-k * t));
-              if (loopWidth > 0) {
-                pos = ((pos % loopWidth) + loopWidth) % loopWidth;
-              }
-              list.scrollLeft = pos;
-              var currentV = v0 * Math.exp(-k * t);
-              if (Math.abs(currentV) > 0.015) {
-                momentumRAF = requestAnimationFrame(glide);
-              } else {
-                momentumRAF = null;
-              }
-            }
-            momentumRAF = requestAnimationFrame(glide);
-          }
+          /* release: the flick's own speed and direction choose the title,
+             settle() carries the rack onto it. A finger that stopped before
+             lifting has no speed left. */
+          var now = e.timeStamp || Date.now();
+          var v = now - lastT > 90 ? 0 : -velocity;
+          var travelled = Math.abs(list.scrollLeft - startScroll);
+          settleFrom(v, Math.abs(v) > DIRECTIONAL || (travelled > 12 && v !== 0));
         }
 
         touchzone.addEventListener('touchstart', dragStart, { passive: true });
@@ -1242,6 +1328,64 @@
           list.scrollLeft = next;
         }
 
+        /* A trackpad swipe is one gesture made of many small deltas (plus,
+           on a Mac, a momentum tail); a mouse wheel is a few notches. The
+           rack follows them 1:1 and is settled ONCE per gesture: when the
+           stream goes quiet (70ms), or -- after a real flick -- as soon as
+           its momentum is clearly dying, at which point the rest of that
+           tail is swallowed so the settle isn't fought. A fresh push takes
+           back over at once. */
+        var wv = 0;          /* smoothed wheel speed, px/ms */
+        var wLastT = 0;
+        var wPeak = 0;       /* largest delta in this gesture */
+        var wStartT = 0;
+        var wTravel = 0;
+        var wDir = 0;
+        var wTimer = null;
+        var wTaken = false;  /* settled early; swallowing this gesture's tail */
+        var wTakenLast = 0;
+        var wTakenAbs = 0;
+
+        function wheelSettle(v, intent) {
+          clearTimeout(wTimer);
+          wTimer = null;
+          settleFrom(v, intent);
+        }
+
+        function wheelFollow(dx, ts) {
+          var abs = Math.abs(dx);
+          if (wTaken) {
+            var fresh = ts - wTakenLast > 160 || abs > Math.max(6, wTakenAbs * 1.6);
+            wTakenLast = ts;
+            wTakenAbs = abs;
+            if (!fresh) return;
+            wTaken = false;
+          }
+          if (ts - wLastT > 160) { wPeak = 0; wStartT = ts; wTravel = 0; wv = 0; }
+          stopMomentum();
+          scrollListBy(dx);
+          var dt = ts - wLastT;
+          wv = dt > 0 && dt < 100 ? wv * 0.6 + (dx / dt) * 0.4 : dx / 16;
+          wLastT = ts;
+          wPeak = Math.max(wPeak, abs);
+          wTravel += dx;
+          if (dx) wDir = dx > 0 ? 1 : -1;
+          clearTimeout(wTimer);
+          /* a real flick whose momentum is fading: take over now */
+          if (wPeak >= 20 && ts - wStartT > 80 && abs < wPeak * 0.35 && abs < 8) {
+            wTaken = true;
+            wTakenLast = ts;
+            wTakenAbs = abs;
+            wheelSettle(wv, true);
+            return;
+          }
+          /* otherwise settle once the stream stops -- the direction of a
+             deliberate move is kept, a tiny drift just settles to nearest */
+          wTimer = setTimeout(function () {
+            wheelSettle(Math.abs(wTravel) > 12 ? wDir * 0.2 : 0, Math.abs(wTravel) > 12);
+          }, 70);
+        }
+
         /* the whole row (WEBRACK label included, not only the list area):
            sideways scrolls the open list 1:1 with the fingers and is always
            cancelled, so it can never become Back/Forward; vertical is left
@@ -1263,10 +1407,27 @@
             return;
           }
           e.preventDefault();
-          scrollListBy(d.x + pendingX);
+          wheelFollow(d.x + pendingX, e.timeStamp || performance.now());
           pendingX = 0;
           pendingY = 0;
         }, { passive: false });
+
+        /* keyboard: with a title focused, Left/Right step one resting point */
+        list.addEventListener('keydown', function (e) {
+          if (e.key !== 'ArrowRight' && e.key !== 'ArrowLeft') return;
+          if (!bar.classList.contains('is-open')) return;
+          e.preventDefault();
+          var pos = list.scrollLeft;
+          var dir = e.key === 'ArrowRight' ? 1 : -1;
+          var to = pickDetent(pos, dir * 0.001, true);
+          settle(pos, to, 0);
+          /* focus the title that will rest there (the first set's copy of it) */
+          var at = loopWidth > 0 ? ((to % loopWidth) + loopWidth) % loopWidth : to;
+          var links = list.querySelectorAll('a');
+          for (var i = 0; i < snaps.length && i < links.length; i++) {
+            if (Math.abs(snaps[i] - at) < 1) { links[i].focus({ preventScroll: true }); break; }
+          }
+        });
 
         /* While WEBRACK is open on PC, a sideways trackpad swipe anywhere else
            on the page has nothing to scroll -- cancel it so it can't page the
