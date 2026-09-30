@@ -1973,12 +1973,8 @@ main[data-template='collection'] .resource-list--grid,
 main[data-template='collection'] [id$='__product_list_fa6P9H'] .resource-list--grid {
   display: grid !important;
   grid-template-columns: repeat(2, 1fr) !important;
-  /* vertical dividers: the 1px column gap (the grid's line-colour
-     background showing through). Horizontal lines: drawn by each cell along
-     its own top edge (the cell rule below), so a line can stop short where
-     a NEW notch cuts it -- hence no row gap. */
   column-gap: 1px !important;
-  row-gap: 0 !important;
+  row-gap: 1px !important;
   /* full width of .mdr-scrollfade (below), which is itself made full-bleed
      to the true viewport edges -- NOT another 100vw trick applied here
      too: .mdr-scrollfade has overflow-x: hidden (needed for the WEBRACK
@@ -2358,16 +2354,12 @@ tbody > .cart-items__table-row::after {
   margin-top: 0 !important;
 }
 
-/* ---- Product form: quantity + ADD TO CART + Buy-with-Shop on one line,
-   same height / same shape, every viewport -- no gap between segments,
-   AND a shared outer border wrapping the whole group. Border-only-on-
-   quantity (no outer border) was tried first, but with nothing drawn
-   around ADD TO CART / Buy-with-Shop's own outer edges, the group read as
-   "a bordered box next to two plain color blocks" rather than one
-   button -- the outer border here closes that outline all the way round
-   (it simply overlaps the quantity box's own border on the sides they
-   share), while quantity's own border is what still provides the one
-   internal divider, between it and ADD TO CART. */
+/* ---- Product form: the purchase rail -- [ − | 1 | + ][ ADD TO CART ][ BUY
+   NOW ] on one line, same height, every viewport, no gaps. Flat: no outer
+   frame -- the graphite quantity control against the one dark action
+   surface (ADD TO CART and BUY NOW share its colour) is the whole
+   structure, like the cart's own quantity control. Widths: quantity ~25%,
+   the two actions split the rest equally (rules below). */
 .product-form-buttons,
 .product-form__buttons {
   display: flex !important;
@@ -2375,7 +2367,7 @@ tbody > .cart-items__table-row::after {
   flex-wrap: nowrap !important;
   align-items: stretch !important;
   gap: 0 !important;
-  border: 1px solid var(--mdr-border-strong) !important;
+  border: 0 !important;
   /* anchor for the quantity/limit error message below -- position:
      relative, not a layout change, so this doesn't disturb the row's own
      sizing */
@@ -2413,15 +2405,28 @@ tbody > .cart-items__table-row::after {
   line-height: 1.3 !important;
 }
 
+/* quantity: a compact quarter of the rail; the control fills it, the
+   number cell taking whatever the − / + cells leave */
 .product-form-buttons > .quantity-selector-wrapper,
 .product-form-buttons > .quantity-selector {
-  flex: 0 0 auto !important;
+  flex: 0 0 25% !important;
+  min-width: 0 !important;
 }
 
-/* the ADD TO CART button sits in an unclassed <span> wrapper */
+.product-form-buttons .quantity-selector {
+  width: 100% !important;
+}
+
+.product-form-buttons .quantity-selector input[type='number'] {
+  flex: 1 1 auto;
+  width: auto !important;
+}
+
+/* ADD TO CART (in an unclassed <span> wrapper) and BUY NOW split the rest
+   equally, so each label centres in a real half of the dark surface */
 .product-form-buttons > span:not(.product-form-text__error) {
-  flex: 0 1 auto !important;
-  max-width: 34% !important;
+  flex: 1 1 0 !important;
+  max-width: none !important;
   min-width: 0 !important;
   display: flex !important;
 }
@@ -2449,8 +2454,8 @@ tbody > .cart-items__table-row::after {
 }
 
 .product-form-buttons > .accelerated-checkout-block {
-  flex: 1 1 auto !important;
-  min-width: 96px !important;
+  flex: 1 1 0 !important;
+  min-width: 0 !important;
   max-width: none !important;
   margin: 0 !important;
 }
@@ -4164,15 +4169,12 @@ main[data-template='collection']
   justify-content: flex-end;
 }
 
-@media screen and (max-width: 749px) {
-  /* Comfortable right padding on phones -- a mirrored RETURN flush against
-     the true right edge would sit in the curved corner/bezel area. The
-     site's own standard page gutter (--mdr-page-px). Desktop instead uses
-     the frame padding (desktop shell block near the top of this file). */
-  .mdr-allbar-wrap:has(.mdr-allbar--back) {
-    padding-inline-end: var(--mdr-page-px, 16px);
-  }
-}
+/* No extra right padding for RETURN: the rail has one gutter on both
+   sides and in both states -- the toggle's / MENU's own 8px (the same 8px
+   the grid's product names sit at) -- so WEBRACK and MENU start at the same
+   x on the left, and MENU and RETURN end at the same x on the right.
+   (Phones used to add 16px here for RETURN only, which put it 16px further
+   in than MENU on the grid.) */
 
 /* PC: while WEBRACK is open, a sideways trackpad swipe past the page's
    edge must not become the browser's Back/Forward gesture (the script
@@ -4493,32 +4495,11 @@ main[data-template='collection']
    pattern, name + price stacked below, ghost "new" tag, hairline seams.
    ========================================================================== */
 
-/* Grid lines. Vertical: the 1px column gap, the grid's line colour showing
-   through. Horizontal: every cell draws the line along its own top edge, in
-   a 1px band of top padding -- the same 1px, same colour, same place the
-   old 1px row gap drew it, so rows sit exactly where they did. Drawn this
-   way (not as a gap) a cell can end its line early: a NEW cell's line stops
-   where its notch begins (--mdr-cell-line, set in the NEW block below).
-   The first row's cells draw the top line of the grid too, so the line
-   directly above the grid (the header's on a phone, the rail's on desktop)
-   is dropped on this page -- see just below. */
+/* 1px grid gaps read as hairlines: the grid paints a faint line colour and
+   every cell fills itself with the paper colour on top. The line above the
+   first row is the header's (phone) / the rail's (desktop) own border. */
 main[data-template='collection'] [id$='__product_list_fa6P9H'] .resource-list__item {
-  padding-top: 1px !important;
-  background:
-    linear-gradient(var(--mdr-border-faint), var(--mdr-border-faint)) no-repeat var(--mdr-cell-line-at, left) top / var(--mdr-cell-line, 100%) 1px,
-    var(--mdr-paper) !important;
-}
-
-@media screen and (max-width: 989px) {
-  body:has(main[data-template='collection'] [id$='__product_list_fa6P9H']) #header-group {
-    border-bottom: 0 !important;
-  }
-}
-
-@media screen and (min-width: 990px) {
-  body:has(main[data-template='collection'] [id$='__product_list_fa6P9H']) .mdr-frame > .mdr-allbar-wrap {
-    border-bottom: 0 !important;
-  }
+  background: var(--mdr-paper) !important;
 }
 
 /* No horizontal bottom line of the grid's own: the footer's top border is
@@ -4599,29 +4580,32 @@ main[data-template='collection'] [id$='__product_list_fa6P9H'] .product-card .pr
   padding: 3% !important;
 }
 
-/* ---- NEW: an open-top trapezium cut into the grid line ---------------------
+/* ---- NEW: a shallow trapezium built on the grid line ----------------------
    A product is NEW when snippets/product-card.liquid marks its card
    data-mdr-new (tagged "new", or published in the last 30 days).
-   The cell's own top grid line (cell rule above) stops short of the
-   divider, and the line drops into the cell instead: down a diagonal,
-   along a short bottom edge, and -- when the product beside it isn't NEW --
-   back up a diagonal to the line at the divider. There's no top edge: NEW
-   sits in the open shape.
+   The cell's top grid line runs on unbroken and is the trapezium's top
+   edge; from it a diagonal drops into the cell, a short bottom edge runs
+   under NEW, and -- when the product beside it isn't NEW -- a second
+   diagonal climbs back to the line at the divider. Closed, shallow, and
+   drawn only in grid strokes -- no fill, no box of its own:
 
-                NEW                        one NEW product
-     ──────╲__________╱|──────────
+     ──────────────────|──────────        one NEW product (left)
+           ╲   NEW   ╱ |
+            ‾‾‾‾‾‾‾‾‾  |
 
-                NEW  |  NEW                two NEW neighbours
-     ──────╲_________|_________╱──────
+     ─────────────────|─────────────      two NEW neighbours
+           ╲   NEW    |    NEW   ╱
+            ‾‾‾‾‾‾‾‾‾‾|‾‾‾‾‾‾‾‾‾‾
 
-   Two NEW neighbours make one shape: each keeps its outer diagonal, and the
-   bottom edges meet across the divider (the column gap), which runs on
-   unbroken down the grid. Cells pair up across a divider -- 1|2, 3|4 in
-   every row, on the phone's 2 columns and the desktop's 4 alike -- so the
-   notch always sits against the divider the pair shares. A cell that isn't
-   NEW keeps its full line and draws nothing.
+   Two NEW neighbours: each keeps its outer diagonal and the bottoms meet
+   across the divider (the column gap), which runs straight through. Cells
+   pair up across a divider -- 1|2, 3|4 in every row, on the phone's 2
+   columns and the desktop's 4 alike -- so the shape always sits against
+   the divider the pair shares. A cell that isn't NEW draws nothing.
    Every edge is the grid's own colour and 1px weight (mask drawings filled
-   with --mdr-border-faint). Fixed size at every width. The drawings are
+   with --mdr-border-faint). Everything sits inside the top 12px of the
+   cell, above the product image's own padding -- nothing reaches the
+   photo, title or price. Fixed size at every width. The drawings are
    exactly --mdr-new-w x --mdr-new-h (40 x 12) with a --mdr-new-cut (6)
    diagonal run -- change them together. */
 :root {
@@ -4634,15 +4618,6 @@ main[data-template='collection'] [id$='__product_list_fa6P9H'] .product-card .pr
   --mdr-new-mask-left: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='40' height='12'%3E%3Cpath d='M.5 .5 6 11.5H40' fill='none' stroke='%23000'/%3E%3C/svg%3E");
   /* right of a NEW pair: _____/ */
   --mdr-new-mask-right: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='40' height='12'%3E%3Cpath d='M0 11.5H34L39.5 .5' fill='none' stroke='%23000'/%3E%3C/svg%3E");
-}
-
-/* the cell's top line ends where the notch begins */
-main[data-template='collection'] [id$='__product_list_fa6P9H'] .resource-list__item:has(product-card[data-mdr-new]) {
-  --mdr-cell-line: calc(100% - var(--mdr-new-w));
-}
-
-main[data-template='collection'] [id$='__product_list_fa6P9H'] .resource-list__item:nth-child(even):has(product-card[data-mdr-new]) {
-  --mdr-cell-line-at: right;
 }
 
 main[data-template='collection'] [id$='__product_list_fa6P9H'] .resource-list__item {
