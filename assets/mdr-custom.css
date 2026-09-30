@@ -4568,32 +4568,32 @@ main[data-template='collection'] [id$='__product_list_fa6P9H'] .product-card .pr
   padding: 3% !important;
 }
 
-/* ---- NEW: a tab cut into the grid ----------------------------------------
+/* ---- NEW: an open notch in the grid line ----------------------------------
    A product is NEW when snippets/product-card.liquid marks its card
-   data-mdr-new (tagged "new", or published in the last 30 days). Its cell
-   then carries a short tab hanging from the cell's top grid line, against
-   the vertical divider it shares with its neighbour:
+   data-mdr-new (tagged "new", or published in the last 30 days). Nothing
+   is drawn around the word: the cell's own top grid line runs on over it,
+   the vertical divider beside it is the real grid gap, and the only added
+   stroke is one short diagonal dropping from the grid line at the outer
+   end of the word -- the line looks notched to take NEW:
 
-        NEW | NEW          left of a pair: tab at the cell's right edge
-     |\_____|_____/|        right of a pair: tab at its left edge
+     ────╲ NEW | NEW ╱────     two NEW neighbours
+     ────╲ NEW |──────────     left one only
+     ──────────| NEW ╱────     right one only
 
    Cells pair up across a divider -- 1|2, 3|4 in every row, on the phone's
-   2 columns and the desktop's 4 alike -- so two NEW neighbours meet on
-   their shared divider as one symmetrical mark, with the divider (the
-   grid's own 1px gap) running straight through. A cell that isn't NEW
-   draws nothing; its neighbour's tab stands alone.
-   The outline is the grid's own line colour and 1px weight: a mask (the
-   drawing) filled with --mdr-border-faint -- the outer edge, the bottom,
-   and the angled cut from the top corner. The tab's top and inner side are
-   the real grid lines. Fixed size at every width: the tab doesn't grow with
-   the cell. The mask drawings are at exactly --mdr-new-w x --mdr-new-h
-   (44 x 13) and the cut is --mdr-new-cut (7) -- change them together. */
+   2 columns and the desktop's 4 alike -- so NEW always sits against the
+   divider it shares with its neighbour, which runs on unbroken down the
+   grid. A cell that isn't NEW adds nothing.
+   The diagonal is the grid's own colour and 1px weight (a mask drawing
+   filled with --mdr-border-faint). Fixed size at every width. The mask
+   drawings are exactly --mdr-new-w x --mdr-new-h (30 x 9) with a
+   --mdr-new-cut (4) run -- change them together. */
 :root {
-  --mdr-new-w: 44px;
-  --mdr-new-h: 13px;
-  --mdr-new-cut: 7px;
-  --mdr-new-mask-left: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='44' height='13'%3E%3Cpath d='M.5 0V13M0 12.5H44M.5 0 7 13' fill='none' stroke='%23000'/%3E%3C/svg%3E");
-  --mdr-new-mask-right: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='44' height='13'%3E%3Cpath d='M43.5 0V13M0 12.5H44M43.5 0 37 13' fill='none' stroke='%23000'/%3E%3C/svg%3E");
+  --mdr-new-w: 30px;
+  --mdr-new-h: 9px;
+  --mdr-new-cut: 4px;
+  --mdr-new-mask-left: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='30' height='9'%3E%3Cpath d='M.5 0 4.5 9' fill='none' stroke='%23000'/%3E%3C/svg%3E");
+  --mdr-new-mask-right: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='30' height='9'%3E%3Cpath d='M29.5 0 25.5 9' fill='none' stroke='%23000'/%3E%3C/svg%3E");
 }
 
 main[data-template='collection'] [id$='__product_list_fa6P9H'] .resource-list__item {
@@ -4610,7 +4610,7 @@ main[data-template='collection'] [id$='__product_list_fa6P9H'] .resource-list__i
   pointer-events: none;
 }
 
-/* the outline */
+/* the diagonal */
 main[data-template='collection'] [id$='__product_list_fa6P9H'] .resource-list__item:has(product-card[data-mdr-new])::before {
   content: '';
   background: var(--mdr-border-faint);
@@ -4618,13 +4618,17 @@ main[data-template='collection'] [id$='__product_list_fa6P9H'] .resource-list__i
   mask: var(--mdr-new-mask-left) no-repeat 0 0 / 100% 100%;
 }
 
-/* the word, centred in the part of the tab past the cut */
+/* the word: plain type under the line, between the cut and the divider --
+   no border, outline or fill of its own */
 main[data-template='collection'] [id$='__product_list_fa6P9H'] .resource-list__item:has(product-card[data-mdr-new])::after {
   content: 'new';
   box-sizing: border-box;
-  padding-inline-start: calc(var(--mdr-new-cut) / 2);
+  padding-inline-start: var(--mdr-new-cut);
+  border: 0;
+  outline: 0;
+  background: transparent;
   font: inherit;
-  font-size: 0.5rem;
+  font-size: 0.44rem;
   font-weight: 400;
   line-height: var(--mdr-new-h);
   letter-spacing: 0.06em;
@@ -4651,7 +4655,7 @@ main[data-template='collection'] [id$='__product_list_fa6P9H'] .resource-list__i
 }
 
 main[data-template='collection'] [id$='__product_list_fa6P9H'] .resource-list__item:nth-child(even):has(product-card[data-mdr-new])::after {
-  padding-inline: 0 calc(var(--mdr-new-cut) / 2);
+  padding-inline: 0 var(--mdr-new-cut);
 }
 
 /* hide the quick-add / choose overlay button -- supreme cards are just tap-through */
