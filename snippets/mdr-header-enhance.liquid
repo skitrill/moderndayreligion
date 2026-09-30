@@ -732,8 +732,8 @@
            opposite the toggle */
         var wrapCs2 = getComputedStyle(wrap);
         menu.style.setProperty('--mdr-rail-line-height', getComputedStyle(toggle).lineHeight);
-        menu.style.top = toggle.offsetTop + 'px';
-        menu.style.height = toggle.offsetHeight + 'px';
+        menu.style.top = (toggleRect.top - wrapRect.top - wrap.clientTop) + 'px';
+        menu.style.height = toggleRect.height + 'px';
         if (isHome) menu.style.right = (parseFloat(wrapCs2.paddingRight) || 0) + 'px';
         else menu.style.left = (parseFloat(wrapCs2.paddingLeft) || 0) + 'px';
         var menuLabel = menu.querySelector('.mdr-allbar__menu-label');
