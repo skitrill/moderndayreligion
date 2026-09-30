@@ -1080,7 +1080,10 @@
            flick runs across several (px, for v in px/ms) */
         function carry(v) {
           var a = Math.abs(v);
-          return (v < 0 ? -1 : 1) * (120 * a + 100 * a * a);
+          /* never more than one full turn of the rack (every title passes
+             once) -- a hard fling shouldn't spin the loop round and round */
+          var most = loopWidth > 0 ? loopWidth : Math.max(0, list.scrollWidth - list.clientWidth);
+          return (v < 0 ? -1 : 1) * Math.min(150 * a + 40 * a * a, most);
         }
         var DIRECTIONAL = 0.12; /* px/ms: a release faster than this is "going somewhere" */
 
