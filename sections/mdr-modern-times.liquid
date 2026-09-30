@@ -35,23 +35,6 @@
 {%- capture newline %}
 {% endcapture -%}
 
-{%- comment -%}
-  PGF Qualta (demo build) draws a "DEMO" mark instead of ! " # $ % & ' ( ) * + - / 4 < = > @ [ \ ] ^ _ ` { | } ~.
-  This page-only alias of the same file covers every character it renders
-  properly; the excluded ones fall through to a neutral sans (--mt-sans),
-  so an ampersand, hyphen, date or apostrophe in editorial copy stays legible.
-{%- endcomment -%}
-<style>
-  @font-face {
-    font-family: 'MDR MT Qualta';
-    src: url('{{ 'pgf-qualta-regular.otf' | asset_url }}') format('opentype');
-    font-weight: 400;
-    font-style: normal;
-    font-display: swap;
-    unicode-range: U+0020, U+002C, U+002E, U+0030-0033, U+0035-003B, U+003F, U+0041-005A, U+0061-007A,
-      U+00A0-00FF, U+2013-2014, U+2018-201D, U+2022, U+2026, U+2122;
-  }
-</style>
 
 <section id="mdr-mt-{{ section.id }}" class="mdr-mtimes mdr-mt">
   <div class="mdr-mt-masthead">
@@ -340,7 +323,7 @@
   /* ==========================================================================
      THE MODERN TIMES -- every rule here is scoped to .mdr-mt (this section
      only). Colours are the site's own tokens; the only type families are
-     the site's own PGF Qualta (page alias, see the <style> above) and
+     the site's own PGF Qualta (licensed; loaded site-wide) and
      Anonymous Pro, the monospace the site already loads, used for issue
      data, bylines, credits and section labels.
      ========================================================================== */
@@ -348,7 +331,7 @@
     --mt-ink: var(--mdr-ink, #202020);
     --mt-gray: var(--mdr-graphite, #858581);
     --mt-rule: var(--mdr-border, #dededa);
-    --mt-sans: 'MDR MT Qualta', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+    --mt-sans: 'PGF Qualta', 'Helvetica Neue', Helvetica, Arial, sans-serif;
     --mt-mono: 'Anonymous Pro', ui-monospace, Menlo, monospace;
     --mt-pad: clamp(16px, 4.2vw, 48px);
     --mt-gutter: clamp(16px, 2.2vw, 24px);

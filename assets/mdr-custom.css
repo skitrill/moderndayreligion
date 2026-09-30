@@ -4,19 +4,52 @@
    -- no post-load reflow.
    ========================================================================== */
 
-/* ---- Global typeface: FSP DEMO - PGF Qualta (Regular), site-wide --------
-   Fontspring DEMO file -- fine to preview/test with, but it's licensed for
-   that only; swap in the purchased font file before this stays live
-   long-term on the public storefront. Only the Regular weight is loaded
-   (that's the only file provided) -- bold/italic text falls back to the
-   browser's own synthesized bold/oblique of this face, or to the previous
-   monospace stack if the font fails to load. Overrides all four of the
-   theme's own font variables (body/subheading/heading/accent) so every
-   text role on the site uses it uniformly, not just body copy. */
+/* ---- Global typeface: PGF Qualta, site-wide ------------------------------
+   Licensed webfonts (Fontspring web font EULA 2.0): WOFF2 with WOFF
+   fallback, embedded with @font-face only, as the license requires -- no
+   .otf/.ttf on the site. The files sit in the theme's assets and are kept
+   out of the git repo (.gitignore): the license forbids redistributing
+   them with the site's source. The license also caps monthly pageviews
+   (on the order receipt).
+   Only the cuts the site actually uses: Regular (everything), Medium (cart
+   prices), Bold (product page price), Italic (editorial emphasis). A face
+   is only downloaded when a page shows text in it. The whole family
+   (Thin -> ExtraBold, with italics) is in the Fontspring order if a
+   design ever needs another weight. Overrides all four of the theme's
+   own font variables (body/subheading/heading/accent) so every text role
+   on the site uses it uniformly, not just body copy. */
 @font-face {
   font-family: 'PGF Qualta';
-  src: url('pgf-qualta-regular.otf') format('opentype');
+  src: url('pgf-qualta-regular-webfont.woff2') format('woff2'),
+    url('pgf-qualta-regular-webfont.woff') format('woff');
   font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'PGF Qualta';
+  src: url('pgf-qualta-italic-webfont.woff2') format('woff2'),
+    url('pgf-qualta-italic-webfont.woff') format('woff');
+  font-weight: 400;
+  font-style: italic;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'PGF Qualta';
+  src: url('pgf-qualta-medium-webfont.woff2') format('woff2'),
+    url('pgf-qualta-medium-webfont.woff') format('woff');
+  font-weight: 500;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'PGF Qualta';
+  src: url('pgf-qualta-bold-webfont.woff2') format('woff2'),
+    url('pgf-qualta-bold-webfont.woff') format('woff');
+  font-weight: 700;
   font-style: normal;
   font-display: swap;
 }
@@ -28,25 +61,14 @@
   --font-accent--family: 'PGF Qualta', 'Anonymous Pro', monospace !important;
 }
 
-/* ...except anywhere the demo font's glyph-watermarking breaks the actual
-   text. Confirmed: $ (prices), the digit 4 (breaks any two/three-digit
-   number containing one -- sizes, measurements, quantities...), and ( )
-   parentheses (the size chart's "44 (XS)" style labels) all render as a
-   "DEMO" watermark glyph instead of the real character in this font.
-   PRICE elements (.price/product-price/.cart-totals) and the size chart
-   table (.size-chart__content -- EU sizes 44-54, chest/shoulder/length/
-   sleeve measurements, all full of 4s, plus "(XS)"-style parenthesised
-   labels) are both moved to PGF Qualta below by explicit request despite
-   the confirmed-live DEMO-glyph bug on most of their digits and every
-   parenthesis; this is a known, accepted regression until a licensed
-   (non-demo) copy of the font replaces pgf-qualta-regular.otf, not an
-   oversight. Still-Futura below (.quantity-selector): not "price" or
-   size-chart content, left as-is. The [- page] zoom control and [top]
-   scroll button (their own [ ] bracket glyphs) are handled further down
-   this file. */
+/* Prices and the size chart, the quantity selector and the [top] control
+   all read PGF Qualta too. (With the old demo file they needed special
+   handling -- it drew a "DEMO" mark in place of $, 4, ( ), [ ] and other
+   symbols, so the quantity selector and [top] fell back to Futura. The
+   licensed webfont draws every character, so those workarounds are gone.) */
 .quantity-selector,
 .quantity-selector * {
-  font-family: 'Futura', 'Futura PT', 'Century Gothic', sans-serif !important;
+  font-family: 'PGF Qualta', 'Anonymous Pro', monospace !important;
 }
 
 .price,
@@ -1008,9 +1030,7 @@ footer .footer-utilities__group-copyright {
   background: none;
   cursor: pointer;
   color: var(--color-foreground, #000000);
-  /* same "[" "]" bracket glyphs as the [- page] zoom control -- DEMO
-     watermarked by the demo font, so Futura instead. */
-  font-family: 'Futura', 'Futura PT', 'Century Gothic', sans-serif;
+  font-family: 'PGF Qualta', 'Anonymous Pro', monospace;
   font-size: 0.6rem;
   line-height: 1;
   letter-spacing: 0.04em;
