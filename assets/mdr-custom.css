@@ -1151,6 +1151,33 @@ product-price *,
   }
 }
 
+/* 750-989px (tablet): the theme starts its side-column summary here, but
+   squeezed into a 300px column its box stayed 375px wide (its own 40px
+   side padding around a 295px block) and pushed the page 75px past the
+   screen. The two-column cart only starts at 990px (block above); below
+   that the cart is the phone's single column -- items, one rule, then
+   the summary under them at the same left edge. */
+@media screen and (min-width: 750px) and (max-width: 989px) {
+  .cart-page {
+    grid-template-columns: minmax(0, 1fr) !important;
+  }
+
+  .cart-page__summary {
+    grid-column: 1 !important;
+    grid-row: auto !important;
+    display: block !important;
+    height: auto !important;
+  }
+
+  .cart-summary,
+  .cart-summary__inner {
+    position: static !important;
+    width: auto !important;
+    max-width: none !important;
+    padding-inline: 0 !important;
+  }
+}
+
 /* ---- Cart page: stop a short cart getting its footer shoved to the true
    bottom of the viewport. footer { margin-top: auto } (further down this
    file) glues the footer to page-wrapper's own full min-height:100dvh --
