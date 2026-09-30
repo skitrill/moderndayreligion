@@ -2253,8 +2253,9 @@ main:not([data-template='index']) {
    the one shared structural-line token every divider on the site reads
    from -- product grid, WEBRACK, footer, this). */
 /* every row, the last one included: its rule is the one line between the
-   list and the summary (the summary draws none of its own). */
-.cart-items__table-row::after {
+   list and the summary (the summary draws none of its own). Body rows
+   only -- the table's screen-reader header row is a row too. */
+tbody > .cart-items__table-row::after {
   content: '';
   position: absolute;
   left: 0;
