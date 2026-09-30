@@ -2156,7 +2156,12 @@ main:not([data-template='index']) {
 .product-information__media {
   border: 1px solid var(--mdr-border-faint, rgba(4, 0, 97, 0.08)) !important;
   box-sizing: border-box !important;
-  padding: 4px 12px 12px !important;
+  /* a true square whatever the photo's proportions: a square media box
+     (below) inside equal padding on all four sides, and the frame itself
+     held at 1:1 -- its height never comes from the photo or from the
+     product information under it */
+  aspect-ratio: 1 / 1;
+  padding: 12px !important;
   /* small breathing room between the header/RETURN-WEBRACK bar and the
      frame's own top edge -- was flush (0 gap) against it. */
   margin-top: 14px !important;
@@ -2198,6 +2203,16 @@ main:not([data-template='index']) {
    accidentally un-sync again. */
 .product-information__media img {
   background-color: transparent !important;
+}
+
+/* the media box inside the frame is square too (the theme sizes it to
+   the photo's own ratio); the photo is fitted inside it, never stretched */
+.product-information__media .product-media {
+  aspect-ratio: 1 / 1 !important;
+}
+
+.product-information__media .product-media img {
+  object-fit: contain !important;
 }
 
 /* No glow on the product-page hero -- the 20% halo was tracing a faint box
