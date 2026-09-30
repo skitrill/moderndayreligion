@@ -263,27 +263,21 @@ product-price *,
      the description block below. */
   --mdr-pdp-content-width: 70%;
 
-  /* ---- PDP vertical rhythm, upper section -- IMAGE FRAME -(2xs)- TITLE
-     -(3xs)- PRICE -(xs)- DESCRIPTION -(xs)- COLOR SELECTOR. Horizontal
-     placement (left/right boundary) is deliberately NOT a variable here
-     -- the color/size selectors, Size Chart and purchase bar already
-     share one boundary structurally (they're all direct children of the
-     same fixed-width .product-details box, see the width/gutter note
-     above .product-details), so there is no per-component margin to
-     unify; introducing a second, competing width source would risk
-     breaking that alignment rather than protecting it. */
-  --mdr-space-3xs: 3px;
+  /* ---- PDP vertical rhythm: four groups --
+       [TITLE -3xs- PRICE]
+       -between- [DESCRIPTION]
+       -between- [COLOUR -in- SIZE -in- SIZE CHART]
+       -between- [QTY | ADD TO CART | BUY NOW]
+       -footer-gap- footer
+     Tight inside a group, a little more between groups; phones run
+     tighter than wider screens (the min-width: 750px values right after
+     this block). Horizontal edges are not variables: description,
+     selectors, Size Chart and purchase rail are all full-width children
+     of the one .product-details column, so they share its edges. */
+  --mdr-space-3xs: 2px;
   --mdr-space-2xs: 6px;
-  --mdr-space-xs: 11px;
-
-  /* ---- PDP commerce area -- COLOR SELECTOR -(control-gap)- SIZE
-     SELECTOR -(control-gap)- SIZE CHART -(control-gap)- PURCHASE BAR
-     -(footer-gap)- FOOTER. One tight, uniform rhythm inside the actual
-     purchasing UI (control-gap), then a deliberately slightly larger
-     beat once before the footer (footer-gap) to read as a boundary
-     between "shopping controls" and "site navigation" -- not another
-     step in the same tight rhythm, and not a large blank section either. */
-  --pdp-control-gap: 12px;
+  --pdp-gap-in: 6px;
+  --pdp-gap-between: 10px;
   --pdp-footer-gap: 18px;
 
   /* ---- Mobile type scale -- everything site-wide (nav, grid title/price,
@@ -292,6 +286,14 @@ product-price *,
   --mdr-fs-xs: 0.56rem;
   --mdr-fs-sm: 0.62rem;
   --mdr-fs-md: 0.72rem;
+}
+
+@media screen and (min-width: 750px) {
+  :root {
+    --mdr-space-3xs: 3px;
+    --pdp-gap-in: 8px;
+    --pdp-gap-between: 14px;
+  }
 }
 
 html {
@@ -915,25 +917,13 @@ footer .utilities,
    specificity (0,1,1) to win instead of just losing to source order, not
    merely repeat the plain .footer-utilities__group-copyright (0,1,0)
    selector from the shared typography rule above. */
-footer .footer-utilities__group-copyright {
-  /* even quieter than the nav/policy links above it -- an explicit dim
-     value rather than --color-foreground-muted, so it reliably reads
-     dimmer regardless of what that resolves to. Glass experiment: was
-     rgba(255,255,255,0.45) (dim white) for the solid blue; now the same
-     secondary graphite the rest of the site uses for quiet copy
-     (timestamps, footnotes).
-     Now precisely 30% lighter than that same graphite (the rest of the
-     footer's own text color, var(--mdr-text-gray), what nav/policy links
-     render at) -- color-mix blends 30% of the way toward white rather
-     than reusing --mdr-text-gray-light, which was never tied to that
-     graphite by a fixed ratio. Paired with a single soft white
-     text-shadow dropped 1px below the glyphs -- the classic engraved-
-     into-a-light-surface trick: a bright lip catching light just under
-     each letter, nothing above it, so the mark reads as pressed into the
-     glass rather than sitting on top of it. */
+footer .footer-utilities__group-copyright,
+footer .footer-utilities__group-copyright * {
+  /* flat: the footer's own grey (the nav and policy links' colour), no
+     engraved text-shadow lip under the letters */
   font-size: 0.44rem !important;
-  color: color-mix(in srgb, var(--mdr-text-gray) 70%, white 30%) !important;
-  text-shadow: 0 1px 0 rgba(255, 255, 255, 0.8);
+  color: var(--mdr-text-gray) !important;
+  text-shadow: none !important;
 }
 
 /* ---- Product page: details column fills to the cart edge, tight gap ------- */
@@ -1369,8 +1359,9 @@ product-price *,
    name only, with the price column running down beside it; here the
    action row takes the full width after the image, so quantity and
    delete sit on one line with delete at the price's right edge. The
-   empty row between absorbs a tall image, keeping the action row on the
-   image's bottom edge. Same module at every width -- the base theme's
+   action row follows the name / variant / price block directly (a small
+   set gap), and the empty last row takes up whatever height a taller
+   image adds. Same module at every width -- the base theme's
    wide-cart layout (@container >= 720px) resets these areas, hence the
    explicit grid-area on each cell. The cart drawer's own row variant
    (--full-width-variants) already has a full-width quantity row and is
@@ -1378,10 +1369,10 @@ product-price *,
 .cart-items__table-row:not(.cart-items__table-row--full-width-variants) {
   grid-template-areas:
     'media details price'
-    'media . .'
     'media quantity quantity'
-    'media error error' !important;
-  grid-template-rows: auto 1fr auto auto !important;
+    'media error error'
+    'media . .' !important;
+  grid-template-rows: auto auto auto 1fr !important;
   /* spacing on the cells, not row-gap: the error row is empty until a
      quantity error shows, and a gap before it would lift the action row
      off the image's bottom edge */
@@ -1404,11 +1395,13 @@ product-price *,
 
 .cart-items__table-row .cart-items__quantity {
   grid-area: quantity !important;
-  align-self: end !important;
+  align-self: start !important;
   justify-self: stretch !important;
   width: auto !important;
   margin: 0 !important;
-  padding-top: 8px !important;
+  /* price line -> quantity: one small step, the same unit as the
+     product page's in-group gap */
+  padding-top: var(--pdp-gap-in) !important;
 }
 
 .cart-items__quantity-controls {
@@ -1421,6 +1414,24 @@ product-price *,
    right edge (same edge as the line total above it). The icon is drawn
    at the button's right edge; the button itself is as tall as the
    quantity box and reaches past it like the − / + do. */
+/* name / colour, size / unit price: three lines of one label -- one
+   line-height (1.12) on every line and no margins between them. The
+   title's wrapper is a block holding an inline-flex row, so the block's
+   own taller line box (the cart's larger base type) used to add a strut
+   above the name; making it a flex box removes that. */
+.cart-items__details :is(.cart-items__product-info, .cart-items__variants-wrapper, .cart-items__unit-price-wrapper) {
+  margin: 0 !important;
+  line-height: 1.12 !important;
+}
+
+.cart-items__details .cart-items__product-info {
+  display: flex !important;
+}
+
+.cart-items__details :is(.cart-items__title, .cart-items__variants, .cart-items__variant, .cart-items__variant dd, .cart-items__unit-price-wrapper *) {
+  line-height: 1.12 !important;
+}
+
 .cart-items__remove:not([hidden]) {
   position: relative;
   display: flex !important;
@@ -1521,18 +1532,20 @@ product-price *,
    viewport), but it does guarantee the FLOW gap -- the part actually
    under this file's control -- is always exactly --pdp-footer-gap, never
    more, never less, regardless of description length or variant count.
-   Deliberately its own token, not --pdp-control-gap: this is the one
+   Deliberately its own token, not --pdp-gap-between: this is the one
    beat in the sequence meant to read as slightly more separated (a
    boundary between the purchasing controls and site navigation), not
-   another step in the tight in-between rhythm. */
+   another step in the in-page rhythm. */
 .product-details > .group-block {
   padding-block-start: var(--mdr-space-2xs, 6px) !important;
   padding-block-end: var(--pdp-footer-gap, 18px) !important;
 }
 
-/* tighter rhythm between each block in the details column (was 24px) ---- */
+/* Details column: no shared gap -- each block below sets its own margin-top
+   from the group tokens (:root), so the space above it says whether it
+   starts a new group or continues one. */
 .product-details > .group-block > .group-block-content {
-  gap: var(--mdr-space-xs, 11px) !important;
+  gap: 0 !important;
 }
 
 /* ---- Product-page block order: title/price -> description -> size/color
@@ -1546,12 +1559,13 @@ product-price *,
 
 .product-details > .group-block > .group-block-content > rte-formatter[class*='__text_aEtTtq'] {
   order: 2 !important;
-  /* a centered, comfortably narrow reading column -- the BLOCK stays
-     perfectly centered on the page (width + margin-inline: auto) no
-     matter how much text it holds, matching the image frame/title/price
-     above it (--mdr-pdp-content-width). */
-  width: var(--mdr-pdp-content-width, 70%) !important;
-  margin-inline: auto !important;
+  margin-top: var(--pdp-gap-between) !important;
+  /* the full width of the details column -- the same edges as the colour
+     and size selectors under it. The copy is centred inside that width;
+     the box itself is not narrowed. */
+  width: 100% !important;
+  max-width: none !important;
+  margin-inline: 0 !important;
   text-align: center !important;
   --text-align: center !important;
 }
@@ -1568,10 +1582,13 @@ product-price *,
 .product-details > .group-block > .group-block-content > rte-formatter[class*='__text_aEtTtq'] li {
   text-align: center !important;
   --text-align: center !important;
-  /* balances line lengths (no lone short orphan word on its own line) --
-     supported in current Safari/Chrome, a no-op progressive enhancement
-     where it isn't. */
-  text-wrap: balance;
+  /* plain wrapping: each line runs as far as the width allows, whole
+     words move to the next line (no balancing, no breaking inside words) */
+  max-width: none !important;
+  text-wrap: wrap;
+  white-space: normal;
+  overflow-wrap: normal;
+  word-break: normal;
 }
 
 /* Centered bullet copy reads lopsided with a left-hugging disc marker,
@@ -1580,48 +1597,35 @@ product-price *,
 .product-details > .group-block > .group-block-content > rte-formatter[class*='__text_aEtTtq'] ul {
   list-style: none;
   padding-inline-start: 0;
+  /* the text block's own width setting caps it at ~305px */
+  max-width: none !important;
+  margin: 0 !important;
 }
 
 .product-details > .group-block > .group-block-content > variant-picker {
   order: 3 !important;
+  margin-top: var(--pdp-gap-between) !important;
 }
 
-/* Color selector -> Size selector: the base theme gives EVERY
-   .variant-option fieldset (color's own included) a margin-top: 16px --
-   left alone that would also inflate the description -> color gap
-   above (out of scope here, not requested), so only the SECOND-and-
-   later fieldset is targeted, tightening just the one relationship this
-   spec calls out. */
+/* Colour -> size: one selection system, the in-group gap. (The first
+   row's own top margin is 0 -- see .variant-option--buttons.) */
 .variant-picker .variant-option + .variant-option {
-  margin-top: var(--pdp-control-gap, 12px) !important;
+  margin-top: var(--pdp-gap-in) !important;
 }
 
 .product-details > .group-block > .group-block-content > .details.size-chart {
   order: 4 !important;
-  /* the base theme ships this accordion with its own margin-top: -7.5px
-     (presumably tuned for its default, larger surrounding gaps) -- left
-     alone, that nearly cancels the shared gap above (11px - 7.5px =
-     3.5px). Overriding it outright (not adding to it) makes the TOTAL
-     gap above this element exactly --pdp-control-gap, same logic as
-     buy-buttons-block below. */
-  margin-top: calc(var(--pdp-control-gap, 12px) - var(--mdr-space-xs, 11px)) !important;
-  /* the <details> element's own top padding (8px, base theme) was adding
-     empty space above the "Size Chart +" trigger text on top of the gap
-     above it -- collapsed accordion height should come from the trigger
-     text itself plus a small controlled amount of room, not this extra
-     padding. Bottom stays 0 (unchanged): only relevant when the panel is
-     open, out of scope here. */
-  padding-top: 4px !important;
+  /* size -> Size Chart: same group, the in-group gap. The <details>'
+     own top padding (and the base theme's -7.5px margin) are replaced,
+     so this margin is the whole gap. Opening it adds only the panel's
+     own height; closing returns to exactly this. */
+  margin-top: var(--pdp-gap-in) !important;
+  padding-top: 0 !important;
 }
 
 .product-details > .group-block > .group-block-content > .buy-buttons-block {
   order: 5 !important;
-  /* Size Chart -> Purchase bar: same mechanism as size-chart's own
-     margin-top above -- the TOTAL distance above the purchase bar is
-     exactly --pdp-control-gap, matching the tight commerce-area rhythm
-     (not the larger --pdp-footer-gap, which is reserved for the one beat
-     after the purchase bar, not before it). */
-  margin-top: calc(var(--pdp-control-gap, 12px) - var(--mdr-space-xs, 11px)) !important;
+  margin-top: var(--pdp-gap-between) !important;
 }
 
 /* Colour/size selector text (BLACK/CLEAR/BEIGE/... and XS/S/M/L) --
@@ -2490,23 +2494,21 @@ tbody > .cart-items__table-row::after {
 }
 
 /* BUY NOW -- replaces the Shop Pay wallet button (blocks/accelerated-
-   checkout.liquid): a real, independently-coloured control instead of
-   Shop Pay's own non-restylable purple brand button. Neutral MDR system:
-   was deep blue (a two-action black/blue hierarchy) -- blue is retired
-   from ordinary interface use, so this is a dark graphite instead. Still
-   deliberately distinct from ADD TO CART's own near-black (its own
-   existing style, untouched) -- two dark tones instead of black/colour,
-   not identical, not colour. Fills the accelerated-checkout-block
-   container exactly (that container is already height/width-matched to
-   the row above). */
+   checkout.liquid): a real control instead of Shop Pay's own
+   non-restylable purple button. Same fill and text as ADD TO CART --
+   both read the theme's primary button colours (--button-background-
+   color / --button-color, what every .button uses), so the two read as
+   one continuous purchase rail after the graphite quantity control, with
+   neither looking secondary. Fills the accelerated-checkout-block
+   container exactly (that container is height/width-matched to the row). */
 .mdr-buy-now {
   display: inline-flex !important;
   align-items: center !important;
   justify-content: center !important;
   width: 100% !important;
   height: 100% !important;
-  background: #333333 !important;
-  color: #ffffff !important;
+  background: var(--button-background-color) !important;
+  color: var(--button-color) !important;
   border: 0 !important;
   font-family: inherit;
   cursor: pointer;
@@ -3407,7 +3409,10 @@ body::after {
   position: relative !important;
   border: 1px solid var(--mdr-border-faint, rgba(4, 0, 97, 0.08)) !important;
   padding: 0 !important;
-  margin-top: 16px !important;
+  /* was 16px, room for the COLOR / SIZE legend above the box -- but this
+     box clips its overflow, so the legend never shows and the 16px was
+     empty. Spacing between rows: .variant-option + .variant-option. */
+  margin-top: 0 !important;
   display: flex !important;
   flex-wrap: nowrap !important;
   gap: 0 !important;

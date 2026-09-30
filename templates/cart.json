@@ -58,7 +58,7 @@
       "settings": {
         "section_width": "page-width",
         "background_color": "{{ settings.color_palette.background }}",
-        "padding-block-start": 24,
+        "padding-block-start": 0,
         "padding-block-end": 0
       }
     }
