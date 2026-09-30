@@ -553,27 +553,10 @@
     }
   }
 
-  /* ---- Type ---------------------------------------------------------------- */
-  /* Sentence case for the reading levels, this page only. The site sets
-     every element uppercase (`body * { text-transform: uppercase
-     !important }`, base.css + mdr-custom.css); masthead, section labels,
-     metadata and the big headlines stay uppercase, the text you actually
-     read opts out here. */
-  .mdr-mt .mdr-mt-masthead__tagline,
-  .mdr-mt .mdr-mt-hed--standard,
-  .mdr-mt .mdr-mt-hed--brief,
-  .mdr-mt .mdr-mt-deck,
-  .mdr-mt .mdr-mt-body,
-  .mdr-mt .mdr-mt-body *,
-  .mdr-mt .mdr-mt-cap__text,
-  .mdr-mt .mdr-mt-quote__text,
-  .mdr-mt .mdr-mt-quote__line,
-  .mdr-mt .mdr-mt-manifesto__lines li,
-  .mdr-mt .mdr-mt-index li,
-  .mdr-mt .mdr-mt-note__body p {
-    text-transform: none !important;
-  }
-
+  /* ---- Type ----------------------------------------------------------------
+     All caps, like the rest of the site (`body * { text-transform:
+     uppercase !important }`, base.css + mdr-custom.css) -- the page used to
+     opt its reading text out into sentence case. */
   .mdr-mt .mdr-mt-kicker {
     margin-bottom: 12px;
     font-family: var(--mt-sans);
