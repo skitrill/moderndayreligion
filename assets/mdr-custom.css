@@ -1382,8 +1382,15 @@ product-price *,
     'media quantity quantity'
     'media error error' !important;
   grid-template-rows: auto 1fr auto auto !important;
-  row-gap: 8px !important;
+  /* spacing on the cells, not row-gap: the error row is empty until a
+     quantity error shows, and a gap before it would lift the action row
+     off the image's bottom edge */
+  row-gap: 0 !important;
   align-items: start !important;
+}
+
+.cart-items__table-row:not(.cart-items__table-row--full-width-variants) .cart-items__error {
+  margin-top: 8px;
 }
 
 .cart-items__table-row:not(.cart-items__table-row--full-width-variants) .cart-items__details {
@@ -1401,6 +1408,7 @@ product-price *,
   justify-self: stretch !important;
   width: auto !important;
   margin: 0 !important;
+  padding-top: 8px !important;
 }
 
 .cart-items__quantity-controls {
