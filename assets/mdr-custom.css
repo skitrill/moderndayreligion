@@ -496,7 +496,9 @@ html {
   .mdr-frame > main[data-template='cart'] .cart-page:not(.cart-page--empty) .cart-page__items {
     grid-column: 1;
     grid-row: 1;
-    padding: 32px 32px 40px 24px;
+    /* no top padding: the first row's own 12px is the gap under the rail,
+       the same as under every row's rule (phone and desktop alike) */
+    padding: 0 32px 40px 24px;
   }
 
   .mdr-frame > main[data-template='cart'] .cart-page:not(.cart-page--empty) .cart-page__more-blocks {
@@ -510,7 +512,8 @@ html {
     display: block !important;
     height: auto !important;
     align-self: stretch !important;
-    padding: 32px 24px 40px 32px !important;
+    /* 12px top: DISCOUNT starts level with the first item */
+    padding: 12px 24px 40px 32px !important;
     border-left: 1px solid var(--mdr-border-faint);
   }
 
