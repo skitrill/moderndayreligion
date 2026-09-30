@@ -1190,6 +1190,9 @@ product-price *,
 @media screen and (max-width: 989px) {
   body:has(main[data-template='cart']) footer {
     margin-top: 0 !important;
+    /* a short cart leaves room under the footer: the footer (its glass)
+       takes it, running to the bottom of the screen */
+    flex-grow: 1;
   }
 
   /* CHECK OUT -> end of the page surface: a set 32px inside the page
@@ -2066,15 +2069,13 @@ main[data-template='collection'] [id$='__product_list_fa6P9H'] .section-resource
 }
 
 body {
-  /* --mdr-edge-color (:root above) -- now the same glass tint the header/
-     footer panels are made of, matching html above. Real page content
-     still reads as flat matte paper because <main> itself carries an
-     explicit --mdr-paper background of its own (main:not([data-template=
-     'index']) further down), so this glass tone is only ever visible in
-     genuine gaps: the safe-area strips, the rubber-band overscroll, and
-     any short-page trailing space -- exactly where it should read as
-     "more of the same chrome", not as page content. */
-  background-color: var(--mdr-edge-color) !important;
+  /* --mdr-chrome-color (GLASS CHROME block, end of file): the tone the white
+     glass header/footer show over the page, same as html. Inside the page
+     .page-wrapper paints its own --mdr-edge-color over this, so it only
+     shows beyond the page -- the rubber-band overscroll at the top and
+     bottom, which then continues the header/footer glass instead of the
+     plainer page tone (whichever of html/body Safari takes it from). */
+  background-color: var(--mdr-chrome-color) !important;
   background-image: none !important;
 }
 
@@ -3299,11 +3300,35 @@ body:has(main[data-template='index']) .page-wrapper {
    unconditional now, not just at that breakpoint. */
 #header-group {
   position: relative;
-  background: var(--mdr-glass-tint) !important;
-  backdrop-filter: var(--mdr-glass-blur) !important;
-  -webkit-backdrop-filter: var(--mdr-glass-blur) !important;
+  /* the glass is painted by its own layer behind the content (::before,
+     next rule), not by this element: iOS Safari can stop painting the
+     content of a pinned element that carries backdrop-filter while it
+     momentum-scrolls -- the glass stayed, the logo / CART / rail vanished.
+     isolate keeps that layer inside this element, behind its content. */
+  isolation: isolate;
+  background: transparent !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
   border-bottom: 1px solid var(--mdr-glass-border) !important;
   box-shadow: var(--mdr-glass-shadow) !important;
+}
+
+#header-group::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background: var(--mdr-glass-tint);
+  -webkit-backdrop-filter: var(--mdr-glass-blur);
+  backdrop-filter: var(--mdr-glass-blur);
+  pointer-events: none;
+}
+
+/* the header's own links (logo, CART): no iOS long-press highlight box or
+   link-preview callout when a finger rests on them -- e.g. at the start of
+   a pull-down -- same as the WEBRACK rail's controls */
+#header-component a {
+  -webkit-touch-callout: none;
 }
 
 /* .header__underlay-closed (the header row's own paint layer,
@@ -5025,7 +5050,8 @@ main[data-template='collection'] [id$='__product_list_fa6P9H'] .product-card .pr
 
    Pinned, as ONE surface: below desktop width the rail lives inside
    #header-group (mdr-header-enhance.liquid), and #header-group is the one
-   sticky, blurred element -- header and rail can't drift apart or lag each
+   sticky, blurred element (its blur on its own ::before layer behind the
+   content -- see the #header-group rule) -- header and rail can't drift apart or lag each
    other while scrolling, because they're a single layer.
      phones:   the whole group (logo + CART + rail) pinned at the top
      tablets:  the same group, pinned with only its rail part on screen
@@ -5050,14 +5076,23 @@ html {
   background-color: var(--mdr-chrome-color);
 }
 
-/* desktop: the rail row carries the glass itself, pinned in the frame */
+/* desktop: the rail row carries the glass itself, pinned in the frame --
+   on its own layer behind the rail's content, as with #header-group */
 @media screen and (min-width: 990px) {
   body .mdr-frame > .mdr-allbar-wrap {
     position: sticky;
     top: 0;
-    background: var(--mdr-glass-tint) !important;
-    -webkit-backdrop-filter: var(--mdr-glass-blur) !important;
-    backdrop-filter: var(--mdr-glass-blur) !important;
+  }
+
+  body .mdr-frame > .mdr-allbar-wrap::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    background: var(--mdr-glass-tint);
+    -webkit-backdrop-filter: var(--mdr-glass-blur);
+    backdrop-filter: var(--mdr-glass-blur);
+    pointer-events: none;
   }
 }
 
