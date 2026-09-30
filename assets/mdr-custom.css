@@ -4716,7 +4716,9 @@ main[data-template='collection'] [id$='__product_list_fa6P9H'] .product-card .pr
   box-sizing: border-box;
   color: var(--mdr-ink);
   font-size: 0.72rem;
-  line-height: 1;
+  /* the toggle's own line box, so MENU's text centres on the rail exactly
+     where WEBRACK / RETURN do */
+  line-height: var(--mdr-rail-line-height, normal);
   text-decoration: none;
   white-space: nowrap;
   -webkit-tap-highlight-color: transparent;

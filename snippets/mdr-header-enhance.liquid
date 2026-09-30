@@ -731,6 +731,7 @@
            rail exactly like WEBRACK/RETURN), at the row's content edge
            opposite the toggle */
         var wrapCs2 = getComputedStyle(wrap);
+        menu.style.setProperty('--mdr-rail-line-height', getComputedStyle(toggle).lineHeight);
         menu.style.top = toggle.offsetTop + 'px';
         menu.style.height = toggle.offsetHeight + 'px';
         if (isHome) menu.style.right = (parseFloat(wrapCs2.paddingRight) || 0) + 'px';
