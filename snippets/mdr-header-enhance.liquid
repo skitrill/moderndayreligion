@@ -782,7 +782,9 @@
         var capX = snap(isHome ? menuRect.left - wrapRect.left - gap - toothLen : menuRect.right - wrapRect.left + gap + toothLen);
         var tipX = capX + dir * toothLen;
         var step = Math.max(2, Math.round(3 * dpr)); /* device px between teeth */
-        var firstRow = Math.floor(midY * dpr - 1.5 * step) + 0.5;
+        /* a 1px stroke is dpr device px wide: its centre sits where the
+           rail's snap() puts it (the same half-width offset) */
+        var firstRow = Math.round(midY * dpr - 1.5 * step - dpr / 2) + dpr / 2;
         var teeth = [0, 1, 2, 3].map(function (i) { return (firstRow + i * step) / dpr; });
         capPath.setAttribute('d',
           'M ' + tipX + ' ' + teeth[0] + ' L ' + capX + ' ' + teeth[0] +
