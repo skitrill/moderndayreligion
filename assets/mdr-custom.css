@@ -2323,13 +2323,13 @@ tbody > .cart-items__table-row::after {
   display: none !important;
 }
 
-/* First item now begins right after RETURN's own row, at the same
-   deliberate top spacing every other template uses for its first piece
-   of real content (was 20px page padding-top + a 6px item margin, one
-   on top of the other, once the heading between them was removed --
-   collapsed into one clean value here instead). */
+/* No page padding above the first item: every row carries its own 12px
+   above and below its rule, and the rail's bottom line plays the rule
+   above the first row -- so the first item sits exactly as far under the
+   rail as every later item sits under the line before it. (The section's
+   own top-padding setting is 0 too, templates/cart.json.) */
 .cart-page {
-  padding-top: 12px !important;
+  padding-top: 0 !important;
 }
 
 .cart-page__items {
