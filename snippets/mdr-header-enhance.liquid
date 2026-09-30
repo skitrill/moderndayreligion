@@ -694,6 +694,24 @@
          Desktop draws the same line (WEBRACK has its own full row there
          too); it stops at the page frame's edges, not the viewport's --
          see lineStart/lineEnd below. */
+      /* the visual centre of a label's capitals, relative to the row */
+      var metricsCtx = null;
+      function opticalCentre(el, rowRect) {
+        var text = (el.textContent || '').trim().toUpperCase();
+        if (!text) return null;
+        var cs = getComputedStyle(el);
+        metricsCtx = metricsCtx || D.createElement('canvas').getContext('2d');
+        metricsCtx.font = cs.fontStyle + ' ' + cs.fontWeight + ' ' + cs.fontSize + ' ' + cs.fontFamily;
+        var tm = metricsCtx.measureText(text);
+        if (!tm.actualBoundingBoxAscent) return null;
+        var probe = D.createElement('span');
+        probe.style.cssText = 'display:inline-block;width:0;height:0;vertical-align:baseline';
+        el.appendChild(probe);
+        var baseline = probe.getBoundingClientRect().top - rowRect.top;
+        probe.remove();
+        return baseline - (tm.actualBoundingBoxAscent - tm.actualBoundingBoxDescent) / 2;
+      }
+
       function buildLinePath() {
         var label = toggle.querySelector('.mdr-allbar__label');
         if (!label) return;
@@ -710,7 +728,20 @@
         /* toggle's own vertical center, not the label's -- .mdr-allbar__
            toggle is align-items:center, so this is exactly where the
            label visually sits regardless of its own line-height box. */
-        var midY = (toggleRect.top + toggleRect.height / 2) - wrapRect.top;
+        /* ONE axis for the whole drawing (chevron tip, rail, end-cap): the
+           OPTICAL centre of the label's capitals, not the centre of its
+           line box. This font's capitals sit a little high in their box
+           (ascender/descender space), so centring on the box left the rail
+           ~0.4px under the text. Measured from the rendered font itself --
+           the baseline (a zero-size probe in the label) minus half the cap
+           ink height -- so it holds for any font, size or screen. MENU uses
+           the same row box and type, so it shares the axis. Then snapped
+           to the screen's pixel grid so the 1px rail is one crisp row of
+           pixels, not a soft line straddling two. */
+        var dpr = window.devicePixelRatio || 1;
+        var snap = function (v) { return (Math.round(v * dpr - dpr / 2) + dpr / 2) / dpr; };
+        var midY = opticalCentre(label, wrapRect) || ((toggleRect.top + toggleRect.height / 2) - wrapRect.top);
+        midY = snap(midY);
         var gap = 7; // label-to-stroke gap, matches the old label/chevron rhythm
         var wingDx = 5; // subtle -- "very minimal, not a conventional thick arrow"
         var wingDy = 4;
@@ -741,9 +772,7 @@
         /* the end-cap: exactly the chevron's height (2 x wingDy), on a
            half pixel so the 1px vertical renders crisp; the rail ends on its
            exact centre -- one shared coordinate, so there is no gap */
-        var capX = isHome
-          ? Math.round(menuRect.left - wrapRect.left - gap) + 0.5
-          : Math.round(menuRect.right - wrapRect.left + gap) - 0.5;
+        var capX = snap(isHome ? menuRect.left - wrapRect.left - gap : menuRect.right - wrapRect.left + gap);
         capPath.setAttribute('d', 'M ' + capX + ' ' + (midY - wingDy) + ' L ' + capX + ' ' + (midY + wingDy));
         /* how far MENU + cap travel to leave the row, for the zap */
         wrap.style.setProperty('--mdr-menu-out', isHome
