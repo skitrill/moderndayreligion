@@ -4829,3 +4829,18 @@ main[data-template='collection'] [id$='__product_list_fa6P9H'] .product-card .pr
     transition: none !important;
   }
 }
+
+/* MENU / WEBRACK / RETURN are pressed and dragged, never read as text: no
+   iOS tap flash, and no long-press text selection or callout sheet while a
+   finger rests on them before a swipe. Only the rail's own controls --
+   text everywhere else stays selectable -- and keyboard :focus-visible
+   rings are untouched. */
+.mdr-allbar__menu,
+.mdr-allbar__toggle,
+.mdr-allbar__list a,
+.mdr-allbar__touchzone {
+  -webkit-tap-highlight-color: transparent;
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  user-select: none;
+}
