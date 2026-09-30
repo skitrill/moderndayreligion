@@ -732,7 +732,9 @@
         var headerGroup = D.getElementById('header-group');
         if (headerGroup) {
           D.documentElement.style.setProperty('--mdr-header-h', headerGroup.offsetHeight + 'px');
-          if (headerGroup.contains(wrap)) D.documentElement.style.setProperty('--mdr-rail-top', wrap.offsetTop + 'px');
+          /* from the rects, not offsetTop -- that rounds, and the rail's top
+             line then sits half a pixel off the top of the screen */
+          if (headerGroup.contains(wrap)) D.documentElement.style.setProperty('--mdr-rail-top', (wrapRect.top - headerGroup.getBoundingClientRect().top) + 'px');
         }
         lineSvg.setAttribute('width', w);
         lineSvg.setAttribute('height', h);
