@@ -30,6 +30,10 @@
   })();
 </script>
 {%- comment -%}
+  Everywhere but the landing/lock screen: #F4F4F4, the colour the white glass
+  header/footer shows over the page (--mdr-chrome-color, assets/mdr-custom.css,
+  GLASS CHROME) -- so the browser's own top/bottom chrome continues the glass
+  instead of a flatter page tone. (Previously the light graphite surface:)
   Material: the light graphite surface (--mdr-surface, #dedfdd, in
   assets/mdr-custom.css) as it looks at the top of the screen, under the
   header's glass tint -- retune with the surface. (Old paper: #f8f8f5.)
@@ -43,7 +47,7 @@
 {%- endcomment -%}
 <meta
   name="theme-color"
-  content="{% if request.page_type == 'index' or request.page_type == 'password' %}#171717{% else %}#E2E3E1{% endif %}"
+  content="{% if request.page_type == 'index' or request.page_type == 'password' %}#171717{% else %}#F4F4F4{% endif %}"
 >
 
 {%- liquid
