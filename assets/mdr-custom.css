@@ -2368,6 +2368,11 @@ tbody > .cart-items__table-row::after {
   align-items: stretch !important;
   gap: 0 !important;
   border: 0 !important;
+  /* the action colour (what .button reads for ADD TO CART / BUY NOW)
+     behind the whole rail: segments meet on fractional pixels, and a
+     sub-pixel seam between them should blend dark, not show the light
+     page through as a hairline */
+  background: var(--color-primary-button-background) !important;
   /* anchor for the quantity/limit error message below -- position:
      relative, not a layout change, so this doesn't disturb the row's own
      sizing */
