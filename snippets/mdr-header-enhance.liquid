@@ -312,8 +312,9 @@
     /* TEMP: only a few products -- clone the tiles so the grid looks full
        while we test. Clones are inert + tagged [data-mdr-clone]; delete
        this function + its calls when done.
-       Runs on desktop too (for scroll testing): 24 tiles = 6 full rows at
-       4 columns, 12 at 2. */
+       Runs on desktop too: six placeholder tiles after the real ones (was a
+       fill up to 24 tiles, for scroll testing: 24 = 6 full rows at
+       4 columns, 12 at 2). */
     function padFill() {
       var sec = featured();
       if (!sec) return;
@@ -330,8 +331,8 @@
       }
       if (!originals.length) return;
 
-      var need = 24 - originals.length;
-      if (need <= 0) return;
+      /* six placeholder tiles after the real products */
+      var need = 6;
 
       var frag = D.createDocumentFragment();
       for (var i = 0; i < need; i++) {
