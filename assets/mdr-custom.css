@@ -4594,33 +4594,41 @@ main[data-template='collection'] [id$='__product_list_fa6P9H'] .product-card .pr
   padding: 3% !important;
 }
 
-/* ---- NEW: an open notch cut into the grid line ----------------------------
+/* ---- NEW: an open-top trapezium cut into the grid line ---------------------
    A product is NEW when snippets/product-card.liquid marks its card
-   data-mdr-new (tagged "new", or published in the last 30 days). The cell's
-   own top grid line (cell rule above) stops short of the divider; from
-   where it stops, one short diagonal drops into the cell; NEW sits in the
-   open space that leaves, just under the line's level. Nothing underneath,
-   nothing around the word -- the notch is open:
+   data-mdr-new (tagged "new", or published in the last 30 days).
+   The cell's own top grid line (cell rule above) stops short of the
+   divider, and the line drops into the cell instead: down a diagonal,
+   along a short bottom edge, and -- when the product beside it isn't NEW --
+   back up a diagonal to the line at the divider. There's no top edge: NEW
+   sits in the open shape.
 
-     ────╲       |       ╱────
-           NEW   |   NEW          two NEW neighbours
-     ────╲       |────────        left one only
-     ────────────|       ╱────    right one only
+                NEW                        one NEW product
+     ──────╲__________╱|──────────
 
-   Cells pair up across a divider -- 1|2, 3|4 in every row, on the phone's
-   2 columns and the desktop's 4 alike -- so the notch always sits against
-   the divider the pair shares, and that divider (the column gap) runs on
-   unbroken. A cell that isn't NEW keeps its full line.
-   The diagonal is the grid's colour and 1px weight (a mask drawing filled
-   with --mdr-border-faint): visible by its length, not by contrast. Fixed
-   size at every width. The mask drawings are exactly --mdr-new-w x
-   --mdr-new-h (40 x 11) with a --mdr-new-cut (6) run -- change together. */
+                NEW  |  NEW                two NEW neighbours
+     ──────╲_________|_________╱──────
+
+   Two NEW neighbours make one shape: each keeps its outer diagonal, and the
+   bottom edges meet across the divider (the column gap), which runs on
+   unbroken down the grid. Cells pair up across a divider -- 1|2, 3|4 in
+   every row, on the phone's 2 columns and the desktop's 4 alike -- so the
+   notch always sits against the divider the pair shares. A cell that isn't
+   NEW keeps its full line and draws nothing.
+   Every edge is the grid's own colour and 1px weight (mask drawings filled
+   with --mdr-border-faint). Fixed size at every width. The drawings are
+   exactly --mdr-new-w x --mdr-new-h (40 x 12) with a --mdr-new-cut (6)
+   diagonal run -- change them together. */
 :root {
   --mdr-new-w: 40px;
-  --mdr-new-h: 11px;
+  --mdr-new-h: 12px;
   --mdr-new-cut: 6px;
-  --mdr-new-mask-left: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='40' height='11'%3E%3Cpath d='M.5 .5 6 11' fill='none' stroke='%23000'/%3E%3C/svg%3E");
-  --mdr-new-mask-right: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='40' height='11'%3E%3Cpath d='M39.5 .5 34 11' fill='none' stroke='%23000'/%3E%3C/svg%3E");
+  /* on its own: \\____/ */
+  --mdr-new-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='40' height='12'%3E%3Cpath d='M.5 .5 6 11.5H34L39.5 .5' fill='none' stroke='%23000'/%3E%3C/svg%3E");
+  /* left of a NEW pair: \\_____ (the bottom runs on across the divider) */
+  --mdr-new-mask-left: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='40' height='12'%3E%3Cpath d='M.5 .5 6 11.5H40' fill='none' stroke='%23000'/%3E%3C/svg%3E");
+  /* right of a NEW pair: _____/ */
+  --mdr-new-mask-right: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='40' height='12'%3E%3Cpath d='M0 11.5H34L39.5 .5' fill='none' stroke='%23000'/%3E%3C/svg%3E");
 }
 
 /* the cell's top line ends where the notch begins */
@@ -4641,31 +4649,27 @@ main[data-template='collection'] [id$='__product_list_fa6P9H'] .resource-list__i
   position: absolute;
   top: 0;
   z-index: 3;
+  box-sizing: border-box;
   width: var(--mdr-new-w);
   height: var(--mdr-new-h);
   pointer-events: none;
 }
 
-/* the diagonal */
+/* the notch's edges */
 main[data-template='collection'] [id$='__product_list_fa6P9H'] .resource-list__item:has(product-card[data-mdr-new])::before {
   content: '';
   background: var(--mdr-border-faint);
-  -webkit-mask: var(--mdr-new-mask-left) no-repeat 0 0 / 100% 100%;
-  mask: var(--mdr-new-mask-left) no-repeat 0 0 / 100% 100%;
+  -webkit-mask: var(--mdr-new-mask) no-repeat 0 0 / 100% 100%;
+  mask: var(--mdr-new-mask) no-repeat 0 0 / 100% 100%;
 }
 
-/* the word: plain type under the line, between the cut and the divider --
-   no border, outline or fill of its own */
+/* the word, inside the notch: clear of the (absent) top and of the bottom
+   edge, centred between the diagonals -- plain type, nothing around it */
 main[data-template='collection'] [id$='__product_list_fa6P9H'] .resource-list__item:has(product-card[data-mdr-new])::after {
   content: 'new';
-  box-sizing: border-box;
-  /* a little air under the line's level; clear of the diagonal */
-  top: 3px;
+  top: 2px;
   height: auto;
-  padding-inline-start: var(--mdr-new-cut);
-  border: 0;
-  outline: 0;
-  background: transparent;
+  padding-inline: var(--mdr-new-cut);
   font: inherit;
   font-size: 0.53rem;
   font-weight: 400;
@@ -4676,24 +4680,35 @@ main[data-template='collection'] [id$='__product_list_fa6P9H'] .resource-list__i
   color: var(--mdr-text-gray-light);
 }
 
-/* left of a pair: against the right-hand divider, cut on its left */
+/* left of a pair: against the divider on its right */
 main[data-template='collection'] [id$='__product_list_fa6P9H'] .resource-list__item:nth-child(odd):has(product-card[data-mdr-new])::before,
 main[data-template='collection'] [id$='__product_list_fa6P9H'] .resource-list__item:nth-child(odd):has(product-card[data-mdr-new])::after {
   right: 0;
 }
 
-/* right of a pair: mirrored */
+/* right of a pair: against the divider on its left */
 main[data-template='collection'] [id$='__product_list_fa6P9H'] .resource-list__item:nth-child(even):has(product-card[data-mdr-new])::before,
 main[data-template='collection'] [id$='__product_list_fa6P9H'] .resource-list__item:nth-child(even):has(product-card[data-mdr-new])::after {
   left: 0;
 }
 
-main[data-template='collection'] [id$='__product_list_fa6P9H'] .resource-list__item:nth-child(even):has(product-card[data-mdr-new])::before {
+/* both NEW: one shape across the divider -- each keeps only its outer
+   diagonal and its word centres between that diagonal and the divider */
+main[data-template='collection'] [id$='__product_list_fa6P9H'] .resource-list__item:nth-child(odd):has(product-card[data-mdr-new]):has(+ .resource-list__item product-card[data-mdr-new])::before {
+  -webkit-mask-image: var(--mdr-new-mask-left);
+  mask-image: var(--mdr-new-mask-left);
+}
+
+main[data-template='collection'] [id$='__product_list_fa6P9H'] .resource-list__item:nth-child(odd):has(product-card[data-mdr-new]):has(+ .resource-list__item product-card[data-mdr-new])::after {
+  padding-inline: var(--mdr-new-cut) 0;
+}
+
+main[data-template='collection'] [id$='__product_list_fa6P9H'] .resource-list__item:nth-child(odd):has(product-card[data-mdr-new]) + .resource-list__item:nth-child(even):has(product-card[data-mdr-new])::before {
   -webkit-mask-image: var(--mdr-new-mask-right);
   mask-image: var(--mdr-new-mask-right);
 }
 
-main[data-template='collection'] [id$='__product_list_fa6P9H'] .resource-list__item:nth-child(even):has(product-card[data-mdr-new])::after {
+main[data-template='collection'] [id$='__product_list_fa6P9H'] .resource-list__item:nth-child(odd):has(product-card[data-mdr-new]) + .resource-list__item:nth-child(even):has(product-card[data-mdr-new])::after {
   padding-inline: 0 var(--mdr-new-cut);
 }
 
