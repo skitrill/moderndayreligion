@@ -1181,6 +1181,7 @@ product-price *,
     width: auto !important;
     max-width: none !important;
     padding-inline: 0 !important;
+    padding-bottom: 0 !important;
   }
 }
 
