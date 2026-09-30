@@ -91,6 +91,12 @@ class CartIcon extends Component {
 
     this.currentCartCount = itemCount;
 
+    // the mobile header's text link (blocks/_header-menu.liquid) is rendered
+    // once by Liquid -- keep its "(n)" in step with the bubble
+    for (const link of document.querySelectorAll('.header__cart-link')) {
+      link.textContent = itemCount > 0 ? `Cart (${itemCount})` : 'Cart';
+    }
+
     this.classList.toggle('header-actions__cart-icon--has-cart', itemCount > 0);
 
     sessionStorage.setItem(
