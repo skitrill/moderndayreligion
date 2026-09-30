@@ -5149,3 +5149,50 @@ body {
     background: color-mix(in srgb, white 92%, transparent) !important;
   }
 }
+
+/* ==========================================================================
+   LOADING IN THE GRID LINE (snippets/mdr-nav-progress.liquid)
+   No loading bar of its own: the line under the WEBRACK / MENU / RETURN rail
+   (#header-group's bottom border below desktop width, the rail row's own on
+   desktop) stays exactly as it is, and while a page loads a graphite stroke
+   runs along that same line from the left -- centred on it, 1.5px against
+   the line's 1px, so the line reads as briefly bolder and darker where the
+   load has reached. Its front eases off over ~36px (graphite -> lighter
+   graphite -> nothing), so it flows into the plain line rather than ending
+   as a hard block. At rest it's invisible and takes no space; the rail's
+   height and the line's position never change. Only its transform
+   (translateX) and opacity animate.
+   ========================================================================== */
+:root {
+  --mdr-load: color-mix(in srgb, var(--mdr-ink) 55%, var(--mdr-graphite));
+}
+
+.mdr-load {
+  position: absolute;
+  left: 0;
+  right: 0;
+  /* the rail row's bottom edge is the line's top edge (the header group's
+     border / the row's own border) -- 1.5px centred on that 1px line */
+  bottom: -1.25px;
+  height: 1.5px;
+  z-index: 5;
+  overflow: hidden;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.mdr-load__bar {
+  display: block;
+  width: 100%;
+  height: 100%;
+  transform: translateX(-100%);
+  background: linear-gradient(
+    90deg,
+    var(--mdr-load) 0,
+    var(--mdr-load) calc(100% - 36px),
+    var(--mdr-graphite) calc(100% - 16px),
+    color-mix(in srgb, var(--mdr-graphite) 35%, transparent) calc(100% - 5px),
+    transparent 100%
+  );
+  will-change: transform;
+}

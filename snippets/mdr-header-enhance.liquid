@@ -941,6 +941,9 @@
              the zip plays out while it's already coming back. */
           wrap.classList.add('mdr-allbar-wrap--zap');
           try { sessionStorage.setItem('mdrMenuEnter', String(Date.now())); } catch (err) {}
+          /* the rail's grid line shows the load (mdr-nav-progress.liquid) --
+             completed by the grid in memory, or by the page that loads */
+          if (window.__mdrProgress) window.__mdrProgress.start();
           setTimeout(function () {
             if (typeof window.mdrGoBack === 'function') window.mdrGoBack();
             else if (history.length > 1) history.back();
@@ -1098,6 +1101,8 @@
            instead of sitting in front of it as a dead pause */
         var outStart = Date.now();
         frame.classList.add('mdr-swiping-out');
+        /* the rail's grid line shows the load (mdr-nav-progress.liquid) */
+        if (window.__mdrProgress) window.__mdrProgress.start();
 
         fetchHtml(url)
           .then(function (html) {
@@ -1133,6 +1138,7 @@
 
               frame.classList.remove('mdr-swiping-out');
               frame.classList.add('mdr-swiping-in');
+              if (window.__mdrProgress) window.__mdrProgress.done();
               setTimeout(function () {
                 frame.classList.remove('mdr-swiping-in');
                 window.__mdrSwitching = false;

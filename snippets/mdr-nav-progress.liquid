@@ -1,0 +1,186 @@
+{%- doc -%}
+  Page loading shown IN the grid line under the WEBRACK / MENU / RETURN rail
+  -- no loading bar of its own. The line (the header group's bottom border
+  below desktop width, the rail row's own on desktop) stays exactly as it
+  is; while a page loads, a graphite stroke (.mdr-load, assets/mdr-custom.css)
+  runs along that same line from the left, a touch bolder than the line,
+  its front easing off into it. When the page is ready it runs to the end
+  and fades, leaving the plain line.
+
+  Behaves like Safari's: a quick first step, then slower and slower while
+  the page is still coming, and only completes when it's actually there --
+  fast (prefetched / in memory) = a quick sweep, slow = it waits. It only
+  ever shows loading; it never holds a navigation back.
+
+  Driven by the real events:
+  - in-page product / grid swaps (mdr-instant-nav) and WEBRACK collection
+    switches (mdr-header-enhance) call window.__mdrProgress.start() and
+    .done(ready) themselves;
+  - any other link / form that leaves the page starts it here, and it keeps
+    moving until the old page is gone; the next page picks it up where it
+    was (sessionStorage) and completes it once that page has loaded.
+  Only transform / opacity animate (Web Animations), so it never causes
+  layout work.
+{%- enddoc -%}
+
+<script>
+  (function () {
+    if (window.__mdrProgress) return;
+    var D = document;
+    var KEY = 'mdr-progress';
+
+    var box = D.createElement('span');
+    box.className = 'mdr-load';
+    box.setAttribute('aria-hidden', 'true');
+    var bar = D.createElement('span');
+    bar.className = 'mdr-load__bar';
+    box.appendChild(bar);
+
+    var run = null;
+    var fade = null;
+    var active = false;
+    var safety = null;
+
+    /* the loader rides in the current rail row -- in-page navigation swaps
+       that row, so it's re-mounted into whichever row is on the page */
+    function mount() {
+      var row = D.querySelector('.mdr-allbar-wrap');
+      if (!row) return false;
+      if (box.parentNode !== row) row.appendChild(box);
+      return true;
+    }
+
+    function at(p) {
+      return 'translateX(' + (p * 100 - 100) + '%)';
+    }
+
+    /* how far along it is right now (0..1), from the live transform */
+    function current() {
+      var m = getComputedStyle(bar).transform;
+      if (!m || m === 'none' || !window.DOMMatrixReadOnly) return 0;
+      var w = bar.offsetWidth || 1;
+      return Math.max(0, Math.min(1, 1 + new DOMMatrixReadOnly(m).m41 / w));
+    }
+
+    function stop() {
+      if (run) { run.cancel(); run = null; }
+      if (fade) { fade.cancel(); fade = null; }
+      clearTimeout(safety);
+    }
+
+    function start(from) {
+      if (!mount() || !bar.animate) return;
+      stop();
+      active = true;
+      box.style.opacity = '1';
+      var p = Math.max(0, Math.min(0.9, from || 0));
+      /* 0 -> 15% at once, then easing off toward 70% over ~7s and creeping
+         toward 90% after that -- it never "finishes" on its own */
+      run = bar.animate([
+        { transform: at(p), easing: 'cubic-bezier(0.2, 0.7, 0.3, 1)' },
+        { transform: at(Math.max(p, 0.15)), offset: 0.012, easing: 'cubic-bezier(0.1, 0.5, 0.3, 1)' },
+        { transform: at(Math.max(p, 0.7)), offset: 0.3, easing: 'cubic-bezier(0.1, 0.4, 0.3, 1)' },
+        { transform: at(Math.max(p, 0.9)) }
+      ], { duration: 25000, fill: 'forwards' });
+      /* a start that never turns into a navigation (nothing unloads, nobody
+         calls done) doesn't sit there forever */
+      safety = setTimeout(finish, 20000);
+    }
+
+    function finish() {
+      if (!active) return;
+      active = false;
+      clearTimeout(safety);
+      if (!mount()) return;
+      var p = current();
+      stop();
+      run = bar.animate([{ transform: at(p) }, { transform: at(1) }], {
+        duration: 140 + (1 - p) * 120,
+        easing: 'cubic-bezier(0.3, 0, 0.2, 1)',
+        fill: 'forwards'
+      });
+      run.onfinish = function () {
+        fade = box.animate([{ opacity: 1 }, { opacity: 0 }], { duration: 220, easing: 'ease-out', fill: 'forwards' });
+        fade.onfinish = reset;
+      };
+    }
+
+    function reset() {
+      stop();
+      active = false;
+      box.style.opacity = '0';
+    }
+
+    /* ready: a promise for "the new content is actually there" (e.g. the
+       product image decoded) -- waited for, but never more than 1.2s */
+    function done(ready) {
+      if (!active) return;
+      Promise.race([
+        Promise.resolve(ready).catch(function () {}),
+        new Promise(function (r) { setTimeout(r, 1200); })
+      ]).then(finish);
+    }
+
+    window.__mdrProgress = { start: start, done: done };
+
+    /* ---- leaving the page ------------------------------------------ */
+    function leavesPage(a) {
+      if (!a || !a.href || a.hasAttribute('download')) return false;
+      if (a.target && a.target !== '_self') return false;
+      if (/^(mailto|tel|sms|javascript):/i.test(a.getAttribute('href') || '')) return false;
+      var u;
+      try { u = new URL(a.href, location.href); } catch (e) { return false; }
+      if (u.origin !== location.origin) return false;
+      if (u.hash && u.pathname === location.pathname && u.search === location.search) return false;
+      return true;
+    }
+
+    /* bubble, on window: runs after every other click handler -- anything
+       they took over (in-page swaps, WEBRACK titles, drawers) is
+       defaultPrevented by now and starts its own progress, or none */
+    window.addEventListener('click', function (e) {
+      if (e.defaultPrevented || e.button !== 0 || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;
+      var a = e.target instanceof Element && e.target.closest('a[href]');
+      if (leavesPage(a)) start();
+    });
+
+    window.addEventListener('submit', function (e) {
+      if (!e.defaultPrevented) start();
+    });
+
+    /* hand the position to the next page */
+    window.addEventListener('pagehide', function () {
+      if (!active) return;
+      try { sessionStorage.setItem(KEY, JSON.stringify({ p: current(), t: Date.now() })); } catch (e) {}
+    });
+
+    /* back to a page restored from the back/forward cache: clear whatever
+       it was showing when it left, and complete the load that brought us
+       here (arrive, below) */
+    window.addEventListener('pageshow', function (e) {
+      if (!e.persisted) return;
+      reset();
+      arrive();
+    });
+
+    /* ---- arriving: complete what the previous page started ---------- */
+    function arrive() {
+      var saved = null;
+      try {
+        saved = JSON.parse(sessionStorage.getItem(KEY) || 'null');
+        sessionStorage.removeItem(KEY);
+      } catch (e) {}
+      if (!saved || Date.now() - saved.t > 10000) return;
+      var go = function () {
+        start(saved.p);
+        if (D.readyState === 'complete') done();
+        else window.addEventListener('load', function () { done(); }, { once: true });
+      };
+      if (D.querySelector('.mdr-allbar-wrap')) go();
+      else D.addEventListener('DOMContentLoaded', function () { requestAnimationFrame(go); }, { once: true });
+    }
+
+    if (D.prerendering) D.addEventListener('prerenderingchange', arrive, { once: true });
+    else arrive();
+  })();
+</script>

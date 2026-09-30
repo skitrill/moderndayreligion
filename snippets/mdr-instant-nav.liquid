@@ -310,11 +310,22 @@
       reportPageView(html);
     }
 
+    /* the rail's grid line shows the load (mdr-nav-progress.liquid) */
+    function progress(what, arg) {
+      if (window.__mdrProgress) window.__mdrProgress[what](arg);
+    }
+
     function go(url, push) {
       if (busy) return;
       busy = true;
+      progress('start');
       get(url)
-        .then(function (html) { showProduct(url, html, push); })
+        .then(function (html) {
+          showProduct(url, html, push);
+          /* done once the product's image is actually drawable */
+          var img = visibleMainImage(currentMain());
+          progress('done', img && img.decode ? img.decode() : null);
+        })
         .catch(function () { location.href = url; })
         .then(function () { busy = false; });
     }
@@ -370,7 +381,10 @@
       if (!main) return;
       var onProduct = (main.dataset.template || '').indexOf('product') === 0;
       if (grid && onProduct && here === grid.url) {
+        /* the grid is in memory: a quick sweep along the line */
+        progress('start');
         restoreGrid();
+        progress('done');
       } else if (history.state && history.state.mdrSwap && onGrid()) {
         go(here, false);
       }
