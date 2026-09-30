@@ -19,8 +19,8 @@
     differently from the footer's default row.
   @param {boolean} [hide_shop] - leave out WEBRACK and LOOKBOOK (the lock screen,
     layout/password.liquid, where the shop is closed).
-  @param {string} [account_label] - the ACCOUNT link's text when nobody is signed in
-    (default "Account"; the lock screen says "User").
+  @param {string} [account_label] - the account link's text when nobody is signed in
+    (default "User" -- MODERN DAY RELIGION says User, never Account).
   @param {boolean} [account_first] - put the account link at the top of the list
     instead of after THE MODERN TIMES (the lock screen).
   @param {string} [extra_items] - markup added as one more list item between ACCOUNT
@@ -37,7 +37,7 @@
       {%- if customer -%}
         {{- customer.first_name -}}
       {%- else -%}
-        {{- account_label | default: 'Account' -}}
+        {{- account_label | default: 'User' -}}
       {%- endif -%}
     </a>
   </li>

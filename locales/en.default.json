@@ -9,7 +9,7 @@
  */
 {
   "accessibility": {
-    "account": "Account",
+    "account": "User",
     "active_filters": "Active filters:",
     "cart": "Cart",
     "cart_count": "Total items in cart",
@@ -88,7 +88,7 @@
     // Continue shopping link on the cart page which takes the user back to a collection page
     "continue_shopping": "Continue shopping",
     "enter_password": "Enter password",
-    "log_in_html": "Have an account? <a href=\"{{ link }}\">Log in</a> to check out faster.",
+    "log_in_html": "Already a user? <a href=\"{{ link }}\">Log in</a> to check out faster.",
     "log_in": "Sign in",
     "log_out": "Log out",
     "open_image_in_full_screen": "Open image in full screen",
@@ -165,7 +165,7 @@
   "content": {
     "cancel": "Cancel",
     "discount": "Discount",
-    "account_title": "Account",
+    "account_title": "User",
     "terms_and_policies": "Terms and Policies",
     "account_title_personalized": "Hi {{ first_name }}",
     "account_orders": "Orders",
