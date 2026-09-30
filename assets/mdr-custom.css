@@ -1126,8 +1126,15 @@ product-price *,
 }
 
 .cart-summary__inner {
-  padding-top: 12px !important;
+  padding-top: 0 !important;
   row-gap: 12px !important;
+}
+
+/* the DISCOUNT toggle's own box (44px) is most of the gap under the last
+   rule; 40px keeps it an easy tap and puts its label ~16px under the
+   rule, in step with the rows */
+.cart-discount__summary {
+  min-height: 40px !important;
 }
 
 .cart-totals {
@@ -1158,7 +1165,13 @@ product-price *,
    the two colliding. */
 @media screen and (max-width: 989px) {
   body:has(main[data-template='cart']) footer {
-    margin-top: 32px !important;
+    margin-top: 0 !important;
+  }
+
+  /* CHECK OUT -> end of the page surface: a set 32px inside the page
+     itself, then the footer straight after (no band of body colour) */
+  main[data-template='cart'] .cart-page {
+    padding-bottom: 32px !important;
   }
 }
 
