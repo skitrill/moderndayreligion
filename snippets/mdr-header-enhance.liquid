@@ -1361,8 +1361,31 @@
           settleFrom(v, intent);
         }
 
-        function wheelFollow(dx, ts) {
+        /* a mouse-wheel click (a line-mode delta, or a big lone delta that
+           starts a gesture -- trackpad gestures always begin with small
+           ones) steps exactly one title; quick clicks add up */
+        var wStepTo = null;
+        function nearFrame(x, ref) {
+          if (!(loopWidth > 0)) return x;
+          while (x - ref > loopWidth / 2) x -= loopWidth;
+          while (ref - x > loopWidth / 2) x += loopWidth;
+          return x;
+        }
+
+        function wheelFollow(dx, ts, lineMode) {
           var abs = Math.abs(dx);
+          var notch = lineMode || (abs >= 50 && (ts - wLastT > 160 || wStepTo !== null));
+          if (notch && dx) {
+            var from = list.scrollLeft;
+            var base = wStepTo !== null && momentumRAF ? nearFrame(wStepTo, from) : from;
+            wStepTo = pickDetent(base, (dx > 0 ? 1 : -1) * 0.001, true);
+            wLastT = ts;
+            wTaken = false;
+            clearTimeout(wTimer);
+            settle(from, wStepTo, 0);
+            return;
+          }
+          wStepTo = null;
           if (wTaken) {
             var fresh = ts - wTakenLast > 160 || abs > Math.max(6, wTakenAbs * 1.6);
             wTakenLast = ts;
@@ -1416,7 +1439,7 @@
             return;
           }
           e.preventDefault();
-          wheelFollow(d.x + pendingX, e.timeStamp || performance.now());
+          wheelFollow(d.x + pendingX, e.timeStamp || performance.now(), e.deltaMode === 1);
           pendingX = 0;
           pendingY = 0;
         }, { passive: false });
