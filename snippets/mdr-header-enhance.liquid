@@ -1251,7 +1251,7 @@
           function frame(ts) {
             if (t0 === null) t0 = ts;
             var t = ts - t0;
-            window.scrollTo(0, y0 + (v / k) * (1 - Math.exp(-k * t)));
+            window.scrollTo({ top: y0 + (v / k) * (1 - Math.exp(-k * t)), behavior: 'instant' });
             if (Math.abs(v * Math.exp(-k * t)) > 0.02) pageRAF = requestAnimationFrame(frame);
             else pageRAF = null;
           }
@@ -1318,7 +1318,8 @@
           }
           sample(now, p.x, p.y);
           if (axis === 'y') {
-            window.scrollTo(0, startPageY - dy);
+            /* instant: the site's smooth scrolling would make the page trail the finger */
+            window.scrollTo({ top: startPageY - dy, behavior: 'instant' });
             return;
           }
           list.scrollLeft = startScroll - dx;
