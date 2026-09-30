@@ -74,13 +74,13 @@
       active = true;
       box.style.opacity = '1';
       var p = Math.max(0, Math.min(0.9, from || 0));
-      /* 0 -> 15% at once, then easing off toward 70% over ~7s and creeping
-         toward 90% after that -- it never "finishes" on its own */
+      /* 0 -> 15% at once, then easing off toward 55% over ~9s and creeping
+         toward 85% after that -- it never "finishes" on its own */
       run = bar.animate([
         { transform: at(p), easing: 'cubic-bezier(0.2, 0.7, 0.3, 1)' },
-        { transform: at(Math.max(p, 0.15)), offset: 0.012, easing: 'cubic-bezier(0.1, 0.5, 0.3, 1)' },
-        { transform: at(Math.max(p, 0.7)), offset: 0.3, easing: 'cubic-bezier(0.1, 0.4, 0.3, 1)' },
-        { transform: at(Math.max(p, 0.9)) }
+        { transform: at(Math.max(p, 0.15)), offset: 0.012, easing: 'cubic-bezier(0.25, 0.5, 0.4, 1)' },
+        { transform: at(Math.max(p, 0.55)), offset: 0.36, easing: 'cubic-bezier(0.2, 0.4, 0.4, 1)' },
+        { transform: at(Math.max(p, 0.85)) }
       ], { duration: 25000, fill: 'forwards' });
       /* a start that never turns into a navigation (nothing unloads, nobody
          calls done) doesn't sit there forever */
