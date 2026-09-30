@@ -4401,7 +4401,12 @@ main[data-template='collection'] [id$='__product_list_fa6P9H'] .resource-list--g
    plain CSS animation on the grid itself needs no JS at all: it just
    plays on first paint. */
 main[data-template='collection'] [id$='__product_list_fa6P9H'] .resource-list--grid {
-  animation: mdr-page-slide-up 0.26s cubic-bezier(0.16, 1, 0.3, 1) both;
+  /* backwards, not both: once it has played, the grid carries no
+     transform at all. With `both` it kept an identity transform for good,
+     which kept the whole (very tall) grid as one GPU layer -- iOS Safari
+     tiles a layer that size, and a tile edge showed as a thin light line
+     straight across the product images. */
+  animation: mdr-page-slide-up 0.26s cubic-bezier(0.16, 1, 0.3, 1) backwards;
 }
 
 @keyframes mdr-page-slide-up {
