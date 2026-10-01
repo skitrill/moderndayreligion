@@ -2890,8 +2890,10 @@ product-card:active .card-gallery {
 
 /* JOIN is one of the site's buttons: the same flat primary fill and text
    as ADD TO CART / BUY NOW / CHECK OUT (the theme's primary-button
-   colours), the same hover, square, no border or shadow. */
-.mdr-fnav__submit {
+   colours), the same hover, square, no border or shadow. (.mdr-fnav in
+   front: the footer section's own ".utilities button" colour would
+   outrank the class alone.) */
+.mdr-fnav .mdr-fnav__submit {
   flex: 0 0 auto;
   height: 100%;
   appearance: none;
@@ -2912,7 +2914,7 @@ product-card:active .card-gallery {
 }
 
 @media (hover: hover) {
-  .mdr-fnav__submit:hover {
+  .mdr-fnav .mdr-fnav__submit:hover {
     background: var(--color-primary-button-hover-background);
     color: var(--color-primary-button-hover-text);
   }
