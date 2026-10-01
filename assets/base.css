@@ -18,8 +18,8 @@ body {
    hover/tap, with the text flipping to white -- not a shadow, not a
    whole-row/tile fill, just the glyphs' own background. The header logo/back
    link is excluded -- it gets no highlight at all (see .header-logo below). */
-a:not([class*='button']):not(.header-logo):hover,
-a:not([class*='button']):not(.header-logo):active {
+a:not([class*='button']):not(.header-logo):not(.mdr-allbar__menu):hover,
+a:not([class*='button']):not(.header-logo):not(.mdr-allbar__menu):active {
   background-color: #3B2412;
   color: #FFFFFF !important;
   text-decoration: none;

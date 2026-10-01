@@ -3440,8 +3440,8 @@ a:not([class*='button']):not(.header-logo) {
     color var(--animation-speed) var(--animation-easing), outline-color var(--animation-speed) var(--animation-easing);
 }
 
-a:not([class*='button']):not(.header-logo):hover,
-a:not([class*='button']):not(.header-logo):active {
+a:not([class*='button']):not(.header-logo):not(.mdr-allbar__menu):hover,
+a:not([class*='button']):not(.header-logo):not(.mdr-allbar__menu):active {
   background-color: var(--mdr-selected) !important;
   color: var(--mdr-ink) !important;
 }
@@ -3452,7 +3452,7 @@ a:not([class*='button']):not(.header-logo):active {
    spots --mdr-accent is meant for, not a background treatment. Outline
    only, no fill -- stays a clearly visible ring without becoming a block
    of colour. */
-a:not([class*='button']):not(.header-logo):focus-visible {
+a:not([class*='button']):not(.header-logo):not(.mdr-allbar__menu):focus-visible {
   background-color: var(--mdr-selected) !important;
   color: var(--mdr-ink) !important;
   outline: 2px solid var(--mdr-accent);
@@ -4811,15 +4811,12 @@ main[data-template='collection'] [id$='__product_list_fa6P9H'] .product-card .pr
   transition: opacity var(--animation-speed) var(--animation-easing);
 }
 
-@media (hover: hover) and (pointer: fine) {
-  .mdr-allbar__menu:hover .mdr-allbar__menu-label {
-    opacity: 1;
-  }
-}
-
-.mdr-allbar__menu:active .mdr-allbar__menu-label {
-  opacity: 1;
-  transition-duration: 0s;
+/* MENU doesn't react to hover or a tap -- no highlight box (it's excluded
+   from the site-wide link hover/active fill), no brightening; it just
+   goes. Keyboard focus still shows, as a plain outline. */
+.mdr-allbar__menu:focus-visible {
+  outline: 1px solid var(--mdr-ink);
+  outline-offset: 2px;
 }
 
 .mdr-allbar__menu,
