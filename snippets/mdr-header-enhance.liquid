@@ -351,12 +351,13 @@
       grid.appendChild(frag);
     }
 
-    /* Desktop: when the real products don't fill the last row, complete it
-       with blank cells (never product copies) so the grid ends on a whole
-       row -- otherwise the grid's own line colour shows through the empty
-       slots as solid blocks. Rerun after WEBRACK swaps in another
-       collection (switchCollection) and on resize (column count changes
-       with the frame width). */
+    /* When the products don't fill the last row, complete it with blank
+       cells (never product copies) so the grid always ends on a whole row
+       -- 4 columns on desktop, 2 on phones, read from the grid itself.
+       Otherwise the grid's own line colour shows through the empty slots
+       as solid blocks and the column lines dangle. Rerun after WEBRACK
+       swaps in another collection (switchCollection) and on resize (column
+       count changes with the width). */
     function fillRow() {
       var sec = featured();
       if (!sec) return;
@@ -364,7 +365,6 @@
       if (!grid) return;
       var old = grid.querySelectorAll('[data-mdr-fill]');
       for (var o = old.length - 1; o >= 0; o--) old[o].remove();
-      if (window.innerWidth < 750) return;
       var count = grid.querySelectorAll(':scope > .resource-list__item').length;
       var cols = getComputedStyle(grid).gridTemplateColumns.split(' ').filter(Boolean).length;
       if (!count || cols < 2) return;

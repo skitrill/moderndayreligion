@@ -44,13 +44,24 @@
   --mdr-interface-*     the shell's material -- masthead, WEBRACK rail,
                         footer: a graphite-tinted glass (colour, alpha, blur)
   --mdr-interface-glass that material as the translucent fill the shell uses
-  --mdr-interface-solid what that glass looks like over the canvas, for the
-                        places that can only take a solid colour: the canvas
-                        beyond the page (overscroll at the top and bottom,
-                        under the browser's bars) and the browser's own top
-                        strip (theme-color, set from it below) -- so the top
-                        and bottom edges of the screen are always exactly the
-                        masthead / footer colour, whatever that becomes.
+  --mdr-interface-solid what that glass looks like over the canvas -- the
+                        colour the screen's edges take, so the top and
+                        bottom of the screen are always exactly the masthead
+                        / footer colour, whatever that becomes:
+
+  How Safari (iOS 26 / WebKit) colours the screen edges -- it ignores
+  theme-color:
+  - top (status bar): the plain background-color of the fixed element it
+    finds 4px below the top edge (at least 11px tall, nearly full width).
+    The masthead's glass has none (its tint is a translucent layer behind
+    the content), so Safari was guessing from pixels; .mdr-edge (rendered
+    in layout/theme.liquid) hands it --mdr-interface-solid instead and
+    paints nothing itself -- its colour is clipped to an empty content box.
+  - bottom, and anything past the page (overscroll, under the toolbar): the
+    document background = html's colour with body's blended over it. So
+    body stays transparent and the canvas is painted by .page-wrapper --
+    an opaque body would put the canvas colour back under the footer.
+  theme-color (set from html below) is for the browsers that do read it.
   The landing / lock screen is graphite end to end.
 {%- endcomment -%}
 <style>
@@ -66,16 +77,30 @@
     --mdr-interface-solid: color-mix(in srgb, var(--mdr-interface-color) var(--mdr-interface-alpha), var(--mdr-surface));
   }
   html { background-color: var(--mdr-interface-solid); color-scheme: light; }
-  body { background-color: var(--mdr-surface); }
+  body { background-color: transparent; }
+  .page-wrapper { background-color: var(--mdr-surface); }
+  .mdr-edge {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 17;
+    box-sizing: content-box;
+    height: 0;
+    padding-top: 12px;
+    background-color: var(--mdr-interface-solid);
+    background-clip: content-box;
+    pointer-events: none;
+  }
   {%- if mdr_landing %}
-  html, body { background-color: var(--mdr-landing-bg); }
+  html, body, .page-wrapper { background-color: var(--mdr-landing-bg); }
   html { color-scheme: dark; }
   {%- endif %}
 </style>
 <meta name="theme-color" content="{% if mdr_landing %}#171717{% endif %}">
 <script>
-  /* the browser's top strip takes a plain colour: give it the resolved
-     shell colour (html's background above), so it is never a second value.
+  /* theme-color takes a plain colour: give it the resolved shell colour
+     (html's background above), so it is never a second value.
      window.__mdrSyncChrome() re-reads it if the shell colour ever changes. */
   (function () {
     function sync() {

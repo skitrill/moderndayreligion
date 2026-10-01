@@ -102,6 +102,11 @@
 
     {% render 'chat-drawer' %}
 
+    {%- comment -%} the colour Safari gives the status bar: see snippets/meta-tags.liquid {%- endcomment -%}
+    {%- unless request.page_type == 'index' -%}
+      <div class="mdr-edge" aria-hidden="true"></div>
+    {%- endunless %}
+
     <div class="page-wrapper">
       <div id="header-group">
         {% sections 'header-group' %}

@@ -184,12 +184,14 @@ product-price *,
      now neutral instead of blue-tinted (declared above, with --mdr-border). */
   --mdr-border-faint: var(--mdr-border);
 
-  /* ---- THE base environment. html, body, .page-wrapper and <main> all
-     paint this one tone, on every template, so nothing behind the content
-     can show as a different grey -- not a short page's empty space, not
-     the overscroll beyond the page, not the gap above the footer. (It
-     replaced three stacked tones: html/body #f4f4f4, .page-wrapper
-     #e2e3e1, main #dedfdd.) The landing screen swaps it for its graphite. */
+  /* ---- THE base environment. .page-wrapper and <main> both paint this
+     one tone, on every template, so nothing behind the content can show
+     as a different grey -- not a short page's empty space, not the gap
+     above the footer. (It replaced three stacked tones: html/body #f4f4f4,
+     .page-wrapper #e2e3e1, main #dedfdd.) Past the page (overscroll, under
+     the browser's bars) is html's shell colour, body stays transparent --
+     snippets/meta-tags.liquid. The landing screen swaps it for its
+     graphite. */
   --mdr-bg: var(--mdr-surface);
 
   /* ---- Structural sizing -- header/footer height and page/control
@@ -223,9 +225,9 @@ product-price *,
      of the one .product-details column, so they share its edges. */
   --mdr-space-3xs: 2px;
   --mdr-space-2xs: 6px;
-  --pdp-gap-in: 6px;
-  --pdp-gap-between: 10px;
-  --pdp-footer-gap: 18px;
+  --pdp-gap-in: 5px;
+  --pdp-gap-between: 8px;
+  --pdp-footer-gap: 16px;
 
   /* ---- Mobile type scale -- everything site-wide (nav, grid title/price,
      PDP title/price, body copy, cart, labels, buttons, footer) reads one
@@ -238,8 +240,8 @@ product-price *,
 @media screen and (min-width: 750px) {
   :root {
     --mdr-space-3xs: 3px;
-    --pdp-gap-in: 8px;
-    --pdp-gap-between: 14px;
+    --pdp-gap-in: 6px;
+    --pdp-gap-between: 12px;
   }
 }
 
@@ -1289,8 +1291,9 @@ product-price *,
    action row takes the full width after the image, so quantity and
    delete sit on one line with delete at the price's right edge. The
    action row follows the name / variant / price block directly (a small
-   set gap), and the empty last row takes up whatever height a taller
-   image adds. Same module at every width -- the base theme's
+   set gap). The image takes no height of its own: it spans that stack
+   exactly -- top on the name, bottom on the quantity box -- so the row
+   is only as tall as its text and controls. Same module at every width -- the base theme's
    wide-cart layout (@container >= 720px) resets these areas, hence the
    explicit grid-area on each cell. The cart drawer's own row variant
    (--full-width-variants) already has a full-width quantity row and is
@@ -1322,6 +1325,25 @@ product-price *,
   min-height: 0 !important;
 }
 
+/* the image box is the stack's height (the cell stretches over the rows
+   the text and quantity set; the picture inside is placed absolutely, so
+   it adds no height of its own) and the whole garment shows inside it */
+.cart-items__table-row:not(.cart-items__table-row--full-width-variants) .cart-items__media {
+  position: relative;
+  align-self: stretch;
+}
+
+.cart-items__table-row:not(.cart-items__table-row--full-width-variants) .cart-items__media-container {
+  position: absolute;
+  inset: 0;
+  aspect-ratio: auto;
+}
+
+.cart-items__table-row:not(.cart-items__table-row--full-width-variants) .cart-items__media-image {
+  height: 100%;
+  aspect-ratio: auto;
+}
+
 .cart-items__table-row .cart-items__quantity {
   grid-area: quantity !important;
   align-self: start !important;
@@ -1344,13 +1366,13 @@ product-price *,
    at the button's right edge; the button itself is as tall as the
    quantity box and reaches past it like the − / + do. */
 /* name / colour, size / unit price: three lines of one label -- one
-   line-height (1.12) on every line and no margins between them. The
+   tight line-height (1.05) on every line and no margins between them. The
    title's wrapper is a block holding an inline-flex row, so the block's
    own taller line box (the cart's larger base type) used to add a strut
    above the name; making it a flex box removes that. */
 .cart-items__details :is(.cart-items__product-info, .cart-items__variants-wrapper, .cart-items__unit-price-wrapper) {
   margin: 0 !important;
-  line-height: 1.12 !important;
+  line-height: 1.05 !important;
 }
 
 .cart-items__details .cart-items__product-info {
@@ -1358,7 +1380,7 @@ product-price *,
 }
 
 .cart-items__details :is(.cart-items__title, .cart-items__variants, .cart-items__variant, .cart-items__variant dd, .cart-items__unit-price-wrapper *) {
-  line-height: 1.12 !important;
+  line-height: 1.05 !important;
 }
 
 .cart-items__remove:not([hidden]) {
@@ -1445,9 +1467,11 @@ product-price *,
   padding-block-start: 0 !important;
 }
 
+/* price: one step stronger than the title -- the medium cut and the
+   darker ink, the title's size; never bold */
 .group-block-content:has(> product-price) > product-price .price {
-  font-weight: 700 !important;
-  font-size: 1.1em !important;
+  font-weight: 500 !important;
+  font-size: 1em !important;
 }
 
 /* image <-> title: the whole details column is wrapped in one shell
@@ -1467,7 +1491,7 @@ product-price *,
    another step in the in-page rhythm. */
 .product-details > .group-block {
   padding-block-start: var(--mdr-space-2xs, 6px) !important;
-  padding-block-end: var(--pdp-footer-gap, 18px) !important;
+  padding-block-end: var(--pdp-footer-gap, 16px) !important;
 }
 
 /* Details column: no shared gap -- each block below sets its own margin-top
@@ -1486,45 +1510,34 @@ product-price *,
   order: 1 !important;
 }
 
+/* ---- Product description: one dense block, the selectors' width -------
+   Exactly the colour and size selectors' edges (the full details column),
+   no box of its own. The type is set once, here, and everything inside
+   inherits it: the size chart's size (--mdr-fs-xs) on a tight
+   line-height. Letters pack the line edge to edge -- a word breaks
+   wherever the line ends (break-all) and the spaces are justified, so
+   every full line runs from the left edge to the right; the last line is
+   centred. The copy is entered as a list whose items split one paragraph
+   at arbitrary words, so list items run on into each other (inline, a
+   space between); a real paragraph or line break starts just the next
+   line, no gap. Whatever the editor adds -- inline widths, sizes,
+   alignment, colours, margins, empty paragraphs -- is overridden. */
 .product-details > .group-block > .group-block-content > rte-formatter[class*='__text_aEtTtq'] {
   order: 2 !important;
   margin-top: var(--pdp-gap-between) !important;
-  /* the full width of the details column -- the same edges as the colour
-     and size selectors under it. The copy is centred inside that width;
-     the box itself is not narrowed. */
   width: 100% !important;
   max-width: none !important;
   margin-inline: 0 !important;
-  text-align: center !important;
-  --text-align: center !important;
+  font-size: var(--mdr-fs-xs) !important;
+  line-height: 1.2 !important;
+  text-align: justify !important;
+  text-align-last: center;
+  --text-align: justify !important;
+  word-break: break-all;
+  overflow-wrap: anywhere;
+  hyphens: none;
 }
 
-/* The theme's own block renderer sets --text-align directly on each
-   paragraph/list item (an inline style, from the text block's own
-   "alignment" setting), not just inherited from an ancestor -- a custom
-   property set closer to the element always wins over one merely
-   inherited from further up, so the container rule above alone wouldn't
-   reach the actual text. Reaching the real elements directly here is
-   what the title+price rule elsewhere in this file already had to do for
-   the same reason. */
-.product-details > .group-block > .group-block-content > rte-formatter[class*='__text_aEtTtq'] p,
-.product-details > .group-block > .group-block-content > rte-formatter[class*='__text_aEtTtq'] li {
-  text-align: center !important;
-  --text-align: center !important;
-  /* plain wrapping: each line runs as far as the width allows, whole
-     words move to the next line (no balancing, no breaking inside words) */
-  max-width: none !important;
-  text-wrap: wrap;
-  white-space: normal;
-  overflow-wrap: normal;
-  word-break: normal;
-}
-
-/* Whatever the rich-text editor produces, the copy conforms to this one
-   column: no per-element widths, sizes, alignment or colours from inline
-   styles; no stray paragraph margins or empty paragraphs; one small gap
-   between blocks; and a long unbroken string breaks rather than pushing
-   past the selectors' edges. Real lists and emphasis keep their meaning. */
 .product-details > .group-block > .group-block-content > rte-formatter[class*='__text_aEtTtq'] * {
   max-width: none !important;
   width: auto !important;
@@ -1532,33 +1545,26 @@ product-price *,
   line-height: inherit !important;
   letter-spacing: inherit !important;
   color: inherit !important;
-  overflow-wrap: break-word;
+  text-align: inherit !important;
+  --text-align: inherit !important;
 }
 
 .product-details > .group-block > .group-block-content > rte-formatter[class*='__text_aEtTtq'] :is(p, ul, ol, li, h1, h2, h3, h4, h5, h6, blockquote, div) {
   margin: 0 !important;
   padding: 0 !important;
-  text-align: center !important;
   font-weight: inherit;
 }
 
-.product-details > .group-block > .group-block-content > rte-formatter[class*='__text_aEtTtq'] :is(p, ul, ol, h1, h2, h3, h4, h5, h6, blockquote, div) + :is(p, ul, ol, h1, h2, h3, h4, h5, h6, blockquote, div) {
-  margin-top: 4px !important;
+.product-details > .group-block > .group-block-content > rte-formatter[class*='__text_aEtTtq'] :is(ul, ol) {
+  list-style: none;
+}
+
+.product-details > .group-block > .group-block-content > rte-formatter[class*='__text_aEtTtq'] li {
+  display: inline;
 }
 
 .product-details > .group-block > .group-block-content > rte-formatter[class*='__text_aEtTtq'] :is(p:empty, p:has(> br:only-child)) {
   display: none !important;
-}
-
-/* Centered bullet copy reads lopsided with a left-hugging disc marker,
-   so bullets go markerless again here (this is the one spot on the page
-   that's a literal <ul>; nothing else depends on it looking like one). */
-.product-details > .group-block > .group-block-content > rte-formatter[class*='__text_aEtTtq'] ul {
-  list-style: none;
-  padding-inline-start: 0;
-  /* the text block's own width setting caps it at ~305px */
-  max-width: none !important;
-  margin: 0 !important;
 }
 
 .product-details > .group-block > .group-block-content > variant-picker {
@@ -1641,11 +1647,12 @@ product-price *,
    neutral page). Now the same tone/contrast language the rest of the
    selection system already uses (matches the BLACK/S grid-cell look this
    spec calls out as the reference): a subtle warm-gray fill (--mdr-
-   selected, mineral-neutral pass), a faint structural border (not a bold
-   accent line), and darker ink text -- recognisable through tone, not
-   colour. */
+   selected, mineral-neutral pass) and darker ink text -- recognisable
+   through tone, not colour. */
+/* the fill is the whole selection: the cell keeps exactly the dividers
+   every other cell has (a darker divider made a selected cell mid-row
+   read as edged on one side only) */
 .variant-picker .variant-option__button-label:has(:checked) {
-  border-color: var(--mdr-border-strong) !important;
   background-color: var(--mdr-selected) !important;
 }
 
@@ -1685,21 +1692,6 @@ main .product-information__grid :is(h1, h2, h3, h4, h5, h6, p, li, legend,
 main .product-information__grid .rte:not(product-price) :is(span, p, li, a, strong, em),
 main .product-information__grid .text-block:not(product-price) :is(span, p, li, a, strong, em) {
   color: var(--mdr-text-gray) !important;
-}
-
-/* Product description + bullets -> the same 0.56rem the WEBRACK grid's
-   own card titles use (main[data-template='collection'] ... .text-block p
-   further down this file) -- was 0.625rem (the theme's own default body
-   copy size). The product title (its own more specific .product-details
-   h1 rule further down) and the Size Chart trigger (its own orange-text
-   rule) both stay their own size -- this only reaches the actual
-   paragraph/bullet copy. */
-main .product-information__grid rte-formatter :is(p, li) {
-  /* ~7% smaller than the grid's own 0.56rem tier, and a slightly tighter
-     line-height -- the description was reading visually denser than the
-     clean selector area below it. */
-  font-size: 0.52rem !important;
-  line-height: 1.3 !important;
 }
 
 /* ---- Product hero image size, all viewport widths -- was 91% (mobile
@@ -1808,36 +1800,15 @@ main .product-information__grid rte-formatter :is(p, li) {
   object-fit: contain !important;
 }
 
-/* Cart rhythm pass: thumbnail sized down from clamp(4.5rem, 24cqi, 7.5rem)
-   (up to 120px) -- "each cart item is too tall" traced largely to this:
-   the whole row's height was following the image, not the compact name/
-   variant/price/qty text stack beside it. Still comfortably larger than
-   the ~53px the base theme default read as "genuinely tiny" (the
-   original reason this was sized up in the first place) -- every row
-   still shares this exact same media column, so the "identical bounding
-   box" requirement holds regardless of garment artwork. */
+/* Cart line columns: [ image ] [ name / variant / price + quantity ]
+   [ line total ]. The image column is about as wide as that stack is
+   tall, so a product shot fills its box rather than floating in it (its
+   height: "Cart line: one structured module", above). The info column is
+   capped at a set width and the price takes the rest (it's text-align:
+   end), so the space between them is deliberate breathing room, not dead
+   space inside a stretched info column. */
 .cart-items__table-row {
-  /* Column-balance pass: info column was minmax(0, 1fr) -- stretching to
-     claim ALL leftover row width, so the (much narrower) name/variant/
-     qty stack inside it just left dead space between itself and the
-     price column, not a deliberate gap. "[ thumbnail ] [ info+qty ]
-     [ flexible space ] [ line total ]" without adding a 4th real column
-     (this is still the base theme's own 3-column named-area grid --
-     media/details/quantity/price, cart-products.liquid -- unchanged):
-     info is capped at a defined width instead (comfortably more than its
-     content needs, per "allow the information column slightly more
-     width"), and PRICE becomes the 1fr column instead -- it's already
-     text-align: end (cart-products.liquid), so it rides at the true
-     right edge of that now-wide column, with the leftover space between
-     them reading as genuine, deliberate breathing room. */
-  grid-template-columns: clamp(3.5rem, 18cqi, 5.5rem) minmax(0, 190px) 1fr !important;
-  /* was "start" (base theme default) -- with a media column this much
-     taller than the compact name/variant/price text stack next to it,
-     top-alignment left a visible block of empty space under the text,
-     unbalancing the row. Centering the whole composition against the
-     image reads as one deliberate row instead of text pinned to the
-     top of a much taller box. */
-  align-items: center !important;
+  grid-template-columns: 4.25rem minmax(0, 190px) 1fr !important;
 }
 
 /* ==========================================================================
@@ -1957,10 +1928,10 @@ main[data-template='collection'] [id$='__product_list_fa6P9H'] .resource-list--g
   }
 }
 
-/* Blank cells that complete the last row on desktop (added by
-   mdr-header-enhance.liquid when the product count doesn't fill it): plain
-   paper, so the grid's 1px dividers still frame them instead of the grid's
-   line colour showing through as a solid block. */
+/* Blank cells that complete the last row (added by mdr-header-enhance.liquid
+   when the product count doesn't fill it): plain paper, so the grid's 1px
+   dividers still frame them instead of the grid's line colour showing
+   through as a solid block. */
 main[data-template='collection'] [id$='__product_list_fa6P9H'] .resource-list__item[data-mdr-fill] {
   pointer-events: none;
 }
@@ -2023,8 +1994,13 @@ main[data-template='collection'] [id$='__product_list_fa6P9H'] .section-resource
   );
 }
 
+/* body stays transparent: Safari fills everything past the page (under its
+   toolbar, overscroll) with html's colour blended with body's, so an opaque
+   body would put the canvas tone back under the footer. The canvas is
+   .page-wrapper's (below); html carries the shell colour
+   (snippets/meta-tags.liquid). */
 body {
-  background-color: var(--mdr-bg) !important;
+  background-color: transparent !important;
   background-image: none !important;
 }
 
@@ -2090,13 +2066,11 @@ main:not([data-template='index']) {
 }
 
 /* PDP photo box -- square, fixed size, no frame (a hairline frame drawn
-   here before was removed by request; the box keeps its size and padding,
-   so the photo hasn't moved). Width lives in the more specific
+   here before was removed by request). Width lives in the more specific
    .product-information__grid .product-information__media rule further
    down this file. */
 .product-information__media {
-  /* no frame: the garment sits straight on the canvas. The box keeps the
-     same size and padding it had with the frame, so nothing moves. */
+  /* no frame: the garment sits straight on the canvas */
   border: 0 !important;
   box-sizing: border-box !important;
   /* a true square whatever the photo's proportions: a square media box
@@ -2104,10 +2078,9 @@ main:not([data-template='index']) {
      held at 1:1 -- its height never comes from the photo or from the
      product information under it */
   aspect-ratio: 1 / 1;
-  padding: 12px !important;
-  /* small breathing room between the header/RETURN-WEBRACK bar and the
-     frame's own top edge -- was flush (0 gap) against it. */
-  margin-top: 14px !important;
+  padding: 8px !important;
+  /* a little room between the MENU / RETURN line and the photo */
+  margin-top: 8px !important;
 }
 
 /* Inner field behind the garment photo -- base theme's slideshow-container
@@ -2247,7 +2220,7 @@ main:not([data-template='index']) {
 .cart-items__table-row {
   /* same space above and below each line, so the rule between rows sits
      at the true midpoint */
-  padding-block: 12px !important;
+  padding-block: 10px !important;
   margin-bottom: 0 !important;
   position: relative;
 }
@@ -4400,15 +4373,14 @@ main[data-template='collection'] [id$='__product_list_fa6P9H'] .resource-list__i
   background: var(--mdr-paper) !important;
 }
 
-/* No horizontal bottom line of the grid's own: the footer's top border is
-   the one authoritative rule under the products. The grid's background
-   (the 1px column gap = the centre divider) runs to the grid's very bottom
-   edge, which sits flush on the footer, so that divider ends exactly on the
-   footer line as a T-junction -- the real grid gap and the real footer
-   border, nothing positioned on top. (border: 0 on this grid lives in the
-   "supreme-style" rule further up.) */
+/* The grid closes with its own bottom line, under the last (always whole)
+   row, so the column lines end on it instead of dangling into the space
+   below (desktop, short collections). Drawn as a 1px shadow just outside
+   the grid -- no layout -- so where the grid sits flush on the footer it
+   lands on the footer's own top border, the same colour: still one line. */
 main[data-template='collection'] [id$='__product_list_fa6P9H'] .resource-list--grid {
   background: var(--mdr-border-faint, rgba(4, 0, 97, 0.08)) !important;
+  box-shadow: 0 1px 0 var(--mdr-border-faint);
 }
 
 /* card = a plain column, a touch of breathing room below the price so it
@@ -4927,8 +4899,9 @@ main[data-template='collection'] [id$='__product_list_fa6P9H'] .product-card .pr
 
    The page travels behind the shell to the very top of the screen: the
    glass is transparent enough to show it (no opaque layer under it, no
-   artificial fade), the browser paints no theme-color over the status
-   bar (snippets/meta-tags.liquid), and on phones the shell's empty areas
+   artificial fade), the status bar above it takes the masthead's
+   composited colour (.mdr-edge, snippets/meta-tags.liquid), and on
+   phones the shell's empty areas
    let taps through to the page behind -- only its controls catch them.
    ========================================================================== */
 /* desktop: the rail row carries the glass itself, pinned in the frame --
