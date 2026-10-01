@@ -23,6 +23,8 @@
     (default "User" -- MODERN DAY RELIGION says User, never Account).
   @param {boolean} [account_first] - put the account link at the top of the list
     instead of after THE MODERN TIMES (the lock screen).
+  @param {boolean} [show_cart] - add CART right after the account link, with the
+    masthead's "(n)" count when the cart has items (the lock screen).
   @param {string} [extra_items] - markup added as one more list item between ACCOUNT
     and MAILING (the lock screen's policy links).
   @param {boolean} [mailing_open] - MAILING is just its sign-up form, always showing:
@@ -41,6 +43,14 @@
       {%- endif -%}
     </a>
   </li>
+  {%- if show_cart -%}
+    <li>
+      <a href="{{ routes.cart_url }}">
+        Cart
+        {%- if cart.item_count > 0 %} ({{ cart.item_count }}){% endif -%}
+      </a>
+    </li>
+  {%- endif -%}
 {%- endcapture -%}
 
 <nav class="mdr-fnav{% if variant %} mdr-fnav--{{ variant }}{% endif %}" aria-label="Footer">
