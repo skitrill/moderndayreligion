@@ -4944,7 +4944,8 @@ body {
   position: absolute;
   left: 0;
   right: 0;
-  top: 100%;
+  /* from just below the 1px line, which stays exactly as it is */
+  top: calc(100% + 1px);
   height: 14px;
   background: linear-gradient(var(--mdr-glass-feather), transparent);
   pointer-events: none;
@@ -4956,7 +4957,7 @@ footer::before {
   position: absolute;
   left: 0;
   right: 0;
-  bottom: 100%;
+  bottom: calc(100% + 1px);
   height: 14px;
   background: linear-gradient(transparent, var(--mdr-glass-feather));
   pointer-events: none;
