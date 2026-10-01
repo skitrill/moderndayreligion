@@ -2838,8 +2838,10 @@ product-card:active .card-gallery {
    width/height. Left alone, the row still draws its own fixed 22px-tall
    border around nothing, which collapses to a thin stray vertical line
    hanging between "MAILING" and the message box below it. Drop this
-   row's own box entirely once it's just holding the message. */
-.mdr-fnav__drop:has(.mdr-fnav__msg) {
+   row's own box entirely once it's just holding the message. (Footer
+   only -- on the landing / lock screen the confirmation stays in the
+   form's own box, see .mdr-fnav--landing .mdr-fnav__msg.) */
+.mdr-fnav:not(.mdr-fnav--landing) .mdr-fnav__drop:has(.mdr-fnav__msg) {
   height: auto;
   border: 0;
   background: none;
@@ -2871,10 +2873,8 @@ product-card:active .card-gallery {
   background: transparent;
   color: var(--color-foreground);
   font-family: var(--font-accent--family, inherit);
-  /* matches every other small label on the site (nav, footer, buttons) --
-     was noticeably smaller (0.52-0.56rem) than the 0.6rem/0.625rem tier
-     everything else here uses */
-  font-size: 0.6rem;
+  /* the nav items' and buttons' size (0.625rem) */
+  font-size: 0.625rem;
   letter-spacing: 0.04em;
   padding: 0 6px;
   pointer-events: auto;
@@ -2888,11 +2888,9 @@ product-card:active .card-gallery {
   outline: 0;
 }
 
-/* was a near-black fill (#241206) with 28%-opacity text on top -- barely
-   legible against the page's own black, and didn't read as a button at
-   all. Same solid cream-fill/dark-text pairing as ADD TO CART and MORE
-   PAYMENT OPTIONS instead, so JOIN actually looks like a button and
-   matches the rest of the site. */
+/* JOIN is one of the site's buttons: the same flat primary fill and text
+   as ADD TO CART / BUY NOW / CHECK OUT (the theme's primary-button
+   colours), the same hover, square, no border or shadow. */
 .mdr-fnav__submit {
   flex: 0 0 auto;
   height: 100%;
@@ -2900,10 +2898,10 @@ product-card:active .card-gallery {
   -webkit-appearance: none;
   border: 0;
   border-radius: 0;
-  background: #e9e1c4;
-  color: #1a1a1a;
+  background: var(--color-primary-button-background);
+  color: var(--color-primary-button-text);
   font-family: var(--font-accent--family, inherit);
-  font-size: 0.6rem;
+  font-size: 0.625rem;
   font-weight: 400;
   letter-spacing: 0.04em;
   text-transform: uppercase;
@@ -2913,8 +2911,11 @@ product-card:active .card-gallery {
   pointer-events: auto;
 }
 
-.mdr-fnav__submit:hover {
-  background: #f0eee6;
+@media (hover: hover) {
+  .mdr-fnav__submit:hover {
+    background: var(--color-primary-button-hover-background);
+    color: var(--color-primary-button-hover-text);
+  }
 }
 
 .mdr-fnav__msg {
@@ -2927,7 +2928,7 @@ product-card:active .card-gallery {
   background: var(--mdr-paper);
   border: 1px solid var(--mdr-border-strong);
   font-family: var(--font-accent--family, inherit);
-  font-size: 0.6rem;
+  font-size: 0.625rem;
   letter-spacing: 0.04em;
   text-transform: uppercase;
   color: var(--color-foreground-muted);
@@ -3089,12 +3090,43 @@ body:has(main[data-template='index']) .page-wrapper {
   color: rgba(255, 255, 255, 0.45);
 }
 
+/* The sign-up is one box of one fixed width: the field and JOIN inside
+   it -- and once joined, "You're on the list." in exactly that box (same
+   border and fill, same size and place, the text where EMAIL was), in
+   the menu's own off-white. Nothing moves, no second box appears. */
+.mdr-fnav--landing .mdr-fnav__form {
+  width: 140px;
+}
+
+.mdr-fnav--landing .mdr-fnav__email {
+  flex: 1 1 auto;
+  width: auto;
+}
+
 .mdr-fnav--landing .mdr-fnav__msg {
   position: static;
-  margin-top: 10px;
-  background: #121212;
-  border-color: rgba(255, 255, 255, 0.25);
-  color: rgba(255, 255, 255, 0.75);
+  display: flex;
+  align-items: center;
+  flex: 1 1 auto;
+  width: auto;
+  height: 100%;
+  margin: 0;
+  padding: 0 6px;
+  background: none;
+  border: 0;
+  color: rgba(247, 240, 228, 0.75);
+}
+
+/* a sign-up error: its own line under the box, the box's width */
+.mdr-fnav--landing .mdr-fnav__msg--err {
+  flex: none;
+  box-sizing: border-box;
+  width: 142px;
+  height: auto;
+  margin-top: 4px;
+  padding: 4px 6px;
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  color: color-mix(in srgb, #c0392b 65%, #fff);
 }
 
 /* ==========================================================================
