@@ -74,7 +74,14 @@ function saveScrollPosition() {
   }
 }
 
-window.addEventListener('pagehide', saveScrollPosition);
+// MODARE: the squeeze layout never applies here (SQUEEZE_QUERY above), so the
+// document is always the scroller and the browser's own scroll restoration
+// (scrollRestoration 'auto') already returns every page to where it was -- the
+// manual save/restore below would only run alongside it as a second, stale
+// restorer: it wrote positions into history.state and re-applied them after
+// the browser's own (and after mdr-instant-nav's in-page RETURN), jumping
+// WEBRACK to an old position. It only runs in the squeeze layout now.
+if (SQUEEZE_QUERY.matches) window.addEventListener('pagehide', saveScrollPosition);
 
 /**
  * Restores a saved scroll position onto the current scroll container.
@@ -93,6 +100,7 @@ function restoreSavedScrollTop(savedScrollTop) {
 }
 
 window.addEventListener('pageshow', () => {
+  if (!SQUEEZE_QUERY.matches) return;
   const scrollTop = history.state?.scrollTop;
   if (scrollTop == null) return;
 
@@ -110,11 +118,12 @@ window.addEventListener('pageshow', () => {
  */
 const originalPushState = history.pushState.bind(history);
 history.pushState = function (state, title, url) {
-  saveScrollPosition();
+  if (SQUEEZE_QUERY.matches) saveScrollPosition();
   originalPushState(state, title, url);
 };
 
 window.addEventListener('popstate', () => {
+  if (!SQUEEZE_QUERY.matches) return;
   const scrollTop = history.state?.scrollTop;
   if (scrollTop == null) return;
 
