@@ -731,7 +731,9 @@
            it (tablets pin the group with only its rail part on screen) */
         var headerGroup = D.getElementById('header-group');
         if (headerGroup) {
-          D.documentElement.style.setProperty('--mdr-header-h', headerGroup.offsetHeight + 'px');
+          /* exact (sub-pixel): phones pad the page by it, so the content's
+             first line meets the fixed header's line exactly */
+          D.documentElement.style.setProperty('--mdr-header-h', headerGroup.getBoundingClientRect().height + 'px');
           /* from the rects, not offsetTop -- that rounds, and the rail's top
              line then sits half a pixel off the top of the screen */
           if (headerGroup.contains(wrap)) D.documentElement.style.setProperty('--mdr-rail-top', (wrapRect.top - headerGroup.getBoundingClientRect().top) + 'px');

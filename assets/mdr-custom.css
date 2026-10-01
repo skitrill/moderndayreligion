@@ -184,73 +184,20 @@ product-price *,
      now neutral instead of blue-tinted (declared above, with --mdr-border). */
   --mdr-border-faint: var(--mdr-border);
 
-  /* ---- Backing canvas -- read by html/body/.page-wrapper for the
-     rubber-band bounce region (beyond real content, header already
-     scrolled away by the time this is visible) and as the base under any
-     genuine short-page gap. The homepage/lockscreen override further
-     down this file switches it to --mdr-landing-bg for just that
-     template (no header/footer there at all, nothing to bleed into).
-     Third pass on this token: was pure white (a colourless "device edge"
-     tone, on the theory this layer never sits behind real content) ->
-     was --mdr-paper (matching main's own content colour exactly, to fix
-     a visible seam on short pages, "off-white page -> white block ->
-     footer") -> now --mdr-glass-tint. The --mdr-paper version fixed that
-     one seam but created a bigger-picture problem: --mdr-paper was
-     ITSELF deliberately tuned earlier to sit very close to the glass
-     tint's own tone (see that token's own comment), so matching content
-     to backing meant the ENTIRE page -- chrome and content both -- read
-     as one undifferentiated off-white field, "bleeding" everywhere
-     instead of just at the header/footer. The actual fix is the other
-     direction: this backing layer (never real content, always either a
-     safe-area strip, an overscroll bounce, or genuine empty page-wrapper
-     space) reads as the SAME material the header/footer glass panels
-     are made of, bleeding continuously from the very top of the screen
-     through the header, and from the footer through to the very bottom
-     -- while <main>'s own explicit --mdr-paper background (still
-     unchanged, see main:not([data-template='index']) further down)
-     stays a visibly distinct, flat, matte surface for actual content.
-     Two materials now, deliberately: glass at the edges/chrome, matte
-     paper wherever there's real page content.
-
-     Fourth pass: the raw --mdr-glass-tint value (rgba(255,255,255,.55))
-     looked right when sampled as a CSS value but wrong on screen -- this
-     layer has no backdrop-filter and nothing real ever sits behind it
-     (empty overscroll canvas), so the translucency has nothing to blend
-     with and reads as a duller, slightly grey flat tone instead of the
-     bright frosted-white the header/footer glass panels actually show
-     (their blur+tint sits over real page content, which is what makes
-     them look light). Fix: bake the tint down to the flat, opaque colour
-     it visually produces when composited over the page's own paper --
-     i.e. the SAME appearance the glass panels have in practice -- so
-     this backing strip matches them by eye, not just by variable name. */
-  /* Material pass: the glass is a lightened canvas (--mdr-glass-base,
-     further down), not pure white -- this is the flat colour that glass
-     makes over the canvas. */
-  --mdr-edge-color: color-mix(in srgb, var(--mdr-glass-base) 55%, var(--mdr-canvas) 45%);
-
-  /* ---- Safe-area strips (body::before/::after) -- a DIFFERENT case from
-     --mdr-edge-color above: these sit permanently over the header/footer
-     (fixed, top/bottom of viewport), which DO have real glass surfaces of
-     their own now, so matching THEM means glass here too, not flat. Was
-     flat/colourless like the overscroll canvas above -- confirmed live
-     that this was the actual source of the visible seam between the
-     status bar and the header ("OFF-WHITE STRIP -> GLASS HEADER" instead
-     of one continuous material) once the header itself became translucent
-     glass instead of a solid colour; a flat strip stopped matching what
-     was now underneath it. --mdr-edge-blur is "none" only on the
-     homepage (flat blue landing screen, no header/footer at all there,
-     see body:has(main[data-template='index']) further down) -- everywhere
-     else it's the same blur/saturate the header/footer already use, so
-     the strip is genuinely the SAME material continuing upward/downward,
-     not a second translucent layer trying to approximate it. */
-  --mdr-edge-top: var(--mdr-glass-tint, var(--mdr-off-white));
-  --mdr-edge-bottom: var(--mdr-glass-tint, var(--mdr-off-white));
-  --mdr-edge-blur: var(--mdr-glass-blur, none);
+  /* ---- THE base environment. html, body, .page-wrapper and <main> all
+     paint this one tone, on every template, so nothing behind the content
+     can show as a different grey -- not a short page's empty space, not
+     the overscroll beyond the page, not the gap above the footer. (It
+     replaced three stacked tones: html/body #f4f4f4, .page-wrapper
+     #e2e3e1, main #dedfdd.) The landing screen swaps it for its graphite. */
+  --mdr-bg: var(--mdr-surface);
 
   /* ---- Structural sizing -- header/footer height and page/control
      rhythm, read by the header, footer and section spacing rules below
      instead of each one picking its own padding. */
-  --mdr-header-h: 91px;
+  /* the pinned header group's height (logo row + WEBRACK rail), measured by
+     mdr-header-enhance.liquid; this is the phone value until it runs */
+  --mdr-header-h: 112px;
   --mdr-footer-pad-y: 4px;
   --mdr-page-px: 16px;
   --mdr-control-h: 30px;
@@ -298,30 +245,14 @@ product-price *,
 
 html {
   font-size: 15px;
-  /* The root element's own background -- not body's -- is what Safari
-     extends into the safe-area/notch strip and the rubber-band overscroll
-     region above the very top of the page. body keeps its own matching
-     background for the same reason (see body { background-color } further
-     down -- real page content gets its own explicit cream backing on
-     <main> instead, see main:not([data-template='index']) further down,
-     so body itself is free to take the detected edge colour everywhere);
-     this "catches" the safe area regardless of any fixed-position layer's
-     own sizing or z-index -- important on iOS 26's redesigned Safari
-     specifically, where the floating "Liquid Glass" chrome samples/blends
-     with actual page background at the edges more aggressively than older
-     Safari versions did, so an exactly-sized env(safe-area-inset-*) patch
-     alone (still kept below, body::before/::after) isn't sufficient on
-     its own -- the base canvas itself needs to already be the right
-     colour. --mdr-edge-color: one flat, colourless, neutral value --
-     the whole point is that this is NOT detected or switched per page/
-     scroll position any more (:root above). */
-  background-color: var(--mdr-edge-color);
-  /* Tells Safari to treat the whole page as a dark surface -- this (not
-     theme-color alone) is what actually governs the rubber-band overscroll
-     fill at the very top/bottom of the page and keeps the browser's own
-     chrome reading dark, on top of and independent of the background-color
-     above. */
-  color-scheme: dark;
+  /* the canvas: also what shows in the overscroll beyond the page and under
+     the browser's own chrome -- the same base tone as everything else */
+  background-color: var(--mdr-bg);
+  /* light, like the site: the browser's own defaults (blank canvas before
+     styles land, form controls, scrollbars) follow it. Was dark, from the
+     old dark theme -- a dark default canvas on a light site. The landing
+     screen sets dark for itself. */
+  color-scheme: light;
 }
 
 /* ---- Desktop shell (>=750px) --------------------------------------------
@@ -550,7 +481,7 @@ html {
 
   /* nav row inside the frame: its own bottom line (the header group's
      bottom line is the one above it); its material is the same white glass
-     as the header (GLASS CHROME block) */
+     as the header (THE SHELL block) */
   .mdr-frame > .mdr-allbar-wrap {
     flex: 0 0 auto;
     border-top: 0 !important;
@@ -2069,13 +2000,7 @@ main[data-template='collection'] [id$='__product_list_fa6P9H'] .section-resource
 }
 
 body {
-  /* --mdr-chrome-color (GLASS CHROME block, end of file): the tone the white
-     glass header/footer show over the page, same as html. Inside the page
-     .page-wrapper paints its own --mdr-edge-color over this, so it only
-     shows beyond the page -- the rubber-band overscroll at the top and
-     bottom, which then continues the header/footer glass instead of the
-     plainer page tone (whichever of html/body Safari takes it from). */
-  background-color: var(--mdr-chrome-color) !important;
+  background-color: var(--mdr-bg) !important;
   background-image: none !important;
 }
 
@@ -2115,16 +2040,13 @@ footer {
 }
 
 .page-wrapper {
-  background-color: var(--mdr-edge-color);
+  background-color: var(--mdr-bg);
 }
 
-/* Every template except the homepage landing screen (which is deliberately
-   black end-to-end, see the data-template='index' rules further up this
-   file) gets its own explicit cream backing on <main> itself, decoupled
-   from page-wrapper's background -- so real content is never at the mercy
-   of whatever colour a wrapping element happens to have. */
+/* main paints the base tone itself (the same as everything around it), so
+   no section's own colour scheme can show through as another grey */
 main:not([data-template='index']) {
-  background-color: var(--mdr-paper) !important;
+  background-color: var(--mdr-bg) !important;
 }
 
 .product-card__content {
@@ -3051,22 +2973,9 @@ body:has(main[data-template='index']) {
   height: 100%;
   overflow: hidden;
   background-color: var(--mdr-landing-bg) !important;
-  /* the safe-area strips (body::before/::after) and the rubber-band
-     canvas itself (background-color above already hardcodes it directly,
-     but --mdr-edge-color is what OTHER rules on this page still read,
-     e.g. .page-wrapper below) all switch to the same graphite here too --
-     same principle as the off-white default everywhere else: the ROOT
-     canvas matches whatever this specific page's own background actually
-     is, so there's no seam at the safe-area boundary (full-screen bleed
-     into the iOS top/bottom chrome, preserved exactly as before). */
-  --mdr-edge-top: var(--mdr-landing-bg);
-  --mdr-edge-bottom: var(--mdr-landing-bg);
-  --mdr-edge-color: var(--mdr-landing-bg);
-  /* flat, no blur -- #header-group/footer are display:none on this
-     template (see below), so there's no glass surface here for the
-     strips to continue; a flat exact match is correct again, same
-     reasoning as --mdr-edge-color. */
-  --mdr-edge-blur: none;
+  /* the landing screen's own environment: graphite, end to end */
+  --mdr-bg: var(--mdr-landing-bg);
+  color-scheme: dark;
 }
 
 /* .page-wrapper (base.css), not html/body, is the ACTUAL scroll container
@@ -3266,7 +3175,7 @@ body:has(main[data-template='index']) .page-wrapper {
      becoming bright white strips. On the old paper it's ~white again. */
   --mdr-glass-base: var(--mdr-highlight);
   /* white glass -- the header, the WEBRACK rail and the footer are all this
-     one material (GLASS CHROME block, end of file) */
+     one material (THE SHELL block, end of file) */
   --mdr-glass-tint: color-mix(in srgb, white 62%, transparent);
   --mdr-glass-blur: blur(24px) saturate(1.4); /* was: none */
   /* Header/footer rebuild pass: this used to be its own white highlight
@@ -3335,7 +3244,7 @@ body:has(main[data-template='index']) .page-wrapper {
    sections/header.liquid) and the WEBRACK/RETURN wrap + pill: all
    transparent, letting #header-group's one glass surface show through
    instead of layering their own panels on top of it. (On desktop the rail
-   row sits in the frame and carries the same glass itself -- GLASS CHROME
+   row sits in the frame and carries the same glass itself -- THE SHELL
    block.) */
 [data-header-rows='single'] .header__underlay-closed,
 .mdr-allbar-wrap,
@@ -3361,17 +3270,6 @@ body:has(main[data-template='index']) .page-wrapper {
   border-top: 1px solid var(--mdr-border);
 }
 
-/* Fallback for browsers without backdrop-filter support (older Android
-   WebView, some older Safari versions) -- without blur to soften what's
-   behind it, a thin 0.55-alpha wash reads muddy against product photos
-   scrolling underneath, so this raises opacity to read as a deliberate
-   translucent-but-substantial panel instead. */
-@supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
-  #header-group,
-  footer {
-    background-color: rgba(246, 243, 231, 0.92) !important;
-  }
-}
 
 /* Logo -> near-black graphite (was: brightness(0) invert(1), i.e. solid
    white, for the solid blue fill this sat on). invert(1) on an already-
@@ -3387,71 +3285,14 @@ body:has(main[data-template='index']) .page-wrapper {
   opacity: 0.85 !important;
 }
 
-/* ---- Safe-area (notch/status-bar strip) fill -------------------------
-   <meta name="theme-color"> alone (meta-tags.liquid) turned out not to be
-   enough on a real iPhone: confirmed via screenshot, Safari was still
-   reading that strip as light (dark status-bar icons on a pale
-   background) even with theme-color set to black -- Safari's status-bar
-   colouring leans on what's actually PAINTED under the safe area, not
-   just the meta hint. This is a separate, always-fixed layer (not the
-   header itself, which scrolls away -- see enable_sticky_header: never),
-   so it keeps covering the safe area regardless of scroll position or
-   the header's own state.
-   GLASS: now the same material as the header/footer (--mdr-edge-top/
-   -blur), not a flat colourless fill -- confirmed live this was the
-   actual source of a visible seam ("OFF-WHITE STRIP" directly above
-   "GLASS HEADER" instead of one continuous surface) once the header
-   itself became translucent glass instead of a solid colour underneath
-   it. #header-group's own glass background already extends to the true
-   top of the page (y:0, underneath this strip) -- this strip blurring
-   the SAME thing #header-group's own backdrop-filter would blur if this
-   strip weren't here is what makes the two genuinely read as one
-   surface rather than two layers that happen to match. Scoped to this
-   one small env(safe-area-inset-top) region, not a document-spanning
-   blur layer. */
-body::before {
-  content: '';
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  height: env(safe-area-inset-top, 0px);
-  background: var(--mdr-edge-top);
-  backdrop-filter: var(--mdr-edge-blur);
-  -webkit-backdrop-filter: var(--mdr-edge-blur);
-  z-index: 2147483001;
-  pointer-events: none;
-}
-
-/* Same fix, bottom edge: the home-indicator strip on notch-style iPhones,
-   now matching the footer's own glass the same way the top strip matches
-   the header. */
-body::after {
-  content: '';
-  position: fixed;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  height: env(safe-area-inset-bottom, 0px);
-  background: var(--mdr-edge-bottom);
-  backdrop-filter: var(--mdr-edge-blur);
-  -webkit-backdrop-filter: var(--mdr-edge-blur);
-  z-index: 2147483001;
-  pointer-events: none;
-}
-
 /* The header itself doesn't know about the safe area at all (viewport-fit=
    cover on the <meta name="viewport"> tag, needed for the edge-blending
    above, means content can render UNDER the notch/status bar unless it
    opts out) -- on load, before any scroll, the logo/CART/account row was
    rendering flush with the true top of the screen, so the status bar's
    time/wifi/battery icons sat directly on top of that text (confirmed on
-   device). Only the row's CONTENT is pushed down here, not the header's
-   own box/background -- the header isn't pinned (enable_sticky_header:
-   never, see the comment above body::before) and scrolls away with the
-   page, so body::before above is what actually owns painting that strip;
-   this only needs to stop the header's own text competing with the status
-   bar while it's still on-screen at the top of the page. */
+   device). Only the row's CONTENT is pushed down here; the header group's
+   own glass reaches up under the status bar behind it. */
 .header__row--top .header__columns {
   padding-top: env(safe-area-inset-top, 0px) !important;
 }
@@ -3990,7 +3831,7 @@ main[data-template='collection']
      The rail is pinned to the top of the screen, but by its container:
      below desktop width it's part of #header-group, which is the one
      sticky element; on desktop it's the frame's first row, sticky itself
-     (GLASS CHROME block, end of file). */
+     (THE SHELL block, end of file). */
   position: relative;
   z-index: 15;
   margin: 0;
@@ -5043,37 +4884,31 @@ main[data-template='collection'] [id$='__product_list_fa6P9H'] .product-card .pr
 }
 
 /* ==========================================================================
-   GLASS CHROME -- the header, the WEBRACK / MENU / RETURN rail and the
-   footer are one material: white glass (--mdr-glass-tint, white 62% +
-   --mdr-glass-blur). Nothing added on top: no gloss, gradient, highlight,
-   rounded corners or borders beyond the existing grid lines.
+   THE SHELL -- header, WEBRACK / MENU / RETURN rail and footer: one white
+   glass material (--mdr-glass-tint, white 62% + --mdr-glass-blur) over
+   the one base environment (--mdr-bg). The glass is painted by its own
+   layer behind the content (#header-group::before; the desktop rail's
+   ::before) -- never by the element that holds the logo / labels.
 
-   Pinned, as ONE surface: below desktop width the rail lives inside
-   #header-group (mdr-header-enhance.liquid), and #header-group is the one
-   sticky, blurred element (its blur on its own ::before layer behind the
-   content -- see the #header-group rule) -- header and rail can't drift apart or lag each
-   other while scrolling, because they're a single layer.
-     phones:   the whole group (logo + CART + rail) pinned at the top
-     tablets:  the same group, pinned with only its rail part on screen
-               (the logo row scrolls away above it)
-     desktop:  the rail is the frame's first row, pinned there on its own
-               in the same glass (the header row scrolls away)
+   Phones: the header group (logo row + rail) is FIXED to the top of the
+   screen and the page is padded by its measured height (--mdr-header-h).
+   Fixed, not sticky: a sticky element is part of the scrolling page, so
+   iOS Safari drags it with the rubber-band bounce and drops its painted
+   content while bouncing (the blank glass / moving header in the
+   recordings); a fixed one belongs to the screen -- it never moves and
+   never repaints with the scroll. Every template gets the same shell at
+   the same coordinates, because nothing in the page decides them.
+   Tablets: the same group, sticky, with only its rail part on screen.
+   Desktop: the rail is the frame's first row, sticky there.
 
-   Edge to edge: on phones the glass runs to the very top and bottom of the
-   screen. The header's box already reaches under the status bar (its row
-   carries the safe-area padding) and the footer's now reaches under the
-   home indicator, so the two fixed safe-area strips (body::before/::after)
-   step aside instead of laying a flat colour over them; and the canvas
-   beyond the page (overscroll, what Safari's own chrome samples) is the
-   colour the glass shows over the page (--mdr-chrome-color) instead of the
-   plain page tone.
+   Glass edges: the grid line stays a precise 1px line; the glass's light
+   feathers off a few pixels past it (::after below the header, ::before
+   above the footer) so the material dissolves into the environment
+   instead of ending as a cut-out rectangle.
    ========================================================================== */
 :root {
-  --mdr-chrome-color: color-mix(in srgb, white 62%, var(--mdr-edge-color));
-}
-
-html {
-  background-color: var(--mdr-chrome-color);
+  /* the glass's own light, fading out past its edge */
+  --mdr-glass-feather: color-mix(in srgb, white 16%, transparent);
 }
 
 /* desktop: the rail row carries the glass itself, pinned in the frame --
@@ -5097,55 +4932,81 @@ html {
 }
 
 /* the theme's own sticky pieces (PDP photo and details, desktop cart
-   summary) stop just under the pinned glass instead of sliding beneath it
+   summary) stop just under the shell instead of sliding beneath it
    (heights measured in mdr-header-enhance.liquid) */
 body {
   --sticky-header-offset: var(--mdr-rail-h, 0px);
 }
 
-@media screen and (max-width: 989px) {
-  #header-group {
-    position: sticky !important;
-    z-index: 16;
-  }
+/* the feather under the header group's grid line */
+#header-group::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 100%;
+  height: 14px;
+  background: linear-gradient(var(--mdr-glass-feather), transparent);
+  pointer-events: none;
+}
+
+/* ...and over the footer's */
+footer::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 100%;
+  height: 14px;
+  background: linear-gradient(transparent, var(--mdr-glass-feather));
+  pointer-events: none;
 }
 
 @media screen and (max-width: 749px) {
   #header-group {
+    position: fixed !important;
     top: 0;
+    left: 0;
+    right: 0;
+    z-index: 16;
+  }
+
+  body:not(:has(main[data-template='index'])) .page-wrapper {
+    padding-top: var(--mdr-header-h);
+  }
+
+  /* in-page anchors land below the shell, not under it */
+  html {
+    scroll-padding-top: var(--mdr-header-h);
   }
 
   footer {
     padding-bottom: env(safe-area-inset-bottom, 0px);
   }
 
-  :root {
-    --mdr-edge-top: transparent;
-    --mdr-edge-bottom: transparent;
-    --mdr-edge-blur: none;
-  }
-
   body {
-    --sticky-header-offset: var(--mdr-header-h, 0px);
+    --sticky-header-offset: var(--mdr-header-h);
   }
 }
 
 @media screen and (min-width: 750px) and (max-width: 989px) {
   #header-group {
+    position: sticky !important;
     top: calc(-1 * var(--mdr-rail-top, 0px));
+    z-index: 16;
   }
 
   body {
-    --sticky-header-offset: calc(var(--mdr-header-h, 0px) - var(--mdr-rail-top, 0px));
+    --sticky-header-offset: calc(var(--mdr-header-h) - var(--mdr-rail-top, 0px));
   }
 }
 
 /* no backdrop blur (older WebViews): the same white, nearly solid, so what
    passes behind never reads as muddy */
 @supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
-  #header-group,
-  footer,
-  body .mdr-frame > .mdr-allbar-wrap {
+  #header-group::before,
+  body .mdr-frame > .mdr-allbar-wrap::before,
+  footer {
     background: color-mix(in srgb, white 92%, transparent) !important;
   }
 }

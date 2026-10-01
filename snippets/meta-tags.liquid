@@ -29,26 +29,32 @@
     if (m) m.setAttribute('content', m.getAttribute('content') + ',maximum-scale=1');
   })();
 </script>
+{%- liquid
+  assign mdr_landing = false
+  if request.page_type == 'index' or request.page_type == 'password'
+    assign mdr_landing = true
+  endif
+-%}
 {%- comment -%}
-  Everywhere but the landing/lock screen: #F4F4F4, the colour the white glass
-  header/footer shows over the page (--mdr-chrome-color, assets/mdr-custom.css,
-  GLASS CHROME) -- so the browser's own top/bottom chrome continues the glass
-  instead of a flatter page tone. (Previously the light graphite surface:)
-  Material: the light graphite surface (--mdr-surface, #dedfdd, in
-  assets/mdr-custom.css) as it looks at the top of the screen, under the
-  header's glass tint -- retune with the surface. (Old paper: #f8f8f5.)
-  Matches assets/mdr-custom.css's --mdr-paper per template: the
-  homepage and the password/lockscreen page are permanently graphite,
-  single-surface screens (--mdr-landing-bg, #171717); every other
-  template's own dominant surface
-  is the mineral-neutral paper field (mineral-neutral pass -- was the
-  warm cream #f6f3e7), so its edge -- and the browser-chrome tint this
-  meta tag governs -- reads as that instead.
+  The browser's own top chrome: the landing / lock screen's graphite, or
+  elsewhere the tone the white-glass header shows at the top of the screen
+  (white 62% over the base #dedfdd) -- so the status-bar area continues the
+  header instead of meeting it with a different colour.
 {%- endcomment -%}
 <meta
   name="theme-color"
-  content="{% if request.page_type == 'index' or request.page_type == 'password' %}#171717{% else %}#F4F4F4{% endif %}"
+  content="{% if mdr_landing %}#171717{% else %}#F2F3F2{% endif %}"
 >
+{%- comment -%}
+  The base environment, painted before any stylesheet arrives: the very
+  first frame of every page is already the right colour (no blank white or
+  dark canvas between pages). Same values as --mdr-bg / --mdr-landing-bg in
+  assets/mdr-custom.css.
+{%- endcomment -%}
+<style>
+  html, body { background-color: {% if mdr_landing %}#171717{% else %}#dedfdd{% endif %}; }
+  html { color-scheme: {% if mdr_landing %}dark{% else %}light{% endif %}; }
+</style>
 
 {%- liquid
   assign og_title = page_title | default: shop.name
