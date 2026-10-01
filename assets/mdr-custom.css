@@ -122,7 +122,11 @@ product-price *,
        is: the header/footer panels are tinted with it, so they sit a hair
        above the surface instead of being bright white strips.
      --mdr-text / --mdr-ink: the existing grey / near-black type, unchanged. */
-  --mdr-surface: #dedfdd;
+  /* the canvas: #f5f5f5 -- the product-grid grey of the Palace reference,
+     read from its live CSS (bg-grey-050), not sampled from video. Every
+     environment tone (page, grid cells, image stages) is this one value;
+     the grid lines, selected fills and quiet text are derived from it. */
+  --mdr-surface: #f5f5f5;
   --mdr-surface-rgb: 222 223 221;
   --mdr-highlight: color-mix(in srgb, var(--mdr-surface), white 22%);
   --mdr-grid: color-mix(in srgb, var(--mdr-surface), var(--mdr-ink) 12%);
@@ -3174,10 +3178,14 @@ body:has(main[data-template='index']) .page-wrapper {
      paper (white 55% over #f8f8f5 ~ +4; this over #dadbd9 ~ +4) instead of
      becoming bright white strips. On the old paper it's ~white again. */
   --mdr-glass-base: var(--mdr-highlight);
-  /* white glass -- the header, the WEBRACK rail and the footer are all this
-     one material (THE SHELL block, end of file) */
-  --mdr-glass-tint: color-mix(in srgb, white 62%, transparent);
-  --mdr-glass-blur: blur(24px) saturate(1.4); /* was: none */
+  /* the shell's glass (header + WEBRACK rail, footer -- THE SHELL block, end
+     of file): a light graphite -- the canvas a step toward graphite -- at
+     55%, lightly blurred, so what scrolls behind it stays visible as form
+     (a black tee reads as a soft mid-grey shape) while the labels on top
+     stay legible. Was white at 62% with a 24px blur: so dense that content
+     behind it all but disappeared. */
+  --mdr-glass-tint: color-mix(in srgb, color-mix(in srgb, var(--mdr-surface), var(--mdr-graphite) 22%) 55%, transparent);
+  --mdr-glass-blur: blur(10px) saturate(1.2);
   /* Header/footer rebuild pass: this used to be its own white highlight
      border (rgba(255,255,255,0.7)) -- a second, different-coloured line
      from the grid's own dividers. "Lines, not boxes" means ONE structural-
@@ -4399,8 +4407,8 @@ main[data-template='collection'] [id$='__product_list_fa6P9H'] .product-card__co
 }
 
 main[data-template='collection'] [id$='__product_list_fa6P9H'] .product-card__content {
-  /* compact, not cramped -- was 10px */
-  padding-bottom: 7px !important;
+  /* compact, not cramped -- name / price sit close to the cell's bottom line */
+  padding-bottom: 6px !important;
   /* the image area + text area need to stack as two independently-sized
      blocks (fixed aspect-ratio image, fixed-height text) for every card to
      land on the exact same total height -- see the text-block rule below. */
@@ -4436,11 +4444,12 @@ main[data-template='collection'] [id$='__product_list_fa6P9H'] .product-media-co
 main[data-template='collection'] [id$='__product_list_fa6P9H'] .product-media-container {
   max-width: 100% !important;
   margin-inline: 0 !important;
-  /* more compact still -- was 4/4.25, and before that 4/5. A fixed ratio
-     (not just a max-height) is what actually guarantees every card's
-     image area is identically sized regardless of the source photo's own
-     proportions -- object-fit: contain below fits each image within it. */
-  aspect-ratio: 4 / 3.6;
+  /* Palace-like proportions: the image stage plus the name/price under it
+     make a cell about as tall as it is wide (Palace: square cells, row
+     pitch = column pitch), instead of noticeably taller. One fixed ratio
+     for every card -- never sized by the photo -- object-fit: contain
+     below fits each image within it. Was 4 / 3.6. */
+  aspect-ratio: 7 / 6;
   flex: 0 0 auto;
 }
 
@@ -4451,7 +4460,9 @@ main[data-template='collection'] [id$='__product_list_fa6P9H'] .product-card .pr
   filter: none !important;
   mix-blend-mode: normal;
   object-fit: contain !important;
-  padding: 3% !important;
+  /* the photos carry their own margin (~8% each side); just a little more,
+     so the garment fills the stage the way Palace's do */
+  padding: 2% !important;
 }
 
 /* ---- NEW: a shallow trapezium built on the grid line ----------------------
@@ -4587,7 +4598,7 @@ main[data-template='collection'] [id$='__product_list_fa6P9H'] .product-card pro
 }
 
 main[data-template='collection'] [id$='__product_list_fa6P9H'] .product-card .text-block {
-  margin: 6px 0 0 !important;
+  margin: 3px 0 0 !important;
   /* breathing room from the card's own edges -- was 0, which put the
      text flush against the same edge the (edge-to-edge) image uses,
      reading as if it ran the full width of the page. */
@@ -4898,16 +4909,12 @@ main[data-template='collection'] [id$='__product_list_fa6P9H'] .product-card .pr
    Tablets: the same group, sticky, with only its rail part on screen.
    Desktop: the rail is the frame's first row, sticky there.
 
-   Glass edges: the grid line stays a precise 1px line; the glass's light
-   feathers off a few pixels past it (::after below the header, ::before
-   above the footer) so the material dissolves into the environment
-   instead of ending as a cut-out rectangle.
+   The page travels behind the shell to the very top of the screen: the
+   glass is transparent enough to show it (no opaque layer under it, no
+   artificial fade), the browser paints no theme-color over the status
+   bar (snippets/meta-tags.liquid), and on phones the shell's empty areas
+   let taps through to the page behind -- only its controls catch them.
    ========================================================================== */
-:root {
-  /* the glass's own light, fading out past its edge */
-  --mdr-glass-feather: color-mix(in srgb, white 16%, transparent);
-}
-
 /* desktop: the rail row carries the glass itself, pinned in the frame --
    on its own layer behind the rail's content, as with #header-group */
 @media screen and (min-width: 990px) {
@@ -4935,31 +4942,6 @@ body {
   --sticky-header-offset: var(--mdr-rail-h, 0px);
 }
 
-/* the feather under the header group's grid line */
-#header-group::after {
-  content: '';
-  position: absolute;
-  left: 0;
-  right: 0;
-  /* from just below the 1px line, which stays exactly as it is */
-  top: calc(100% + 1px);
-  height: 14px;
-  background: linear-gradient(var(--mdr-glass-feather), transparent);
-  pointer-events: none;
-}
-
-/* ...and over the footer's */
-footer::before {
-  content: '';
-  position: absolute;
-  left: 0;
-  right: 0;
-  bottom: calc(100% + 1px);
-  height: 14px;
-  background: linear-gradient(transparent, var(--mdr-glass-feather));
-  pointer-events: none;
-}
-
 @media screen and (max-width: 749px) {
   #header-group {
     position: fixed !important;
@@ -4969,8 +4951,23 @@ footer::before {
     z-index: 16;
   }
 
+  /* the page starts below the shell at rest (the first row's composition),
+     then scrolls on behind it -- the shell is fixed, nothing in the page
+     stops at it */
   body:not(:has(main[data-template='index'])) .page-wrapper {
     padding-top: var(--mdr-header-h);
+  }
+
+  /* the shell floats over the page: only its controls take taps (logo, CART,
+     the WEBRACK / MENU / RETURN rail); the glass between them doesn't block
+     the products scrolling behind it */
+  #header-group {
+    pointer-events: none;
+  }
+
+  #header-group :is(a, button, input, select, summary, [role='button'], label),
+  #header-group .mdr-allbar-wrap {
+    pointer-events: auto;
   }
 
   /* in-page anchors land below the shell, not under it */

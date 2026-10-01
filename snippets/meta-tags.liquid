@@ -36,23 +36,23 @@
   endif
 -%}
 {%- comment -%}
-  The browser's own top chrome: the landing / lock screen's graphite, or
-  elsewhere the tone the white-glass header shows at the top of the screen
-  (white 62% over the base #dedfdd) -- so the status-bar area continues the
-  header instead of meeting it with a different colour.
+  The browser's own top chrome: only the landing / lock screen sets one (its
+  graphite). Everywhere else there's deliberately no theme-color -- Safari
+  would paint the status-bar area in it as a solid strip, cutting the page
+  off there; without it the page scrolls on under the status bar, behind
+  the transparent shell, to the physical top of the screen.
 {%- endcomment -%}
-<meta
-  name="theme-color"
-  content="{% if mdr_landing %}#171717{% else %}#F2F3F2{% endif %}"
->
+{%- if mdr_landing -%}
+  <meta name="theme-color" content="#171717">
+{%- endif -%}
 {%- comment -%}
   The base environment, painted before any stylesheet arrives: the very
   first frame of every page is already the right colour (no blank white or
-  dark canvas between pages). Same values as --mdr-bg / --mdr-landing-bg in
-  assets/mdr-custom.css.
+  dark canvas between pages). Same values as --mdr-surface / --mdr-landing-bg
+  in assets/mdr-custom.css.
 {%- endcomment -%}
 <style>
-  html, body { background-color: {% if mdr_landing %}#171717{% else %}#dedfdd{% endif %}; }
+  html, body { background-color: {% if mdr_landing %}#171717{% else %}#f5f5f5{% endif %}; }
   html { color-scheme: {% if mdr_landing %}dark{% else %}light{% endif %}; }
 </style>
 
