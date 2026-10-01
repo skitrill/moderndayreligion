@@ -122,12 +122,10 @@ product-price *,
        is: the header/footer panels are tinted with it, so they sit a hair
        above the surface instead of being bright white strips.
      --mdr-text / --mdr-ink: the existing grey / near-black type, unchanged. */
-  /* the canvas: #f5f5f5 -- the product-grid grey of the Palace reference,
-     read from its live CSS (bg-grey-050), not sampled from video. Every
-     environment tone (page, grid cells, image stages) is this one value;
-     the grid lines, selected fills and quiet text are derived from it. */
-  --mdr-surface: #f5f5f5;
-  --mdr-surface-rgb: 222 223 221;
+  /* --mdr-surface (the canvas: #f5f5f5, the Palace product-grid grey, read
+     from its live CSS), --mdr-surface-rgb, --mdr-graphite, --mdr-landing-bg
+     and the shell's --mdr-interface-* material are defined ONCE, in <head>
+     (snippets/meta-tags.liquid) -- everything below derives from them. */
   --mdr-highlight: color-mix(in srgb, var(--mdr-surface), white 22%);
   --mdr-grid: color-mix(in srgb, var(--mdr-surface), var(--mdr-ink) 12%);
   --mdr-text: var(--mdr-graphite);
@@ -138,7 +136,6 @@ product-price *,
   --mdr-background: var(--mdr-surface);
   --mdr-paper: var(--mdr-background);
   --mdr-ink: #202020;
-  --mdr-graphite: #858581;
   /* one step quieter than graphite: graphite tinted toward the surface (as
      documented above) -- #b7b7b1 on the old paper; relative, so it stays
      the same step quieter on any surface. */
@@ -157,7 +154,6 @@ product-price *,
      instead of the deep-blue --mdr-primary. Deliberately its own token,
      not a global one: this is scoped to that one template only, not a
      second brand colour for the rest of the shop. */
-  --mdr-landing-bg: #171717;
 
   /* off-white product field -- the site's other half, everywhere content
      (not brand chrome) sits. */
@@ -249,14 +245,8 @@ product-price *,
 
 html {
   font-size: 15px;
-  /* the canvas: also what shows in the overscroll beyond the page and under
-     the browser's own chrome -- the same base tone as everything else */
-  background-color: var(--mdr-bg);
-  /* light, like the site: the browser's own defaults (blank canvas before
-     styles land, form controls, scrollbars) follow it. Was dark, from the
-     old dark theme -- a dark default canvas on a light site. The landing
-     screen sets dark for itself. */
-  color-scheme: light;
+  /* background (the shell colour beyond the page) and color-scheme (light;
+     dark on the landing screen) are set in <head>, meta-tags.liquid */
 }
 
 /* ---- Desktop shell (>=750px) --------------------------------------------
@@ -1530,6 +1520,36 @@ product-price *,
   word-break: normal;
 }
 
+/* Whatever the rich-text editor produces, the copy conforms to this one
+   column: no per-element widths, sizes, alignment or colours from inline
+   styles; no stray paragraph margins or empty paragraphs; one small gap
+   between blocks; and a long unbroken string breaks rather than pushing
+   past the selectors' edges. Real lists and emphasis keep their meaning. */
+.product-details > .group-block > .group-block-content > rte-formatter[class*='__text_aEtTtq'] * {
+  max-width: none !important;
+  width: auto !important;
+  font-size: inherit !important;
+  line-height: inherit !important;
+  letter-spacing: inherit !important;
+  color: inherit !important;
+  overflow-wrap: break-word;
+}
+
+.product-details > .group-block > .group-block-content > rte-formatter[class*='__text_aEtTtq'] :is(p, ul, ol, li, h1, h2, h3, h4, h5, h6, blockquote, div) {
+  margin: 0 !important;
+  padding: 0 !important;
+  text-align: center !important;
+  font-weight: inherit;
+}
+
+.product-details > .group-block > .group-block-content > rte-formatter[class*='__text_aEtTtq'] :is(p, ul, ol, h1, h2, h3, h4, h5, h6, blockquote, div) + :is(p, ul, ol, h1, h2, h3, h4, h5, h6, blockquote, div) {
+  margin-top: 4px !important;
+}
+
+.product-details > .group-block > .group-block-content > rte-formatter[class*='__text_aEtTtq'] :is(p:empty, p:has(> br:only-child)) {
+  display: none !important;
+}
+
 /* Centered bullet copy reads lopsided with a left-hugging disc marker,
    so bullets go markerless again here (this is the one spot on the page
    that's a literal <ul>; nothing else depends on it looking like one). */
@@ -2069,17 +2089,15 @@ main:not([data-template='index']) {
   filter: drop-shadow(0 0 11px rgba(122, 84, 52, 0.1)) !important;
 }
 
-/* Square frame around the PDP photo -- same hairline colour/thickness as
-   the product grid's own divider lines (--mdr-border, 1px). Restored
-   after a brief removal (an audit pass flagged it as inconsistent with
-   the grid's borderless cards) -- back by request. Sizing itself
-   (max-width/margin) is NOT set here -- .product-information__grid
-   .product-information__media (further down this file) is more specific
-   (two classes) and would win over a single-class rule here regardless of
-   !important/source order, so the actual width lives in that rule, not
-   this one. */
+/* PDP photo box -- square, fixed size, no frame (a hairline frame drawn
+   here before was removed by request; the box keeps its size and padding,
+   so the photo hasn't moved). Width lives in the more specific
+   .product-information__grid .product-information__media rule further
+   down this file. */
 .product-information__media {
-  border: 1px solid var(--mdr-border-faint, rgba(4, 0, 97, 0.08)) !important;
+  /* no frame: the garment sits straight on the canvas. The box keeps the
+     same size and padding it had with the frame, so nothing moves. */
+  border: 0 !important;
   box-sizing: border-box !important;
   /* a true square whatever the photo's proportions: a square media box
      (below) inside equal padding on all four sides, and the frame itself
@@ -3179,13 +3197,11 @@ body:has(main[data-template='index']) .page-wrapper {
      becoming bright white strips. On the old paper it's ~white again. */
   --mdr-glass-base: var(--mdr-highlight);
   /* the shell's glass (header + WEBRACK rail, footer -- THE SHELL block, end
-     of file): a light graphite -- the canvas a step toward graphite -- at
-     55%, lightly blurred, so what scrolls behind it stays visible as form
-     (a black tee reads as a soft mid-grey shape) while the labels on top
-     stay legible. Was white at 62% with a 24px blur: so dense that content
-     behind it all but disappeared. */
-  --mdr-glass-tint: color-mix(in srgb, color-mix(in srgb, var(--mdr-surface), var(--mdr-graphite) 22%) 55%, transparent);
-  --mdr-glass-blur: blur(10px) saturate(1.2);
+     of file): the one interface material from <head> (meta-tags.liquid) --
+     a light graphite, translucent and lightly blurred, so what scrolls
+     behind it stays visible as form while the labels on top stay legible */
+  --mdr-glass-tint: var(--mdr-interface-glass);
+  --mdr-glass-blur: var(--mdr-interface-blur);
   /* Header/footer rebuild pass: this used to be its own white highlight
      border (rgba(255,255,255,0.7)) -- a second, different-coloured line
      from the grid's own dividers. "Lines, not boxes" means ONE structural-

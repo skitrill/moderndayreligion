@@ -36,25 +36,61 @@
   endif
 -%}
 {%- comment -%}
-  The browser's own top chrome: only the landing / lock screen sets one (its
-  graphite). Everywhere else there's deliberately no theme-color -- Safari
-  would paint the status-bar area in it as a solid strip, cutting the page
-  off there; without it the page scrolls on under the status bar, behind
-  the transparent shell, to the physical top of the screen.
-{%- endcomment -%}
-{%- if mdr_landing -%}
-  <meta name="theme-color" content="#171717">
-{%- endif -%}
-{%- comment -%}
-  The base environment, painted before any stylesheet arrives: the very
-  first frame of every page is already the right colour (no blank white or
-  dark canvas between pages). Same values as --mdr-surface / --mdr-landing-bg
-  in assets/mdr-custom.css.
+  THE colour source for the whole site -- assets/mdr-custom.css only
+  derives from these (it defines none of them itself). In <head>, ahead of
+  every stylesheet, so the very first frame of every page is already right.
+
+  --mdr-surface         the canvas (Palace's #f5f5f5)
+  --mdr-interface-*     the shell's material -- masthead, WEBRACK rail,
+                        footer: a graphite-tinted glass (colour, alpha, blur)
+  --mdr-interface-glass that material as the translucent fill the shell uses
+  --mdr-interface-solid what that glass looks like over the canvas, for the
+                        places that can only take a solid colour: the canvas
+                        beyond the page (overscroll at the top and bottom,
+                        under the browser's bars) and the browser's own top
+                        strip (theme-color, set from it below) -- so the top
+                        and bottom edges of the screen are always exactly the
+                        masthead / footer colour, whatever that becomes.
+  The landing / lock screen is graphite end to end.
 {%- endcomment -%}
 <style>
-  html, body { background-color: {% if mdr_landing %}#171717{% else %}#f5f5f5{% endif %}; }
-  html { color-scheme: {% if mdr_landing %}dark{% else %}light{% endif %}; }
+  :root {
+    --mdr-surface: #f5f5f5;
+    --mdr-surface-rgb: 245 245 245;
+    --mdr-graphite: #858581;
+    --mdr-landing-bg: #171717;
+    --mdr-interface-color: color-mix(in srgb, var(--mdr-surface), var(--mdr-graphite) 22%);
+    --mdr-interface-alpha: 55%;
+    --mdr-interface-blur: blur(10px) saturate(1.2);
+    --mdr-interface-glass: color-mix(in srgb, var(--mdr-interface-color) var(--mdr-interface-alpha), transparent);
+    --mdr-interface-solid: color-mix(in srgb, var(--mdr-interface-color) var(--mdr-interface-alpha), var(--mdr-surface));
+  }
+  html { background-color: var(--mdr-interface-solid); color-scheme: light; }
+  body { background-color: var(--mdr-surface); }
+  {%- if mdr_landing %}
+  html, body { background-color: var(--mdr-landing-bg); }
+  html { color-scheme: dark; }
+  {%- endif %}
 </style>
+<meta name="theme-color" content="{% if mdr_landing %}#171717{% endif %}">
+<script>
+  /* the browser's top strip takes a plain colour: give it the resolved
+     shell colour (html's background above), so it is never a second value.
+     window.__mdrSyncChrome() re-reads it if the shell colour ever changes. */
+  (function () {
+    function sync() {
+      var meta = document.querySelector('meta[name="theme-color"]');
+      var ctx = document.createElement('canvas').getContext('2d');
+      if (!meta || !ctx) return;
+      ctx.fillStyle = getComputedStyle(document.documentElement).backgroundColor;
+      ctx.fillRect(0, 0, 1, 1);
+      var d = ctx.getImageData(0, 0, 1, 1).data;
+      meta.setAttribute('content', '#' + [d[0], d[1], d[2]].map(function (v) { return v.toString(16).padStart(2, '0'); }).join(''));
+    }
+    window.__mdrSyncChrome = sync;
+    sync();
+  })();
+</script>
 
 {%- liquid
   assign og_title = page_title | default: shop.name
