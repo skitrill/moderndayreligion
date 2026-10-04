@@ -150,23 +150,19 @@
     var navRows = {};     /* { home: <WEBRACK row>, back: <RETURN row> } */
     var busy = false;
 
+    /* under the masthead, inside #header-group, at every width */
     function placeRow(row) {
-      var frame = D.querySelector('.mdr-frame');
-      if (window.matchMedia('(min-width: 990px)').matches && frame) {
-        frame.insertBefore(row, frame.firstChild);
-      } else {
-        var header = D.querySelector('header.shopify-section-group-header-group') || D.querySelector('#header-group > header');
-        if (header && header.parentNode) header.parentNode.insertBefore(row, header.nextSibling);
-      }
-      /* its line and drag zone re-measure for the current layout */
+      var header = D.querySelector('header.shopify-section-group-header-group') || D.querySelector('#header-group > header');
+      if (header && header.parentNode) header.parentNode.insertBefore(row, header.nextSibling);
+      /* its drag zone and the shell's measurements follow the new row */
       window.dispatchEvent(new Event('resize'));
     }
 
-    /* a row put away keeps whatever it was doing when it left -- RETURN's
-       tap leaves its line zipped away, an open WEBRACK stays open -- so it
-       goes back to rest first (detached, so nothing animates) */
+    /* a row put away keeps whatever it was doing when it left -- an open
+       WEBRACK stays open -- so it goes back to rest first (detached, so
+       nothing animates) */
     function resetRow(row) {
-      row.classList.remove('mdr-allbar-wrap--zap', 'mdr-allbar--instant');
+      row.classList.remove('mdr-allbar--instant');
       var bar = row.querySelector('.mdr-allbar');
       if (bar && bar.classList.contains('is-open')) {
         bar.classList.remove('is-open');
@@ -186,8 +182,6 @@
       }
       if (navRows[to]) {
         placeRow(navRows[to]);
-        /* back on the grid after a RETURN: MENU slides back onto the rail */
-        if (to === 'home' && window.__mdrMenuEnterPending && window.__mdrMenuEnterPending()) window.__mdrMenuEnter(navRows[to]);
       } else if (window.__mdrAllbarBuild) {
         window.__mdrAllbarBuild();
         navRows[to] = D.querySelector('.mdr-allbar-wrap');
@@ -310,21 +304,12 @@
       reportPageView(html);
     }
 
-    /* the rail's grid line shows the load (mdr-nav-progress.liquid) */
-    function progress(what, arg) {
-      if (window.__mdrProgress) window.__mdrProgress[what](arg);
-    }
-
     function go(url, push) {
       if (busy) return;
       busy = true;
-      progress('start');
       get(url)
         .then(function (html) {
           showProduct(url, html, push);
-          /* done once the product's image is actually drawable */
-          var img = visibleMainImage(currentMain());
-          progress('done', img && img.decode ? img.decode() : null);
         })
         .catch(function () { location.href = url; })
         .then(function () { busy = false; });
@@ -381,10 +366,8 @@
       if (!main) return;
       var onProduct = (main.dataset.template || '').indexOf('product') === 0;
       if (grid && onProduct && here === grid.url) {
-        /* the grid is in memory: a quick sweep along the line */
-        progress('start');
+        /* the grid is in memory */
         restoreGrid();
-        progress('done');
       } else if (history.state && history.state.mdrSwap && onGrid()) {
         go(here, false);
       }

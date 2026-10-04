@@ -327,7 +327,7 @@
       var originals = [];
       var kids = grid.children;
       for (var k = 0; k < kids.length; k++) {
-        if (!kids[k].hasAttribute('data-mdr-clone') && !kids[k].hasAttribute('data-mdr-fill') && kids[k].querySelector('product-card')) originals.push(kids[k]);
+        if (!kids[k].hasAttribute('data-mdr-clone') && kids[k].querySelector('product-card')) originals.push(kids[k]);
       }
       if (!originals.length) return;
 
@@ -351,48 +351,14 @@
       grid.appendChild(frag);
     }
 
-    /* When the products don't fill the last row, complete it with blank
-       cells (never product copies) so the grid always ends on a whole row
-       -- 4 columns on desktop, 2 on phones, read from the grid itself.
-       Otherwise the grid's own line colour shows through the empty slots
-       as solid blocks and the column lines dangle. Rerun after WEBRACK
-       swaps in another collection (switchCollection) and on resize (column
-       count changes with the width). */
-    function fillRow() {
-      var sec = featured();
-      if (!sec) return;
-      var grid = sec.querySelector('.resource-list--grid');
-      if (!grid) return;
-      var old = grid.querySelectorAll('[data-mdr-fill]');
-      for (var o = old.length - 1; o >= 0; o--) old[o].remove();
-      var count = grid.querySelectorAll(':scope > .resource-list__item').length;
-      var cols = getComputedStyle(grid).gridTemplateColumns.split(' ').filter(Boolean).length;
-      if (!count || cols < 2) return;
-      var missing = (cols - (count % cols)) % cols;
-      for (var i = 0; i < missing; i++) {
-        var cell = D.createElement('div');
-        cell.className = 'resource-list__item';
-        cell.setAttribute('data-mdr-fill', '');
-        cell.setAttribute('aria-hidden', 'true');
-        grid.appendChild(cell);
-      }
-    }
-    window.__mdrGridFillRow = fillRow;
     /* WEBRACK's in-place swap replaces the whole grid, clones included --
        it calls this to put them back when the full list (ALL) returns */
     window.__mdrGridPadFill = padFill;
 
-    function boot() { padFill(); fillRow(); }
-
-    boot();
-    if (D.readyState !== 'loading') boot();
-    D.addEventListener('DOMContentLoaded', boot);
-    window.addEventListener('load', boot);
-    var fillRAF = null;
-    window.addEventListener('resize', function () {
-      if (fillRAF) return;
-      fillRAF = requestAnimationFrame(function () { fillRAF = null; fillRow(); });
-    }, { passive: true });
+    padFill();
+    if (D.readyState !== 'loading') padFill();
+    D.addEventListener('DOMContentLoaded', padFill);
+    window.addEventListener('load', padFill);
   })();
 
   /* =====================================================================
@@ -417,9 +383,13 @@
   })();
 
   /* =====================================================================
-     WEBRACK » bar: a small collapsed pill in the header, right next to the
-     logo. Tap it and it slides open into the list of collection titles;
-     tap again -- or tap anywhere outside -- to collapse it.
+     The nav row under the masthead -- type only, no lines or symbols:
+       grid:         WEBRACK                                  MENU
+       other pages:  MENU                            [U-turn] RETURN
+     WEBRACK opens the collection titles in place (tap again, or anywhere
+     outside, to close); MENU is the landing screen ("/"); RETURN goes back.
+     It lives in #header-group at every width -- one glass surface with the
+     masthead (mdr-custom.css, NAV ROW + THE SHELL).
      ===================================================================== */
   (function () {
     if (window.__mdrAllBar) return;
@@ -431,26 +401,6 @@
       if (!el) return [];
       try { return JSON.parse(el.textContent) || []; } catch (e) { return []; }
     }
-
-    /* MENU arrival after a RETURN (full load, back-forward cache, or the
-       in-page navigation putting the grid's row back -- mdr-instant-nav):
-       start carried out at the edge, then transition home */
-    window.__mdrMenuEnterPending = function () {
-      var t = 0;
-      try { t = +sessionStorage.getItem('mdrMenuEnter') || 0; sessionStorage.removeItem('mdrMenuEnter'); } catch (e) {}
-      return t && Date.now() - t < 6000;
-    };
-    window.__mdrMenuEnter = function (row) {
-      if (!row || !row.querySelector('.mdr-allbar__menu')) return;
-      row.classList.add('mdr-allbar-wrap--menu-enter');
-      void row.offsetWidth;
-      requestAnimationFrame(function () { row.classList.remove('mdr-allbar-wrap--menu-enter'); });
-    };
-    window.addEventListener('pageshow', function (e) {
-      if (!e.persisted || !window.__mdrMenuEnterPending()) return;
-      var row = D.querySelector('.mdr-allbar-wrap');
-      if (row && !row.querySelector('.mdr-allbar--back')) window.__mdrMenuEnter(row);
-    });
 
     /* MENU's destination, warmed once the page is idle -- browsers that
        prerender links already do it themselves; this covers the others */
@@ -497,15 +447,16 @@
       toggle.type = 'button';
       toggle.className = 'mdr-allbar__toggle';
       toggle.setAttribute('aria-expanded', 'false');
-      /* No separate chevron element at all any more -- "remove the
-         existing chevron icons completely... do not use text characters
-         such as >>, <<, ›, <, SVG icon libraries, or a separate chevron
-         element." Just the word itself; the arrow is drawn as part of
-         .mdr-allbar__line below, sharing one continuous stroke with the
-         connecting rule instead of sitting beside it as its own icon. */
+      /* WEBRACK is just the word. RETURN carries its U-turn: a bold arrow
+         head with the stroke running right, round a curve and back -- one
+         vector drawing in the label's own colour, sized to the type
+         (mdr-custom.css, .mdr-return-icon). */
       toggle.innerHTML = isHome
         ? '<span class="mdr-allbar__label">Webrack</span>'
-        : '<span class="mdr-allbar__label">Return</span>';
+        : '<svg class="mdr-return-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false">' +
+            '<path class="mdr-return-icon__head" d="M2.5 8 9 3.2v9.6Z"/>' +
+            '<path class="mdr-return-icon__body" d="M8.5 8h6.75a5 5 0 0 1 5 5v1.5a5 5 0 0 1-5 5H7.5"/>' +
+          '</svg><span class="mdr-allbar__label">Return</span>';
 
       var list = D.createElement('div');
       list.className = 'mdr-allbar__list';
@@ -606,313 +557,46 @@
       bar.appendChild(list);
       wrap.appendChild(bar);
 
-      /* MENU: the far end of the rail -- right of WEBRACK's line on the grid,
-         left of RETURN's everywhere else -- a real link to the landing screen
-         (the site menu, "/"). A real <a> so the browser's own prerender /
+      /* MENU: the row's other end -- right of WEBRACK on the grid, left of
+         RETURN everywhere else -- a real link to the landing screen (the
+         site menu, "/"). A real <a> so the browser's own prerender /
          prefetch (layout/theme.liquid speculation rules) and the idle
-         prefetch below make it land instantly. Sits above the rack's drag
-         catcher so it takes its own hover / tap directly. */
+         prefetch above make it land instantly. */
       var menu = D.createElement('a');
       menu.className = 'mdr-allbar__menu' + (isHome ? '' : ' mdr-allbar__menu--start');
       menu.href = '/';
       menu.innerHTML = '<span class="mdr-allbar__menu-label">Menu</span>';
       wrap.appendChild(menu);
 
-      /* The line-as-icon redesign: WEBRACK/RETURN's arrow is no longer a
-         separate glyph, SVG icon, or CSS-clipped shape sitting beside the
-         connecting rule -- it's cut directly into the SAME stroke as the
-         rule itself, one <path>, so there is no seam where "line" ends
-         and "icon" begins to ever misalign in the first place. One <svg>
-         per bar, appended as a sibling of the toggle/list (not inside
-         them) so it can span the full row width independent of the
-         button's own box. */
-      var SVG_NS = 'http://www.w3.org/2000/svg';
-      var lineSvg = D.createElementNS(SVG_NS, 'svg');
-      lineSvg.setAttribute('class', 'mdr-allbar__line');
-      lineSvg.setAttribute('aria-hidden', 'true');
-      lineSvg.setAttribute('focusable', 'false');
-      var linePath = D.createElementNS(SVG_NS, 'path');
-      linePath.setAttribute('class', 'mdr-allbar__line-path');
-      lineSvg.appendChild(linePath);
-      /* MENU's end-cap: the rail's terminal stroke -- its own path (same
-         stroke class) so it can travel with MENU while the rail zips */
-      var capPath = D.createElementNS(SVG_NS, 'path');
-      capPath.setAttribute('class', 'mdr-allbar__line-path mdr-allbar__cap');
-      lineSvg.appendChild(capPath);
-      wrap.appendChild(lineSvg);
-
-      /* sit it directly below the header, on every page -- inside
-         #header-group, so below desktop width the header and the rail are
-         ONE pinned glass surface (mdr-custom.css, GLASS CHROME): one sticky
-         element, one blur, nothing to drift apart while scrolling */
+      /* directly below the masthead, inside #header-group: one pinned glass
+         surface with it at every width */
       header.parentNode.insertBefore(wrap, header.nextSibling);
 
-      /* PC (>=990px): WEBRACK/RETURN is the first row of the desktop frame
-         (.mdr-frame, layout/theme.liquid) so the frame's vertical lines start
-         at the line above it; below that it stays under the header, as
-         before. Moving the node keeps every listener on it. */
-      var headerParent = header.parentNode;
-      var frameQuery = window.matchMedia('(min-width: 990px)');
-      function placeWrap() {
-        /* a row the in-page navigation has set aside (mdr-instant-nav) stays aside */
-        if (!wrap.isConnected) return;
-        var frame = D.querySelector('.mdr-frame');
-        var inFrame = frameQuery.matches && frame && !D.querySelector('main[data-template="index"]');
-        if (inFrame) {
-          if (wrap.parentNode !== frame) frame.insertBefore(wrap, frame.firstChild);
-        } else if (wrap.parentNode !== headerParent) {
-          headerParent.insertBefore(wrap, header.nextSibling);
-        }
-      }
-      placeWrap();
-      frameQuery.addEventListener('change', function () {
-        placeWrap();
-        requestAnimationFrame(buildLinePath);
-      });
-
-      /* Builds the line+chevron as ONE path, drawn directly in the wrap's
-         own real pixel coordinate space (svg width/height/viewBox all set
-         to the wrap's exact measured size, no scaling transform anywhere)
-         so the diagonal wings render at a true, undistorted angle at any
-         viewport width -- "alignment cannot break at different viewport
-         widths" ruled out an approach where a fixed viewBox gets stretched
-         to fit, since non-uniform stretching would skew the diagonals
-         differently per width.
-         The path is two subpaths sharing one exact coordinate (the
-         vertex): [one wing tip -> vertex -> the line's far end] as one
-         unbroken 2-segment stroke (this covers the ENTIRE horizontal
-         line, since the vertex is a literal midpoint of that same L
-         command, not a separate piece measured afterward -- "the
-         horizontal section must enter the exact mathematical center of
-         the chevron point" and "zero gap between the chevron tip and
-         line" are both true by construction), then a single moveto to
-         draw the second wing (vertex -> the other wing tip). A perfect
-         zero-lift trace isn't geometrically possible for a 3-way junction (the
-         vertex has three strokes meeting at it -- horizontal, upper wing,
-         lower wing -- which no single continuous line can visit without
-         doubling back), but rendered pixels are identical either way:
-         same stroke-width/colour/cap the whole way, both subpaths meeting
-         at one exact shared point, so nothing visibly "joins" -- it reads
-         as one continuous wire because, pixel for pixel, it is one.
-         Desktop draws the same line (WEBRACK has its own full row there
-         too); it stops at the page frame's edges, not the viewport's --
-         see lineStart/lineEnd below. */
-      /* the visual centre of a label's capitals, relative to the row */
-      var metricsCtx = null;
-      function opticalCentre(el, rowRect) {
-        var text = (el.textContent || '').trim().toUpperCase();
-        if (!text) return null;
-        var cs = getComputedStyle(el);
-        metricsCtx = metricsCtx || D.createElement('canvas').getContext('2d');
-        metricsCtx.font = cs.fontStyle + ' ' + cs.fontWeight + ' ' + cs.fontSize + ' ' + cs.fontFamily;
-        var tm = metricsCtx.measureText(text);
-        if (!tm.actualBoundingBoxAscent) return null;
-        var probe = D.createElement('span');
-        probe.style.cssText = 'display:inline-block;width:0;height:0;vertical-align:baseline';
-        el.appendChild(probe);
-        var baseline = probe.getBoundingClientRect().top - rowRect.top;
-        probe.remove();
-        return baseline - (tm.actualBoundingBoxAscent - tm.actualBoundingBoxDescent) / 2;
-      }
-
-      function buildLinePath() {
-        var label = toggle.querySelector('.mdr-allbar__label');
-        if (!label) return;
-        var wrapRect = wrap.getBoundingClientRect();
-        var toggleRect = toggle.getBoundingClientRect();
-        var labelRect = label.getBoundingClientRect();
-        var w = wrapRect.width;
-        var h = wrapRect.height;
-        if (!w || !h) return;
-        /* the pinned rail's height: the theme's sticky pieces (PDP photo and
-           details, desktop cart summary) stop just under it */
-        D.documentElement.style.setProperty('--mdr-rail-h', wrap.offsetHeight + 'px');
-        /* the pinned header group's height, and where the rail starts inside
-           it (tablets pin the group with only its rail part on screen) */
+      /* the shell's measurements (mdr-custom.css, THE SHELL): the row's
+         height (the theme's sticky pieces stop under it), the pinned
+         group's height (phones pad the page by it) and where the row
+         starts inside it (from 750px the group pins with only this row on
+         screen) -- exact, from the rects, so nothing sits half a pixel off */
+      function measure() {
+        var root = D.documentElement.style;
+        root.setProperty('--mdr-rail-h', wrap.offsetHeight + 'px');
         var headerGroup = D.getElementById('header-group');
-        if (headerGroup) {
-          /* exact (sub-pixel): phones pad the page by it, so the content's
-             first line meets the fixed header's line exactly */
-          D.documentElement.style.setProperty('--mdr-header-h', headerGroup.getBoundingClientRect().height + 'px');
-          /* from the rects, not offsetTop -- that rounds, and the rail's top
-             line then sits half a pixel off the top of the screen */
-          if (headerGroup.contains(wrap)) D.documentElement.style.setProperty('--mdr-rail-top', (wrapRect.top - headerGroup.getBoundingClientRect().top) + 'px');
-        }
-        lineSvg.setAttribute('width', w);
-        lineSvg.setAttribute('height', h);
-        lineSvg.setAttribute('viewBox', '0 0 ' + w + ' ' + h);
-
-        /* toggle's own vertical center, not the label's -- .mdr-allbar__
-           toggle is align-items:center, so this is exactly where the
-           label visually sits regardless of its own line-height box. */
-        /* ONE axis for the whole drawing (chevron tip, rail, end-cap): the
-           OPTICAL centre of the label's capitals, not the centre of its
-           line box. This font's capitals sit a little high in their box
-           (ascender/descender space), so centring on the box left the rail
-           ~0.4px under the text. Measured from the rendered font itself --
-           the baseline (a zero-size probe in the label) minus half the cap
-           ink height -- so it holds for any font, size or screen. MENU uses
-           the same row box and type, so it shares the axis. Then snapped
-           to the screen's pixel grid so the 1px rail is one crisp row of
-           pixels, not a soft line straddling two. */
-        var dpr = window.devicePixelRatio || 1;
-        var snap = function (v) { return (Math.round(v * dpr - dpr / 2) + dpr / 2) / dpr; };
-        var midY = opticalCentre(label, wrapRect) || ((toggleRect.top + toggleRect.height / 2) - wrapRect.top);
-        midY = snap(midY);
-        var gap = 7; // label-to-stroke gap, matches the old label/chevron rhythm
-        var wingDx = 5; // subtle -- "very minimal, not a conventional thick arrow"
-        var wingDy = 4;
-        var edgeInset = 2; // keeps the vertex just short of the true row edge
-        /* phones: the row's true edges. Desktop: the frame edges -- the
-           wrap's inline padding plus the toggle's own padding (the label
-           sits exactly on the frame edge, mdr-custom.css desktop shell). */
-        var lineStart = edgeInset;
-        var lineEnd = w - edgeInset;
-        if (window.innerWidth >= 750) {
-          var wrapCs = getComputedStyle(wrap);
-          var toggleInset = parseFloat(getComputedStyle(toggle).paddingLeft) || 0;
-          lineStart = (parseFloat(wrapCs.paddingLeft) || 0) + toggleInset;
-          lineEnd = w - (parseFloat(wrapCs.paddingRight) || 0) - toggleInset;
-        }
-
-        /* MENU: the same row box as the toggle (so its label centres on the
-           rail exactly like WEBRACK/RETURN), at the row's content edge
-           opposite the toggle */
-        var wrapCs2 = getComputedStyle(wrap);
-        menu.style.setProperty('--mdr-rail-line-height', getComputedStyle(toggle).lineHeight);
-        menu.style.top = (toggleRect.top - wrapRect.top - wrap.clientTop) + 'px';
-        menu.style.height = toggleRect.height + 'px';
-        if (isHome) menu.style.right = (parseFloat(wrapCs2.paddingRight) || 0) + 'px';
-        else menu.style.left = (parseFloat(wrapCs2.paddingLeft) || 0) + 'px';
-        var menuLabel = menu.querySelector('.mdr-allbar__menu-label');
-        var menuRect = menuLabel.getBoundingClientRect();
-        /* MENU's symbol, permanent (never swapped or morphed): a four-tooth
-           rake seen side-on -- a short vertical spine the rail runs into at
-           its centre, with four equal teeth pointing toward MENU. About the
-           chevron's height. Tooth tips sit `gap` from the label, mirroring
-           the chevron's gap from WEBRACK / RETURN.
-           Teeth are placed in device pixels: equal spacing (~3px), each on a
-           pixel row so all four render crisp at any screen density; the set
-           is centred on the rail to within half a device pixel. */
-        var toothLen = 3;
-        var dir = isHome ? 1 : -1; /* teeth point toward MENU */
-        var capX = snap(isHome ? menuRect.left - wrapRect.left - gap - toothLen : menuRect.right - wrapRect.left + gap + toothLen);
-        var tipX = capX + dir * toothLen;
-        var step = Math.max(2, Math.round(3 * dpr)); /* device px between teeth */
-        /* a 1px stroke is dpr device px wide: its centre sits where the
-           rail's snap() puts it (the same half-width offset) */
-        var firstRow = Math.round(midY * dpr - 1.5 * step - dpr / 2) + dpr / 2;
-        var teeth = [0, 1, 2, 3].map(function (i) { return (firstRow + i * step) / dpr; });
-        capPath.setAttribute('d',
-          'M ' + tipX + ' ' + teeth[0] + ' L ' + capX + ' ' + teeth[0] +
-          ' L ' + capX + ' ' + teeth[3] + ' L ' + tipX + ' ' + teeth[3] +
-          ' M ' + capX + ' ' + teeth[1] + ' L ' + tipX + ' ' + teeth[1] +
-          ' M ' + capX + ' ' + teeth[2] + ' L ' + tipX + ' ' + teeth[2]);
-        /* how far MENU + cap travel to leave the row, for the zap */
-        wrap.style.setProperty('--mdr-menu-out', isHome
-          ? (w - (menuRect.left - wrapRect.left) + gap + 12) + 'px'
-          : (-(menuRect.right - wrapRect.left) - gap - 12) + 'px');
-
-        var d;
-        if (isHome) {
-          /* WEBRACK: reversed from the first version of this -- the
-             chevron now sits immediately after the label, THEN the line
-             runs on to the right edge ("WEBRACK >>────", not
-             "WEBRACK────>>"). wingBackX is the chevron's own open/back
-             side (right after the label); vertexX is its tip, one wingDx
-             further right. The MAIN stroke is [upper wing tip -> vertex
-             -> right edge] as one unbroken run -- the line doesn't just
-             start "near" the vertex, it's the literal continuation of the
-             same L command the vertex is defined by, so "zero gap between
-             chevron tip and line" is true by construction. Path starts
-             (t=0) at the label end and ends (t=len) at the right edge, on
-             purpose: the open/close erase (CSS stroke-dashoffset) always
-             clears from a path's own t=0 toward t=len, so starting at the
-             label makes the wipe travel left -> right, chevron-first --
-             "as though >> is pulling the line open". */
-          var wingBackX = (labelRect.right - wrapRect.left) + gap;
-          var vertexX = wingBackX + wingDx;
-          var lineEndX = Math.max(vertexX, capX);
-          d = 'M ' + wingBackX + ' ' + (midY - wingDy) +
-            ' L ' + vertexX + ' ' + midY +
-            ' L ' + lineEndX + ' ' + midY +
-            ' M ' + vertexX + ' ' + midY +
-            ' L ' + wingBackX + ' ' + (midY + wingDy);
-        } else {
-          /* RETURN: mirrored -- chevron sits immediately BEFORE the label
-             (label is right-aligned, so this is the label's own left
-             edge), tip pointing left, line running on from the tip to the
-             row's left edge ("────< RETURN"). Path again starts (t=0) at
-             the label end, same as WEBRACK, so the erase direction is
-             controlled by the SAME rule (always label -> outward) while
-             the geometry itself points the opposite way -- the net result
-             is a right -> left wipe here, mirroring WEBRACK's left ->
-             right one, "motion travels right -> left when returning". */
-          var wingBackX2 = (labelRect.left - wrapRect.left) - gap;
-          var vertexX2 = wingBackX2 - wingDx;
-          var lineStartX = Math.min(vertexX2, capX);
-          d = 'M ' + wingBackX2 + ' ' + (midY - wingDy) +
-            ' L ' + vertexX2 + ' ' + midY +
-            ' L ' + lineStartX + ' ' + midY +
-            ' M ' + vertexX2 + ' ' + midY +
-            ' L ' + wingBackX2 + ' ' + (midY + wingDy);
-        }
-        linePath.setAttribute('d', d);
-
-        /* dash length only -- NOT dashoffset (that stays purely CSS-
-           class-driven, see .mdr-allbar-wrap--zap / .is-open in
-           mdr-custom.css) -- setting offset here as an inline style would
-           permanently out-specificity those class rules and the open/
-           close transition would never fire again. */
-        var len = linePath.getTotalLength();
-        wrap.style.setProperty('--mdr-line-len', len);
-        linePath.style.strokeDasharray = len + ' ' + len;
+        if (!headerGroup) return;
+        var groupRect = headerGroup.getBoundingClientRect();
+        root.setProperty('--mdr-header-h', groupRect.height + 'px');
+        if (headerGroup.contains(wrap)) root.setProperty('--mdr-rail-top', (wrap.getBoundingClientRect().top - groupRect.top) + 'px');
       }
+      window.__mdrRailMeasure = measure;
 
-      buildLinePath();
-      window.addEventListener('resize', buildLinePath, { passive: true });
-      window.addEventListener('load', buildLinePath);
-      /* the axis is measured from the real font -- again once it has loaded */
-      if (D.fonts && D.fonts.ready) D.fonts.ready.then(buildLinePath);
+      measure();
+      window.addEventListener('resize', measure, { passive: true });
+      window.addEventListener('load', measure);
+      if (D.fonts && D.fonts.ready) D.fonts.ready.then(measure);
 
-      /* back on the grid after a RETURN: MENU and its cap arrive from the
-         edge they were carried out to, and click back onto the rail */
-      if (isHome && window.__mdrMenuEnterPending && window.__mdrMenuEnterPending()) window.__mdrMenuEnter(wrap);
-
-      /* line its label up under the logo, at every breakpoint (the header
-         centres its own content on desktop, so a fixed gutter won't do) */
-      /* the button now starts flush at the true left edge (CSS:
-         .mdr-allbar-wrap padding-inline-start: 0) instead of lined up
-         under the logo, so there's no JS alignment needed here any more */
-
-      /* The diagonal used to be a separate 1px line rotated with a CSS
-         transform, positioned via a JS-measured custom property. Rotating
-         a hairline like that doesn't anti-alias cleanly -- it reads as a
-         slightly fuzzy, uneven-width stroke next to the crisp horizontal/
-         vertical borders, which is the "not uniform... overflow" look.
-         Replaced entirely: the diagonal is now cut directly into the
-         button's own shape with clip-path (see CSS), the same technique
-         a solid vector tool uses for a ribbon/flag tail -- one clean
-         outline, no separate rotated element, and no JS measurement
-         needed at all since the cut is always relative to the button's
-         own current box. */
-
-      /* A body-position:fixed page-lock here was expensive (forces a full
-         reflow the instant WEBRACK opens -- the mobile lag/freeze) and
-         locked the WHOLE page, not just this bar. Dropped entirely: the
-         touchzone's own `touch-action: pan-x` (see CSS) already keeps a
-         drag on the titles from also scrolling the page, for free, scoped
-         to just that gesture -- no page-wide lock needed or wanted. */
-      /* "Zap" is the line+chevron's own open/close state -- a fast (see
-         .mdr-allbar-wrap--zap / .is-open in mdr-custom.css, ~220ms)
-         stroke-dashoffset wipe, replacing the old instant display:none
-         and the old CSS scaleX(-1) chevron flip alike: there's no
-         separate icon left to flip, the whole line+arrow graphic zips
-         away as one stroke while the category list slides in underneath
-         it, and zips back in on close. */
+      /* WEBRACK open: the titles take the row (MENU steps aside until it
+         closes) */
       function setOpen(on) {
         bar.classList.toggle('is-open', on);
-        wrap.classList.toggle('mdr-allbar-wrap--zap', on);
         D.documentElement.classList.toggle('mdr-webrack-open', on);
         toggle.setAttribute('aria-expanded', on ? 'true' : 'false');
         if (typeof positionTouchzone === 'function') requestAnimationFrame(positionTouchzone);
@@ -922,35 +606,15 @@
 
       if (!isHome) {
         /* off the home page this bar IS the back button */
-        toggle.setAttribute('aria-label', 'Back');
+        toggle.setAttribute('aria-label', 'Return');
         toggle.addEventListener('click', function (e) {
           e.preventDefault();
           e.stopPropagation();
-          /* RETURN never "opens" anything -- .mdr-allbar-wrap--zap here is
-             a one-shot flourish, not a persistent state toggle: play the
-             same zip transition (mdr-custom.css), reversed direction by
-             construction (buildLinePath's RETURN path starts at the
-             LABEL end, WEBRACK's starts at the OUTER end -- see that
-             function's own comment), then actually navigate once there's
-             been enough time to SEE the zip start, not zero. A plain,
-             un-delayed history.back() would swap the page out the same
-             tick the class gets added -- the browser never gets a chance
-             to paint a single animated frame before the transition target
-             page starts loading. 60ms: enough for the zip's first
-             frames to visibly start, without holding the navigation
-             itself back -- the previous page comes from the browser's
-             cache (see mdrGoBack, layout/theme.liquid), so the rest of
-             the zip plays out while it's already coming back. */
-          wrap.classList.add('mdr-allbar-wrap--zap');
-          try { sessionStorage.setItem('mdrMenuEnter', String(Date.now())); } catch (err) {}
-          /* the rail's grid line shows the load (mdr-nav-progress.liquid) --
-             completed by the grid in memory, or by the page that loads */
-          if (window.__mdrProgress) window.__mdrProgress.start();
-          setTimeout(function () {
-            if (typeof window.mdrGoBack === 'function') window.mdrGoBack();
-            else if (history.length > 1) history.back();
-            else location.href = '/';
-          }, 60);
+          /* the browser's own history (mdrGoBack, layout/theme.liquid), so
+             the previous page comes straight from its cache */
+          if (typeof window.mdrGoBack === 'function') window.mdrGoBack();
+          else if (history.length > 1) history.back();
+          else location.href = '/';
         });
         return;
       }
@@ -977,13 +641,6 @@
            instantly instead of racing the navigation. */
         var navLink = e.target.closest && e.target.closest('a[href]');
         if (navLink) {
-          /* moved from `bar` to `wrap`: .mdr-allbar__line now lives as a
-             sibling of `bar`, not inside it, so a class added only to
-             `bar` never reached it via the existing ".mdr-allbar--instant
-             *" descendant selector -- the line would still animate its
-             zip-closed transition while the page was already navigating
-             away, the exact stutter this instant-close path exists to
-             prevent. Adding it to `wrap` instead reaches both. */
           wrap.classList.add('mdr-allbar--instant');
           setOpen(false);
           requestAnimationFrame(function () {
@@ -1103,8 +760,6 @@
            instead of sitting in front of it as a dead pause */
         var outStart = Date.now();
         frame.classList.add('mdr-swiping-out');
-        /* the rail's grid line shows the load (mdr-nav-progress.liquid) */
-        if (window.__mdrProgress) window.__mdrProgress.start();
 
         fetchHtml(url)
           .then(function (html) {
@@ -1130,7 +785,6 @@
               /* the full list comes back with its placeholder tiles, as on a
                  fresh page load (categories stay real products only) */
               if (!empty && url.split('?')[0] === allUrl && window.__mdrGridPadFill) window.__mdrGridPadFill();
-              if (window.__mdrGridFillRow) window.__mdrGridFillRow();
 
               currentUrl = url;
               if (!fromPopstate) {
@@ -1140,7 +794,6 @@
 
               frame.classList.remove('mdr-swiping-out');
               frame.classList.add('mdr-swiping-in');
-              if (window.__mdrProgress) window.__mdrProgress.done();
               setTimeout(function () {
                 frame.classList.remove('mdr-swiping-in');
                 window.__mdrSwitching = false;
