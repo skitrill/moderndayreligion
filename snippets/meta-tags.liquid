@@ -45,7 +45,9 @@
   --mdr-landing-bg      the home screen's graphite (#171717)
   --mdr-surface         the canvas everywhere = that graphite
   --mdr-light           the home screen's warm off-white (its logo, its
-                        menu) -- primary text (--mdr-ink, assets/mdr-custom.css)
+                        menu) -- primary text (--mdr-ink, assets/mdr-custom.css);
+                        -rgb: the same as a triplet, for the theme's
+                        translucent lines and placeholders (keep in step)
   --mdr-graphite        secondary text: the off-white at the home screen
                         menu's 75%, as one solid colour
   --mdr-interface-*     the shell's material -- masthead, WEBRACK rail,
@@ -79,6 +81,7 @@
     --mdr-surface: var(--mdr-landing-bg);
     --mdr-surface-rgb: 23 23 23;
     --mdr-light: #f7f0e4;
+    --mdr-light-rgb: 247 240 228;
     --mdr-graphite: color-mix(in srgb, var(--mdr-light) 75%, var(--mdr-surface));
     --mdr-interface-color: color-mix(in srgb, var(--mdr-surface), var(--mdr-graphite) 22%);
     --mdr-interface-alpha: 55%;

@@ -3507,7 +3507,7 @@ main[data-template='collection'] [id$='__product_list_fa6P9H'] .resource-list__i
 ::before,
 ::after {
   --color-foreground: var(--mdr-text-gray) !important;
-  --color-foreground-rgb: 0 0 0 !important;
+  --color-foreground-rgb: var(--mdr-light-rgb) !important;
   /* the WEBRACK grid's own product titles/prices grey, as the ONE standard
      body-text colour site-wide -- this was full black before (a prior
      explicit ask), and muted 0.72/0.45 opacity before that. Elements with
@@ -3519,9 +3519,9 @@ main[data-template='collection'] [id$='__product_list_fa6P9H'] .resource-list__i
   --color-foreground-subdued: var(--mdr-text-gray) !important;
 }
 
-/* ---- Footer: glass experiment -- was white-on-solid-blue, now graphite
-   on the light glass fill (same --mdr-text-gray family the rest of the
-   site's body copy uses). footer * (not just footer) is needed because
+/* ---- Footer: glass experiment -- was white-on-solid-blue, now the
+   graphite text on the dark glass fill (same --mdr-text-gray family the
+   rest of the site's body copy uses). footer * (not just footer) is needed because
    the rule above re-declares these variables directly on every element
    via the * selector -- setting them only on <footer> wouldn't reach its
    children, since a directly-set custom property always wins over one
@@ -3531,7 +3531,7 @@ footer *,
 footer ::before,
 footer ::after {
   --color-foreground: var(--mdr-text-gray) !important;
-  --color-foreground-rgb: 0 0 0 !important;
+  --color-foreground-rgb: var(--mdr-light-rgb) !important;
   --color-foreground-muted: var(--mdr-text-gray) !important;
   --color-foreground-subdued: var(--mdr-text-gray-light) !important;
 }
