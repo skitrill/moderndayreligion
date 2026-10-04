@@ -1268,6 +1268,14 @@ product-price *,
   --mdr-qty-reach: 9px;
 }
 
+/* phones: the cart's edges are the masthead's (the theme's own page margin
+   is 10px; the product page already sits on the gutter) */
+@media screen and (max-width: 749px) {
+  main[data-template='cart'] {
+    --page-margin: var(--mdr-gutter);
+  }
+}
+
 /* ---- Cart line: one structured module --------------------------------
      [ image ] [ name / colour, size / unit price ]        [ line total ]
      [       ] [ − | 1 | + ]                                     [ delete ]
