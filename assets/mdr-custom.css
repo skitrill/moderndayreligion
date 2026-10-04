@@ -495,6 +495,11 @@ html {
     padding-inline: var(--mdr-frame-inline) !important;
     box-sizing: border-box !important;
   }
+
+  /* the shop grid carries its own gutter (the masthead's edges) */
+  main[data-template='collection'] {
+    padding-inline: 0 !important;
+  }
 }
 
 @media screen and (min-width: 750px) {
