@@ -3872,9 +3872,14 @@ main[data-template='collection']
   flex: 1 1 auto;
 }
 
-/* other pages: MENU starts the row, RETURN ends it */
+/* other pages: MENU starts the row, RETURN ends it (RETURN has no title
+   list, so nothing trails it) */
 .mdr-allbar--back {
   margin-inline-start: auto;
+}
+
+.mdr-allbar--back .mdr-allbar__list {
+  display: none;
 }
 
 .mdr-allbar__menu {
