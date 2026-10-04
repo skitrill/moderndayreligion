@@ -219,9 +219,9 @@ product-price *,
 
   /* ---- PDP vertical rhythm: four groups --
        [TITLE -3xs- PRICE]
-       -between- [DESCRIPTION]
        -between- [COLOUR -in- SIZE -in- SIZE CHART]
        -between- [QTY | ADD TO CART | BUY NOW]
+       -between- [DESCRIPTION]
        -footer-gap- footer
      Tight inside a group, a little more between groups; phones run
      tighter than wider screens (the min-width: 750px values right after
@@ -1498,8 +1498,9 @@ product-price *,
   gap: 0 !important;
 }
 
-/* ---- Product-page block order: title/price -> description -> size/color
-   selectors -> Size Chart (right under the size box) -> buy-buttons row.
+/* ---- Product-page block order: title/price -> size/color selectors ->
+   Size Chart (right under the size box) -> buy-buttons row -> description
+   (the last thing on the page).
    These blocks are direct children of the details column's OWN
    group-block > group-block-content wrapper, not of .product-details
    itself -- .product-details only wraps that one group-block. ----------- */
@@ -1520,7 +1521,7 @@ product-price *,
    line, no gap. Whatever the editor adds -- inline widths, sizes,
    alignment, colours, margins, empty paragraphs -- is overridden. */
 .product-details > .group-block > .group-block-content > rte-formatter[class*='__text_aEtTtq'] {
-  order: 2 !important;
+  order: 6 !important;
   margin-top: var(--pdp-gap-between) !important;
   width: 100% !important;
   max-width: none !important;
