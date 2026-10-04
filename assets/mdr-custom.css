@@ -137,10 +137,8 @@ product-price *,
   --mdr-paper: var(--mdr-background);
   /* primary text: the home screen's warm off-white (snippets/meta-tags.liquid) */
   --mdr-ink: var(--mdr-light);
-  /* the wordmark, wherever it sits: the black SVG drawn in that same warm
-     off-white (brightness(0) blacks it out, invert whitens it, sepia +
-     saturate warm it, brightness takes it just off pure white) */
-  --mdr-logo-filter: brightness(0) invert(1) sepia(0.35) saturate(0.55) brightness(0.97);
+  /* the wordmark, wherever it sits: the masthead CART link's colour */
+  --mdr-logo-color: var(--mdr-text-gray);
   /* prices: a step stronger than the graphite titles */
   --mdr-price-ink: color-mix(in srgb, var(--mdr-ink) 88%, var(--mdr-surface));
   /* one step quieter than graphite: graphite tinted toward the surface (as
@@ -3016,15 +3014,7 @@ body:has(main[data-template='index']) .page-wrapper {
   /* +15% then +20% more from the original min(60vw, 420px) */
   width: min(82.8vw, 580px);
   height: auto;
-  /* on the graphite landing background now (--mdr-landing-bg test, was
-     solid blue before that, cream body background before that), same
-     navy-on-transparent starting point as the header's own logo (blocks/
-     _header-logo.liquid .mdr-logo-image), but NOT stopped at stark white
-     -- invert(1) alone gives pure #fff, which read as "blue-white" cold
-     against the graphite; sepia+saturate add a touch of warmth back in
-     (a warm off-white, not a second colour), brightness pulls it just
-     off pure white. */
-  filter: var(--mdr-logo-filter);
+  /* its colour: the wordmark rule (--mdr-logo-color) */
 }
 
 /* Desktop: smaller landing wordmark -- was capped at 580px, reading as
@@ -3308,9 +3298,20 @@ body:has(main[data-template='index']) .page-wrapper {
 }
 
 
-/* the masthead wordmark: the home screen's own off-white wordmark */
-#header-component .mdr-logo-image {
-  filter: var(--mdr-logo-filter) !important;
+/* ---- The wordmark, everywhere -- masthead, home screen, lock screen --
+   in exactly the CART link's colour (--mdr-logo-color). It's the black
+   SVG as an <img>, and a filter can only approximate a colour, so it's
+   painted instead: the image's box is filled with the colour and masked
+   to the SVG's own shape, sized and placed the way the picture itself is
+   (contain, centred); the picture's own pixels are moved out of its box.
+   Same box, same alt text, same link -- only the paint changes. */
+#header-component .mdr-logo-image,
+.mdr-landing__logo img {
+  background-color: var(--mdr-logo-color);
+  -webkit-mask: url('mdr-logo.svg') center / contain no-repeat;
+  mask: url('mdr-logo.svg') center / contain no-repeat;
+  object-position: -10000px 0;
+  filter: none !important;
 }
 
 /* The header itself doesn't know about the safe area at all (viewport-fit=
