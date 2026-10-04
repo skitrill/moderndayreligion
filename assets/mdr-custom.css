@@ -3852,6 +3852,10 @@ main[data-template='collection']
   overflow-x: clip;
 }
 
+.mdr-allbar__toggle {
+  margin: 0;
+}
+
 .mdr-allbar {
   position: relative;
   z-index: 1;
@@ -3895,7 +3899,6 @@ main[data-template='collection']
   display: inline-flex;
   align-items: center;
   gap: 0.45em;
-  margin: 0;
   /* the tap area is the row's full height; the type stays compact */
   padding: 13px 0;
   border: 0;
@@ -4051,12 +4054,13 @@ html.mdr-webrack-open .mdr-allbar__touchzone {
   user-select: none;
 }
 
-/* supreme-style: the grid just flows down the page, no inner scroll window */
+/* the grid just flows down the page, no inner scroll window (its inline
+   padding is the gutter, set with the grid itself) */
 main[data-template='collection'] [id$='__product_list_fa6P9H'] .resource-list--grid {
   max-height: none !important;
   overflow: visible !important;
   border: 0 !important;
-  padding: 0 !important;
+  padding-block: 0 !important;
 }
 
 /* ---- Homepage grid load-in: the whole grid slides up + fades in as ONE
@@ -4231,7 +4235,7 @@ main[data-template='collection'] [id$='__product_list_fa6P9H'] .product-card .pr
    sits on its own line just above the name, in the smallest quiet step;
    every card keeps that line (empty when it isn't new), so names and
    prices stay level across a row. */
-main[data-template='collection'] [id$='__product_list_fa6P9H'] .product-card .text-block::before {
+main[data-template='collection'] [id$='__product_list_fa6P9H'] .product-card .text-block[class*='product_title']::before {
   content: '\00a0';
   display: block;
   margin-bottom: 2px;
@@ -4242,7 +4246,7 @@ main[data-template='collection'] [id$='__product_list_fa6P9H'] .product-card .te
   color: var(--mdr-muted);
 }
 
-main[data-template='collection'] [id$='__product_list_fa6P9H'] product-card[data-mdr-new] .text-block::before {
+main[data-template='collection'] [id$='__product_list_fa6P9H'] product-card[data-mdr-new] .text-block[class*='product_title']::before {
   content: 'New';
 }
 
@@ -4271,8 +4275,12 @@ main[data-template='collection'] [id$='__product_list_fa6P9H'] .product-card pro
    the strong cut, ink), the price sits right under it (secondary step,
    graphite) */
 main[data-template='collection'] [id$='__product_list_fa6P9H'] .product-card .text-block {
-  margin: 10px 0 0 !important;
+  margin: 0 !important;
   padding: 0 !important;
+}
+
+main[data-template='collection'] [id$='__product_list_fa6P9H'] .product-card .text-block[class*='product_title'] {
+  margin-top: 10px !important;
 }
 
 main[data-template='collection'] [id$='__product_list_fa6P9H'] .product-card .text-block p,
