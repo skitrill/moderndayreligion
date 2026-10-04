@@ -57,21 +57,6 @@
   if block_settings.background_color != blank
     render 'contrast-override', background_color: block_settings.background_color, text_color: block_settings.text_color, section_id: block.id
   endif
-
-  # MDR "NEW" (the tab cut into the product grid, assets/mdr-custom.css): a
-  # product tagged "new" (any case), or published in the last 30 days.
-  assign mdr_is_new = false
-  assign mdr_tags = product.tags | join: '|' | downcase | split: '|'
-  if mdr_tags contains 'new'
-    assign mdr_is_new = true
-  elsif product.published_at != blank
-    assign mdr_now = 'now' | date: '%s' | plus: 0
-    assign mdr_published = product.published_at | date: '%s' | plus: 0
-    assign mdr_age = mdr_now | minus: mdr_published
-    if mdr_age < 2592000
-      assign mdr_is_new = true
-    endif
-  endif
 %}
 
 <product-card
@@ -87,9 +72,6 @@
   {{ block.shopify_attributes }}
   {% if onboarding %}
     data-placeholder="true"
-  {% endif %}
-  {% if mdr_is_new %}
-    data-mdr-new
   {% endif %}
   {%- unless onboarding -%}
     {% # theme-check-disable-next-line UnknownFilter %}

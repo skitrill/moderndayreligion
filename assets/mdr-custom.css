@@ -4247,27 +4247,6 @@ main[data-template='collection'] [id$='__product_list_fa6P9H'] .product-card .pr
   padding: 2% !important;
 }
 
-/* ---- NEW: a word, nothing more ------------------------------------------
-   A product is NEW when snippets/product-card.liquid marks its card
-   data-mdr-new (tagged "new", or published in the last 30 days). The word
-   sits on its own line just above the name, in the smallest quiet step;
-   every card keeps that line (empty when it isn't new), so names and
-   prices stay level across a row. */
-main[data-template='collection'] [id$='__product_list_fa6P9H'] .product-card .text-block[class*='product_title']::before {
-  content: '\00a0';
-  display: block;
-  margin-bottom: 2px;
-  font-size: var(--mdr-fs-xs);
-  font-weight: 400;
-  line-height: 1.2;
-  letter-spacing: 0.06em;
-  color: var(--mdr-muted);
-}
-
-main[data-template='collection'] [id$='__product_list_fa6P9H'] product-card[data-mdr-new] .text-block[class*='product_title']::before {
-  content: 'New';
-}
-
 /* hide the quick-add / choose overlay button -- supreme cards are just tap-through */
 main[data-template='collection'] [id$='__product_list_fa6P9H'] quick-add-component,
 main[data-template='collection'] [id$='__product_list_fa6P9H'] .quick-add {
@@ -4288,10 +4267,16 @@ main[data-template='collection'] [id$='__product_list_fa6P9H'] .product-card pro
   display: inline !important;
 }
 
-/* under the photo, on its edge: NEW / name / price as one compact block,
-   left-aligned in every column -- the name is the anchor (primary step,
-   the strong cut, ink), the price sits right under it (secondary step,
-   graphite) */
+/* under the photo: name / price as one compact block, centred under it --
+   the name is the anchor (primary step, the strong cut, ink), the price
+   sits right under it (secondary step, graphite) */
+main[data-template='collection'] [id$='__product_list_fa6P9H'] .product-card .text-block,
+main[data-template='collection'] [id$='__product_list_fa6P9H'] .product-card product-price,
+main[data-template='collection'] [id$='__product_list_fa6P9H'] .product-card product-price > div {
+  text-align: center !important;
+  --text-align: center !important;
+}
+
 main[data-template='collection'] [id$='__product_list_fa6P9H'] .product-card .text-block {
   margin: 0 !important;
   padding: 0 !important;
@@ -4308,7 +4293,7 @@ main[data-template='collection'] [id$='__product_list_fa6P9H'] .product-card pro
   font-size: var(--mdr-fs-sm) !important;
   line-height: 1.25 !important;
   letter-spacing: 0.03em !important;
-  text-align: left !important;
+  text-align: center !important;
   color: var(--mdr-graphite) !important;
   text-transform: uppercase !important;
 }
