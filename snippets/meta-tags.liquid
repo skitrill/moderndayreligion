@@ -40,7 +40,14 @@
   derives from these (it defines none of them itself). In <head>, ahead of
   every stylesheet, so the very first frame of every page is already right.
 
-  --mdr-surface         the canvas (Palace's #f5f5f5)
+  The whole site is the home screen's environment: its graphite and its
+  warm off-white.
+  --mdr-landing-bg      the home screen's graphite (#171717)
+  --mdr-surface         the canvas everywhere = that graphite
+  --mdr-light           the home screen's warm off-white (its logo, its
+                        menu) -- primary text (--mdr-ink, assets/mdr-custom.css)
+  --mdr-graphite        secondary text: the off-white at the home screen
+                        menu's 75%, as one solid colour
   --mdr-interface-*     the shell's material -- masthead, WEBRACK rail,
                         footer: a graphite-tinted glass (colour, alpha, blur)
   --mdr-interface-glass that material as the translucent fill the shell uses
@@ -62,21 +69,24 @@
     body stays transparent and the canvas is painted by .page-wrapper --
     an opaque body would put the canvas colour back under the footer.
   theme-color (set from html below) is for the browsers that do read it.
-  The landing / lock screen is graphite end to end.
+  The theme palette (config/settings_data.json color_palette) carries the
+  same two colours for Horizon's own parts. The landing / lock screen has
+  no shell, so it is the plain graphite end to end.
 {%- endcomment -%}
 <style>
   :root {
-    --mdr-surface: #f5f5f5;
-    --mdr-surface-rgb: 245 245 245;
-    --mdr-graphite: #858581;
     --mdr-landing-bg: #171717;
+    --mdr-surface: var(--mdr-landing-bg);
+    --mdr-surface-rgb: 23 23 23;
+    --mdr-light: #f7f0e4;
+    --mdr-graphite: color-mix(in srgb, var(--mdr-light) 75%, var(--mdr-surface));
     --mdr-interface-color: color-mix(in srgb, var(--mdr-surface), var(--mdr-graphite) 22%);
     --mdr-interface-alpha: 55%;
     --mdr-interface-blur: blur(10px) saturate(1.2);
     --mdr-interface-glass: color-mix(in srgb, var(--mdr-interface-color) var(--mdr-interface-alpha), transparent);
     --mdr-interface-solid: color-mix(in srgb, var(--mdr-interface-color) var(--mdr-interface-alpha), var(--mdr-surface));
   }
-  html { background-color: var(--mdr-interface-solid); color-scheme: light; }
+  html { background-color: var(--mdr-interface-solid); color-scheme: dark; }
   body { background-color: transparent; }
   .page-wrapper { background-color: var(--mdr-surface); }
   .mdr-edge {
@@ -94,7 +104,6 @@
   }
   {%- if mdr_landing %}
   html, body, .page-wrapper { background-color: var(--mdr-landing-bg); }
-  html { color-scheme: dark; }
   {%- endif %}
 </style>
 <meta name="theme-color" content="{% if mdr_landing %}#171717{% endif %}">

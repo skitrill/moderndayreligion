@@ -135,7 +135,14 @@ product-price *,
   --mdr-canvas-rgb: var(--mdr-surface-rgb);
   --mdr-background: var(--mdr-surface);
   --mdr-paper: var(--mdr-background);
-  --mdr-ink: #202020;
+  /* primary text: the home screen's warm off-white (snippets/meta-tags.liquid) */
+  --mdr-ink: var(--mdr-light);
+  /* the wordmark, wherever it sits: the black SVG drawn in that same warm
+     off-white (brightness(0) blacks it out, invert whitens it, sepia +
+     saturate warm it, brightness takes it just off pure white) */
+  --mdr-logo-filter: brightness(0) invert(1) sepia(0.35) saturate(0.55) brightness(0.97);
+  /* prices: a step stronger than the graphite titles */
+  --mdr-price-ink: color-mix(in srgb, var(--mdr-ink) 88%, var(--mdr-surface));
   /* one step quieter than graphite: graphite tinted toward the surface (as
      documented above) -- #b7b7b1 on the old paper; relative, so it stays
      the same step quieter on any surface. */
@@ -992,7 +999,7 @@ product-price *,
 .cart-drawer__total .price,
 .cart__total .price,
 .totals__total-value {
-  color: rgba(0, 0, 0, 0.65) !important;
+  color: var(--mdr-price-ink) !important;
 }
 
 /* Estimated total, mobile: 10% smaller. calc() against the base theme's
@@ -1674,7 +1681,7 @@ product-price *,
    as one unit so unavailable options genuinely recede. Selector
    dimensions/layout/available options/selected fill are untouched. */
 .variant-option__strikethrough {
-  stroke: #bebeba !important;
+  stroke: var(--mdr-border-strong) !important;
   opacity: 0.5 !important;
 }
 
@@ -1976,7 +1983,7 @@ main[data-template='collection'] [id$='__product_list_fa6P9H'] .section-resource
   :is(h1, h2, h3, h4, .text-block, [class*='title']),
 main[data-template='collection'] [id$='__product_list_fa6P9H'] .section-resource-list__header
   :is(h1, h2, h3, h4, .text-block) * {
-  color: #000000 !important;
+  color: var(--mdr-ink) !important;
 }
 
 /* ==========================================================================
@@ -2321,7 +2328,7 @@ tbody > .cart-items__table-row::after {
   padding: 6px 8px !important;
   border: 1px solid var(--mdr-border-strong) !important;
   background: var(--mdr-paper);
-  color: #000000 !important;
+  color: var(--mdr-ink) !important;
   font-size: 0.62rem !important;
   line-height: 1.3 !important;
 }
@@ -2544,8 +2551,7 @@ button.link,
    ancestor's width). A bordered/transparent treatment, then a faint
    0.1-alpha tint, were both tried here and still read as "a strip of
    text", not a button -- a solid fill with real padding is what actually
-   reads as one, so it borrows the exact same cream-fill/dark-text pairing
-   as ADD TO CART right above it. */
+   reads as one, so it takes ADD TO CART's own button colours. */
 .shopify-payment-button__more-options,
 [class*='more-options'] {
   display: block !important;
@@ -2553,8 +2559,8 @@ button.link,
   box-sizing: border-box;
   text-align: center;
   padding: 9px 8px !important;
-  background: #e9e1c4 !important;
-  color: #1a1a1a !important;
+  background: var(--color-primary-button-background) !important;
+  color: var(--color-primary-button-text) !important;
   /* not 600 -- only the Regular weight is actually loaded (see the
      @font-face at the top of this file), so a heavier weight here was
      the browser's own synthesized/faux bold: a different, inconsistent
@@ -3018,7 +3024,7 @@ body:has(main[data-template='index']) .page-wrapper {
      against the graphite; sepia+saturate add a touch of warmth back in
      (a warm off-white, not a second colour), brightness pulls it just
      off pure white. */
-  filter: brightness(0) invert(1) sepia(0.35) saturate(0.55) brightness(0.97);
+  filter: var(--mdr-logo-filter);
 }
 
 /* Desktop: smaller landing wordmark -- was capped at 580px, reading as
@@ -3302,18 +3308,9 @@ body:has(main[data-template='index']) .page-wrapper {
 }
 
 
-/* Logo -> near-black graphite (was: brightness(0) invert(1), i.e. solid
-   white, for the solid blue fill this sat on). invert(1) on an already-
-   fully-black image (brightness(0) first) flips it to white; dropping
-   the invert leaves it black, and the opacity softens that to a graphite
-   rather than jet-black, matching the "dark graphite" ask without
-   flattening the wordmark to pure ink. Scoped to the HEADER logo only
-   (.mdr-logo-image, blocks/_header-logo.liquid) -- the homepage hero
-   logo (.mdr-landing__logo img) is a different element, still on its own
-   solid blue screen, out of scope for this experiment. */
+/* the masthead wordmark: the home screen's own off-white wordmark */
 #header-component .mdr-logo-image {
-  filter: brightness(0) !important;
-  opacity: 0.85 !important;
+  filter: var(--mdr-logo-filter) !important;
 }
 
 /* The header itself doesn't know about the safe area at all (viewport-fit=
@@ -3365,7 +3362,7 @@ body:has(main[data-template='index']) .page-wrapper {
 .variant-option--buttons .variant-option__button-label {
   flex: 1 1 0 !important;
   border: 0 !important;
-  border-left: 1px solid rgba(0, 0, 0, 0.12) !important;
+  border-left: 1px solid var(--mdr-border) !important;
   padding: 4px 4px !important;
   min-height: 24px !important;
   align-items: center !important;
@@ -3575,7 +3572,7 @@ main .product-information__grid .product-details {
    colour accent, so product artwork is what actually reads as colour. */
 main .product-information__grid.product-information__grid
   :is(.price, .price *, product-price, product-price *) {
-  color: rgba(0, 0, 0, 0.65) !important;
+  color: var(--mdr-price-ink) !important;
 }
 
 /* ...size chart -> graphite, a utility link rather than a coloured CTA */
@@ -3608,7 +3605,7 @@ main .product-information__grid.product-information__grid .product-details h1 {
 #header-component .header-logo,
 #header-component .header-logo span,
 #header-component [data-testid='header-logo'] {
-  color: #000000 !important;
+  color: var(--mdr-ink) !important;
 }
 
 /* Hit-area pass: the home-link's own clickable box constrained strictly
@@ -3649,7 +3646,7 @@ cart-drawer *,
    blue regardless, see .cart-bubble further down, more specific still). */
 .cart-page__title .cart-title h1,
 .cart-page__title .cart-title h1 * {
-  color: #000000 !important;
+  color: var(--mdr-ink) !important;
 }
 
 /* ...but solid (primary) buttons keep their own white-on-black button text --
@@ -3687,7 +3684,7 @@ cart-drawer .button:not(.button-secondary, .button-unstyled) *,
 .cart-totals [class*='price'],
 .cart-drawer [class*='price'],
 cart-drawer [class*='price'] {
-  color: rgba(0, 0, 0, 0.65) !important;
+  color: var(--mdr-price-ink) !important;
 }
 
 /* Typography pass: .cart-page [class*='price'] above is a wildcard --
@@ -3709,7 +3706,7 @@ cart-drawer [class*='price'] {
 [class*='cart-bubble'] [class*='count'],
 .cart-page__title .cart-bubble,
 .cart-page__title .cart-bubble * {
-  color: #3a3ec4 !important;
+  color: var(--mdr-ink) !important;
 }
 
 /* header cart link -> graphite text (glass experiment: was white, for the
@@ -3771,14 +3768,14 @@ cart-drawer [class*='price'] {
 
 /* lookbook heading -> follow the red default */
 .mdr-lookbook__heading {
-  color: #000000 !important;
+  color: var(--mdr-ink) !important;
 }
 
 /* collection page headings -> full black, unchanged (out of scope for the
    product/cart grey standardization below) */
 main[data-template='collection'] h1,
 main[data-template='collection'] .text-block :is(h1, h2, h3) {
-  color: #000000 !important;
+  color: var(--mdr-ink) !important;
 }
 
 /* product title -> the one standard grey (--mdr-text-gray), matching the
@@ -3806,7 +3803,7 @@ main[data-template='product'] .product-title * {
   /* inherit the site's default type -- no custom family / tracking / size */
   font: inherit;
   text-transform: uppercase;
-  color: #000000;
+  color: var(--mdr-ink);
   text-decoration: none;
   border: 0;
   line-height: 1;
@@ -3921,7 +3918,7 @@ main[data-template='collection']
   padding: 4px 0;
   border: 0;
   background: transparent;
-  color: #000;
+  color: var(--mdr-ink);
   font: inherit;
   font-size: 0.66rem;
   text-transform: uppercase;
@@ -4703,7 +4700,7 @@ main[data-template='collection'] [id$='__product_list_fa6P9H'] .product-card .te
    match Supreme's own "sold out" reading lowercase). */
 main[data-template='collection'] [id$='__product_list_fa6P9H'] .product-card product-price:has(.price--sold-out) .price,
 main[data-template='collection'] [id$='__product_list_fa6P9H'] .product-card .price--sold-out {
-  color: rgba(0, 0, 0, 0.42) !important;
+  color: var(--mdr-muted) !important;
   text-transform: lowercase !important;
 }
 
