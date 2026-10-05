@@ -1771,8 +1771,27 @@ tbody > .cart-items__table-row::after {
    is untouched (functionality/settings still there, just not rendered),
    consistent with how the rest of this file hides other stock elements
    rather than editing Liquid/section settings. */
-.cart-page__title {
+/* A full cart needs no heading -- the masthead's CART (n) carries it. An
+   empty cart keeps its one line, "Your cart is empty", then the way back:
+   centred, in the cart's own type, on the spacing scale. */
+.cart-page:not(.cart-page--empty) .cart-page__title {
   display: none !important;
+}
+
+.cart-page--empty {
+  padding-block: var(--mdr-space-7) !important;
+  row-gap: var(--mdr-space-3);
+}
+
+.cart-page--empty .cart-page__title {
+  margin: 0;
+}
+
+.cart-page--empty .cart-title h1 {
+  font-size: var(--mdr-fs-md);
+  font-weight: var(--mdr-fw-strong);
+  line-height: 1.2;
+  letter-spacing: 0.03em;
 }
 
 .cart-page__items {
