@@ -3902,6 +3902,13 @@ main[data-template='collection']
   margin-inline-start: auto;
 }
 
+/* on the grid MENU ends the row: its last letter's ink -- not the tracking
+   after it, nor the U's side bearing -- sits on the gutter, mirroring
+   WEBRACK's first letter on the left (measured: 0.083em in this face) */
+.mdr-allbar-wrap .mdr-allbar__menu:not(.mdr-allbar__menu--start) {
+  margin-inline-end: -0.083em;
+}
+
 .mdr-allbar__menu--start {
   order: -1;
   margin-inline-start: 0;
