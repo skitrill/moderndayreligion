@@ -76,7 +76,6 @@
 
       if (REDUCE || Math.abs(dist) < 2) {
         window.scrollTo(0, targetY);
-        zap(btn);
         return;
       }
 
@@ -117,7 +116,6 @@
         } else {
           glideRAF = null;
           detach();
-          zap(btn);
         }
       }
       glideRAF = requestAnimationFrame(step);
@@ -131,13 +129,6 @@
 
     function productCards() {
       return Array.prototype.slice.call(D.querySelectorAll('product-card, .product-card'));
-    }
-
-    function zap(el) {
-      if (!el) return;
-      el.classList.remove('mdr-zap');
-      void el.offsetWidth;
-      el.classList.add('mdr-zap');
     }
 
     function goTop() {
@@ -455,9 +446,9 @@
          (it lands exactly on the gutter). Named for screen readers below. */
       toggle.innerHTML = isHome
         ? '<span class="mdr-allbar__label">Webrack</span>'
-        : '<svg class="mdr-return-icon" viewBox="1.8 2.5 20.05 18.6" aria-hidden="true" focusable="false">' +
+        : '<svg class="mdr-return-icon" viewBox="1.8 2.5 30.05 18.6" aria-hidden="true" focusable="false">' +
             '<path class="mdr-return-icon__head" d="M2.5 8 9 3.2v9.6Z"/>' +
-            '<path class="mdr-return-icon__body" d="M8.5 8h6.75a5 5 0 0 1 5 5v1.5a5 5 0 0 1-5 5H7.5"/>' +
+            '<path class="mdr-return-icon__body" d="M8.5 8h16.75a5 5 0 0 1 5 5v1.5a5 5 0 0 1-5 5H7.5"/>' +
           '</svg>';
 
       var list = D.createElement('div');
@@ -618,7 +609,9 @@
           e.preventDefault();
           e.stopPropagation();
           /* the browser's own history (mdrGoBack, layout/theme.liquid), so
-             the previous page comes straight from its cache */
+             the previous page comes straight from its cache; the
+             progression line shows it coming (mdr-nav-progress) */
+          if (window.__mdrProgress) window.__mdrProgress.start();
           if (typeof window.mdrGoBack === 'function') window.mdrGoBack();
           else if (history.length > 1) history.back();
           else location.href = '/';
@@ -767,6 +760,7 @@
            instead of sitting in front of it as a dead pause */
         var outStart = Date.now();
         frame.classList.add('mdr-swiping-out');
+        if (window.__mdrProgress) window.__mdrProgress.start();
 
         fetchHtml(url)
           .then(function (html) {
@@ -801,6 +795,7 @@
 
               frame.classList.remove('mdr-swiping-out');
               frame.classList.add('mdr-swiping-in');
+              if (window.__mdrProgress) window.__mdrProgress.done();
               setTimeout(function () {
                 frame.classList.remove('mdr-swiping-in');
                 window.__mdrSwitching = false;

@@ -1,11 +1,9 @@
 {%- doc -%}
-  Page loading shown IN the grid line under the WEBRACK / MENU / RETURN rail
-  -- no loading bar of its own. The line (the header group's bottom border
-  below desktop width, the rail row's own on desktop) stays exactly as it
-  is; while a page loads, a graphite stroke (.mdr-load, assets/mdr-custom.css)
-  runs along that same line from the left, a touch bolder than the line,
-  its front easing off into it. When the page is ready it runs to the end
-  and fades, leaving the plain line.
+  PROGRESSION -- the one motion signature: while a page loads, a graphite
+  hairline (.mdr-load, assets/mdr-custom.css) runs along the masthead's
+  bottom edge from the left, its front easing off; when the page is there
+  it runs to the end and fades. Nothing shows at rest -- it is state, not
+  decoration.
 
   Behaves like Safari's: a quick first step, then slower and slower while
   the page is still coming, and only completes when it's actually there --
@@ -19,8 +17,7 @@
   - any other link / form that leaves the page starts it here, and it keeps
     moving until the old page is gone; the next page picks it up where it
     was (sessionStorage) and completes it once that page has loaded.
-  Only transform / opacity animate (Web Animations), so it never causes
-  layout work.
+  Only transform / opacity animate (Web Animations): no layout work.
 {%- enddoc -%}
 
 <script>
@@ -41,8 +38,9 @@
     var active = false;
     var safety = null;
 
-    /* the loader rides in the current rail row -- in-page navigation swaps
-       that row, so it's re-mounted into whichever row is on the page */
+    /* it rides in the nav row (the masthead's bottom edge) -- in-page
+       navigation swaps that row, so it's re-mounted into whichever is on
+       the page */
     function mount() {
       var row = D.querySelector('.mdr-allbar-wrap');
       if (!row) return false;

@@ -17,249 +17,95 @@
   --font-accent--family: 'PGF Qualta', 'Anonymous Pro', monospace !important;
 }
 
-/* Prices and the size chart, the quantity selector and the [top] control
-   all read PGF Qualta too. (With the old demo file they needed special
-   handling -- it drew a "DEMO" mark in place of $, 4, ( ), [ ] and other
-   symbols, so the quantity selector and [top] fell back to Futura. The
-   licensed webfont draws every character, so those workarounds are gone.) */
-.quantity-selector,
-.quantity-selector * {
-  font-family: 'PGF Qualta', 'Anonymous Pro', monospace !important;
-}
-
-.price,
-.price *,
-product-price,
-product-price *,
-.cart-totals,
-.cart-totals *,
-.size-chart__content,
-.size-chart__content * {
-  font-family: 'PGF Qualta', 'Anonymous Pro', monospace !important;
-}
-
-/* ---- Global: shrink the whole page a touch ---------------------------------- */
 /* ==========================================================================
-   MDR DESIGN TOKENS -- the one shared source for colour, spacing and
-   component sizing. Product grid, PDP, cart, landing page and footer all
-   read these instead of redeclaring their own values; changing site-wide
-   colour/spacing/sizing happens here, not by hunting through every rule
-   that uses it.
+   MDR DESIGN SYSTEM -- the tokens every rule below reads. Change the look
+   here, not rule by rule.
+
+   COLOUR. The sources are in <head> (snippets/meta-tags.liquid):
+     --mdr-surface        the page: the home screen's graphite
+     --mdr-interface-*    the shell material -- masthead, nav row, footer:
+                          translucent graphite glass; --mdr-interface-solid
+                          is that glass over the page, the colour the
+                          screen's top and bottom edges take
+     --mdr-light          the home screen's warm off-white
+     --mdr-graphite       secondary text (the off-white at 75%)
+   Derived here:
+     --mdr-ink            primary text
+     --mdr-muted          tertiary text (metadata, sold out)
+     --mdr-border         the one quiet line (cart rows, inputs, tables)
+     --mdr-border-strong  a control's edge, where it needs one
+     --mdr-selected       a selected option's fill
+     --mdr-action(-ink)   ADD TO CART / BUY NOW / CHECK OUT / JOIN -- the
+                          theme palette's primary button colours
+     --mdr-control        the graphite quantity control
+   Product artwork is never recoloured by any of these.
+
+   TYPE. One family (PGF Qualta, all caps), five steps:
+     2xs 0.52rem  footer, metadata
+     xs  0.58rem  technical: description, size chart, cart details
+     sm  0.66rem  secondary: prices, options
+     md  0.72rem  primary: product names, buttons, CART
+     lg  0.8rem   navigation, the product page's title
+   Regular weight, except primary UI (--mdr-fw-strong).
+
+   SPACE. One scale -- 4 / 8 / 12 / 16 / 24 / 32 / 48 -- on phones and
+   desktop alike. The page gutter is the masthead's own edges.
    ========================================================================== */
 :root {
-  /* ---- Colour ------------------------------------------------------------
-     --mdr-primary: kept in the design system (NOT deleted) but retired
-     from ordinary interface use as of the neutral MDR system pass. It was
-     the ONE experimental brand colour -- header/footer fill, WEBRACK/
-     RETURN accents, primary buttons, structural hairlines -- but that was
-     built around the earlier all-blue direction; the site is intentionally
-     neutral now (warm paper + glass + ink + graphite), so product artwork
-     can carry the colour instead of the chrome fighting it. Still resolves
-     to the same value for anything that references it directly (nothing
-     in ordinary UI does any more -- audited and moved to the neutral
-     tokens below), and stays available if a future drop wants an accent. */
-  --mdr-primary: #040061;
-  --mdr-primary-rgb: 4, 0, 97;
-  --mdr-price-blue: #3a3ec4;
-
-  /* ---- Neutral MDR system -- the actual palette every template should
-     read from now. Canvas/ink/graphite/muted/border/glass/accent, nothing
-     else; avoid a second ad-hoc gray anywhere downstream of this block.
-     Mineral-neutral pass: solid hex values now, not alpha-black over
-     paper -- alpha-based grays read differently depending on what's
-     behind them (paper vs glass vs the new near-white edge), which
-     fought a single consistent palette; flat values are the same colour
-     everywhere, by design.
-     --mdr-paper: the site canvas -- was a warm cream (#f6f3e7), tested
-       here at a much cleaner near-white mineral tone specifically so it
-       reads closer to the translucent white glass header/footer sit on,
-       not warmer/creamier than them.
-     --mdr-ink: primary/strong text.
-     --mdr-graphite: normal/secondary/product text (was rgba(0,0,0,0.5)).
-     --mdr-muted: the one step quieter than graphite (footer copyright,
-       timestamps) -- derived as a lighter tint toward --mdr-paper rather
-       than a separate value, so it's still clearly the same family.
-     --mdr-border: structural hairlines (was rgba(0,0,0,0.08)).
-     --mdr-border-strong: the purchase-bar/quantity-selector/size-chart-
-       table tier that needs more contrast than a passive line.
-     --mdr-selected: the selected-cell fill (color/size selectors) --
-       was rgba(0,0,0,0.05), then a warm-gray #d8d7d0 that read as its own
-       beige accent color next to the cooler mineral-neutral palette
-       around it (confirmed live: unselected cells were ALSO sitting on
-       the theme's old raw cream #F6F3E7, not --mdr-paper -- so selected
-       vs unselected was beige-on-cream, two separate off-whites, not one
-       surface with a restrained selected state). Now derived the same
-       way --mdr-muted is: a flat step off --mdr-paper itself (247,247,242
-       -> 236,236,231, ~4.5% darker, same R=G/B-5 proportion as paper and
-       --mdr-border), so it reads as "this site's paper, one notch down"
-       rather than a distinct hue.
-     --mdr-accent: the ONE spot of colour on an otherwise neutral site --
-       muted indigo, used sparingly (WEBRACK/RETURN directional chevrons,
-       size-chart interaction, focus/active indicators, small functional
-       details only) -- NOT the header/footer/grid/large buttons, which
-       stay neutral. */
-  /* The ONE main neutral canvas (was #f7f7f2, a touch too warm). Keep in
-     step with the theme's own palette background (config/settings_data.json
-     color_palette.background), which every section-background and
-     base-theme surface reads, and the browser-bar tint in
-     snippets/meta-tags.liquid. --mdr-paper stays as the name every existing
-     rule reads. */
-  /* ---- MATERIAL -- light graphite environment ----------------------------
-     The whole surface system is these few values; everything else that
-     paints "the page" reads them. REVERT to the old paper: --mdr-surface
-     #f8f8f5 / --mdr-surface-rgb 248 248 245 (every line/fill below is
-     relative to the surface, so it reproduces the old values exactly).
-     --mdr-surface: the environment -- page, grid, product pages, cart,
-       content pages, drawers, inputs (theme surfaces that used the palette
-       background read it through snippets/mdr-canvas-color.liquid).
-     --mdr-surface-rgb: the same colour as an rgb triplet, for the theme's
-       rgb() colours -- keep the two in step. (Also the browser-bar colour
-       in snippets/meta-tags.liquid.)
-     --mdr-grid: THE divider -- grid lines, hairlines, frames, cell rules:
-       the surface a step darker, so it stays etched-in-looking on any
-       surface (#dededa on the old paper).
-     --mdr-highlight: the surface a step lighter -- the only "glass" there
-       is: the header/footer panels are tinted with it, so they sit a hair
-       above the surface instead of being bright white strips.
-     --mdr-text / --mdr-ink: the existing grey / near-black type, unchanged. */
-  /* --mdr-surface (the canvas: #f5f5f5, the Palace product-grid grey, read
-     from its live CSS), --mdr-surface-rgb, --mdr-graphite, --mdr-landing-bg
-     and the shell's --mdr-interface-* material are defined ONCE, in <head>
-     (snippets/meta-tags.liquid) -- everything below derives from them. */
-  --mdr-highlight: color-mix(in srgb, var(--mdr-surface), white 22%);
-  --mdr-grid: color-mix(in srgb, var(--mdr-surface), var(--mdr-ink) 12%);
-  --mdr-text: var(--mdr-graphite);
-
-  /* older names for the same surface, still read throughout this file */
+  /* colour */
+  --mdr-ink: var(--mdr-light);
+  --mdr-muted: color-mix(in srgb, var(--mdr-graphite), var(--mdr-surface) 43%);
+  --mdr-border: color-mix(in srgb, var(--mdr-surface), var(--mdr-ink) 12%);
+  --mdr-border-strong: color-mix(in srgb, var(--mdr-surface), var(--mdr-ink) 32%);
+  --mdr-selected: color-mix(in srgb, var(--mdr-surface), var(--mdr-ink) 7%);
+  --mdr-action: var(--color-primary-button-background);
+  --mdr-action-ink: var(--color-primary-button-text);
+  --mdr-control: color-mix(in srgb, var(--mdr-landing-bg) 75%, var(--mdr-graphite));
+  --mdr-disabled: color-mix(in srgb, var(--mdr-surface), var(--mdr-ink) 20%);
+  --mdr-error: color-mix(in srgb, #c0392b 65%, var(--mdr-ink));
+  --mdr-logo-color: var(--mdr-graphite);
+  /* older names rules still read: aliases, not new colours */
+  --mdr-bg: var(--mdr-surface);
+  --mdr-paper: var(--mdr-surface);
   --mdr-canvas: var(--mdr-surface);
   --mdr-canvas-rgb: var(--mdr-surface-rgb);
-  --mdr-background: var(--mdr-surface);
-  --mdr-paper: var(--mdr-background);
-  /* primary text: the home screen's warm off-white (snippets/meta-tags.liquid) */
-  --mdr-ink: var(--mdr-light);
-  /* the wordmark, wherever it sits: the masthead CART link's colour */
-  --mdr-logo-color: var(--mdr-text-gray);
-  /* prices: a step stronger than the graphite titles */
-  --mdr-price-ink: color-mix(in srgb, var(--mdr-ink) 88%, var(--mdr-surface));
-  /* one step quieter than graphite: graphite tinted toward the surface (as
-     documented above) -- #b7b7b1 on the old paper; relative, so it stays
-     the same step quieter on any surface. */
-  --mdr-muted: color-mix(in srgb, var(--mdr-graphite), var(--mdr-surface) 43%);
-  /* the grid/hairline divider (above), and the two relatives defined by
-     their relation to the surface: the stronger control border and the
-     selected-cell fill (#b3b3ad / #ecece7 on the old paper) */
-  --mdr-border: var(--mdr-grid);
-  --mdr-border-strong: color-mix(in srgb, var(--mdr-surface), var(--mdr-ink) 32%);
-  --mdr-selected: color-mix(in srgb, var(--mdr-surface), var(--mdr-ink) 5.5%);
-  --mdr-accent: #5558a6;
-  --mdr-glass: var(--mdr-glass-tint, rgba(255, 255, 255, 0.55));
-
-  /* Landing/entrance screen only (sections/mdr-landing.liquid, the full-
-     screen no-header/no-footer static page at "/") -- TEST graphite
-     instead of the deep-blue --mdr-primary. Deliberately its own token,
-     not a global one: this is scoped to that one template only, not a
-     second brand colour for the rest of the shop. */
-
-  /* off-white product field -- the site's other half, everywhere content
-     (not brand chrome) sits. */
-  --mdr-off-white: var(--mdr-paper);
-
-  /* body copy grey -- the ONE grey every template's normal text reads,
-     same value the product-grid card titles introduced it with.
-     -light is for already-subdued copy (footer copyright, timestamps)
-     that should read one notch quieter still, not a third ad-hoc grey. */
   --mdr-text-gray: var(--mdr-graphite);
   --mdr-text-gray-light: var(--mdr-muted);
-
-  /* structural hairlines -- ONE token for every quiet structural border
-     site-wide: PDP image frame, color/size selectors, product-grid
-     dividers (vertical + horizontal), the NEW badge, cart row dividers.
-     These used to read as three different borders (a 0.14-alpha grid/
-     cart line, a 0.3-alpha NEW-badge/size-box line, and this 0.08-alpha
-     PDP line) that didn't visually agree with each other -- confirmed as
-     a "purple/lavender inconsistency" once actually compared side by
-     side, so everything above now derives from this one value instead.
-     Neutral MDR system: was rgba(var(--mdr-primary-rgb), 0.08) (a blue
-     tint) -- now the plain neutral --mdr-border above.
-     --mdr-border-strong stays separate and deliberately stronger: it's
-     reserved for the purchase bar / quantity-selector's own container
-     border (an actionable control, not a passive structural line) and
-     the size-chart table's internal cell gridlines, which need more
-     contrast to read as a table. Two tiers, not two accidents -- also
-     now neutral instead of blue-tinted (declared above, with --mdr-border). */
   --mdr-border-faint: var(--mdr-border);
 
-  /* ---- THE base environment. .page-wrapper and <main> both paint this
-     one tone, on every template, so nothing behind the content can show
-     as a different grey -- not a short page's empty space, not the gap
-     above the footer. (It replaced three stacked tones: html/body #f4f4f4,
-     .page-wrapper #e2e3e1, main #dedfdd.) Past the page (overscroll, under
-     the browser's bars) is html's shell colour, body stays transparent --
-     snippets/meta-tags.liquid. The landing screen swaps it for its
-     graphite. */
-  --mdr-bg: var(--mdr-surface);
-
-  /* ---- Structural sizing -- header/footer height and page/control
-     rhythm, read by the header, footer and section spacing rules below
-     instead of each one picking its own padding. */
-  /* the pinned header group's height (logo row + WEBRACK rail), measured by
-     mdr-header-enhance.liquid; this is the phone value until it runs */
-  --mdr-header-h: 112px;
-  --mdr-footer-pad-y: 4px;
-  --mdr-page-px: 16px;
-  --mdr-control-h: 30px;
-  --mdr-section-gap: clamp(16px, 4vw, 28px);
-  --mdr-grid-line: 1px;
-
-  /* PDP: the image frame, title, price and description all read this one
-     width so they form a single centered column instead of each picking
-     its own -- see product-information__media, the title/price group and
-     the description block below. */
-  --mdr-pdp-content-width: 70%;
-
-  /* ---- PDP vertical rhythm: four groups --
-       [TITLE -3xs- PRICE]
-       -between- [COLOUR -in- SIZE -in- SIZE CHART]
-       -between- [QTY | ADD TO CART | BUY NOW]
-       -between- [DESCRIPTION]
-       -footer-gap- footer
-     Tight inside a group, a little more between groups; phones run
-     tighter than wider screens (the min-width: 750px values right after
-     this block). Horizontal edges are not variables: description,
-     selectors, Size Chart and purchase rail are all full-width children
-     of the one .product-details column, so they share its edges. */
-  --mdr-space-3xs: 2px;
-  --mdr-space-2xs: 6px;
-  --pdp-gap-in: 5px;
-  --pdp-gap-between: 8px;
-  --pdp-footer-gap: 16px;
-
-  /* ---- Type scale -- typography is the structure now (no grid lines, no
-     rail lines), so every piece of UI reads one of these steps:
-       xs  0.58rem  dense / tertiary: description, size chart, NEW,
-                    policies, copyright
-       sm  0.66rem  secondary: prices, selectors, cart details, footer nav
-       md  0.72rem  primary: grid titles, buttons, CART (+ the strong cut)
-       lg  0.8rem   the nav (WEBRACK / MENU / RETURN), the product title
-     Regular weight throughout except primary UI (--mdr-fw-strong). */
+  /* type */
+  --mdr-fs-2xs: 0.52rem;
   --mdr-fs-xs: 0.58rem;
   --mdr-fs-sm: 0.66rem;
   --mdr-fs-md: 0.72rem;
   --mdr-fs-lg: 0.8rem;
-  /* the stronger cut, for primary UI only (nav, product titles, buttons);
-     everything else stays regular */
   --mdr-fw-strong: 500;
-  /* the page gutter: the masthead's own edges (the logo's left, CART's
-     right); from 750px the frame edges (--mdr-frame-pad, below) */
-  --mdr-gutter: 18px;
-}
 
-@media screen and (min-width: 750px) {
-  :root {
-    --mdr-space-3xs: 3px;
-    --pdp-gap-in: 6px;
-    --pdp-gap-between: 12px;
-  }
+  /* space */
+  --mdr-space-1: 4px;
+  --mdr-space-2: 8px;
+  --mdr-space-3: 12px;
+  --mdr-space-4: 16px;
+  --mdr-space-5: 24px;
+  --mdr-space-6: 32px;
+  --mdr-space-7: 48px;
+  /* the masthead's own edges (the logo's left, CART's right); from 750px
+     the frame edges (--mdr-frame-pad, below) */
+  --mdr-gutter: 18px;
+  /* the nav row's padding above and below its controls (its tap height) */
+  --mdr-nav-pad: var(--mdr-space-3);
+
+  /* product page rhythm --
+       [TITLE -1- PRICE] -between- [COLOUR -in- SIZE -in- SIZE CHART]
+       -between- [PURCHASE BAR] -between- [DESCRIPTION] -footer- footer */
+  --pdp-gap-in: var(--mdr-space-2);
+  --pdp-gap-between: var(--mdr-space-4);
+  --pdp-footer-gap: var(--mdr-space-6);
+  --mdr-pdp-content-width: 70%;
+
+  /* the pinned masthead's height (logo row + nav row), measured by
+     mdr-header-enhance.liquid; this is the phone value until it runs */
+  --mdr-header-h: 112px;
 }
 
 html {
@@ -605,158 +451,51 @@ html {
   margin-inline: auto;
 }
 
-/* ---- Footer: nav (WEBRACK / LOOKBOOK / MAILING / THE MODERN TIMES) and
-   policy links (PRIVACY POLICY / TERMS OF SERVICE / REFUND POLICY) as ONE
-   real row, not two stacked columns forced into alignment with an
-   absolute-position overlay. mdr-footer-nav now renders straight inside
-   footer-utilities.liquid's own .utilities container (see that file and
-   footer.liquid), so this is a single flex row by construction -- .mdr-fnav
-   and its <ul> contribute no box of their own (display: contents), so
-   their <li>s sit as direct flex items alongside the policy <li>s.
-   Copyright still lands on its own final line, last, nothing under it --
-   flex-basis: 100% forces the wrap before it, at the end of DOM order. */
+/* ==========================================================================
+   FOOTER -- metadata, on the masthead's own glass (THE SHELL): the nav
+   (WEBRACK / LOOKBOOK / THE MODERN TIMES / USER / MAILING) on one line,
+   the policy links on the next, the copyright last. Centred, flat, the two
+   smallest type steps in graphite, tight rows; no rule above it -- the
+   edge of the glass is the boundary. (The nav markup is
+   snippets/mdr-footer-nav.liquid, rendered inside footer-utilities.)
+   ========================================================================== */
 footer {
   position: relative;
-  /* backstop for the two footer sections' own background: each renders its
-     black fill via a .section-background div with z-index:-2 (Shopify's
-     own section-background mechanism, sections/footer-group.json), which
-     stacking-context quirks can push behind an ancestor's cream paint on
-     some templates (confirmed happening on the product page specifically
-     -- footer text was readable but sitting on cream, not black, there).
-     A solid background-color directly on <footer> itself doesn't depend
-     on that layering at all, so it can't go wrong the same way. */
-  /* REMOVED: the hazard-tape pattern (--mdr-tape, still used on product
-     grid cards further down) was briefly layered on top of this as a
-     background-image -- flagged in the next audit pass as an unwanted
-     "striped/gradient artifact" once actually seen live. Footer is a
-     clean solid fill only, no pattern.
-     Glass experiment: was solid var(--mdr-primary) -- now the same
-     shared glass tokens as the header/WEBRACK (see the :root block,
-     "EXPERIMENT -- frosted liquid-glass"), so all three read as one
-     consistent surface material instead of three separately-tuned
-     translucent panels. border-top (not -bottom, this is the last thing
-     on the page) is the same subtle highlight the header uses on its
-     own bottom edge. */
   background-color: var(--mdr-glass-tint);
-  backdrop-filter: var(--mdr-glass-blur);
   -webkit-backdrop-filter: var(--mdr-glass-blur);
-  /* no rule above it: the glass against the page is the edge */
+  backdrop-filter: var(--mdr-glass-blur);
   border: 0;
   box-shadow: none;
 }
 
-/* The two .section-background divs mentioned above (footer + footer-
-   utilities, each their own solid var(--mdr-primary) fill, Shopify's own
-   mechanism) stayed harmless while <footer>'s own backstop was ALSO a
-   solid, identical blue -- the exact stacking-order bug they're prone to
-   was invisible because both layers happened to match. Confirmed live on
-   the PDP once <footer> went translucent: solid blue was still painting
-   over the new glass here specifically (the same template already
-   flagged above as where this stacking quirk shows up). Hidden outright
-   now that <footer>'s own background is the real, only paint layer. */
+/* the footer sections' own colour panels: the glass above is the one paint layer */
 footer .section-background {
   display: none !important;
 }
 
-.footer-content .list-unstyled {
-  display: flex !important;
-  flex-direction: column !important;
-  align-items: flex-start;
-  gap: var(--gap-xs);
-}
-
-.footer-content .menu__item a {
-  color: var(--color-foreground-muted);
-}
-
 footer .utilities {
-  padding-block: 4px 4px !important;
-  padding-inline: 16px !important;
   flex-direction: row !important;
   flex-wrap: wrap !important;
   justify-content: center !important;
   align-items: center !important;
-  column-gap: 18px !important;
-  /* Was 5px, briefly 8px (once nav/policy/copyright became three
-     deliberate full-width lines instead of incidental wrap groups) --
-     "small, like the padding between the product title and price" on the
-     product grid, which measures as a genuine 0px gap there (confirmed
-     live: title's own bottom edge and price's own top edge are pixel-
-     identical, no margin, no flex gap -- the only separation is each
-     line's own line-height: 1 leading, same as every line here). Matched
-     exactly rather than picking an arbitrary "small" number: 0px, relying
-     on the same line-height: 1 the footer's own type already uses (see
-     the shared footer typography rule below) to keep the three lines
-     legibly apart without adding any deliberate space between them.
-
-     Since bumped off flush-zero: a later pass asked for "5% more" gap
-     between these three rows specifically. With no existing gap to scale,
-     anchored the new value to this same box's own padding-block below
-     (4px, the one deliberate spacing unit already living here) and
-     applied the 5% to that: 4px * 1.05 = 4.2px. */
-  row-gap: 4.2px !important;
-  /* explicit centered content column, not just an incidental result of
-     flex justify-content on an already-full-width row -- keeps the nav +
-     policy links from ever reading as a wide, sparse spread on a very
-     wide screen, and the inline padding guarantees a side gutter (so
-     REFUND POLICY / WEBRACK never sit flush against the viewport edge)
-     even on the very narrowest phones. */
+  column-gap: var(--mdr-space-4) !important;
+  row-gap: var(--mdr-space-1) !important;
   max-width: 640px !important;
   margin-inline: auto !important;
+  padding-block: var(--mdr-space-2) !important;
+  padding-inline: var(--mdr-gutter) !important;
   text-align: center !important;
 }
 
-/* Nav row -- forced onto exactly one line, own dedicated row. Was
-   display: contents (the <li>s sat as direct flex items of .utilities
-   itself, wrapping wherever they individually ran out of room -- with 5
-   items now (WEBRACK/LOOKBOOK/THE MODERN TIMES/ACCOUNT/MAILING) that
-   split mid-group, e.g. MAILING stranding itself onto the SAME line as
-   the policy links instead of either its own group). Now .mdr-fnav is a
-   real flex row of its own -- one atomic item within .utilities,
-   flex-basis: 100% guarantees it always claims a full line by itself,
-   flex-wrap: nowrap keeps all 5 items together on that one line instead
-   of ever splitting again, and justify-content: center here (not just on
-   the outer .utilities) is what actually centers ITS OWN children now
-   that it's 100% wide -- the outer row's centering only ever centered
-   nav as a whole block, not the items inside it.
-   gap tightened from the shared 18px down to 8px, nav-only (.mdr-fnav ul
-   stays `display: contents` below, so this gap is read as the "column-
-   gap" between the 5 li's) -- confirmed live as the exact amount five
-   items at this font-size need to just fit one line at 375px without
-   any of them wrapping (5 items' own text totals ~290px inside a 323px
-   content box -- 18px gaps would need ~360px, 8px gaps need ~322px).
-   No overflow-x/scroll fallback here on purpose: .mdr-fnav__mailing's own
-   dropdown (.mdr-fnav__drop, further down this file) is position:
-   absolute against THIS element as its nearest positioned ancestor's
-   sibling context -- giving .mdr-fnav itself an overflow other than
-   visible would clip that dropdown the instant it opens (confirmed
-   against the general rule that overflow-x: auto/hidden forces overflow-y
-   to stop being "visible" too, even when not set explicitly). 8px gaps
-   already fit all 5 items on one line at 375px with a few px to spare;
-   narrower than that, they overflow visibly rather than silently
-   clipping a real feature.
-   :not(.mdr-fnav--landing) -- this same snippet (mdr-footer-nav.liquid)
-   renders on the homepage landing screen too, with BOTH classes on the
-   one <nav> ("mdr-fnav mdr-fnav--landing"). This block's !important
-   values were unscoped at first and, having no matching !important on
-   the landing side to fight, silently overrode .mdr-fnav--landing's own
-   flex-direction:column/align-items:flex-start further down this file
-   regardless of its higher specificity -- !important always wins over a
-   normal declaration, specificity or not. Broke the landing screen
-   badly: flex-basis:100% in THAT flex-column context reads as HEIGHT,
-   not width, so the nav stretched to fill almost the entire viewport
-   height, shoving the centered-logo composition up to the very top
-   (confirmed live: nav box measured 619px tall in a 714px-tall viewport).
-   Excluding .mdr-fnav--landing here is the actual fix -- the landing
-   nav's own column/stacked treatment never needed any of this row-
-   specific logic in the first place. */
+/* the nav: a line of its own, never split ("landing" is the home / lock
+   screen's stacked version of the same nav) */
 .mdr-fnav:not(.mdr-fnav--landing) {
   display: flex !important;
   flex-basis: 100% !important;
   flex-wrap: nowrap !important;
   justify-content: center !important;
   align-items: center !important;
-  gap: 8px !important;
+  gap: var(--mdr-space-2) !important;
   max-width: 100%;
 }
 
@@ -764,31 +503,16 @@ footer .utilities {
   display: contents;
 }
 
-/* Policy links -- same "own dedicated full-width line" treatment as nav
-   above, so MAILING (end of the nav row) and PRIVACY POLICY (start of
-   this row) never share a line and compete for the same centered group
-   again. Already display:flex (a real box, not contents) so flex-basis
-   alone is enough; justify-content:center is new -- without it, a 100%-
-   wide flex row defaults its own children to flex-start (left-aligned),
-   which reads off-center the moment this row is wider than its content. */
+/* the policy links: the next line */
 .policy-list-inline {
   flex-basis: 100% !important;
   flex-direction: row !important;
   flex-wrap: wrap !important;
   justify-content: center !important;
-  gap: 20px !important;
+  gap: var(--mdr-space-4) !important;
 }
 
-/* No social links are configured (all placeholder URLs), so this block
-   renders as a div with no actual icon markup inside -- :empty doesn't
-   match it (it's full of whitespace text nodes from the loop that emits
-   nothing per icon), but it's still a real flex item of footer .utilities
-   and still claims its own wrapped line there (0px tall, but a line all
-   the same), so policy-list-inline -> copyright was paying row-gap TWICE
-   (once above this empty line, once below it) while nav -> policy-list-
-   inline only paid it once. Dropping it from flow restores one uniform
-   row-gap between every visible row instead of a silent double gap
-   wherever this invisible line sits. */
+/* no social links are set up: the empty block mustn't take a row */
 .social-icons__wrapper {
   display: none !important;
 }
@@ -798,50 +522,26 @@ footer .utilities {
   text-align: center;
 }
 
-/* ---- Footer typography: one voice across nav (WEBRACK/LOOKBOOK/MAILING),
-   policy links, and copyright -- same size/tracking/weight/line-height as
-   .mdr-fnav a (the reference). Policy links otherwise render at full
-   --color-foreground (not muted) and copyright at its own larger 0.75rem
-   block setting (fixed at the source too, see footer-group.json) -- both
-   drifted from the nav's own look before this. Colour intensity is split
-   below: everything except copyright matches Cart's full-opacity white,
-   copyright alone stays at the dimmer muted value. */
+/* type: the nav one step above the policies and copyright */
 footer .utilities,
-.footer-utilities__group-copyright,
-.footer-utilities__text,
-.policy-list-inline,
-.policy-list-inline a {
-  /* the tertiary step; the footer nav itself is a step up (.mdr-fnav a) */
-  font-size: var(--mdr-fs-xs) !important;
-  line-height: 1 !important;
-  letter-spacing: 0.04em !important;
-  font-weight: 400 !important;
-}
-
-/* Full intensity, matching Cart's own color (var(--color-foreground),
-   full-opacity white on the header's dark red) -- not the footer's default
-   muted var, which copyright alone keeps (see below). */
-footer .utilities,
-.footer-utilities__text,
-.policy-list-inline,
-.policy-list-inline a,
-.mdr-fnav a,
-.mdr-fnav .mdr-fnav__toggle {
-  color: var(--color-foreground) !important;
-}
-
-/* footer .utilities (the row, above) cascades white to every child by
-   inheritance, including copyright -- this needs to at least MATCH its
-   specificity (0,1,1) to win instead of just losing to source order, not
-   merely repeat the plain .footer-utilities__group-copyright (0,1,0)
-   selector from the shared typography rule above. */
+footer .policy-list-inline,
+footer .policy-list-inline a,
+footer .footer-utilities__text,
 footer .footer-utilities__group-copyright,
 footer .footer-utilities__group-copyright * {
-  /* flat: the footer's own grey (the nav and policy links' colour), no
-     engraved text-shadow lip under the letters; just under the policies */
-  font-size: 0.52rem !important;
-  color: var(--mdr-text-gray) !important;
+  font-size: var(--mdr-fs-2xs) !important;
+  font-weight: 400 !important;
+  line-height: 1.2 !important;
+  letter-spacing: 0.04em !important;
+  color: var(--mdr-graphite) !important;
   text-shadow: none !important;
+}
+
+footer .mdr-fnav a,
+footer .mdr-fnav .mdr-fnav__toggle {
+  font-size: var(--mdr-fs-xs) !important;
+  line-height: 1.2 !important;
+  color: var(--mdr-graphite) !important;
 }
 
 /* ---- Product page: details column fills to the cart edge, tight gap ------- */
@@ -928,22 +628,6 @@ footer .footer-utilities__group-copyright * {
   margin: 0 1px;
 }
 
-/* ---- zap: a soft "gust" nudge as the glide launches --------------------- */
-@keyframes mdr-zap {
-  0%   { opacity: 1; transform: translateY(0); }
-  30%  { opacity: 0.5; transform: translateY(1.5px); }
-  100% { opacity: 1; transform: translateY(0); }
-}
-
-.mdr-scrolltop.mdr-visible.mdr-zap {
-  animation: mdr-zap 0.3s cubic-bezier(0.22, 1, 0.36, 1);
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .mdr-scrolltop.mdr-zap {
-    animation: none;
-  }
-}
 
 /* ==========================================================================
    Batch: cart layout, price color, quantity buttons, spacing, mobile image
@@ -982,7 +666,7 @@ product-price *,
 .cart-drawer__total .price,
 .cart__total .price,
 .totals__total-value {
-  color: var(--mdr-price-ink) !important;
+  color: var(--mdr-graphite) !important;
 }
 
 /* Estimated total, mobile: 10% smaller. calc() against the base theme's
@@ -1132,9 +816,9 @@ product-price *,
    Behaviour is all Horizon's (buttons, input, AJAX update, min/max,
    disabled state, keyboard) -- this only restyles it. */
 .quantity-selector {
-  --mdr-qty-bg: color-mix(in srgb, var(--mdr-landing-bg) 75%, var(--mdr-graphite));
-  --mdr-qty-ink: rgb(255 255 255 / 0.86);
-  --mdr-qty-rule: rgb(255 255 255 / 0.14);
+  --mdr-qty-bg: var(--mdr-control);
+  --mdr-qty-ink: var(--mdr-ink);
+  --mdr-qty-rule: rgb(var(--mdr-light-rgb) / 0.14);
   --mdr-qty-h: 30px;
   --mdr-qty-cell: 30px;
   --mdr-qty-num: 32px;
@@ -1238,12 +922,12 @@ product-price *,
 
 @media (hover: hover) and (pointer: fine) {
   .quantity-selector :is(.quantity-minus, .quantity-plus):not([disabled]):hover {
-    background: rgb(255 255 255 / 0.06) !important;
+    background: rgb(var(--mdr-light-rgb) / 0.06) !important;
   }
 }
 
 .quantity-selector :is(.quantity-minus, .quantity-plus):not([disabled]):active {
-  background: rgb(255 255 255 / 0.12) !important;
+  background: rgb(var(--mdr-light-rgb) / 0.12) !important;
 }
 
 .quantity-selector :is(.quantity-minus, .quantity-plus)[disabled] {
@@ -1458,17 +1142,19 @@ product-price *,
 
 /* title <-> price sit right on top of each other now */
 .group-block-content:has(> product-price) {
-  gap: var(--mdr-space-3xs, 3px) !important;
+  gap: var(--mdr-space-1) !important;
 }
 
 .group-block-content:has(> product-price) > product-price {
   padding-block-start: 0 !important;
 }
 
-/* price: the medium cut, a step under the title; never bold */
+/* price: a step quieter than the title -- smaller, regular, graphite;
+   editorial, not a sales shout */
 .group-block-content:has(> product-price) > product-price .price {
-  font-weight: 500 !important;
-  font-size: var(--mdr-fs-md) !important;
+  font-weight: 400 !important;
+  font-size: var(--mdr-fs-sm) !important;
+  letter-spacing: 0.03em !important;
 }
 
 /* image <-> title: the whole details column is wrapped in one shell
@@ -1487,7 +1173,7 @@ product-price *,
    boundary between the purchasing controls and site navigation), not
    another step in the in-page rhythm. */
 .product-details > .group-block {
-  padding-block-start: var(--mdr-space-2xs, 6px) !important;
+  padding-block-start: var(--mdr-space-4) !important;
   padding-block-end: var(--pdp-footer-gap, 16px) !important;
 }
 
@@ -1508,18 +1194,16 @@ product-price *,
   order: 1 !important;
 }
 
-/* ---- Product description: one dense block, the selectors' width -------
-   Exactly the colour and size selectors' edges (the full details column),
-   no box of its own. The type is set once, here, and everything inside
-   inherits it: the size chart's size (--mdr-fs-xs) on a tight
-   line-height. Letters pack the line edge to edge -- a word breaks
-   wherever the line ends (break-all) and the spaces are justified, so
-   every full line runs from the left edge to the right; the last line is
-   centred. The copy is entered as a list whose items split one paragraph
-   at arbitrary words, so list items run on into each other (inline, a
-   space between); a real paragraph or line break starts just the next
-   line, no gap. Whatever the editor adds -- inline widths, sizes,
-   alignment, colours, margins, empty paragraphs -- is overridden. */
+/* ---- Product description: a compact technical block, the last thing in
+   the column. It runs the column's full width (the selectors' and the
+   purchase bar's edges) with natural wrapping -- normal word spacing, a
+   word that doesn't fit moves to the next line, only an unbroken string
+   longer than the line ever breaks -- on the size chart's step, lines
+   stacked close. Copy entered as a list runs on as one block (items
+   inline, a space between); a real paragraph or line break starts just
+   the next line. Whatever the editor adds -- inline widths, sizes,
+   alignment, colours, margins, empty paragraphs -- is overridden, so any
+   Shopify description lays out the same. */
 .product-details > .group-block > .group-block-content > rte-formatter[class*='__text_aEtTtq'] {
   order: 6 !important;
   margin-top: var(--pdp-gap-between) !important;
@@ -1527,12 +1211,12 @@ product-price *,
   max-width: none !important;
   margin-inline: 0 !important;
   font-size: var(--mdr-fs-xs) !important;
-  line-height: 1.2 !important;
-  text-align: justify !important;
-  text-align-last: center;
-  --text-align: justify !important;
-  word-break: break-all;
-  overflow-wrap: anywhere;
+  line-height: 1.3 !important;
+  letter-spacing: 0.02em !important;
+  text-align: left !important;
+  --text-align: left !important;
+  word-break: normal;
+  overflow-wrap: break-word;
   hyphens: none;
 }
 
@@ -1591,68 +1275,67 @@ product-price *,
   margin-top: var(--pdp-gap-between) !important;
 }
 
-/* Colour/size selector text (BLACK/CLEAR/BEIGE/... and XS/S/M/L) --
-   was full black, visually the strongest thing on the page. Faded to the
-   same muted grey as the product copy above so the selectors read as
-   technical/subordinate to the product itself, not competing with it.
-   Still readable (0.5 opacity black, same value used everywhere else on
-   the site as the "standard" body grey, not an accessibility-failing
-   faint one). Was: applies whether selected or not, with only the fill/
-   border below carrying selection. Neutral MDR system now asks for
-   "darker graphite text" on the selected cell too (see :has(:checked)
-   below, more specific, wins over this) -- selection is fill + border +
-   text weight together now, not fill/border alone. */
-.variant-picker .variant-option[data-testid='variant-option-single'],
-.variant-picker .variant-option[data-testid='variant-option-single'] .variant-option__swatch-value,
-.variant-picker .variant-option__swatch-value,
-.variant-picker .variant-option__button-label {
-  color: var(--mdr-graphite) !important;
+/* ==========================================================================
+   OPTION SELECTORS -- colour / size (the theme's variant-picker). Flat rows
+   of equal cells and no boxes: the options are type on the page, the
+   selected one sits on a flat graphite fill (--mdr-selected) in ink, and
+   unavailable ones recede (faded, the theme's diagonal kept faint). Rows
+   run the column's full width -- the purchase bar's edges. The option
+   name (COLOR / SIZE) stays for screen readers only.
+   ========================================================================== */
+.variant-option--buttons {
+  position: relative !important;
+  display: flex !important;
+  flex-wrap: nowrap !important;
+  gap: 0 !important;
+  margin-top: 0 !important;
+  padding: 0 !important;
+  border: 0 !important;
+  overflow: hidden !important;
 }
 
-/* colour / size labels: the secondary step -- clear, not dominant */
-.variant-picker .variant-option__button-label,
-.variant-picker .variant-option__button-label * {
+.variant-option--buttons > legend {
+  position: absolute !important;
+  width: 1px !important;
+  height: 1px !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  overflow: hidden !important;
+  clip-path: inset(50%) !important;
+  white-space: nowrap !important;
+}
+
+.variant-option--buttons .variant-option__button-label {
+  flex: 1 1 0 !important;
+  align-items: center !important;
+  justify-content: center !important;
+  min-height: 24px !important;
+  padding: 4px !important;
+  border: 0 !important;
+  border-radius: 0 !important;
+  background: transparent !important;
+  box-shadow: none !important;
+  color: var(--mdr-graphite) !important;
+  text-align: center !important;
+  overflow: hidden !important;
+}
+
+.variant-option--buttons .variant-option__button-label,
+.variant-option--buttons .variant-option__button-label * {
   font-size: var(--mdr-fs-sm) !important;
 }
 
-/* Every option row's own outline -- and the individual cell dividers
-   inside it -- considerably fainter than before (was --mdr-border-strong,
-   0.3 alpha, reading as a visible lavender/purple line). Structure stays,
-   the line itself almost disappears into the off-white field. */
-.variant-picker .variant-option {
-  border-color: var(--mdr-border-faint, rgba(4, 0, 97, 0.08)) !important;
+/* the theme's own sliding selected-pill: the fill below replaces it */
+.variant-option--buttons .variant-option__button-label__pill {
+  display: none !important;
 }
 
-/* Unselected cell fill -- was unstyled, so it fell through to the
-   theme's own color-palette setting (#F6F3E7, the pre-mineral-neutral
-   warm cream) instead of --mdr-paper (#f7f7f2, the actual current page
-   background). Barely different values sitting edge to edge (an
-   unselected color/size cell directly against the page canvas around
-   it) is exactly the kind of seam this token system exists to prevent --
-   confirmed live via computed styles, not visible to the eye as two
-   colors so much as a very faint "square inside a square" haze. Matched
-   to --mdr-paper exactly so an unselected cell is genuinely invisible
-   against the page except for its own border. */
-.variant-picker .variant-option__button-label {
-  background-color: var(--mdr-paper) !important;
+.variant-option--buttons .variant-option__button-label:has(:checked) {
+  background: var(--mdr-selected) !important;
 }
 
-/* Selected state -- neutral MDR system: was a thin deep-blue border +
-   faint blue-tinted background (a bright accent colour on an otherwise
-   neutral page). Now the same tone/contrast language the rest of the
-   selection system already uses (matches the BLACK/S grid-cell look this
-   spec calls out as the reference): a subtle warm-gray fill (--mdr-
-   selected, mineral-neutral pass) and darker ink text -- recognisable
-   through tone, not colour. */
-/* the fill is the whole selection: the cell keeps exactly the dividers
-   every other cell has (a darker divider made a selected cell mid-row
-   read as edged on one side only) */
-.variant-picker .variant-option__button-label:has(:checked) {
-  background-color: var(--mdr-selected) !important;
-}
-
-.variant-picker .variant-option__button-label:has(:checked),
-.variant-picker .variant-option__button-label:has(:checked) * {
+.variant-option--buttons .variant-option__button-label:has(:checked),
+.variant-option--buttons .variant-option__button-label:has(:checked) * {
   color: var(--mdr-ink) !important;
 }
 
@@ -1903,8 +1586,8 @@ main[data-template='collection'] .resource-list--grid,
 main[data-template='collection'] [id$='__product_list_fa6P9H'] .resource-list--grid {
   display: grid !important;
   grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
-  column-gap: 14px !important;
-  row-gap: 30px !important;
+  column-gap: var(--mdr-space-4) !important;
+  row-gap: var(--mdr-space-6) !important;
   padding-inline: var(--mdr-gutter) !important;
   /* full width of .mdr-scrollfade (below), which is itself made full-bleed
      to the true viewport edges -- NOT another 100vw trick applied here
@@ -1928,8 +1611,8 @@ main[data-template='collection'] [id$='__product_list_fa6P9H'] .resource-list--g
 
 @media (min-width: 750px) {
   main[data-template='collection'] [id$='__product_list_fa6P9H'] .resource-list--grid {
-    column-gap: 24px !important;
-    row-gap: 44px !important;
+    column-gap: var(--mdr-space-5) !important;
+    row-gap: var(--mdr-space-7) !important;
   }
 }
 
@@ -1944,12 +1627,12 @@ main[data-template='collection'] [id$='__product_list_fa6P9H'] .resource-list--g
 /* the products start a deliberate step below the nav row and leave room
    before the footer -- space, not a line, separates them */
 main[data-template='collection'] [id$='__product_list_fa6P9H'] {
-  padding-block: 22px 52px !important;
+  padding-block: var(--mdr-space-5) var(--mdr-space-7) !important;
 }
 
 @media (min-width: 750px) {
   main[data-template='collection'] [id$='__product_list_fa6P9H'] {
-    padding-block: 40px 80px !important;
+    padding-block: var(--mdr-space-7) calc(2 * var(--mdr-space-7)) !important;
   }
 }
 
@@ -1988,20 +1671,6 @@ main[data-template='collection'] [id$='__product_list_fa6P9H'] .section-resource
   color: var(--mdr-ink) !important;
 }
 
-/* ==========================================================================
-   Batch: hazard-tape bg + card tiles, card spacing + glow, cart lines,
-   mobile buy-buttons row, red Shop Pay
-   ========================================================================== */
-
-/* ---- Subtle diagonal orange/black "tape" pattern: on the CARD TILES only.
-   The page itself stays plain black (no pattern at the page ends). --------- */
-:root {
-  --mdr-tape: repeating-linear-gradient(
-    45deg,
-    rgba(255, 128, 40, 0.028) 0 7px,
-    rgba(255, 128, 40, 0) 7px 15px
-  );
-}
 
 /* body stays transparent: Safari fills everything past the page (under its
    toolbar, overscroll) with html's colour blended with body's, so an opaque
@@ -2060,7 +1729,7 @@ main:not([data-template='index']) {
 
 .product-card__content {
   background-color: var(--mdr-paper) !important;
-  background-image: var(--mdr-tape) !important;
+  background-image: none !important;
   border: 0 !important;
   box-shadow: none !important;
 }
@@ -2229,7 +1898,7 @@ main:not([data-template='index']) {
 .cart-items__table-row {
   /* same space above and below each line, so the rule between rows sits
      at the true midpoint */
-  padding-block: 10px !important;
+  padding-block: var(--mdr-space-2) !important;
   margin-bottom: 0 !important;
   position: relative;
 }
@@ -2483,8 +2152,8 @@ button[name='checkout'] {
 }
 
 .mdr-buy-now:disabled {
-  background: #4a4a4a !important;
-  color: rgba(255, 255, 255, 0.7) !important;
+  background: var(--mdr-disabled) !important;
+  color: var(--mdr-graphite) !important;
   cursor: default;
 }
 
@@ -2504,8 +2173,8 @@ button[name='checkout'] {
 
 .product-form-buttons .add-to-cart-button:not(.sticky-add-to-cart__button)[disabled] {
   width: 100% !important;
-  background: #4a4a4a !important;
-  color: rgba(255, 255, 255, 0.7) !important;
+  background: var(--mdr-disabled) !important;
+  color: var(--mdr-graphite) !important;
   opacity: 1 !important;
   border: 0 !important;
 }
@@ -2957,7 +2626,7 @@ product-card:active .card-gallery {
 }
 
 .mdr-fnav__msg--err {
-  color: #c0392b;
+  color: var(--mdr-error);
 }
 
 /* ==========================================================================
@@ -3072,7 +2741,7 @@ body:has(main[data-template='index']) .page-wrapper {
   /* warm off-white, matching the logo's own new tint just above --
      "warm/off-white... rather than stark blue-white" -- was plain
      rgba(255,255,255,0.75). */
-  color: rgba(247, 240, 228, 0.75) !important;
+  color: var(--mdr-graphite) !important;
 }
 
 .mdr-fnav--landing .mdr-fnav__mailing {
@@ -3084,8 +2753,8 @@ body:has(main[data-template='index']) .page-wrapper {
 .mdr-fnav--landing .mdr-fnav__drop {
   position: static;
   margin-top: 10px;
-  background: #121212;
-  border-color: rgba(255, 255, 255, 0.25);
+  background: transparent;
+  border-color: var(--mdr-border-strong);
 }
 
 .mdr-fnav--landing .mdr-fnav__email {
@@ -3096,11 +2765,11 @@ body:has(main[data-template='index']) .page-wrapper {
      background, but a pale box against this page's black. !important
      to actually beat it, not just match it. */
   background-color: transparent !important;
-  color: rgba(255, 255, 255, 0.9);
+  color: var(--mdr-ink);
 }
 
 .mdr-fnav--landing .mdr-fnav__email::placeholder {
-  color: rgba(255, 255, 255, 0.45);
+  color: rgb(var(--mdr-light-rgb) / 0.45);
 }
 
 /* The sign-up is one box of one fixed width: the field and JOIN inside
@@ -3127,7 +2796,7 @@ body:has(main[data-template='index']) .page-wrapper {
   padding: 0 6px;
   background: none;
   border: 0;
-  color: rgba(247, 240, 228, 0.75);
+  color: var(--mdr-graphite);
 }
 
 /* a sign-up error: its own line under the box, the box's width */
@@ -3138,8 +2807,8 @@ body:has(main[data-template='index']) .page-wrapper {
   height: auto;
   margin-top: 4px;
   padding: 4px 6px;
-  border: 1px solid rgba(255, 255, 255, 0.25);
-  color: color-mix(in srgb, #c0392b 65%, #fff);
+  border: 1px solid var(--mdr-border-strong);
+  color: var(--mdr-error);
 }
 
 /* ==========================================================================
@@ -3317,74 +2986,6 @@ body:has(main[data-template='index']) .page-wrapper {
   padding-top: env(safe-area-inset-top, 0px) !important;
 }
 
-/* ==========================================================================
-   Sizes joined into one long bordered box + tighter phone gutters
-   ========================================================================== */
-
-/* one long box around the whole size row -- was a stronger 0.3-alpha
-   border, visibly darker/more purple than the color selector's own
-   fieldset border (--mdr-border-faint) right above it; unified to the
-   same faint token so both rows read as one consistent border system. */
-.variant-option--buttons {
-  position: relative !important;
-  border: 1px solid var(--mdr-border-faint, rgba(4, 0, 97, 0.08)) !important;
-  padding: 0 !important;
-  /* was 16px, room for the COLOR / SIZE legend above the box -- but this
-     box clips its overflow, so the legend never shows and the 16px was
-     empty. Spacing between rows: .variant-option + .variant-option. */
-  margin-top: 0 !important;
-  display: flex !important;
-  flex-wrap: nowrap !important;
-  gap: 0 !important;
-  overflow: hidden !important;
-}
-
-/* "SIZE" legend lifted clear of the box (absolute -> out of the flex flow) */
-.variant-option--buttons > legend {
-  position: absolute !important;
-  top: -14px !important;
-  left: 0 !important;
-  float: none !important;
-  width: auto !important;
-  margin: 0 !important;
-  padding: 0 !important;
-}
-
-/* each size = a segment, divided by a hairline */
-.variant-option--buttons .variant-option__button-label {
-  flex: 1 1 0 !important;
-  border: 0 !important;
-  border-left: 1px solid var(--mdr-border) !important;
-  padding: 4px 4px !important;
-  min-height: 24px !important;
-  align-items: center !important;
-  justify-content: center !important;
-  text-align: center !important;
-  overflow: hidden !important;
-}
-
-.variant-option--buttons .variant-option__button-label:first-of-type {
-  border-left: 0 !important;
-}
-
-/* selected size -> the one shared selected-cell fill (mineral-neutral
-   pass -- was its own ad-hoc #d6d1c4/#1a1a1a pairing, now the same
-   --mdr-selected/--mdr-ink tokens the color selector's own selected
-   state uses, further up this file). */
-.variant-option--buttons .variant-option__button-label__pill {
-  inset: 0 !important;
-  background: var(--mdr-selected) !important;
-}
-
-.variant-option--buttons .variant-option__button-label:has(input:checked) {
-  color: var(--mdr-ink) !important;
-}
-
-.variant-option--buttons .variant-option__button-label:has(input:checked)
-  :is(.variant-option__button-label__text, span) {
-  color: var(--mdr-ink) !important;
-}
-
 /* phone: narrower side gutters */
 @media screen and (max-width: 749px) {
   :root,
@@ -3433,7 +3034,7 @@ main .product-information__grid .size-chart:not(._):not(._):not(._) * {
    (further up this file) -- without it this loses to that rule's higher
    specificity despite coming later in source. */
 main .product-information__grid .size-chart .icon-plus:not(._):not(._):not(._) {
-  color: var(--mdr-accent) !important;
+  color: var(--mdr-ink) !important;
 }
 
 /* ==========================================================================
@@ -3475,7 +3076,7 @@ a:not([class*='button']):not(.header-logo):not(.mdr-allbar__menu):active {
 a:not([class*='button']):not(.header-logo):not(.mdr-allbar__menu):focus-visible {
   background-color: var(--mdr-selected) !important;
   color: var(--mdr-ink) !important;
-  outline: 2px solid var(--mdr-accent);
+  outline: 1px solid var(--mdr-ink);
   outline-offset: 1px;
 }
 
@@ -3564,7 +3165,7 @@ main .product-information__grid .product-details {
    colour accent, so product artwork is what actually reads as colour. */
 main .product-information__grid.product-information__grid
   :is(.price, .price *, product-price, product-price *) {
-  color: var(--mdr-price-ink) !important;
+  color: var(--mdr-graphite) !important;
 }
 
 /* ...size chart -> graphite, a utility link rather than a coloured CTA */
@@ -3677,7 +3278,7 @@ cart-drawer .button:not(.button-secondary, .button-unstyled) *,
 .cart-totals [class*='price'],
 .cart-drawer [class*='price'],
 cart-drawer [class*='price'] {
-  color: var(--mdr-price-ink) !important;
+  color: var(--mdr-graphite) !important;
 }
 
 /* Typography pass: .cart-page [class*='price'] above is a wildcard --
@@ -3858,7 +3459,7 @@ main[data-template='collection']
   z-index: 15;
   display: flex;
   align-items: center;
-  gap: 20px;
+  gap: var(--mdr-space-5);
   box-sizing: border-box;
   width: 100%;
   margin: 0;
@@ -3876,7 +3477,7 @@ main[data-template='collection']
   z-index: 1;
   display: flex;
   align-items: stretch;
-  gap: 20px;
+  gap: var(--mdr-space-5);
   flex: 0 1 auto;
   min-width: 0;
   overflow: hidden;
@@ -3927,7 +3528,7 @@ main[data-template='collection']
   align-items: center;
   gap: 0.45em;
   /* the tap area is the row's full height; the type stays compact */
-  padding: 13px 0;
+  padding: var(--mdr-nav-pad) 0;
   border: 0;
   background: none;
   color: var(--mdr-text-gray);
@@ -3985,13 +3586,14 @@ main[data-template='collection']
    box's), as MENU's text is. The tap area reaches past the drawing --
    into the row, and out into the gutter -- without moving it. */
 .mdr-allbar--back .mdr-allbar__toggle {
-  padding-inline: 24px 14px;
-  margin-inline-end: -14px;
+  padding-inline: var(--mdr-space-5) var(--mdr-space-3);
+  margin-inline-end: calc(-1 * var(--mdr-space-3));
 }
 
 .mdr-return-icon {
   flex: 0 0 auto;
-  width: 1.055em;
+  /* the drawing's own proportions (viewBox 30.05 x 18.6): no stretching */
+  width: calc(0.98em * 30.05 / 18.6);
   height: 0.98em;
   overflow: visible;
   transform: translateY(-0.042em);
@@ -4016,7 +3618,7 @@ main[data-template='collection']
 .mdr-allbar__list {
   display: flex;
   align-items: stretch;
-  gap: 18px;
+  gap: var(--mdr-space-4);
   /* zero width while closed; the row's room once open */
   flex: 0 0 0;
   min-width: 0;
@@ -4123,28 +3725,16 @@ main[data-template='collection'] [id$='__product_list_fa6P9H'] .resource-list--g
   padding-block: 0 !important;
 }
 
-/* ---- Homepage grid load-in: the whole grid slides up + fades in as ONE
-   block, once, snappily -- not the old per-card staggered cascade (each
-   card its own delayed animation, bouncing in one after another). A
-   plain CSS animation on the grid itself needs no JS at all: it just
-   plays on first paint. */
+/* ---- Grid load-in: the whole grid fades in once, as one block -- no
+   movement. (backwards, not both: once played it carries nothing, so the
+   tall grid never stays a GPU layer -- iOS tiled one and showed a seam.) */
 main[data-template='collection'] [id$='__product_list_fa6P9H'] .resource-list--grid {
-  /* backwards, not both: once it has played, the grid carries no
-     transform at all. With `both` it kept an identity transform for good,
-     which kept the whole (very tall) grid as one GPU layer -- iOS Safari
-     tiles a layer that size, and a tile edge showed as a thin light line
-     straight across the product images. */
-  animation: mdr-page-slide-up 0.26s cubic-bezier(0.16, 1, 0.3, 1) backwards;
+  animation: mdr-fade-in 0.22s ease-out backwards;
 }
 
-@keyframes mdr-page-slide-up {
+@keyframes mdr-fade-in {
   from {
     opacity: 0;
-    transform: translateY(14px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
   }
 }
 
@@ -4175,19 +3765,16 @@ main[data-template='collection'] [id$='__product_list_fa6P9H'] .mdr-scrollfade {
   margin-inline: 0;
 }
 
-/* WEBRACK title tap: swipe the grid out left, swap it, swipe the new one in
-   from the right -- all without leaving the page. Quick/"zappy" -- was
-   0.22s out / 0.34s in, sped up to read as a fast flick instead of a
-   smooth glide (matching JS timings in mdr-header-enhance.liquid). */
+/* A WEBRACK title swaps the grid in place: the old one fades out, the new
+   one fades in (timings in mdr-header-enhance.liquid) -- no sliding. */
 main[data-template='collection'] [id$='__product_list_fa6P9H'] .mdr-scrollfade .resource-list--grid {
-  transition: transform 0.11s cubic-bezier(0.4, 0, 1, 1), opacity 0.11s ease;
+  transition: opacity 0.11s ease;
 }
 
 main[data-template='collection']
   [id$='__product_list_fa6P9H']
   .mdr-scrollfade.mdr-swiping-out
   .resource-list--grid {
-  transform: translateX(-5%);
   opacity: 0;
 }
 
@@ -4195,18 +3782,7 @@ main[data-template='collection']
   [id$='__product_list_fa6P9H']
   .mdr-scrollfade.mdr-swiping-in
   .resource-list--grid {
-  animation: mdr-swipe-in 0.2s cubic-bezier(0.16, 1, 0.3, 1);
-}
-
-@keyframes mdr-swipe-in {
-  from {
-    transform: translateX(5%);
-    opacity: 0;
-  }
-  to {
-    transform: translateX(0);
-    opacity: 1;
-  }
+  animation: mdr-fade-in 0.2s ease-out;
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -4325,7 +3901,7 @@ main[data-template='collection'] [id$='__product_list_fa6P9H'] .product-card .te
 }
 
 main[data-template='collection'] [id$='__product_list_fa6P9H'] .product-card .text-block[class*='product_title'] {
-  margin-top: 10px !important;
+  margin-top: var(--mdr-space-3) !important;
 }
 
 main[data-template='collection'] [id$='__product_list_fa6P9H'] .product-card .text-block p,
@@ -4386,85 +3962,6 @@ main[data-template='collection'] [id$='__product_list_fa6P9H'] .product-card .pr
   color: var(--mdr-muted) !important;
   text-transform: lowercase !important;
 }
-
-/* "The Modern Times" is now a plain <li><a> inside .mdr-fnav's own <ul>
-   (see mdr-footer-nav.liquid) -- it inherits .mdr-fnav a's typography
-   directly, same as WEBRACK/LOOKBOOK/MAILING, no separate rule needed. */
-
-
-
-/* ==========================================================================
-   LIQUID GLASS -- motion between states (snippets/mdr-liquid-glass.liquid).
-   ========================================================================== */
-
-/* Selector lens: one glass lens per colour/size row carries the selected
-   state. Its fill is the SAME selected tone as before (ink at 5.5% over the
-   canvas = --mdr-selected), laid over the cell instead of painted by it, so
-   at rest the selected cell looks exactly as it did -- a flat fill. It
-   travels between cells; the glass edge and glint only show while it
-   moves. Square, like every other cell on the site. */
-.mdr-lens-host {
-  position: relative;
-}
-
-.mdr-lens {
-  position: absolute;
-  z-index: 2;
-  pointer-events: none;
-  overflow: hidden;
-  transform-origin: 0 0;
-  background: color-mix(in srgb, var(--mdr-ink) 5.5%, transparent);
-  /* flat at rest -- the glass edge only shows while it travels (set by the
-     script's animation) */
-  box-shadow: none;
-  will-change: transform;
-}
-
-.mdr-lens__glint {
-  position: absolute;
-  inset: 0;
-  opacity: 0;
-  background: linear-gradient(100deg, rgb(255 255 255 / 0) 20%, rgb(255 255 255 / 0.7) 50%, rgb(255 255 255 / 0) 80%);
-}
-
-/* the cell's own selected fill steps aside while the lens is there, so it
-   isn't painted twice (text stays ink) */
-.mdr-lens-host .variant-option--buttons .variant-option__button-label:has(:checked) {
-  background-color: var(--mdr-paper) !important;
-}
-
-.mdr-lens-host .variant-option--buttons .variant-option__button-label__pill {
-  background: transparent !important;
-}
-
-/* Press glint: a soft glass highlight where a button is pressed, and one
-   sweep across it when a mouse arrives. Transient only -- button colours
-   are unchanged. */
-.mdr-glint-host {
-  overflow: hidden;
-}
-
-.mdr-glint-host--pos {
-  position: relative;
-}
-
-.mdr-glint {
-  position: absolute;
-  pointer-events: none;
-  border-radius: 50%;
-  background: radial-gradient(circle, rgb(255 255 255 / 0.3) 0%, rgb(255 255 255 / 0.1) 34%, rgb(255 255 255 / 0) 64%);
-}
-
-.mdr-glint--sweep {
-  top: 0;
-  bottom: 0;
-  left: 0;
-  width: 42%;
-  border-radius: 0;
-  background: linear-gradient(90deg, rgb(255 255 255 / 0), rgb(255 255 255 / 0.2), rgb(255 255 255 / 0));
-}
-
-
 
 /* ==========================================================================
    THE SHELL -- masthead + nav row (#header-group) and footer: one glass
@@ -4562,4 +4059,35 @@ body {
   }
 }
 
+/* ==========================================================================
+   PROGRESSION (snippets/mdr-nav-progress.liquid) -- while a page loads, a
+   graphite hairline runs along the masthead's bottom edge from the left,
+   its front easing off; then it completes and fades. Invisible at rest,
+   takes no space; only transform / opacity animate.
+   ========================================================================== */
+.mdr-load {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 1.5px;
+  z-index: 5;
+  overflow: hidden;
+  opacity: 0;
+  pointer-events: none;
+}
 
+.mdr-load__bar {
+  display: block;
+  width: 100%;
+  height: 100%;
+  transform: translateX(-100%);
+  background: linear-gradient(
+    90deg,
+    var(--mdr-graphite) 0,
+    var(--mdr-graphite) calc(100% - 36px),
+    color-mix(in srgb, var(--mdr-graphite) 35%, transparent) calc(100% - 8px),
+    transparent 100%
+  );
+  will-change: transform;
+}
