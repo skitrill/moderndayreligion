@@ -1778,13 +1778,14 @@ tbody > .cart-items__table-row::after {
   display: none !important;
 }
 
-.cart-page--empty {
-  padding-block: var(--mdr-space-7) !important;
+main[data-template='cart'] .cart-page.cart-page--empty {
+  justify-content: flex-start;
   row-gap: var(--mdr-space-3);
+  padding-block: var(--mdr-space-7) !important;
 }
 
-.cart-page--empty .cart-page__title {
-  margin: 0;
+main[data-template='cart'] .cart-page--empty > * {
+  margin-top: 0;
 }
 
 .cart-page--empty .cart-title h1 {
