@@ -185,7 +185,6 @@ html {
     flex-direction: column;
     flex: 1 0 auto;
     min-width: 0;
-    box-sizing: border-box;
     margin-inline: var(--mdr-frame-inline);
   }
 
@@ -196,10 +195,8 @@ html {
 
   .mdr-frame > main {
     flex: 1 0 auto;
-    box-sizing: border-box;
     /* content sits a little inside the frame edges; the product grid is
        the exception -- its outer edges ARE the frame edges */
-    padding-inline: 24px !important;
   }
 
   .mdr-frame > main[data-template='collection'] {
@@ -245,7 +242,6 @@ html {
      scroller). Column widths are fractions of the fixed frame, so no
      number of lines or quantities can move them. */
   .mdr-frame > main[data-template='cart'] {
-    display: flex;
     flex-direction: column;
     padding: 0 !important;
   }
@@ -264,7 +260,6 @@ html {
     grid-template-rows: auto 1fr !important;
     column-gap: 0 !important;
     padding-top: 0 !important;
-    width: 100%;
   }
 
   .mdr-frame > main[data-template='cart'] .cart-page:not(.cart-page--empty) .cart-page__items {
@@ -284,8 +279,6 @@ html {
     grid-column: 2 !important;
     grid-row: 1 / -1 !important;
     display: block !important;
-    height: auto !important;
-    align-self: stretch !important;
     /* 12px top: DISCOUNT starts level with the first item */
     padding: 12px 24px 40px 32px !important;
   }
@@ -294,8 +287,6 @@ html {
     position: sticky;
     top: calc(var(--mdr-rail-h, 0px) + 32px);
     display: block !important;
-    width: auto !important;
-    max-width: none !important;
     height: auto !important;
     padding-top: 0 !important;
   }
@@ -314,11 +305,9 @@ html {
 
   /* CHECK OUT spans the summary column, directly under the totals */
   .mdr-frame > main[data-template='cart'] .cart-page__summary :is(.cart__checkout-button, button[name='checkout']) {
-    width: 100% !important;
     max-width: 100% !important;
   }
 }
-
 
 /* Desktop: a large, deliberately dramatic page border -- the header/
    footer brand bars stay full-width (they're chrome, not content), but
@@ -339,7 +328,6 @@ html {
 @media screen and (min-width: 750px) and (max-width: 989px) {
   main {
     padding-inline: var(--mdr-frame-inline) !important;
-    box-sizing: border-box !important;
   }
 
   /* the shop grid carries its own gutter (the masthead's edges) */
@@ -390,7 +378,6 @@ html {
   }
 }
 
-
 /* Mobile: hold the logo on one line even when the cart count widens "CART (n)". */
 @media screen and (max-width: 749px) {
   #header-component .header-logo,
@@ -423,11 +410,6 @@ html {
   display: none !important;
 }
 
-/* Card tile look is defined further down (hazard-tape pattern + glow). */
-.product-card__content {
-  padding: 3px !important;
-}
-
 .product-card,
 .product-card__content,
 .product-card .card-gallery,
@@ -446,11 +428,6 @@ html {
   border: 0 !important;
 }
 
-.product-card .product-media-container {
-  max-width: 94%;
-  margin-inline: auto;
-}
-
 /* ==========================================================================
    FOOTER -- metadata, on the masthead's own glass (THE SHELL): the nav
    (WEBRACK / LOOKBOOK / THE MODERN TIMES / USER / MAILING) on one line,
@@ -464,8 +441,6 @@ footer {
   background-color: var(--mdr-glass-tint);
   -webkit-backdrop-filter: var(--mdr-glass-blur);
   backdrop-filter: var(--mdr-glass-blur);
-  border: 0;
-  box-shadow: none;
 }
 
 /* the footer sections' own colour panels: the glass above is the one paint layer */
@@ -477,7 +452,6 @@ footer .utilities {
   flex-direction: row !important;
   flex-wrap: wrap !important;
   justify-content: center !important;
-  align-items: center !important;
   column-gap: var(--mdr-space-4) !important;
   row-gap: var(--mdr-space-1) !important;
   max-width: 640px !important;
@@ -492,7 +466,6 @@ footer .utilities {
 .mdr-fnav:not(.mdr-fnav--landing) {
   display: flex !important;
   flex-basis: 100% !important;
-  flex-wrap: nowrap !important;
   justify-content: center !important;
   align-items: center !important;
   gap: var(--mdr-space-2) !important;
@@ -519,7 +492,6 @@ footer .utilities {
 
 .footer-utilities__group-copyright {
   flex-basis: 100%;
-  text-align: center;
 }
 
 /* type: the nav one step above the policies and copyright */
@@ -530,7 +502,6 @@ footer .footer-utilities__text,
 footer .footer-utilities__group-copyright,
 footer .footer-utilities__group-copyright * {
   font-size: var(--mdr-fs-2xs) !important;
-  font-weight: 400 !important;
   line-height: 1.2 !important;
   letter-spacing: 0.04em !important;
   color: var(--mdr-graphite) !important;
@@ -550,14 +521,7 @@ footer .mdr-fnav .mdr-fnav__toggle {
   column-gap: 16px !important;
 }
 
-@media screen and (min-width: 750px) {
-  .product-information__grid.product-information--media-left {
-    grid-template-columns: 300px minmax(0, 1fr) !important;
-  }
-}
-
 .product-information__grid .product-details {
-  max-width: none !important;
   min-width: 0 !important;
 }
 
@@ -621,13 +585,11 @@ footer .mdr-fnav .mdr-fnav__toggle {
 }
 
 .mdr-arrow {
-  display: block;
   flex: none;
   width: 8px;
   height: 6px;
   margin: 0 1px;
 }
-
 
 /* ==========================================================================
    Batch: cart layout, price color, quantity buttons, spacing, mobile image
@@ -639,14 +601,9 @@ footer .mdr-fnav .mdr-fnav__toggle {
   --spacing-scale-default: 0.75;
 }
 
-/* ---- Prices, everywhere -> the PDP's own graphite, not blue --------------
-   Was a bright #3a3ec4 blue (a stale "dark brown, everywhere" comment even
-   named a THIRD, never-applied colour -- leftover from an earlier design
-   pass). The PDP's own price is deliberately graphite, not blue -- blue is
-   reserved for actual brand/action moments (SIZE CHART, BUY NOW), not
-   ordinary product information -- so every other price on the site
-   (cart line items, unit price, cart totals) now reads the same way
-   instead of standing out as its own inconsistent accent colour. */
+/* ---- Prices, everywhere -> graphite ------------------------------------
+   One price colour for the whole site (PDP, cards, cart lines, unit price,
+   totals): secondary information, quieter than the ink of the title. */
 .price,
 .price *,
 .compare-at-price,
@@ -686,7 +643,6 @@ product-price *,
    right gutter (grid-column 2/4). Confine it to the content track. --- */
 .cart-page {
   grid-column: 2 / 3 !important;
-  grid-template-columns: minmax(0, 1fr) minmax(0, 300px) !important;
   column-gap: 40px !important;
 }
 
@@ -825,17 +781,13 @@ product-price *,
   --mdr-qty-reach: 7px;
   flex: 0 0 auto !important;
   align-self: center !important;
-  display: flex !important;
   align-items: stretch !important;
   width: auto !important;
   height: var(--mdr-qty-h) !important;
-  padding: 0 !important;
   background: var(--mdr-qty-bg) !important;
   color: var(--mdr-qty-ink) !important;
   border: 0 !important;
-  border-radius: 0 !important;
   /* visible, so the − / + touch areas below can reach past the box */
-  overflow: visible !important;
 }
 
 .quantity-selector :is(.quantity-minus, .quantity-plus) .svg-wrapper {
@@ -844,18 +796,13 @@ product-price *,
 
 .quantity-selector :is(.quantity-minus, .quantity-plus) {
   position: relative;
-  display: flex !important;
-  align-items: center !important;
-  justify-content: center !important;
   width: var(--mdr-qty-cell) !important;
   height: auto !important;
   min-height: 0 !important;
-  padding: 0 !important;
   background: transparent !important;
   color: inherit !important;
   box-shadow: none !important;
   border: 0 !important;
-  border-radius: 0 !important;
   cursor: pointer;
   touch-action: manipulation;
   -webkit-tap-highlight-color: transparent;
@@ -890,7 +837,6 @@ product-price *,
 
 .quantity-selector :is(.quantity-minus, .quantity-plus)::after {
   font-size: 0.8125rem;
-  font-weight: 400;
   line-height: 1;
   transition: opacity var(--animation-speed-fast) var(--animation-easing);
 }
@@ -906,14 +852,10 @@ product-price *,
 .quantity-selector input[type='number'] {
   width: var(--mdr-qty-num) !important;
   min-width: 0 !important;
-  height: auto !important;
-  margin: 0 !important;
   padding: 0 !important;
   border: 0 !important;
-  border-radius: 0 !important;
   background: transparent !important;
   color: var(--mdr-qty-ink) !important;
-  text-align: center !important;
   font-variant-numeric: tabular-nums;
   /* very small -- matches the PDP product title (0.625rem) */
   font-size: 0.625rem !important;
@@ -991,15 +933,10 @@ product-price *,
      quantity error shows, and a gap before it would lift the action row
      off the image's bottom edge */
   row-gap: 0 !important;
-  align-items: start !important;
 }
 
 .cart-items__table-row:not(.cart-items__table-row--full-width-variants) .cart-items__error {
   margin-top: 8px;
-}
-
-.cart-items__table-row:not(.cart-items__table-row--full-width-variants) .cart-items__details {
-  grid-area: details !important;
 }
 
 .cart-items__table-row:not(.cart-items__table-row--full-width-variants) .cart-items__price {
@@ -1021,11 +958,6 @@ product-price *,
   aspect-ratio: auto;
 }
 
-.cart-items__table-row:not(.cart-items__table-row--full-width-variants) .cart-items__media-image {
-  height: 100%;
-  aspect-ratio: auto;
-}
-
 .cart-items__table-row .cart-items__quantity {
   grid-area: quantity !important;
   align-self: start !important;
@@ -1039,8 +971,6 @@ product-price *,
 
 .cart-items__quantity-controls {
   width: 100% !important;
-  align-items: center !important;
-  justify-content: flex-start !important;
 }
 
 /* delete: in the row's flow, on the quantity's own centre line, at the
@@ -1059,10 +989,6 @@ product-price *,
 
 .cart-items__details .cart-items__product-info {
   display: flex !important;
-}
-
-.cart-items__details :is(.cart-items__title, .cart-items__variants, .cart-items__variant, .cart-items__variant dd, .cart-items__unit-price-wrapper *) {
-  line-height: 1.05 !important;
 }
 
 .cart-items__remove:not([hidden]) {
@@ -1152,7 +1078,6 @@ product-price *,
 /* price: a step quieter than the title -- smaller, regular, graphite;
    editorial, not a sales shout */
 .group-block-content:has(> product-price) > product-price .price {
-  font-weight: 400 !important;
   font-size: var(--mdr-fs-sm) !important;
   letter-spacing: 0.03em !important;
 }
@@ -1207,27 +1132,19 @@ product-price *,
 .product-details > .group-block > .group-block-content > rte-formatter[class*='__text_aEtTtq'] {
   order: 6 !important;
   margin-top: var(--pdp-gap-between) !important;
-  width: 100% !important;
   max-width: none !important;
-  margin-inline: 0 !important;
   font-size: var(--mdr-fs-xs) !important;
   line-height: 1.3 !important;
   letter-spacing: 0.02em !important;
   text-align: left !important;
   --text-align: left !important;
-  word-break: normal;
   overflow-wrap: break-word;
   hyphens: none;
 }
 
 .product-details > .group-block > .group-block-content > rte-formatter[class*='__text_aEtTtq'] * {
   max-width: none !important;
-  width: auto !important;
   font-size: inherit !important;
-  line-height: inherit !important;
-  letter-spacing: inherit !important;
-  color: inherit !important;
-  text-align: inherit !important;
   --text-align: inherit !important;
 }
 
@@ -1289,8 +1206,6 @@ product-price *,
   flex-wrap: nowrap !important;
   gap: 0 !important;
   margin-top: 0 !important;
-  padding: 0 !important;
-  border: 0 !important;
   overflow: hidden !important;
 }
 
@@ -1299,7 +1214,6 @@ product-price *,
   width: 1px !important;
   height: 1px !important;
   margin: 0 !important;
-  padding: 0 !important;
   overflow: hidden !important;
   clip-path: inset(50%) !important;
   white-space: nowrap !important;
@@ -1461,7 +1375,6 @@ main .product-information__grid .text-block:not(product-price) :is(span, p, li, 
 .cart-items__unit-price-wrapper,
 .cart-items__unit-price-wrapper * {
   font-size: var(--mdr-fs-xs) !important;
-  font-weight: 400 !important;
 }
 
 /* image link stays clickable but gets no highlight / hover treatment */
@@ -1553,7 +1466,6 @@ main .button[type='submit']:not(.add-to-cart-button):not(.product-form__submit) 
 
 .product-form-buttons,
 .product-form__buttons {
-  gap: 8px !important;
   justify-content: flex-start !important;
 }
 
@@ -1567,16 +1479,6 @@ main .shopify-section > .section,
 main .shopify-section > .section-wrapper > .section,
 main .section--page-width {
   max-width: 100% !important;
-  margin-inline: auto !important;
-}
-
-/* ---- Homepage featured + product recommendations: match the collection --
-   same flat tiles, tight seam. The collection page keeps its own native grid. */
-main[data-template='collection'] .resource-list--grid,
-.product-recommendations .resource-list--grid,
-.product-recommendations .resource-list {
-  column-gap: 2px !important;
-  row-gap: 2px !important;
 }
 
 /* ---- The product grid: a raw canvas. No lines, no cells, no boxes -- the
@@ -1603,11 +1505,6 @@ main[data-template='collection'] [id$='__product_list_fa6P9H'] .resource-list--g
 
 /* Columns: 2 on phones (rule above), 2 on tablets (750-989px), 4 on PC
    (990px+). */
-@media (min-width: 750px) {
-  main[data-template='collection'] [id$='__product_list_fa6P9H'] .resource-list--grid {
-    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
-  }
-}
 
 @media (min-width: 750px) {
   main[data-template='collection'] [id$='__product_list_fa6P9H'] .resource-list--grid {
@@ -1663,15 +1560,6 @@ main[data-template='collection'] [id$='__product_list_fa6P9H'] .section-resource
   margin-bottom: clamp(10px, 2.4vw, 20px) !important;
 }
 
-/* "All" section title -> red */
-main[data-template='collection'] [id$='__product_list_fa6P9H'] .section-resource-list__header
-  :is(h1, h2, h3, h4, .text-block, [class*='title']),
-main[data-template='collection'] [id$='__product_list_fa6P9H'] .section-resource-list__header
-  :is(h1, h2, h3, h4, .text-block) * {
-  color: var(--mdr-ink) !important;
-}
-
-
 /* body stays transparent: Safari fills everything past the page (under its
    toolbar, overscroll) with html's colour blended with body's, so an opaque
    body would put the canvas tone back under the footer. The canvas is
@@ -1679,7 +1567,6 @@ main[data-template='collection'] [id$='__product_list_fa6P9H'] .section-resource
    (snippets/meta-tags.liquid). */
 body {
   background-color: transparent !important;
-  background-image: none !important;
 }
 
 /* .page-wrapper (base.css) is a flex column with its own min-height: 100dvh,
@@ -1717,10 +1604,6 @@ footer {
   }
 }
 
-.page-wrapper {
-  background-color: var(--mdr-bg);
-}
-
 /* main paints the base tone itself (the same as everything around it), so
    no section's own colour scheme can show through as another grey */
 main:not([data-template='index']) {
@@ -1749,8 +1632,6 @@ main:not([data-template='index']) {
    down this file. */
 .product-information__media {
   /* no frame: the garment sits straight on the canvas */
-  border: 0 !important;
-  box-sizing: border-box !important;
   /* a true square whatever the photo's proportions: a square media box
      (below) inside equal padding on all four sides, and the frame itself
      held at 1:1 -- its height never comes from the photo or from the
@@ -1759,21 +1640,6 @@ main:not([data-template='index']) {
   padding: 8px !important;
   /* a little room between the MENU / RETURN line and the photo */
   margin-top: 8px !important;
-}
-
-/* Inner field behind the garment photo -- base theme's slideshow-container
-   (snippets/slideshow-styles.liquid) paints its own background straight
-   from the section's color-palette setting (#F6F3E7, the same pre-
-   mineral-neutral cream the unselected variant cells were also still
-   reading), completely independent of --mdr-paper. That put a second,
-   slightly different off-white INSIDE this frame's border -- a "square
-   inside a square" against the page's own #f7f7f2 canvas around the
-   frame. Scoped to the PDP media area only (not a blanket slideshow-
-   container rule) so any other section using this same base component
-   with an intentionally different color scheme is untouched. Frame
-   border/size/padding above is unrelated and unchanged. */
-.product-information__media slideshow-container {
-  background-color: var(--mdr-paper) !important;
 }
 
 /* There was a SECOND, separate layer painting that same stale cream --
@@ -1803,27 +1669,6 @@ main:not([data-template='index']) {
    the photo's own ratio); the photo is fitted inside it, never stretched */
 .product-information__media .product-media {
   aspect-ratio: 1 / 1 !important;
-}
-
-.product-information__media .product-media img {
-  object-fit: contain !important;
-}
-
-/* No glow on the product-page hero -- the 20% halo was tracing a faint box
-   around the cut-out's edge on mobile. */
-.product-information__media .product-media__image,
-.product-information__media img,
-.product-information__media .product-media,
-.product-media-gallery .product-media__image,
-.product-media-gallery img,
-.product-media-container img {
-  filter: none !important;
-}
-
-/* ---- Slight visible gap between cards so they don't look merged ----------- */
-.resource-list--grid {
-  column-gap: 6px !important;
-  row-gap: 6px !important;
 }
 
 /* ---- PDP "Recommended" section: hairline grid lines between the cards,
@@ -1882,11 +1727,6 @@ main:not([data-template='index']) {
   border: 0 !important;
 }
 
-/* keep the discount input's own outline */
-.cart-discount__input {
-  border: 1px solid var(--color-input-border, #5c564a) !important;
-}
-
 /* ---- Cart line items: one repeatable row height/padding system --------
    Horizon's own row spacing is padding-bottom (a merchant "gap" setting,
    usually 24px+) PLUS margin-bottom (--margin-lg, 1rem) stacked on top of
@@ -1935,15 +1775,6 @@ tbody > .cart-items__table-row::after {
   display: none !important;
 }
 
-/* No page padding above the first item: every row carries its own 12px
-   above and below its rule, and the rail's bottom line plays the rule
-   above the first row -- so the first item sits exactly as far under the
-   rail as every later item sits under the line before it. (The section's
-   own top-padding setting is 0 too, templates/cart.json.) */
-.cart-page {
-  padding-top: 0 !important;
-}
-
 .cart-page__items {
   margin-top: 0 !important;
 }
@@ -1956,12 +1787,8 @@ tbody > .cart-items__table-row::after {
    the two actions split the rest equally (rules below). */
 .product-form-buttons,
 .product-form__buttons {
-  display: flex !important;
-  flex-direction: row !important;
   flex-wrap: nowrap !important;
-  align-items: stretch !important;
   gap: 0 !important;
-  border: 0 !important;
   /* the action colour (what .button reads for ADD TO CART / BUY NOW)
      behind the whole rail: segments meet on fractional pixels, and a
      sub-pixel seam between them should blend dark, not show the light
@@ -2018,14 +1845,12 @@ tbody > .cart-items__table-row::after {
 
 .product-form-buttons .quantity-selector input[type='number'] {
   flex: 1 1 auto;
-  width: auto !important;
 }
 
 /* ADD TO CART (in an unclassed <span> wrapper) and BUY NOW split the rest
    equally, so each label centres in a real half of the dark surface */
 .product-form-buttons > span:not(.product-form-text__error) {
   flex: 1 1 0 !important;
-  max-width: none !important;
   min-width: 0 !important;
   display: flex !important;
 }
@@ -2040,16 +1865,12 @@ tbody > .cart-items__table-row::after {
    below). */
 .product-form-buttons add-to-cart-component {
   flex: 1 1 auto !important;
-  width: 100% !important;
 }
 
 .product-form-buttons .add-to-cart-button:not(.sticky-add-to-cart__button),
 .product-form-buttons .product-form__submit {
-  width: 100% !important;
   min-width: 0 !important;
-  max-width: none !important;
   padding-inline: 8px !important;
-  white-space: nowrap !important;
 }
 
 /* ADD TO CART / BUY NOW / CHECK OUT: the primary step and the strong cut */
@@ -2066,8 +1887,6 @@ button[name='checkout'] {
 .product-form-buttons > .accelerated-checkout-block {
   flex: 1 1 0 !important;
   min-width: 0 !important;
-  max-width: none !important;
-  margin: 0 !important;
 }
 
 .product-form-buttons .shopify-payment-button {
@@ -2126,8 +1945,6 @@ button[name='checkout'] {
 
 .product-form-buttons .add-to-cart-button:not(.sticky-add-to-cart__button) {
   display: inline-flex !important;
-  align-items: center !important;
-  justify-content: center !important;
 }
 
 /* BUY NOW -- replaces the Shop Pay wallet button (blocks/accelerated-
@@ -2142,7 +1959,6 @@ button[name='checkout'] {
   display: inline-flex !important;
   align-items: center !important;
   justify-content: center !important;
-  width: 100% !important;
   height: 100% !important;
   background: var(--button-background-color) !important;
   color: var(--button-color) !important;
@@ -2468,7 +2284,6 @@ product-card:active .card-gallery {
 .mdr-fnav a,
 .mdr-fnav .mdr-fnav__toggle {
   display: inline-block;
-  margin: 0;
   padding: 0;
   border: 0;
   background: none;
@@ -2477,7 +2292,6 @@ product-card:active .card-gallery {
   font-size: var(--mdr-fs-sm);
   line-height: 1;
   letter-spacing: 0.04em;
-  text-transform: uppercase;
   color: var(--color-foreground-muted);
   text-decoration: none;
 }
@@ -2557,10 +2371,8 @@ product-card:active .card-gallery {
   appearance: none;
   -webkit-appearance: none;
   border: 0;
-  border-radius: 0;
   background: transparent;
   color: var(--color-foreground);
-  font-family: var(--font-accent--family, inherit);
   /* the nav items' and buttons' size (0.625rem) */
   font-size: var(--mdr-fs-sm);
   letter-spacing: 0.04em;
@@ -2587,16 +2399,12 @@ product-card:active .card-gallery {
   appearance: none;
   -webkit-appearance: none;
   border: 0;
-  border-radius: 0;
   background: var(--color-primary-button-background);
   color: var(--color-primary-button-text);
   font-family: var(--font-accent--family, inherit);
   font-size: var(--mdr-fs-sm);
-  font-weight: 400;
   letter-spacing: 0.04em;
-  text-transform: uppercase;
   padding: 0 7px;
-  margin: 0;
   cursor: pointer;
   pointer-events: auto;
 }
@@ -2656,12 +2464,10 @@ body:has(main[data-template='index']) footer {
    graphite into a second global colour the rest of the site inherits. */
 html:has(main[data-template='index']),
 body:has(main[data-template='index']) {
-  height: 100%;
   overflow: hidden;
   background-color: var(--mdr-landing-bg) !important;
   /* the landing screen's own environment: graphite, end to end */
   --mdr-bg: var(--mdr-landing-bg);
-  color-scheme: dark;
 }
 
 /* .page-wrapper (base.css), not html/body, is the ACTUAL scroll container
@@ -2669,7 +2475,6 @@ body:has(main[data-template='index']) {
    stop it from scrolling on its own there. background-color: explicit
    here too, same --mdr-landing-bg token. */
 body:has(main[data-template='index']) .page-wrapper {
-  height: 100vh !important;
   overflow: hidden !important;
   background-color: var(--mdr-landing-bg) !important;
 }
@@ -2687,17 +2492,13 @@ body:has(main[data-template='index']) .page-wrapper {
   justify-content: center;
   gap: 16px;
   width: 100%;
-  height: 100%;
   padding-block: 24px;
   text-align: center;
-  box-sizing: border-box;
 }
 
 .mdr-landing__logo img {
-  display: block;
   /* +15% then +20% more from the original min(60vw, 420px) */
   width: min(82.8vw, 580px);
-  height: auto;
   /* its colour: the wordmark rule (--mdr-logo-color) */
 }
 
@@ -2782,7 +2583,6 @@ body:has(main[data-template='index']) .page-wrapper {
 
 .mdr-fnav--landing .mdr-fnav__email {
   flex: 1 1 auto;
-  width: auto;
 }
 
 .mdr-fnav--landing .mdr-fnav__msg {
@@ -2838,8 +2638,6 @@ body:has(main[data-template='index']) .page-wrapper {
    darkens the page behind it. */
 .header__underlay-open {
   background: transparent !important;
-  backdrop-filter: none !important;
-  -webkit-backdrop-filter: none !important;
   pointer-events: none !important;
   opacity: 0 !important;
 }
@@ -2908,19 +2706,13 @@ body:has(main[data-template='index']) .page-wrapper {
    desktop (further up this file, needed for the WEBRACK-merge JS); it's
    unconditional now, not just at that breakpoint. */
 #header-group {
-  position: relative;
   /* the glass is painted by its own layer behind the content (::before,
      next rule), not by this element: iOS Safari can stop painting the
      content of a pinned element that carries backdrop-filter while it
      momentum-scrolls -- the glass stayed, the logo / CART / rail vanished.
      isolate keeps that layer inside this element, behind its content. */
   isolation: isolate;
-  background: transparent !important;
-  backdrop-filter: none !important;
-  -webkit-backdrop-filter: none !important;
   /* no rule under the masthead: the glass against the page is the edge */
-  border: 0 !important;
-  box-shadow: none !important;
 }
 
 #header-group::before {
@@ -2956,8 +2748,6 @@ body:has(main[data-template='index']) .page-wrapper {
   box-shadow: none !important;
 }
 
-
-
 /* ---- The wordmark, everywhere -- masthead, home screen, lock screen --
    in exactly the CART link's colour (--mdr-logo-color). It's the black
    SVG as an <img>, and a filter can only approximate a colour, so it's
@@ -2971,7 +2761,6 @@ body:has(main[data-template='index']) .page-wrapper {
   -webkit-mask: url('mdr-logo.svg') center / contain no-repeat;
   mask: url('mdr-logo.svg') center / contain no-repeat;
   object-position: -10000px 0;
-  filter: none !important;
 }
 
 /* The header itself doesn't know about the safe area at all (viewport-fit=
@@ -3024,7 +2813,6 @@ main .product-information__grid .size-chart:not(._):not(._):not(._) * {
 .size-chart__trigger,
 .size-chart__trigger-text {
   font-size: var(--mdr-fs-xs) !important;
-  font-weight: 400 !important;
 }
 
 /* the +/- disclosure icon specifically -- "size-chart interaction" is one
@@ -3157,23 +2945,6 @@ main .product-information__grid .product-details {
   --color-foreground-muted: var(--mdr-text-gray) !important;
 }
 
-/* PDP price -> graphite, same family as the product title (--mdr-text-
-   gray, 0.5 alpha) but slightly darker for a touch more presence -- was
-   blue. Neutral MDR system: blue is retired from ordinary interface use
-   entirely now (SIZE CHART and BUY NOW below included), not just price
-   display -- the site runs on the neutral ink/graphite/muted system, no
-   colour accent, so product artwork is what actually reads as colour. */
-main .product-information__grid.product-information__grid
-  :is(.price, .price *, product-price, product-price *) {
-  color: var(--mdr-graphite) !important;
-}
-
-/* ...size chart -> graphite, a utility link rather than a coloured CTA */
-main .product-information__grid.product-information__grid .size-chart,
-main .product-information__grid.product-information__grid .size-chart * {
-  color: var(--mdr-graphite) !important;
-}
-
 /* ...product title -> matches the homepage product-card title's own grey
    (--mdr-text-gray) and its line-height/letter-spacing: the PDP title
    uses the "h5" preset (tight, no tracking) while the homepage card
@@ -3212,7 +2983,6 @@ main .product-information__grid.product-information__grid .product-details h1 {
   max-height: 100%;
   overflow: hidden;
 }
-
 
 /* cart text -> the one standard grey (--mdr-text-gray, top of file) --
    this blanket rule is what actually wins for most cart copy (title,
@@ -3262,38 +3032,7 @@ cart-drawer .button:not(.button-secondary, .button-unstyled) *,
   color: var(--button-color) !important;
 }
 
-/* ...but prices stay graphite, matching the PDP (not blue -- see the
-   consolidated price-colour rule near the top of this file; this block
-   is the actual one winning on the cart page, since it's more specific
-   and comes later in source order, so it has to carry the same colour
-   rather than the two silently disagreeing). */
-.cart-page .cart-items__price,
-.cart-page .cart-items__price *,
-.cart-page product-price,
-.cart-page product-price *,
-.cart-page [class*='price'],
-.cart-totals .cart-totals__total-value,
-.cart-totals .cart-totals__total-value *,
-.cart-totals [class*='total-value'],
-.cart-totals [class*='price'],
-.cart-drawer [class*='price'],
-cart-drawer [class*='price'] {
-  color: var(--mdr-graphite) !important;
-}
-
-/* Typography pass: .cart-page [class*='price'] above is a wildcard --
-   it also matches .cart-items__unit-price-wrapper's own class name (it
-   contains "price"), pulling the unit price into the same darker tone
-   as the line total. Excluded back out here, same specificity as that
-   rule but later in source, so this is what actually wins: unit price
-   stays soft gray ("small, soft gray, regular weight"), distinct from
-   the darker, slightly-more-prominent line total beside it. */
-.cart-page .cart-items__unit-price-wrapper,
-.cart-page .cart-items__unit-price-wrapper * {
-  color: var(--mdr-text-gray) !important;
-}
-
-/* the cart-page count badge stays blue */
+/* the cart count badge -> ink */
 .cart-bubble,
 .cart-bubble *,
 .cart-bubble__text-count,
@@ -3316,7 +3055,6 @@ cart-drawer [class*='price'] {
 #header-component .header__cart-link,
 #header-component a[href$='/cart'] {
   display: inline-block !important;
-  padding: 0 !important;
   color: var(--mdr-text-gray) !important;
   /* the primary step and the strong cut -- the masthead's one control */
   font-size: var(--mdr-fs-md) !important;
@@ -3324,8 +3062,6 @@ cart-drawer [class*='price'] {
   background-color: transparent !important;
   background-image: none !important;
   border: 0 !important;
-  border-radius: 0 !important;
-  text-transform: uppercase !important;
   line-height: 1 !important;
   letter-spacing: 0.04em !important;
   text-shadow: none !important;
@@ -3460,16 +3196,10 @@ main[data-template='collection']
   display: flex;
   align-items: center;
   gap: var(--mdr-space-5);
-  box-sizing: border-box;
   width: 100%;
-  margin: 0;
   padding: 0 var(--mdr-gutter);
   /* the open title list scrolls inside the row, never the page sideways */
   overflow-x: clip;
-}
-
-.mdr-allbar__toggle {
-  margin: 0;
 }
 
 .mdr-allbar {
@@ -3478,7 +3208,6 @@ main[data-template='collection']
   display: flex;
   align-items: stretch;
   gap: var(--mdr-space-5);
-  flex: 0 1 auto;
   min-width: 0;
   overflow: hidden;
   white-space: nowrap;
@@ -3537,7 +3266,6 @@ main[data-template='collection']
   font-weight: var(--mdr-fw-strong);
   letter-spacing: 0.03em;
   line-height: 1;
-  text-transform: uppercase;
   text-decoration: none;
   white-space: nowrap;
   cursor: pointer;
@@ -3575,7 +3303,6 @@ main[data-template='collection']
   fill: none;
   stroke: currentColor;
   stroke-width: 18;
-  stroke-linecap: butt;
 }
 
 /* The back control is the U-turn alone: a bold head with the stroke
@@ -3622,7 +3349,6 @@ main[data-template='collection']
   /* zero width while closed; the row's room once open */
   flex: 0 0 0;
   min-width: 0;
-  overflow-x: auto;
   overflow-y: hidden;
   overscroll-behavior-x: contain;
   -webkit-overflow-scrolling: touch;
@@ -3650,7 +3376,6 @@ main[data-template='collection']
   letter-spacing: 0.03em;
   line-height: 1;
   text-decoration: none;
-  white-space: nowrap;
   opacity: 0.7;
   transition: opacity 0.15s ease, color 0.12s ease;
 }
@@ -3716,15 +3441,6 @@ html.mdr-webrack-open .mdr-allbar__touchzone {
   user-select: none;
 }
 
-/* the grid just flows down the page, no inner scroll window (its inline
-   padding is the gutter, set with the grid itself) */
-main[data-template='collection'] [id$='__product_list_fa6P9H'] .resource-list--grid {
-  max-height: none !important;
-  overflow: visible !important;
-  border: 0 !important;
-  padding-block: 0 !important;
-}
-
 /* ---- Grid load-in: the whole grid fades in once, as one block -- no
    movement. (backwards, not both: once played it carries nothing, so the
    tall grid never stays a GPU layer -- iOS tiled one and showed a seam.) */
@@ -3761,8 +3477,6 @@ main[data-template='collection'] [id$='__product_list_fa6P9H'] .mdr-scrollfade {
      which measures the TRUE rendered gap via getBoundingClientRect
      (reliable even under zoom, unlike vw) and corrects it directly. This
      rule is just the fallback if that JS hasn't run yet. */
-  width: 100%;
-  margin-inline: 0;
 }
 
 /* A WEBRACK title swaps the grid in place: the old one fades out, the new
@@ -3797,7 +3511,6 @@ main[data-template='collection']
    pattern, name + price stacked below, ghost "new" tag, hairline seams.
    ========================================================================== */
 
-
 /* card = a plain column straight on the canvas */
 main[data-template='collection'] [id$='__product_list_fa6P9H'] .product-card,
 main[data-template='collection'] [id$='__product_list_fa6P9H'] .product-card__content {
@@ -3806,20 +3519,6 @@ main[data-template='collection'] [id$='__product_list_fa6P9H'] .product-card__co
   box-shadow: none !important;
   padding: 0 !important;
   gap: 0 !important;
-}
-
-main[data-template='collection'] [id$='__product_list_fa6P9H'] .product-card__content {
-  padding-bottom: 0 !important;
-  /* the image area + text area need to stack as two independently-sized
-     blocks (fixed aspect-ratio image, fixed-height text) for every card to
-     land on the exact same total height -- see the text-block rule below. */
-  display: flex !important;
-  flex-direction: column !important;
-}
-
-/* the full-card overlay link stops at the content -- not below the price */
-main[data-template='collection'] [id$='__product_list_fa6P9H'] .product-card__link {
-  height: 100% !important;
 }
 
 /* no tap flash anywhere on a product card */
@@ -3833,17 +3532,13 @@ main[data-template='collection'] [id$='__product_list_fa6P9H'] .resource-list__i
 /* the photo's stage: no panel of its own, just the canvas */
 main[data-template='collection'] [id$='__product_list_fa6P9H'] .card-gallery,
 main[data-template='collection'] [id$='__product_list_fa6P9H'] .product-media-container {
-  position: relative;
   background-color: transparent !important;
   background-image: none !important;
   border: 0 !important;
-  border-radius: 0 !important;
-  overflow: hidden;
 }
 
 main[data-template='collection'] [id$='__product_list_fa6P9H'] .product-media-container {
   max-width: 100% !important;
-  margin-inline: 0 !important;
   /* Palace-like proportions: the image stage plus the name/price under it
      make a cell about as tall as it is wide (Palace: square cells, row
      pitch = column pitch), instead of noticeably taller. One fixed ratio
@@ -3858,7 +3553,6 @@ main[data-template='collection'] [id$='__product_list_fa6P9H'] .product-card .pr
 main[data-template='collection'] [id$='__product_list_fa6P9H'] .product-card .product-media img {
   /* the warm glow behind the cutout is gone -- flat now, no filter */
   filter: none !important;
-  mix-blend-mode: normal;
   object-fit: contain !important;
   /* the photos carry their own margin (~8% each side); just a little more,
      so the garment fills the stage the way Palace's do */
@@ -3896,7 +3590,6 @@ main[data-template='collection'] [id$='__product_list_fa6P9H'] .product-card pro
 }
 
 main[data-template='collection'] [id$='__product_list_fa6P9H'] .product-card .text-block {
-  margin: 0 !important;
   padding: 0 !important;
 }
 
@@ -3906,14 +3599,10 @@ main[data-template='collection'] [id$='__product_list_fa6P9H'] .product-card .te
 
 main[data-template='collection'] [id$='__product_list_fa6P9H'] .product-card .text-block p,
 main[data-template='collection'] [id$='__product_list_fa6P9H'] .product-card product-price .price {
-  font-family: 'PGF Qualta', 'Anonymous Pro', monospace !important;
-  font-weight: 400 !important;
   font-size: var(--mdr-fs-sm) !important;
   line-height: 1.25 !important;
   letter-spacing: 0.03em !important;
-  text-align: center !important;
   color: var(--mdr-graphite) !important;
-  text-transform: uppercase !important;
 }
 
 main[data-template='collection'] [id$='__product_list_fa6P9H'] .product-card .text-block p {
@@ -3922,16 +3611,7 @@ main[data-template='collection'] [id$='__product_list_fa6P9H'] .product-card .te
   color: var(--mdr-ink) !important;
 }
 
-main[data-template='collection'] [id$='__product_list_fa6P9H'] .product-card product-price,
-main[data-template='collection'] [id$='__product_list_fa6P9H'] .product-card product-price.spacing-style,
-main[data-template='collection'] [id$='__product_list_fa6P9H'] .product-card product-price > div {
-  margin: 0 !important;
-  padding: 0 !important;
-}
-
 main[data-template='collection'] [id$='__product_list_fa6P9H'] .product-card .text-block p {
-  margin: 0 !important;
-  padding: 0 !important;
   /* every card's text area needs to be the SAME height regardless of the
      product name's actual length ("MODERNA TEE" vs "PIR® DOCTRINE TEE")
      -- two lines, ellipsis past that (was one line: the Supreme
@@ -3944,7 +3624,6 @@ main[data-template='collection'] [id$='__product_list_fa6P9H'] .product-card .te
      only reserves ~1 line's worth now: most names are one line, so most
      cards get a tight gap, and the rare two-line name just makes that
      one card a little taller than its neighbours instead. */
-  display: -webkit-box !important;
   -webkit-box-orient: vertical !important;
   -webkit-line-clamp: 2 !important;
   overflow: hidden !important;
