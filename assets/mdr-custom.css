@@ -3841,9 +3841,10 @@ main[data-template='collection']
 /* ==========================================================================
    NAV ROW -- WEBRACK / MENU / RETURN, under the masthead (built by
    snippets/mdr-header-enhance.liquid):
-     grid:          WEBRACK                                   MENU
-     other pages:   MENU                                 [U] RETURN
-   Type alone carries it -- no lines, no symbols but RETURN's U-turn. It
+     grid:          WEBRACK                                 = MENU
+     other pages:   = MENU                                     [U]
+   (= the stacked-dash icon, [U] the U-turn back arrow.) Type and two
+   icons of one stroke family carry it -- no lines. It
    sits on the masthead's glass (one surface, #header-group) and is pinned
    with it (THE SHELL). Its outer labels sit on the masthead's own edges
    (--mdr-gutter: the logo's left, CART's right). The controls read in the
@@ -3947,13 +3948,46 @@ main[data-template='collection']
   outline-offset: 3px;
 }
 
-/* RETURN's U-turn: a bold head with the stroke running right, round the
-   curve and back -- one drawing in the label's colour, scaled to the type */
+/* MENU's stacked dashes: three flat-ended strokes, equal gaps, exactly the
+   capitals' height (0.747em in this face) and standing on the text's
+   baseline, so they align with the word by construction. Strokes ~0.135em
+   -- about the letters' own stem. */
+.mdr-allbar-wrap .mdr-allbar__menu {
+  align-items: baseline;
+}
+
+.mdr-menu-icon {
+  flex: 0 0 auto;
+  width: 0.934em;
+  height: 0.747em;
+  overflow: visible;
+}
+
+.mdr-menu-icon path {
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 18;
+  stroke-linecap: butt;
+}
+
+/* The back control is the U-turn alone: a bold head with the stroke
+   running right, round the curve and back -- the dashes' stroke family, a
+   touch heavier (its silhouette is busier). Its box is the drawing itself,
+   so the outer edge sits exactly on the gutter, mirroring MENU's dashes on
+   the other side; centred on the capitals' middle (0.5px above the line
+   box's), as MENU's text is. The tap area reaches past the drawing --
+   into the row, and out into the gutter -- without moving it. */
+.mdr-allbar--back .mdr-allbar__toggle {
+  padding-inline: 24px 14px;
+  margin-inline-end: -14px;
+}
+
 .mdr-return-icon {
   flex: 0 0 auto;
-  width: 1.2em;
-  height: 1.2em;
+  width: 1.055em;
+  height: 0.98em;
   overflow: visible;
+  transform: translateY(-0.042em);
 }
 
 .mdr-return-icon__head {

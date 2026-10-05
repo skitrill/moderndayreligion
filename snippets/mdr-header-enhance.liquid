@@ -447,16 +447,18 @@
       toggle.type = 'button';
       toggle.className = 'mdr-allbar__toggle';
       toggle.setAttribute('aria-expanded', 'false');
-      /* WEBRACK is just the word. RETURN carries its U-turn: a bold arrow
-         head with the stroke running right, round a curve and back -- one
-         vector drawing in the label's own colour, sized to the type
-         (mdr-custom.css, .mdr-return-icon). */
+      /* WEBRACK is just the word. The back control is only its U-turn: a
+         bold arrow head with the stroke running right, round a curve and
+         back -- one vector drawing in the nav's colour, sized to the type
+         (mdr-custom.css, .mdr-return-icon). The viewBox is the drawing's
+         own bounds, strokes included, so its outer edge IS the icon's edge
+         (it lands exactly on the gutter). Named for screen readers below. */
       toggle.innerHTML = isHome
         ? '<span class="mdr-allbar__label">Webrack</span>'
-        : '<svg class="mdr-return-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false">' +
+        : '<svg class="mdr-return-icon" viewBox="1.8 2.5 20.05 18.6" aria-hidden="true" focusable="false">' +
             '<path class="mdr-return-icon__head" d="M2.5 8 9 3.2v9.6Z"/>' +
             '<path class="mdr-return-icon__body" d="M8.5 8h6.75a5 5 0 0 1 5 5v1.5a5 5 0 0 1-5 5H7.5"/>' +
-          '</svg><span class="mdr-allbar__label">Return</span>';
+          '</svg>';
 
       var list = D.createElement('div');
       list.className = 'mdr-allbar__list';
@@ -565,7 +567,12 @@
       var menu = D.createElement('a');
       menu.className = 'mdr-allbar__menu' + (isHome ? '' : ' mdr-allbar__menu--start');
       menu.href = '/';
-      menu.innerHTML = '<span class="mdr-allbar__menu-label">Menu</span>';
+      /* three stacked dashes, then the word: the dashes are exactly the
+         capitals' height and sit on the text's baseline (mdr-custom.css,
+         .mdr-menu-icon) */
+      menu.innerHTML = '<svg class="mdr-menu-icon" viewBox="0 0 125 100" aria-hidden="true" focusable="false">' +
+          '<path d="M0 9H125M0 50H125M0 91H125"/>' +
+        '</svg><span class="mdr-allbar__menu-label">Menu</span>';
       wrap.appendChild(menu);
 
       /* directly below the masthead, inside #header-group: one pinned glass
@@ -606,7 +613,7 @@
 
       if (!isHome) {
         /* off the home page this bar IS the back button */
-        toggle.setAttribute('aria-label', 'Return');
+        toggle.setAttribute('aria-label', 'Go back');
         toggle.addEventListener('click', function (e) {
           e.preventDefault();
           e.stopPropagation();
